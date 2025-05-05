@@ -1,0 +1,7 @@
+# public/.htaccess
+RewriteEngine On
+RewriteBase /privatevault/
+# Wenn Datei/Ordner nicht existiert, leite an index.php weiter
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
