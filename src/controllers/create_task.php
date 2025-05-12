@@ -43,7 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               $due_date
             ]);
             $success = 'Aufgabe wurde erfolgreich erstellt.';
-            $_POST = [];               // Formular leeren
+
+            // Weiterleitung nach erfolgreicher Erstellung
+            header('Location: /dashboard.php');
+            exit;
         } catch (PDOException $e) {
             $errors[] = 'Datenbankfehler: ' . $e->getMessage();
         }
