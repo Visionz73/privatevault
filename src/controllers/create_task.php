@@ -9,14 +9,17 @@ error_reporting(E_ALL);
 requireLogin();
 requireRole(['admin']);          // nur Admins dürfen Tasks erstellen
 
-$errors  = [];
+// Initialisierung von Variablen
+$allUsers = [];
 $success = '';
+$errors = [];
 
 // Alle Nutzer für das Dropdown
 $allUsers = $pdo->query(
   'SELECT id, username FROM users ORDER BY username'
 )->fetchAll();
 
+// Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title       = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
@@ -48,4 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Template laden
 require_once __DIR__ . '/../../templates/create_task.php';
+?>
