@@ -1,9 +1,9 @@
 <?php
 // config.php
 // DB-Konfiguration
-$dsn    = 'mysql:host=localhost;dbname=privatevault;charset=utf8mb4';
-$dbUser = 'root';           // neu
-$dbPass = '';   // neu 
+$dsn    = 'mysql:host=127.0.0.1;dbname=privatevault_db;charset=utf8mb4';
+$dbUser = 'pv_user';           // neu
+$dbPass = '12345678';   // neu 
 
 $options = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -11,7 +11,7 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=privatevault', 'your_original_username', 'your_original_password', $options);
+    $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
 } catch (PDOException $e) {
     die('DB‐Verbindung fehlgeschlagen: ' . $e->getMessage());
 }
