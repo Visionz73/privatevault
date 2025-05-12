@@ -11,7 +11,7 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
+    $pdo = new PDO('mysql:host=localhost;dbname=privatevault', 'your_original_username', 'your_original_password', $options);
 } catch (PDOException $e) {
     die('DB‐Verbindung fehlgeschlagen: ' . $e->getMessage());
 }
