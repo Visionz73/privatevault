@@ -18,12 +18,17 @@
 
     <!-- Greeting --------------------------------------------------------->
     <?php
-    $formatter = new IntlDateFormatter(
-        'de_DE',
-        IntlDateFormatter::FULL,
-        IntlDateFormatter::NONE
-    );
-    $formattedDate = $formatter->format(new DateTime());
+    if (class_exists('IntlDateFormatter')) {
+        $formatter = new IntlDateFormatter(
+            'de_DE',
+            IntlDateFormatter::FULL,
+            IntlDateFormatter::NONE
+        );
+        $formattedDate = $formatter->format(new DateTime());
+    } else {
+        setlocale(LC_TIME, 'de_DE.UTF-8');
+        $formattedDate = strftime('%A, %d. %B');
+    }
     ?>
     <h1 class="text-3xl font-bold text-gray-900 leading-tight">
       <?= $formattedDate ?><br>
