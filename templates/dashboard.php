@@ -64,7 +64,7 @@
       <!-- Dokumente Widget ----------------------------------------------->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <a href="profile.php?tab=documents" class="group inline-flex items-center mb-4">
-          <h2 class="text-lg font-semibold mr-1">Docs</h2>
+          <h2 class="text-lg font-semibold mr-1">Dokumente</h2>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
         <p class="text-sm text-gray-500 mb-4"><?= $docCount ?> Dateien</p>
