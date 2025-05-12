@@ -12,6 +12,10 @@ if (!isset($success)) {
 if (!isset($errors)) {
     $errors = []; // Standardwert
 }
+
+echo "Debug: Template geladen.<br>";
+echo "Debug: Erfolgsmeldung: " . htmlspecialchars($success) . "<br>";
+echo "Debug: Fehler: " . implode(', ', $errors) . "<br>";
 ?>
 <!DOCTYPE html>
 <html lang="de" class="h-full">

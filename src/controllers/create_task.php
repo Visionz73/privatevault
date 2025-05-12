@@ -9,6 +9,8 @@ error_reporting(E_ALL);
 requireLogin();
 requireRole(['admin']);          // nur Admins dürfen Tasks erstellen
 
+echo "Debug: Controller geladen.<br>";
+
 // Initialisierung von Variablen
 $allUsers = [];
 $success = '';
@@ -21,6 +23,7 @@ $allUsers = $pdo->query(
 
 // Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "Debug: POST-Daten empfangen.<br>";
     $title       = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $assigned_to = $_POST['assigned_to'] ?? '';
@@ -44,9 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               $due_date
             ]);
             $success = 'Aufgabe wurde erstellt.';
+            echo "Debug: Aufgabe erfolgreich erstellt.<br>";
             $_POST = [];               // Formular leeren
         } catch (PDOException $e) {
             $errors[] = 'Datenbankfehler: ' . $e->getMessage();
+            echo "Debug: Datenbankfehler - " . $e->getMessage() . "<br>";
         }
     }
 }
