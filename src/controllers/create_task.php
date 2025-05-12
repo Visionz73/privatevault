@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 requireLogin();
 requireRole(['admin']);          // nur Admins dürfen Tasks erstellen
 
@@ -25,19 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare(
-          'INSERT INTO tasks (title, description, assigned_to, created_by, due_date)
-           VALUES (?,?,?,?,?)'
-        );
-        $stmt->execute([
-          $title,
-          $description,
-          $assigned_to,
-          $_SESSION["user_id"],
-          $due_date
-        ]);
-        $success = 'Aufgabe wurde erstellt.';
-        $_POST = [];               // Formular leeren
+        try {
+            $stmt = $pdo->prepare(
+              'INSERT INTO tasks (title, description, assigned_to, created_by, due_date)
+               VALUES (?,?,?,?,?)'
+            );
+            $stmt->execute([
+              $title,
+              $description,
+              $assigned_to,
+              $_SESSION["user_id"],
+              $due_date
+            ]);
+            $success = 'Aufgabe wurde erstellt.';
+            $_POST = [];               // Formular leeren
+        } catch (PDOException $e) {
+            $errors[] = 'Datenbankfehler: ' . $e->getMessage();
+        }
     }
 }
 

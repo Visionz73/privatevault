@@ -43,7 +43,7 @@ if (!isset($errors)) {
       </div>
     <?php endif; ?>
 
-    <form method="post" action="create_task.php" class="bg-card-bg p-6 rounded-xl shadow-card-lg space-y-6 max-w-xl">
+    <form method="post" action="/src/controllers/create_task.php" class="bg-card-bg p-6 rounded-xl shadow-card-lg space-y-6 max-w-xl">
       <div>
         <label class="block text-sm font-medium text-text-secondary mb-1">Titel *</label>
         <input name="title" required
