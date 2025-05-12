@@ -26,8 +26,7 @@
         );
         $formattedDate = $formatter->format(new DateTime());
     } else {
-        setlocale(LC_TIME, 'de_DE.UTF-8');
-        $formattedDate = strftime('%A, %d. %B');
+        $formattedDate = date('l, d. F'); // Fallback using date()
     }
     ?>
     <h1 class="text-3xl font-bold text-gray-900 leading-tight">
