@@ -30,3 +30,7 @@ $allUsers = $pdo->query(
 
 /* ------------------------------------------------------------------*/
 require_once __DIR__ . '/../../templates/taskboard.php';
+
+if (!isset($someVariable)) {
+    die('Fehler: Variable $someVariable ist nicht definiert.');
+}
