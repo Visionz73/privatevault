@@ -2,8 +2,8 @@
 // config.php
 // DB-Konfiguration
 $dsn    = 'mysql:host=localhost;dbname=privatevault;charset=utf8mb4';
-$dbUser = 'username';           // neu
-$dbPass = 'password';   // neu 
+$dbUser = 'root';           // neu
+$dbPass = '';   // neu 
 
 $options = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
