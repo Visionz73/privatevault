@@ -12,8 +12,6 @@ if (!isset($success)) {
 if (!isset($errors)) {
     $errors = []; // Standardwert
 }
-
-echo "Debug: Script läuft bis hier.";
 ?>
 <!DOCTYPE html>
 <html lang="de" class="h-full">
@@ -60,25 +58,25 @@ echo "Debug: Script läuft bis hier.";
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-text-secondary mb-1">Empfänger *</label>     class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary">
+        <label class="block text-sm font-medium text-text-secondary mb-1">Empfänger *</label>
         <select name="assigned_to" required
-      <div> ?>
-        <label class="block text-sm font-medium text-text-secondary mb-1">Fällig am</label> ?> >
-        <input type="date" name="due_date"
-               class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"</option>
-               value="<?= htmlspecialchars($_POST['due_date'] ?? '') ?>">          <?php endforeach; ?>
+                class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary">
+          <option value="" disabled selected>Bitte auswählen…</option>
+          <?php foreach ($allUsers as $u): ?>
+            <option value="<?= $u['id'] ?>" <?= (($_POST['assigned_to'] ?? '') == $u['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($u['username']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
       </div>
 
-      <button type="submit"
-              class="px-6 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary-dark transition">
-        Aufgabe erstellenbel class="block text-sm font-medium text-text-secondary mb-1">Fällig am</label>
-      </button>input type="date" name="due_date"
-    </form>        class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
-  </main>        value="<?= htmlspecialchars($_POST['due_date'] ?? '') ?>">
-</body>      </div>
+      <div>
+        <label class="block text-sm font-medium text-text-secondary mb-1">Fällig am</label>
+        <input type="date" name="due_date"
+               class="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+               value="<?= htmlspecialchars($_POST['due_date'] ?? '') ?>">
+      </div>
 
-
-</html>
       <button type="submit"
               class="px-6 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary-dark transition">
         Aufgabe erstellen
