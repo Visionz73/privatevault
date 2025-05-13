@@ -6,9 +6,11 @@ require_once __DIR__ . '/../lib/auth.php';
 requireLogin();
 
 $userId = $_SESSION['user_id'];
+error_log("DEBUG: Inbox controller: user_id = " . $userId);
 
 // 1) Welcher Filter? 'all' oder eine User-ID (Default: nur meine Tasks)
 $filterAssignedTo = $_GET['assigned_to'] ?? $userId;
+error_log("DEBUG: Filter assigned_to = " . $filterAssignedTo);
 
 // 2) „Erledigt“-Button verarbeiten, dann zurück mit gleichem Filter
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
@@ -59,6 +61,11 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([':uid' => $userId]);
 $tasks = $stmt->fetchAll();
+
+// Debug: Log the SQL parameters and number of tasks fetched
+error_log("DEBUG: SQL params: " . print_r($params, true));
+error_log("DEBUG: Number of tasks fetched: " . count($tasks));
+error_log("DEBUG: Fetched tasks: " . print_r($tasks, true));
 
 // 5) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';
