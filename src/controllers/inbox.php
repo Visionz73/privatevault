@@ -1,7 +1,7 @@
 <?php
 // src/controllers/inbox.php
 
-// 1) Session starten und Auth laden
+// 1) Session & Auth
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -12,10 +12,10 @@ requireLogin();
 // 2) Aktuellen User ermitteln
 $userId = $_SESSION['user_id'];
 
-// 3) Filter aus GET ziehen: entweder 'all' oder eine User-ID
+// 3) Filter aus GET ziehen: 'all' oder eine User-ID (default: nur meine Tasks)
 $filterAssignedTo = $_GET['assigned_to'] ?? $userId;
 
-// 4) „Erledigt“-Button verarbeiten
+// 4) „Erledigt“-Markierung verarbeiten
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
     $stmt = $pdo->prepare(
         'UPDATE tasks
@@ -33,11 +33,9 @@ $users = $pdo->query(
        FROM users
     ORDER BY username'
 )->fetchAll(PDO::FETCH_ASSOC);
-
-// Map von ID → Username
 $usersMap = array_column($users, 'username', 'id');
 
-// 6) WHERE-Klausel je nach Filter zusammenbauen
+// 6) WHERE-Klausel je nach Filter aufbauen
 $where  = ['t.status != "done"'];
 $params = [];
 
@@ -46,7 +44,7 @@ if ($filterAssignedTo !== 'all') {
     $params[] = (int)$filterAssignedTo;
 }
 
-// 7) Tasks abfragen (inkl. Creator-Username)
+// 7) Tasks abfragen (inkl. Creator-Name)
 $sql = '
     SELECT t.*, u.username AS creator
       FROM tasks t
@@ -67,10 +65,6 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([':uid' => $userId]);
 $tasks = $stmt->fetchAll();
-
-// Optional: Debug-Log
-error_log("DEBUG: filterAssignedTo = $filterAssignedTo");
-error_log("DEBUG: fetched " . count($tasks) . " tasks");
 
 // 8) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';

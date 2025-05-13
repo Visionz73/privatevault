@@ -1,10 +1,10 @@
 <!-- templates/inbox.php -->
 <?php
 // Vom Controller bereitgestellt:
-//   $tasks             — Array der Task-Datensätze
-//   $users              — Array aller User (id, username)
-//   $usersMap           — Map id ⇒ username
-//   $filterAssignedTo   — 'all' oder User-ID
+//   $tasks           — Array der Task-Datensätze
+//   $users           — Array aller User (id, username)
+//   $usersMap        — Map id ⇒ username
+//   $filterAssignedTo— 'all' oder User-ID
 ?>
 <!DOCTYPE html>
 <html lang="de" class="h-full">
@@ -39,12 +39,12 @@
             </svg>
           </button>
           <div id="filterMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-20">
-            <a href="?assigned_to=all"
+            <a href="/inbox.php?assigned_to=all"
                class="block px-4 py-2 hover:bg-gray-100 <?= $filterAssignedTo==='all'?'bg-gray-100':'' ?>">
               Alle Aufgaben
             </a>
             <?php foreach($users as $u): ?>
-              <a href="?assigned_to=<?= $u['id'] ?>"
+              <a href="/inbox.php?assigned_to=<?= $u['id'] ?>"
                  class="block px-4 py-2 hover:bg-gray-100 <?= ((string)$filterAssignedTo)===(string)$u['id']?'bg-gray-100':'' ?>">
                 <?= htmlspecialchars($u['username']) ?>
               </a>
@@ -84,7 +84,8 @@
                 <?php if(!empty($t['due_date']) && strtotime($t['due_date'])<time()): ?>
                   <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-medium">Überfällig</span>
                 <?php endif; ?>
-                <form method="post" action="inbox.php?done=<?= $t['id'] ?>&assigned_to=<?= urlencode($filterAssignedTo) ?>">
+                <form method="post"
+                      action="/inbox.php?done=<?= $t['id'] ?>&assigned_to=<?= urlencode($filterAssignedTo) ?>">
                   <button type="submit"
                           class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition text-sm">
                     Erledigt
@@ -99,14 +100,14 @@
     </div>
   </main>
 
-  <!-- Detail-Modal (zentriert) -->
+  <!-- Detail-Modal -->
   <div id="detailModal" class="fixed inset-0 hidden bg-black/50 flex items-center justify-center z-50">
     <div id="detailContent" class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative"></div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Filter-Dropdown
+      // Filter-Dropdown toggeln
       const btn  = document.getElementById('filterBtn');
       const menu = document.getElementById('filterMenu');
       btn.addEventListener('click', e => {
@@ -115,43 +116,18 @@
       });
       document.addEventListener('click', () => menu.classList.add('hidden'));
 
-      // Modal öffnen
+      // Modal laden
       window.openDetailModal = async (id) => {
-        try {
-          const res  = await fetch('task_detail_modal.php?id=' + id);
-          const html = await res.text();
-          const modal = document.getElementById('detailModal');
-          const content = document.getElementById('detailContent');
-          content.innerHTML = html;
-          modal.classList.remove('hidden');
-
-          // Cancel-Button
-          const cancel = content.querySelector('[data-action="close-modal"]');
-          if(cancel) cancel.addEventListener('click', ()=> modal.classList.add('hidden'));
-
-          // Assign-Form
-          const form = content.querySelector('form#assignForm');
-          form.addEventListener('submit', async e => {
-            e.preventDefault();
-            const fd = new FormData(form);
-            const r = await fetch('/src/api/task_assign_update.php', {
-              method: 'POST',
-              body: fd
-            });
-            const data = await r.json();
-            if(data.success) location.reload();
-            else alert(data.error || 'Fehler beim Speichern');
-          });
-        } catch(err) {
-          alert('Fehler: ' + err);
-        }
+        const res  = await fetch('/task_detail_modal.php?id=' + id);
+        const html = await res.text();
+        document.getElementById('detailContent').innerHTML = html;
+        document.getElementById('detailModal').classList.remove('hidden');
+        document.querySelector('[data-action="close-modal"]')
+                .addEventListener('click', ()=> document.getElementById('detailModal').classList.add('hidden'));
       };
-
-      // Modal schließen bei Klick außerhalb
+      // Klick außerhalb schließt Modal
       document.getElementById('detailModal')
-        .addEventListener('click', e => {
-          if(e.target.id === 'detailModal') e.target.classList.add('hidden');
-        });
+              .addEventListener('click', e => { if(e.target.id==='detailModal') e.target.classList.add('hidden'); });
     });
   </script>
 </body>
