@@ -2,6 +2,7 @@
 // src/controllers/create_task.php
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
+require_once __DIR__ . '/../../config.php';
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -15,41 +16,30 @@ $success = '';
 $errors = [];
 
 // Alle Nutzer für das Dropdown
-$allUsers = $pdo->query(
-  'SELECT id, username FROM users ORDER BY username'
-)->fetchAll();
+try {
+    $stmt = $pdo->query("SELECT id, username FROM users ORDER BY username");
+    $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errors[] = 'Fehler beim Laden der Benutzer';
+}
 
 // Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title       = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $assigned_to = $_POST['assigned_to'] ?? '';
-    $due_date    = $_POST['due_date']    ?? null;
+    try {
+        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, due_date, status) VALUES (?, ?, ?, ?, 'open')");
+        $stmt->execute([
+            $_POST['title'],
+            $_POST['description'],
+            $_POST['assigned_to'],
+            $_POST['due_date']
+        ]);
+        $success = 'Aufgabe wurde erfolgreich erstellt.';
 
-    if ($title === '' || $assigned_to === '') {
-        $errors[] = 'Titel und Empfänger sind Pflichtfelder.';
-    }
-
-    if (empty($errors)) {
-        try {
-            $stmt = $pdo->prepare(
-              "INSERT INTO tasks (title, description, assigned_to, due_date)
-               VALUES (?, ?, ?, ?)"
-            );
-            $stmt->execute([
-              $title,
-              $description,
-              $assigned_to,
-              $due_date
-            ]);
-            $success = 'Aufgabe wurde erfolgreich erstellt.';
-
-            // Weiterleitung nach erfolgreicher Erstellung
-            header('Location: /dashboard.php');
-            exit;
-        } catch (PDOException $e) {
-            $errors[] = 'Datenbankfehler: ' . $e->getMessage();
-        }
+        // Weiterleitung nach erfolgreicher Erstellung
+        header('Location: /dashboard.php');
+        exit;
+    } catch (PDOException $e) {
+        $errors[] = 'Fehler beim Erstellen der Aufgabe: ' . $e->getMessage();
     }
 }
 

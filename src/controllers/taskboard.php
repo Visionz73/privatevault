@@ -10,14 +10,9 @@ requireRole(['admin','member']);  // Gäste ausgeschlossen
 -------------------------------------------------------------------*/
 $columns = ['todo'=>[], 'doing'=>[], 'done'=>[]];
 
-$stmt = $pdo->query(
-  'SELECT t.id, t.title, t.description, t.status, t.due_date,
-          au.username  AS assignee
-     FROM tasks t
-LEFT JOIN users au ON au.id = t.assigned_to
- ORDER BY t.id DESC'
-);
-foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+$query = "SELECT t.id, t.title, t.description, t.assigned_to, t.due_date, t.status FROM tasks t"; // Füge t.status wieder hinzu
+$result = $pdo->query($query);
+foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
     $columns[$row['status']][] = $row;
 }
 
