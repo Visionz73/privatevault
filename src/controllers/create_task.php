@@ -7,6 +7,17 @@ require_once __DIR__ . '/../../config.php';
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// Session starten falls noch nicht geschehen
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Überprüfen ob Benutzer eingeloggt ist
+if (!isset($_SESSION['user'])) {
+    header('Location: /login.php');
+    exit;
+}
+
 requireLogin();
 requireRole(['admin']);          // nur Admins dürfen Tasks erstellen
 
