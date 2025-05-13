@@ -3,64 +3,59 @@
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 
-// Falls noch nicht geschehen, Session starten
+// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Fallback: Wenn kein eingeloggter Nutzer existiert, setze einen Standardnutzer (nur zu Testzwecken!)
+// Fallback for debugging (remove or replace in production)
 if (!isset($_SESSION['user'])) {
-    $_SESSION['user'] = ['id' => 1]; // Standardnutzer-ID
+    $_SESSION['user'] = ['id' => 1];
 }
 
-
-// Initialisierung von Variablen
 $allUsers = [];
 $success = '';
 $errors = [];
 
-// Benutzer laden
+// Load users to populate the "assigned_to" select field
 try {
     $stmt = $pdo->query("SELECT id, username FROM users ORDER BY username");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errors[] = 'Fehler beim Laden der Benutzer';
+    $errors[] = 'Error loading users: ' . $e->getMessage();
 }
 
-// Formularverarbeitung
+// Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Debug: log received form fields
-    error_log("DEBUG: create_task POST received");
-    error_log("DEBUG: Title: " . ($_POST['title'] ?? 'unset'));
-    error_log("DEBUG: Description: " . ($_POST['description'] ?? 'unset'));
-    error_log("DEBUG: Assigned_to: " . ($_POST['assigned_to'] ?? 'unset'));
-    error_log("DEBUG: Due_date: " . ($_POST['due_date'] ?? 'unset'));
+    error_log("DEBUG: POST received in create_task");
+    error_log("DEBUG: Title: " . ($_POST['title'] ?? 'not provided'));
+    error_log("DEBUG: Description: " . ($_POST['description'] ?? 'not provided'));
+    error_log("DEBUG: Assigned_to: " . ($_POST['assigned_to'] ?? 'not provided'));
+    error_log("DEBUG: Due_date: " . ($_POST['due_date'] ?? 'not provided'));
 
     try {
         $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, due_date, status, user_id, created_by) VALUES (?, ?, ?, ?, 'open', ?, ?)");
         $result = $stmt->execute([
             $_POST['title'] ?? '',
             $_POST['description'] ?? '',
-            $_POST['assigned_to'] ?? '',
-            $_POST['due_date'] ?? '',
-            $_SESSION['user']['id'] ?? 1,  // fallback user id
-            $_SESSION['user']['id'] ?? 1   // fallback as created_by
+            $_POST['assigned_to'] ?? null,
+            $_POST['due_date'] ?? null,
+            $_SESSION['user']['id'],
+            $_SESSION['user']['id']
         ]);
-        error_log("DEBUG: Insert executed. Row count: " . $stmt->rowCount());
+        error_log("DEBUG: Insert result: " . var_export($result, true));
+        error_log("DEBUG: Rows inserted: " . $stmt->rowCount());
         if ($result && $stmt->rowCount() > 0) {
-            $success = 'Aufgabe wurde erfolgreich erstellt.';
+            $success = 'Task created successfully.';
             header('Location: /dashboard.php');
             exit;
         } else {
-            error_log("DEBUG: No rows inserted.");
-            $errors[] = 'Aufgabe wurde nicht erstellt. Überprüfen Sie die Eingabedaten.';
+            $errors[] = 'Task was not created. Check your input values.';
         }
     } catch (PDOException $e) {
-        error_log("DEBUG: PDOException: " . $e->getMessage());
-        $errors[] = 'Fehler beim Erstellen der Aufgabe: ' . $e->getMessage();
+        error_log("DEBUG: PDOException in create_task: " . $e->getMessage());
+        $errors[] = 'Error creating task: ' . $e->getMessage();
     }
 }
 
-// Template laden
 require_once __DIR__ . '/../../templates/create_task.php';
 ?>

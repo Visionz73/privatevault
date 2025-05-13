@@ -3,15 +3,11 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Debug-Ausgabe
-echo "Debug: create_task.php wird ausgeführt<br>";
-
-// Debugging: Überprüfen, ob die Dateien existieren
 if (!file_exists(__DIR__ . '/../config.php')) {
-    die('Fehler: config.php nicht gefunden.');
+    die("Error: config.php not found at " . __DIR__ . '/../config.php');
 }
 if (!file_exists(__DIR__ . '/../src/controllers/create_task.php')) {
-    die('Fehler: create_task.php (Controller) nicht gefunden.');
+    die("Error: Controller not found at " . __DIR__ . '/../src/controllers/create_task.php');
 }
 
 // Konfigurations- und Controller-Dateien laden
