@@ -52,10 +52,17 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Debug: Log the SQL parameters and number of tasks fetched
-error_log("DEBUG: SQL params: " . print_r($params, true));
-error_log("DEBUG: Number of tasks fetched: " . count($tasks));
-error_log("DEBUG: Fetched tasks: " . print_r($tasks, true));
+// Debug: Log filter parameter and number of tasks fetched
+error_log("DEBUG: Filter assigned_to = " . $filterAssignedTo);
+error_log("DEBUG: Number of tasks fetched = " . count($tasks));
+
+// If no tasks are fetched, try without the filter to see all tasks
+if (count($tasks) === 0) {
+    error_log("DEBUG: No tasks fetched with current filter, trying without filter conditions.");
+    $stmtAll = $pdo->query('SELECT t.*, u.username AS creator FROM tasks t JOIN users u ON u.id = t.created_by ORDER BY t.id DESC');
+    $allTasks = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
+    error_log("DEBUG: All tasks fetched = " . print_r($allTasks, true));
+}
 
 // 5) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';
