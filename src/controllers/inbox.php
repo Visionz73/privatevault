@@ -1,18 +1,18 @@
 <?php
 // src/controllers/inbox.php
 
+if (session_status() === PHP_SESSION_NONE) { 
+    session_start(); 
+}
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 requireLogin();
 
 $userId = $_SESSION['user_id'];
-error_log("DEBUG: Inbox controller: user_id = " . $userId);
-
-// 1) Welcher Filter? 'all' oder eine User-ID (Default: nur meine Tasks)
+// Determine filter: either 'all' or a specific user ID (default: only my tasks)
 $filterAssignedTo = $_GET['assigned_to'] ?? $userId;
-error_log("DEBUG: Filter assigned_to = " . $filterAssignedTo);
 
-// 2) „Erledigt“-Button verarbeiten, dann zurück mit gleichem Filter
+// Process "done" button if clicked
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
     $stmt = $pdo->prepare(
         'UPDATE tasks
@@ -24,17 +24,15 @@ if (isset($_GET['done']) && is_numeric($_GET['done'])) {
     exit;
 }
 
-// 3) Liste aller User für Filter-Dropdown und Zuweisung
+// 3) Retrieve list of all users for the filter dropdown
 $users = $pdo->query(
   'SELECT id, username 
      FROM users 
   ORDER BY username'
 )->fetchAll(PDO::FETCH_ASSOC);
-
-// Für schnelles Nachschlagen im Template
 $usersMap = array_column($users, 'username', 'id');
 
-// 4) Tasks holen – je nach Filter
+// 4) Retrieve tasks based on filter
 $where  = ['t.status != "done"'];
 $params = [];
 if ($filterAssignedTo !== 'all') {
@@ -62,17 +60,10 @@ $stmt = $pdo->prepare("
 $stmt->execute([':uid' => $userId]);
 $tasks = $stmt->fetchAll();
 
-// Debug: Log filter parameter and number of tasks fetched
+// You may optionally log the fetched tasks for debugging
 error_log("DEBUG: Filter assigned_to = " . $filterAssignedTo);
 error_log("DEBUG: Number of tasks fetched = " . count($tasks));
 
-// If no tasks are fetched, try without the filter to see all tasks
-if (count($tasks) === 0) {
-    error_log("DEBUG: No tasks fetched with current filter, trying without filter conditions.");
-    $stmtAll = $pdo->query('SELECT t.*, u.username AS creator FROM tasks t JOIN users u ON u.id = t.created_by ORDER BY t.id DESC');
-    $allTasks = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
-    error_log("DEBUG: All tasks fetched = " . print_r($allTasks, true));
-}
-
 // 5) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';
+?>
