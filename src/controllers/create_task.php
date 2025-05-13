@@ -26,12 +26,13 @@ try {
 // Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, due_date, status) VALUES (?, ?, ?, ?, 'open')");
+        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, due_date, status, user_id) VALUES (?, ?, ?, ?, 'open', ?)");
         $stmt->execute([
             $_POST['title'],
             $_POST['description'],
             $_POST['assigned_to'],
-            $_POST['due_date']
+            $_POST['due_date'],
+            $_SESSION['user']['id']  // Füge user_id hinzu
         ]);
         $success = 'Aufgabe wurde erfolgreich erstellt.';
 
