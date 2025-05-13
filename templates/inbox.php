@@ -53,12 +53,6 @@
         </div>
       </div>
 
-      <!-- Toggle links für Filterung -->
-      <div class="mb-4">
-        <a href="/inbox.php?assigned_to=all" class="text-blue-600 hover:underline">Alle Aufgaben anzeigen</a> |
-        <a href="/inbox.php?assigned_to=<?= htmlspecialchars($userId) ?>" class="text-blue-600 hover:underline">Nur meine Aufgaben anzeigen</a>
-      </div>
-
       <!-- Aufgabenliste -->
       <?php if(empty($tasks)): ?>
         <div class="p-6 bg-card-bg rounded-xl shadow-card-lg text-center text-text-secondary">
