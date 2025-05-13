@@ -46,9 +46,19 @@ $sql = '
    WHERE ' . implode(' AND ', $where) . '
 ORDER BY t.id DESC
 ';
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt = $pdo->prepare("
+    SELECT
+        id,
+        title,
+        is_done,
+        created_at          AS due_date   -- oder due_date, falls Spalte existiert
+    FROM tasks
+    WHERE user_id = :uid
+      AND is_done = 0
+    ORDER BY created_at DESC
+");
+$stmt->execute([':uid' => $userId]);
+$tasks = $stmt->fetchAll();
 
 // 5) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';
