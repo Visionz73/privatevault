@@ -30,20 +30,23 @@ try {
 // Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $stmt = $pdo->prepare(
-            "INSERT INTO tasks (title, description, assigned_to, due_date, status, user_id, created_by) VALUES (?, ?, ?, ?, 'open', ?, ?)"
-        );
-        $stmt->execute([
+        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, due_date, status, user_id, created_by) VALUES (?, ?, ?, ?, 'open', ?, ?)");
+        $result = $stmt->execute([
             $_POST['title'],
             $_POST['description'],
             $_POST['assigned_to'],
             $_POST['due_date'],
-            $_SESSION['user']['id'] ?? 1,  // use session user id or default 1
-            $_SESSION['user']['id'] ?? 1   // created_by same as user_id
+            $_SESSION['user']['id'] ?? 1,
+            $_SESSION['user']['id'] ?? 1
         ]);
-        
-        header('Location: /dashboard.php');
-        exit;
+        // Check if the insertion succeeded
+        if ($result && $stmt->rowCount() > 0) {
+            $success = 'Aufgabe wurde erfolgreich erstellt.';
+            header('Location: /dashboard.php');
+            exit;
+        } else {
+            $errors[] = 'Aufgabe wurde nicht erstellt. Überprüfen Sie die Eingabedaten.';
+        }
     } catch (PDOException $e) {
         $errors[] = 'Fehler beim Erstellen der Aufgabe: ' . $e->getMessage();
     }
