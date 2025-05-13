@@ -18,8 +18,7 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-requireLogin();
-requireRole(['admin']);          // nur Admins dürfen Tasks erstellen
+requireLogin();  // Nutzt die existierende Auth-Funktion
 
 // Initialisierung von Variablen
 $allUsers = [];
@@ -43,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['description'],
             $_POST['assigned_to'],
             $_POST['due_date'],
-            $_SESSION['user']['id']  // Füge user_id hinzu
+            getCurrentUserId()  // Nutzt die Auth-Library Funktion
         ]);
         $success = 'Aufgabe wurde erfolgreich erstellt.';
 
