@@ -1,21 +1,24 @@
-// src/controllers/create_task.php
 <?php
-// Ab jetzt immer absolut per DOCUMENT_ROOT einbinden
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/auth.php';
+// src/controllers/create_task.php
 
-// Session starten
+// 1) DB und Auth laden (relativ zu diesem Skript)
+require_once __DIR__ . '/../lib/db.php';
+require_once __DIR__ . '/../lib/auth.php';
+
+// 2) Session starten
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// 3) Fallback für Benutzer-ID (Debug / lokal)
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Debug-Fallback
+    $_SESSION['user_id'] = 1;
 }
 
 $allUsers = [];
 $errors   = [];
 
-// Nutzer für select laden
+// 4) Alle Nutzer für das „assigned_to“-Dropdown laden
 try {
     $stmt     = $pdo->query("SELECT id, username FROM users ORDER BY username");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,16 +26,17 @@ try {
     $errors[] = 'Error loading users: ' . $e->getMessage();
 }
 
+// 5) Formular-Verarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Fallback: wenn kein Empfänger ausgewählt, auf mich selbst setzen
+    // Wenn kein Empfänger gewählt wurde: auf mich selbst setzen
     $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
 
     try {
         $stmt = $pdo->prepare("
             INSERT INTO tasks
-              (title, description, assigned_to, due_date, status, user_id, created_by)
+                (title, description, assigned_to, due_date, status, user_id, created_by)
             VALUES
-              (?, ?, ?, ?, 'open', ?, ?)
+                (?, ?, ?, ?, 'open', ?, ?)
         ");
         $stmt->execute([
             $_POST['title']       ?? '',
@@ -44,16 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         if ($stmt->rowCount() > 0) {
-            // Redirect zur öffentlichen Inbox
-            header('Location: /inbox.php');
+            // Zur Inbox weiterleiten
+            header('Location: /src/controllers/inbox.php');
             exit;
         } else {
             $errors[] = 'Task wurde nicht angelegt. Bitte Eingaben prüfen.';
         }
     } catch (PDOException $e) {
-        $errors[] = 'Fehler beim Anlegen: ' . $e->getMessage();
+        $errors[] = 'Error creating task: ' . $e->getMessage();
     }
 }
 
-// Template laden
-require_once $_SERVER['DOCUMENT_ROOT'] . '/templates/create_task.php';
+// 6) Template rendern
+require_once __DIR__ . '/../../templates/create_task.php';
