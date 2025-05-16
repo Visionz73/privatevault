@@ -1,6 +1,5 @@
-<?php
 // src/controllers/inbox.php
-
+<?php
 // 1) Session & Auth
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
