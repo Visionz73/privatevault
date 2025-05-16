@@ -2,7 +2,7 @@
 // src/controllers/create_task.php
 
 // 1) DB und Auth aus src/lib laden
-require_once __DIR__ . '/../lib/db.php';
+require_once(__DIR__ . '/../../lib/db.php');
 require_once __DIR__ . '/../lib/auth.php';
 
 // 2) Session starten
