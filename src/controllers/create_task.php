@@ -1,7 +1,7 @@
 <?php
 // src/controllers/create_task.php
 
-// 1) DB und Auth laden (relativ zu diesem Skript)
+// 1) DB und Auth aus src/lib laden
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 
@@ -9,8 +9,7 @@ require_once __DIR__ . '/../lib/auth.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// 3) Fallback für Benutzer-ID (Debug / lokal)
+// Debug-Fallback
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['user_id'] = 1;
 }
@@ -18,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 $allUsers = [];
 $errors   = [];
 
-// 4) Alle Nutzer für das „assigned_to“-Dropdown laden
+// 3) Nutzer für „assigned_to“-Dropdown
 try {
     $stmt     = $pdo->query("SELECT id, username FROM users ORDER BY username");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -26,17 +25,16 @@ try {
     $errors[] = 'Error loading users: ' . $e->getMessage();
 }
 
-// 5) Formular-Verarbeitung
+// 4) Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Wenn kein Empfänger gewählt wurde: auf mich selbst setzen
     $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
 
     try {
         $stmt = $pdo->prepare("
             INSERT INTO tasks
-                (title, description, assigned_to, due_date, status, user_id, created_by)
+              (title, description, assigned_to, due_date, status, user_id, created_by)
             VALUES
-                (?, ?, ?, ?, 'open', ?, ?)
+              (?, ?, ?, ?, 'open', ?, ?)
         ");
         $stmt->execute([
             $_POST['title']       ?? '',
@@ -48,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         if ($stmt->rowCount() > 0) {
-            // Zur Inbox weiterleiten
-            header('Location: /src/controllers/inbox.php');
+            header('Location: /inbox.php');
             exit;
         } else {
             $errors[] = 'Task wurde nicht angelegt. Bitte Eingaben prüfen.';
@@ -59,5 +56,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 6) Template rendern
+// 5) Template rendern
 require_once __DIR__ . '/../../templates/create_task.php';
