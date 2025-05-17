@@ -102,16 +102,27 @@
             <h2 class="text-lg font-semibold">Meine Termine</h2>
             <span class="ml-2 text-gray-500">&gt;</span>
           </a>
-          <button onclick="window.location.href='calendar.php?create=1'" class="bg-gray-100 text-gray-700 px-3 py-1 rounded shadow">
+          <!-- Replace the button to a shortcut that toggles an inline create event form -->
+          <button id="showInlineEventForm" class="bg-gray-100 text-gray-700 px-3 py-1 rounded shadow">
             +
           </button>
         </div>
+        <!-- Inline Event Form (initially hidden) -->
+        <div id="inlineEventFormContainer" class="mb-4 hidden">
+          <form id="inlineEventForm" class="space-y-2">
+            <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
+            <input type="date" name="date" class="w-full border border-gray-300 rounded p-2" required>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+              Termin erstellen
+            </button>
+          </form>
+        </div>
         <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
-        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
+        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
           <?php if(!empty($events)): ?>
             <?php foreach($events as $evt): ?>
               <li class="px-2 py-2 flex justify-between items-center">
-                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) ?></a>
+                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) )?></a>
                 <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
               </li>
             <?php endforeach; ?>
@@ -131,3 +142,49 @@
   </main>
 </body>
 </html>
+
+<script>
+// Toggle inline event creation form
+document.getElementById('showInlineEventForm').addEventListener('click', function() {
+  document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+});
+
+// Handle inline event form submission via AJAX
+document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const title = this.title.value.trim();
+  const date = this.date.value;
+  if(title && date){
+    fetch('/create_event.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ title: title, date: date })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success){
+        // Create new list element for the event
+        const newEvent = data.event;
+        const li = document.createElement('li');
+        li.className = "px-2 py-2 flex justify-between items-center";
+        li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
+                         <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+        const eventList = document.getElementById('dashboardEventList');
+        
+        // If "Keine Termine gefunden." is present, remove it.
+        if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+          eventList.innerHTML = '';
+        }
+        eventList.appendChild(li);
+        // Update count (force a reload or recalc count)
+        // For simplicity, not auto-updating count here.
+        this.reset();
+        document.getElementById('inlineEventFormContainer').classList.add('hidden');
+      } else {
+        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+      }
+    })
+    .catch(() => alert('Fehler beim Erstellen des Termins.'));
+  }
+});
+</script>
