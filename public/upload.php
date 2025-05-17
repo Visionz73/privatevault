@@ -1,7 +1,6 @@
 <?php
 // public/upload.php
 require __DIR__ . '/../config.php';
-require __DIR__ . '/../src/controllers/upload.php';
 
 session_start();
 require_once __DIR__ . '/../src/lib/auth.php';
@@ -31,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         // Use a unique file name for collision avoidance
-        $filename   = time() . '_' . basename($_FILES['file']['name]);
+        $filename   = time() . '_' . basename($_FILES['file']['name']);
         $targetFile = $uploadDir . $filename;
         if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
             // Optionally, save upload info to your database here (name, category, file path, etc.)
