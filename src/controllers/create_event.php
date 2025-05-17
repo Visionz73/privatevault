@@ -20,7 +20,8 @@ if (!$title || !$date) {
     exit;
 }
 
-$stmt = $pdo->prepare("INSERT INTO events (user_id, title, event_date) VALUES (?, ?, ?)");
+// Ändere den Spaltennamen von user_id zu created_by, um den korrekten Wert zu speichern
+$stmt = $pdo->prepare("INSERT INTO events (created_by, title, event_date) VALUES (?, ?, ?)");
 $stmt->execute([$userId, $title, $date]);
 $eventId = $pdo->lastInsertId();
 
