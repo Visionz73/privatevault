@@ -39,9 +39,8 @@ $where  = ["t.status != 'done'"];
 $params = [];
 if ($filterAssignedTo !== 'all') {
     if ((int)$filterAssignedTo === (int)$userId) {
-        // Für den eingeloggten Nutzer: Zeige Aufgaben an, die ihm direkt zugewiesen sind
-        // oder solche, die er erstellt hat, wenn kein anderer zugewiesen wurde.
-        $where[] = "(t.assigned_to = ? OR (t.assigned_to IS NULL AND t.created_by = ?))";
+        // Zeige alle Aufgaben, die entweder direkt zugewiesen sind oder vom Nutzer erstellt wurden
+        $where[] = "(t.assigned_to = ? OR t.created_by = ?)";
         $params[] = (int)$userId;
         $params[] = (int)$userId;
     } else {
