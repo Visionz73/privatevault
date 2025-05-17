@@ -7,46 +7,37 @@ session_start();
 require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
 
-// Define the destination directory for uploaded files. Ensure this folder exists and is writeable.
-$uploadDir = __DIR__ . '/../uploads/';
-if (!is_dir($uploadDir)) {
-    if (!mkdir($uploadDir, 0755, true)) {
-        die("Fehler: Upload-Verzeichnis konnte nicht erstellt werden.");
-    }
-}
-
+// Use your existing upload processing: name, category, and file
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    $file = $_FILES['file'];
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        $error = 'Fehler beim Hochladen der Datei.';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve existing form fields
+    $name     = trim($_POST['name'] ?? '');
+    $category = trim($_POST['category'] ?? '');
+    // ... retrieve any additional fields as needed ...
+
+    // Basic validation (adjust as needed)
+    if (!$name || !$category) {
+        $error = 'Name und Kategorie sind erforderlich.';
+    } elseif (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        $error = 'Bitte wählen Sie eine Datei aus.';
     } else {
-        // Allowed MIME types (adjust as needed)
-        $allowedTypes = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'image/jpeg',
-            'image/png'
-        ];
-        if (!in_array($file['type'], $allowedTypes)) {
-            $error = 'Dateityp nicht erlaubt.';
-        } else {
-            // Use a unique file name to avoid collisions
-            $filename = time() . '_' . basename($file['name']);
-            $targetFile = $uploadDir . $filename;
-            if (move_uploaded_file($file['tmp_name'], $targetFile)) {
-                // Debug: check if file exists after move
-                if (file_exists($targetFile)) {
-                    $success = 'Datei erfolgreich hochgeladen.';
-                } else {
-                    $error = 'Upload war erfolgreich, aber die Datei wurde nicht gefunden im Zielordner.';
-                }
-            } else {
-                $error = 'Fehler beim Speichern der Datei.';
+        // Set up upload directory (ensure it exists & is writeable)
+        $uploadDir = __DIR__ . '/../uploads/';
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0755, true)) {
+                die("Fehler: Upload-Verzeichnis konnte nicht erstellt werden.");
             }
+        }
+        // Use a unique file name for collision avoidance
+        $filename   = time() . '_' . basename($_FILES['file']['name']);
+        $targetFile = $uploadDir . $filename;
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
+            // Optionally, save upload info to your database here (name, category, file path, etc.)
+            $success = 'Datei erfolgreich hochgeladen.';
+        } else {
+            $error = 'Fehler beim Speichern der Datei.';
         }
     }
 }
@@ -61,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 </head>
 <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
   <div class="bg-white rounded shadow-md p-8 w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-4">Datei hochladen</h1>
+    <h1 class="text-2xl font-bold mb-4">Datei & Informationen hochladen</h1>
     <?php if ($error): ?>
       <div class="bg-red-100 text-red-700 p-2 rounded mb-4"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
@@ -69,11 +60,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
       <div class="bg-green-100 text-green-700 p-2 rounded mb-4"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
     <form action="upload.php" method="post" enctype="multipart/form-data">
+      <!-- Existing fields for filtering on profile -->
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 mb-2">Name:</label>
+        <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded" required>
+      </div>
+      <div class="mb-4">
+        <label for="category" class="block text-gray-700 mb-2">Kategorie:</label>
+        <input type="text" id="category" name="category" class="w-full px-3 py-2 border rounded" required>
+      </div>
+      <!-- Existing file input -->
       <div class="mb-4">
         <label for="file" class="block text-gray-700 mb-2">Datei auswählen:</label>
-        <input type="file" id="file" name="file" class="w-full px-3 py-2 border rounded">
+        <input type="file" id="file" name="file" class="w-full px-3 py-2 border rounded" required>
       </div>
-      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Hochladen</button>
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+        Hochladen
+      </button>
     </form>
   </div>
 </body>
