@@ -21,7 +21,8 @@
   <?php require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
-  <main class="flex-1 p-8 space-y-10">
+  <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
