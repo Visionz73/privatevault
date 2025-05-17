@@ -102,13 +102,13 @@
         </ul>
       </article>
 
-      <!-- Meine Termine Widget -->
+      <!-- Meine Termine Widget – Updated for consistent formatting -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
-          <a href="calendar.php" class="flex items-center">
-            <h2 class="text-lg font-semibold mr-1">Meine Termine</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          <a href="calendar.php" class="inline-flex items-center text-lg font-semibold text-gray-900">
+            Meine Termine
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
           <button id="showInlineEventForm" class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg shadow-sm">
@@ -116,7 +116,7 @@
           </button>
         </div>
         <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
-        <!-- Inline event form (initially hidden) -->
+        <!-- Inline event creation form (initially hidden) -->
         <div id="inlineEventFormContainer" class="mb-4 hidden">
           <form id="inlineEventForm" class="space-y-2">
             <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
