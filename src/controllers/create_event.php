@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 
@@ -21,21 +25,20 @@ if (!$title || !$date) {
 }
 
 try {
-    // Insert event using the correct column names (assumes the table "events" uses "created_by")
+    // Stelle sicher, dass in der Tabelle events die Spalten "created_by", "title" und "event_date" existieren.
     $stmt = $pdo->prepare("INSERT INTO events (created_by, title, event_date) VALUES (?, ?, ?)");
     $stmt->execute([$userId, $title, $date]);
     $eventId = $pdo->lastInsertId();
+
+    echo json_encode([
+        'success' => true,
+        'event'   => [
+            'id'    => $eventId,
+            'title' => $title,
+            'date'  => $date
+        ]
+    ]);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
-    exit;
+    echo json_encode(['error' => 'DB error: ' . $e->getMessage()]);
 }
-
-echo json_encode([
-    'success' => true,
-    'event'   => [
-        'id'    => $eventId,
-        'title' => $title,
-        'date'  => $date
-    ]
-]);
