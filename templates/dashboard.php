@@ -42,12 +42,21 @@
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <a href="inbox.php" class="group inline-flex items-center mb-4">
           <h2 class="text-lg font-semibold mr-1">Inbox</h2>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
         </a>
+        <?php 
+          // Filtere alle Aufgaben, die dem eingeloggten Nutzer zugewiesen sind
+          $filteredTasks = array_filter($tasks, function($t) use ($user) {
+            return isset($t['assigned_to']) && ((int)$t['assigned_to'] === (int)$user['id']);
+          });
+          $openTaskCount = count($filteredTasks);
+        ?>
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
-          <?php foreach($tasks as $idx=>$t): ?>
+          <?php foreach($filteredTasks as $idx=>$t): ?>
             <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
               <span class="truncate pr-2">
                 <?= htmlspecialchars($t['title']) ?>
@@ -59,7 +68,7 @@
               <?php endif; ?>
             </li>
           <?php endforeach; ?>
-          <?php if(empty($tasks)): ?>
+          <?php if(empty($filteredTasks)): ?>
             <li class="px-2 py-2 text-gray-500">Keine offenen Aufgaben.</li>
           <?php endif; ?>
         </ul>
