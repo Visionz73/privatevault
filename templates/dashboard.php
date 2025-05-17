@@ -16,12 +16,12 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
-  <main class="ml-64 md:ml-0 flex-1 p-8 space-y-10">
+  <!-- Ensure the main content is offset from the fixed navbar -->
+  <main class="ml-64 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
