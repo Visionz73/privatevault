@@ -28,6 +28,7 @@ $user = getUser();
         ['href'=>'profile.php',     'icon'=>'<path d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M12 12a4 4 0 100-8 4 4 0 000 8z" />', 'label'=>'Profil'],
         ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />',                 'label'=>'MyTask'],
         ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />',                                   'label'=>'Create Task'],
+        ['href'=>'calendar.php',    'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2h-3.5a1.5 1.5 0 010-3H9.5a1.5 1.5 0 010 3H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>' ,'label'=>'Kalender'],
         ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />',                                'label'=>'Kanban'],
       ];
       foreach ($links as $l): ?>
