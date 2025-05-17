@@ -25,7 +25,7 @@ if (!$title || !$date) {
 }
 
 try {
-    // Stelle sicher, dass in der Tabelle events die Spalten "created_by", "title" und "event_date" existieren.
+    // Insert event into "events" table using the column "created_by"
     $stmt = $pdo->prepare("INSERT INTO events (created_by, title, event_date) VALUES (?, ?, ?)");
     $stmt->execute([$userId, $title, $date]);
     $eventId = $pdo->lastInsertId();

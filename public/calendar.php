@@ -91,7 +91,8 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
       const title = this.title.value.trim();
       const date = this.date.value;
       if(title && date){
-        fetch('/src/controllers/create_event.php', {
+        // Update URL to the public endpoint
+        fetch('/create_event.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({ title: title, date: date })
