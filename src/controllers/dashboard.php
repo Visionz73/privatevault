@@ -29,22 +29,22 @@ $stmt->execute([$userId]);
 $openTaskCount = (int)$stmt->fetchColumn();
 
 /* ------------------------------------------------------------------
-   Dokumente (unverändert)
+   Dokumente mit Kategorien laden
 -------------------------------------------------------------------*/
 $stmt = $pdo->prepare(
-    'SELECT title
-       FROM documents
-      WHERE user_id = ? AND is_deleted = 0
-   ORDER BY upload_date DESC
-      LIMIT 5'
+    'SELECT d.title, d.filename, c.name as category
+     FROM documents d
+     JOIN document_categories c ON c.id = d.category_id
+     WHERE d.user_id = ? 
+     AND d.is_deleted = 0
+     ORDER BY d.upload_date DESC
+     LIMIT 5'
 );
 $stmt->execute([$userId]);
-$docs      = $stmt->fetchAll();
+$docs = $stmt->fetchAll();
 
 $stmt = $pdo->prepare(
-    'SELECT COUNT(*)
-       FROM documents
-      WHERE user_id = ? AND is_deleted = 0'
+    'SELECT COUNT(*) FROM documents WHERE user_id = ? AND is_deleted = 0'
 );
 $stmt->execute([$userId]);
 $docCount = (int)$stmt->fetchColumn();
