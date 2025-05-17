@@ -34,20 +34,29 @@ $users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
                 ->fetchAll(PDO::FETCH_ASSOC);
 $usersMap = array_column($users, 'username', 'id');
 
-// 6) WHERE-Klausel bauen: Zeige nur Aufgaben an, die dem eingeloggten Nutzer zugewiesen sind und noch nicht erledigt wurden
-$where  = ["t.status != 'done'", "t.assigned_to = ?"];
-$params = [(int)$userId];
+// 6) WHERE-Klausel bauen
+$where  = ["t.status != 'done'"];
+$params = [];
+if ($filterAssignedTo !== 'all') {
+    if ((int)$filterAssignedTo === (int)$userId) {
+        // Für den eingeloggten Nutzer: Zeige Aufgaben an, die ihm direkt zugewiesen sind
+        // oder solche, die er erstellt hat, wenn kein anderer zugewiesen wurde.
+        $where[] = "(t.assigned_to = ? OR (t.assigned_to IS NULL AND t.created_by = ?))";
+        $params[] = (int)$userId;
+        $params[] = (int)$userId;
+    } else {
+        $where[]  = 't.assigned_to = ?';
+        $params[] = (int)$filterAssignedTo;
+    }
+}
 
 // 7) Tasks holen
-$sql = "
-    SELECT t.*, u.username AS creator
-    FROM tasks t
-    JOIN users u ON u.id = t.created_by
-    WHERE " . implode(' AND ', $where) . "
-    ORDER BY t.id DESC
-";
-
-$stmt = $pdo->prepare($sql);
+$sql = "SELECT t.*, u.username AS creator
+FROM tasks t
+JOIN users u ON u.id = t.created_by
+WHERE " . implode(' AND ', $where) . "
+ORDER BY t.id DESC";
+$stmt  = $pdo->prepare($sql);
 $stmt->execute($params);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
