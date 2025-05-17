@@ -9,12 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Remove mobile-specific adjustments */
+    /* Reverting to original styling (mobile formatting removed) */
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
   <?php require_once __DIR__.'/navbar.php'; ?>
-  <!-- Revert to original non-mobile main container -->
   <main class="ml-64 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
@@ -123,7 +122,7 @@
         </ul>
       </article>
 
-      <!-- Meine Termine Widget (remains unchanged) -->
+      <!-- Meine Termine Widget -->
       <article class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-md p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
           <a href="calendar.php" class="flex items-center">
