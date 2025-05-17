@@ -19,7 +19,7 @@ require_once __DIR__ . '/../src/controllers/create_task.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ...existing creation logic...
     if($creationSuccessful){ // Ensure that $creationSuccessful is set in your controller
-        header('Location: dashboard.php');
+        header('Location: inbox.php');
         exit;
     }
 }
