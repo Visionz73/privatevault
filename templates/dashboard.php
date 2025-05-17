@@ -96,14 +96,14 @@
       </article>
 
       <!-- Meine Termine Widget -->
-      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
+      <article class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-md p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
           <a href="calendar.php" class="flex items-center">
             <h2 class="text-lg font-semibold">Meine Termine</h2>
             <span class="ml-2 text-gray-500">&gt;</span>
           </a>
-          <!-- Replace the button to a shortcut that toggles an inline create event form -->
-          <button id="showInlineEventForm" class="bg-gray-100 text-gray-700 px-3 py-1 rounded shadow">
+          <!-- Updated plus button: transparent, rounder, no blue -->
+          <button id="showInlineEventForm" class="bg-white/30 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
             +
           </button>
         </div>
