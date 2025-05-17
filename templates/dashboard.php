@@ -95,33 +95,6 @@
         </ul>
       </article>
 
-      <!-- Kalender Widget (neu: nur Terminliste) -->
-      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Kalender</h2>
-          <button onclick="window.location.href='calendar.php'" class="bg-blue-500 text-white px-3 py-1 rounded">
-            Termin hinzufügen
-          </button>
-        </div>
-        <?php 
-          // Annahme: $events enthält alle Termine, die diesem Benutzer zugewiesen sind
-          $eventCount = count($events ?? []);
-        ?>
-        <p class="text-sm text-gray-500 mb-4"><?= $eventCount ?> Termine</p>
-        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
-          <?php if(!empty($events)): ?>
-            <?php foreach($events as $evt): ?>
-              <li class="px-2 py-2 flex justify-between items-center">
-                <span class="truncate pr-2"><?= htmlspecialchars($evt['title']) ?></span>
-                <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['date'])) ?></span>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="px-2 py-2 text-gray-500">Keine Termine gefunden.</li>
-          <?php endif; ?>
-        </ul>
-      </article>
-
       <!-- Neue Termine Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
