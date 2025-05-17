@@ -52,9 +52,9 @@
               <span class="truncate pr-2">
                 <?= htmlspecialchars($t['title']) ?>
               </span>
-              <?php if($t['due_date']): $over=strtotime($t['due_date'])<time(); ?>
-                <span class="<?php echo $over? 'bg-red-100 text-red-600' : 'text-gray-400'; ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
-                  <?= $over?'Überfällig':date('d.m.',strtotime($t['due_date'])) ?>
+              <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
+                <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+                  <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
                 </span>
               <?php endif; ?>
             </li>
