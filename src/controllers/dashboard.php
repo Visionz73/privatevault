@@ -32,7 +32,7 @@ $openTaskCount = (int)$stmt->fetchColumn();
    Dokumente laden
 -------------------------------------------------------------------*/
 $stmt = $pdo->prepare(
-    'SELECT title, category 
+    'SELECT title, upload_date 
      FROM documents 
      WHERE user_id = ? 
      AND is_deleted = 0
