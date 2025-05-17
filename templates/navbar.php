@@ -16,9 +16,8 @@ $user = getUser();
   </button>
   <div class="flex-1 overflow-y-auto mt-2">
     <!-- Logo -->
-    <a href="dashboard.php" class="flex items-center w-full px-4 py-2 mb-6">
-      <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto" />
-      
+    <a href="dashboard.php" class="flex items-center justify-center w-full px-4 py-2 mb-6">
+      <img src="/assets/logo.png" alt="Logo" class="h-32 w-auto" />
     </a>
     <!-- Navigation Links -->
     <ul class="flex flex-col space-y-4 px-2">
