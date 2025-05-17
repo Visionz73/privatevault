@@ -27,11 +27,7 @@ try {
 
 // 4) Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Erfassung der Formulardaten
-    $title       = $_POST['title']       ?? '';
-    $description = $_POST['description'] ?? '';
-    $due_date    = $_POST['due_date']    ?? null; // Default null, falls nicht gesetzt
-    $assignedTo  = $_POST['assigned_to'] ?? $_SESSION['user_id'];
+    $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
 
     // Prüfen, ob der Array-Key "due_date" gesetzt ist und einen Default-Wert zuweisen
     $due_date = $_POST['due_date'] ?? '';
@@ -44,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               (?, ?, ?, ?, 'open', ?, ?)
         ");
         $stmt->execute([
-            $title,
-            $description,
+            $_POST['title']       ?? '',
+            $_POST['description'] ?? '',
             $assignedTo,
             $due_date,
             $_SESSION['user_id'],
