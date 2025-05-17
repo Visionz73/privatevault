@@ -7,10 +7,12 @@ session_start();
 require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
 
-// Define the destination directory for uploaded files. Ensure this directory exists or create it.
+// Define the destination directory for uploaded files. Ensure this folder exists and is writeable.
 $uploadDir = __DIR__ . '/../uploads/';
 if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+    if (!mkdir($uploadDir, 0755, true)) {
+        die("Fehler: Upload-Verzeichnis konnte nicht erstellt werden.");
+    }
 }
 
 $error = '';
@@ -21,21 +23,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     if ($file['error'] !== UPLOAD_ERR_OK) {
         $error = 'Fehler beim Hochladen der Datei.';
     } else {
-        // Allowed file MIME types; adjust as needed.
+        // Allowed MIME types (adjust as needed)
         $allowedTypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'image/jpeg',
-          'image/png'
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/png'
         ];
         if (!in_array($file['type'], $allowedTypes)) {
             $error = 'Dateityp nicht erlaubt.';
         } else {
+            // Use a unique file name to avoid collisions
             $filename = time() . '_' . basename($file['name']);
             $targetFile = $uploadDir . $filename;
             if (move_uploaded_file($file['tmp_name'], $targetFile)) {
-                $success = 'Datei erfolgreich hochgeladen.';
+                // Debug: check if file exists after move
+                if (file_exists($targetFile)) {
+                    $success = 'Datei erfolgreich hochgeladen.';
+                } else {
+                    $error = 'Upload war erfolgreich, aber die Datei wurde nicht gefunden im Zielordner.';
+                }
             } else {
                 $error = 'Fehler beim Speichern der Datei.';
             }
