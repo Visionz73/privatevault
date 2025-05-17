@@ -122,7 +122,7 @@
           <?php if(!empty($events)): ?>
             <?php foreach($events as $evt): ?>
               <li class="px-2 py-2 flex justify-between items-center">
-                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) )?></a>
+                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) ?></a>
                 <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
               </li>
             <?php endforeach; ?>
