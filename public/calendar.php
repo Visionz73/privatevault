@@ -1,3 +1,14 @@
+<?php
+session_start();
+require_once __DIR__ . '/../src/lib/db.php';
+require_once __DIR__ . '/../src/lib/auth.php';
+requireLogin();
+$userId = $_SESSION['user_id'];
+
+$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE user_id = ? ORDER BY event_date ASC");
+$stmt->execute([$userId]);
+$events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -6,15 +17,8 @@
   <title>Kalender | Private Vault</title>
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FullCalendar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/main.min.css" rel="stylesheet" />
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* FullCalendar Anpassungen */
-    .fc { background-color: white; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .fc-toolbar-title { font-size: 1.25rem; font-weight: 600; }
-    .fc-button { background-color: transparent; border: 1px solid #e5e7eb; color: #374151; }
-    .fc-button:hover { background-color: #f3f4f6; }
   </style>
 </head>
 <body class="p-8 bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2]">
@@ -22,19 +26,29 @@
     <h1 class="text-3xl font-bold text-gray-900">Kalender</h1>
   </header>
   
-  <!-- Kalender Container -->
-  <div id="calendar" class="mb-8"></div>
-  
-  <!-- Liste der erstellten Termine -->
+  <!-- Terminliste Widget -->
   <section class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Meine Termine</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-semibold">Meine Termine</h2>
+      <button id="showFormBtn" class="bg-blue-500 text-white px-3 py-1 rounded">Termin hinzufügen</button>
+    </div>
+    <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
     <ul id="eventList" class="divide-y divide-gray-200">
-      <li id="noEvents" class="py-2 text-gray-500 text-center">Keine Ereignisse gefunden.</li>
+      <?php if(!empty($events)): ?>
+        <?php foreach($events as $evt): ?>
+          <li class="py-2 flex justify-between items-center">
+            <span class="font-medium"><?= htmlspecialchars($evt['title']) ?></span>
+            <span class="text-sm text-gray-500"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
+          </li>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <li class="py-2 text-gray-500 text-center">Keine Termine gefunden.</li>
+      <?php endif; ?>
     </ul>
   </section>
   
-  <!-- Event-Planungsformular -->
-  <section class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+  <!-- Event-Planungsformular (initial versteckt) -->
+  <section id="eventFormContainer" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow mb-8 hidden">
     <h2 class="text-xl font-semibold mb-4">Neues Event hinzufügen</h2>
     <form id="eventForm" class="space-y-4">
       <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
@@ -43,64 +57,52 @@
     </form>
   </section>
   
-  <!-- FullCalendar JS -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/main.global.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Array zur Speicherung der Termine
-      let myEvents = [];
+    // Toggle Formularanzeige
+    document.getElementById('showFormBtn').addEventListener('click', function() {
+      const formContainer = document.getElementById('eventFormContainer');
+      formContainer.classList.toggle('hidden');
+    });
+    
+    // Updates der Terminliste
+    function updateEventList(newEvent) {
+      const eventList = document.getElementById('eventList');
+      // Entferne "Keine Termine gefunden." falls vorhanden
+      const noEventsEl = document.getElementById('noEvents');
+      if(noEventsEl) noEventsEl.remove();
       
-      // Kalender initialisieren
-      var calendarEl = document.getElementById('calendar');
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        selectable: true,
-        editable: true,
-        events: myEvents
-      });
-      calendar.render();
-      
-      // Funktion zum Aktualisieren der Event-Liste unter dem Kalender
-      function updateEventList() {
-        const eventList = document.getElementById('eventList');
-        eventList.innerHTML = '';
-        if (myEvents.length === 0) {
-          eventList.innerHTML = '<li class="py-2 text-gray-500 text-center">Keine Ereignisse gefunden.</li>';
-          return;
-        }
-        myEvents.forEach(function(event, index) {
-          const li = document.createElement('li');
-          li.className = "py-2 flex justify-between items-center";
-          li.innerHTML = `<span class="font-medium">${event.title}</span>
-                          <span class="text-sm text-gray-500">${new Date(event.start).toLocaleDateString('de-DE')}</span>`;
-          eventList.appendChild(li);
-        });
+      // Füge neues Event ans Ende der Liste hinzu
+      const li = document.createElement('li');
+      li.className = "py-2 flex justify-between items-center";
+      li.innerHTML = `<span class="font-medium">${newEvent.title}</span>
+                      <span class="text-sm text-gray-500">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+      eventList.appendChild(li);
+    }
+    
+    // Event-Formular-Handler per AJAX
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = this.title.value.trim();
+      const date = this.date.value;
+      if(title && date){
+        fetch('/src/controllers/create_event.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ title: title, date: date })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            updateEventList(data.event);
+            this.reset();
+            // Formular ausblenden
+            document.getElementById('eventFormContainer').classList.add('hidden');
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Erstellen des Termins.'));
       }
-      
-      // Event-Formular-Handler
-      document.getElementById('eventForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const title = this.title.value.trim();
-        const date = this.date.value;
-        if(title && date){
-          const newEvent = {
-            title: title,
-            start: date,
-            allDay: true
-          };
-          // Event zum Kalender hinzufügen
-          calendar.addEvent(newEvent);
-          // Event in unser Array speichern und Liste aktualisieren
-          myEvents.push(newEvent);
-          updateEventList();
-          this.reset();
-        }
-      });
     });
   </script>
 </body>
