@@ -95,18 +95,23 @@
         </ul>
       </article>
 
-      <!-- Neue Termine Widget -->
+      <!-- Meine Termine Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Meine Termine</h2>
-          <button onclick="window.location.href='calendar.php'" class="bg-blue-500 text-white px-3 py-1 rounded">Termin hinzufügen</button>
+          <a href="calendar.php" class="flex items-center">
+            <h2 class="text-lg font-semibold">Meine Termine</h2>
+            <span class="ml-2 text-gray-500">&gt;</span>
+          </a>
+          <button onclick="window.location.href='calendar.php?create=1'" class="bg-gray-100 text-gray-700 px-3 py-1 rounded shadow">
+            +
+          </button>
         </div>
         <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
-        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
+        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
           <?php if(!empty($events)): ?>
             <?php foreach($events as $evt): ?>
               <li class="px-2 py-2 flex justify-between items-center">
-                <span class="truncate pr-2"><?= htmlspecialchars($evt['title']) ?></span>
+                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) ?></a>
                 <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
               </li>
             <?php endforeach; ?>
