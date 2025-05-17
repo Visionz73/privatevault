@@ -35,18 +35,17 @@ $users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
 $usersMap = array_column($users, 'username', 'id');
 
 // 6) WHERE-Klausel bauen
-$where  = ["t.status != 'done'"];
+$where = ["t.status != 'done'"];
 $params = [];
-if ($filterAssignedTo !== 'all') {
-    if ((int)$filterAssignedTo === (int)$userId) {
-        // Zeige alle Aufgaben, die entweder direkt zugewiesen sind oder vom Nutzer erstellt wurden
-        $where[] = "(t.assigned_to = ? OR t.created_by = ?)";
-        $params[] = (int)$userId;
-        $params[] = (int)$userId;
-    } else {
-        $where[]  = 't.assigned_to = ?';
-        $params[] = (int)$filterAssignedTo;
-    }
+if ($filterAssignedTo === (string)$userId) {
+    // Zeige alle Aufgaben an, die entweder explizit dem Nutzer zugewiesen sind
+    // oder von ihm erstellt wurden (falls kein expliziter Empfänger gesetzt ist).
+    $where[] = "(t.assigned_to = ? OR t.created_by = ?)";
+    $params[] = (int)$userId;
+    $params[] = (int)$userId;
+} elseif ($filterAssignedTo !== 'all') {
+    $where[] = "t.assigned_to = ?";
+    $params[] = (int)$filterAssignedTo;
 }
 
 // 7) Tasks holen
