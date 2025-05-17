@@ -1,21 +1,23 @@
-// src/controllers/create_task.php
 <?php
-// Ab jetzt immer absolut per DOCUMENT_ROOT einbinden
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/auth.php';
+// src/controllers/create_task.php
 
-// Session starten
+// 1) DB und Auth aus src/lib laden
+require_once(__DIR__ . '/../../lib/db.php');
+require_once __DIR__ . '/../lib/auth.php';
+
+// 2) Session starten
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Debug-Fallback
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Debug-Fallback
+    $_SESSION['user_id'] = 1;
 }
 
 $allUsers = [];
 $errors   = [];
 
-// Nutzer für select laden
+// 3) Nutzer für „assigned_to“-Dropdown
 try {
     $stmt     = $pdo->query("SELECT id, username FROM users ORDER BY username");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,8 +25,8 @@ try {
     $errors[] = 'Error loading users: ' . $e->getMessage();
 }
 
+// 4) Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Fallback: wenn kein Empfänger ausgewählt, auf mich selbst setzen
     $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
 
     try {
@@ -44,16 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         if ($stmt->rowCount() > 0) {
-            // Redirect zur öffentlichen Inbox
             header('Location: /inbox.php');
             exit;
         } else {
             $errors[] = 'Task wurde nicht angelegt. Bitte Eingaben prüfen.';
         }
     } catch (PDOException $e) {
-        $errors[] = 'Fehler beim Anlegen: ' . $e->getMessage();
+        $errors[] = 'Error creating task: ' . $e->getMessage();
     }
 }
 
-// Template laden
-require_once $_SERVER['DOCUMENT_ROOT'] . '/templates/create_task.php';
+// 5) Template rendern
+require_once __DIR__ . '/../../templates/create_task.php';
