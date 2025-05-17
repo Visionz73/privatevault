@@ -53,7 +53,7 @@ $user = getUser();
       </svg>
     </button>
     <a href="dashboard.php" class="flex items-center ml-4">
-      <img src="/assets/logo.png" alt="Logo" class="h-20 w-auto" />
+      <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
       
     </a>
   </div>
