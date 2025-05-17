@@ -41,13 +41,15 @@ if ($filterAssignedTo !== 'all') {
 }
 
 // 7) Tasks holen
-$sql   = "
-    SELECT t.*, u.username AS creator
-      FROM tasks t
-      JOIN users u ON u.id = t.created_by
-     WHERE " . implode(' AND ', $where) . "
-  ORDER BY t.id DESC
-";
+$sql = <<<SQL
+SELECT t.*, u.username AS creator
+FROM tasks t
+JOIN users u ON u.id = t.created_by
+WHERE %s
+ORDER BY t.id DESC
+SQL;
+$sql = sprintf($sql, implode(' AND ', $where));
+
 $stmt  = $pdo->prepare($sql);
 $stmt->execute($params);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
