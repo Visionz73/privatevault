@@ -29,6 +29,9 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
 
+    // Prüfen, ob der Array-Key "due_date" gesetzt ist und einen Default-Wert zuweisen
+    $due_date = $_POST['due_date'] ?? '';
+
     try {
         $stmt = $pdo->prepare("
             INSERT INTO tasks
@@ -40,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['title']       ?? '',
             $_POST['description'] ?? '',
             $assignedTo,
-            $_POST['due_date']    ?? null,
+            $due_date,
             $_SESSION['user_id'],
             $_SESSION['user_id']
         ]);
