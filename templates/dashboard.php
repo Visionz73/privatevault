@@ -14,6 +14,15 @@
       main { margin-left: 0 !important; padding: 1rem; }
       nav#sidebar { width: 100%; position: relative; }
     }
+
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+      /* Remove left margin so content fills mobile screen */
+      main { margin-left: 0; padding: 1rem; }
+      /* Make sidebar relative and full width if visible */
+      nav#sidebar { position: relative; width: 100%; }
+      /* Optionally hide sidebar toggle elements */
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
