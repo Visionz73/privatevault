@@ -16,7 +16,19 @@ if (!file_exists(__DIR__ . '/../src/controllers/create_task.php')) {
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/controllers/create_task.php';
 
-// Nach erfolgreicher Erstellung des Tasks:
-header("Location: /taskboard.php"); // Weiterleitung zu taskboard.php, anstatt automatisch in inbox.php zu landen
-exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // ...existing creation logic...
+    if($creationSuccessful){ // Ensure that $creationSuccessful is set in your controller
+        header('Location: dashboard.php');
+        exit;
+    }
+}
+
+// Remove any inclusion of templates that display the taskboard if not needed
+// For example, if there's a require or include for a dashboard or taskboard template, remove or comment it out:
+// require_once __DIR__.'/dashboard_template.php';
+
+// ...existing code for displaying the create task form...
+
+ob_end_flush();
 ?>
