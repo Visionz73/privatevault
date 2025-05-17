@@ -17,8 +17,8 @@ $user = getUser();
   <div class="flex-1 overflow-y-auto mt-2">
     <!-- Logo -->
     <a href="dashboard.php" class="flex items-center w-full px-4 py-2 mb-6">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto" />
-      <span class="label ml-3 text-xl font-bold text-gray-900">O-Archive</span>
+      <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto" />
+      
     </a>
     <!-- Navigation Links -->
     <ul class="flex flex-col space-y-4 px-2">
