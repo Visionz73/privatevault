@@ -47,17 +47,16 @@
           </svg>
         </a>
         <?php 
-          // Zeige alle Aufgaben an, die dem aktuell eingeloggten Nutzer (z.B. ghost) zugewiesen sind
-          $filteredTasks = array_filter($tasks, function($t) use ($user) {
-            return ((int)($t['assigned_to'] ?? 0)) === ((int)$user['id']);
-          });
+          // Statt zu filtern, nutzen wir alle vom Controller gelieferten Aufgaben,
+          // damit genau dieselben Aufgaben wie in public/inbox angezeigt werden.
+          $filteredTasks = $tasks;
           $openTaskCount = count($filteredTasks);
         ?>
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php foreach($filteredTasks as $idx=>$t): ?>
-            <li class="px-2 py-2 <?= $idx % 2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
+            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
               <span class="truncate pr-2">
                 <?= htmlspecialchars($t['title']) ?>
               </span>
