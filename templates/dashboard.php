@@ -3,21 +3,18 @@
 <html lang="de" class="h-full">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Dashboard | Private Vault</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
+  <style>body{font-family:'Inter',sans-serif}</style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <!-- On mobile, remove the left margin so the content takes full width -->
-  <main class="flex-1 p-4 space-y-6 md:ml-64">
+  <main class="ml-64 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
@@ -117,43 +114,6 @@
               <li class="px-2 py-2 flex justify-between items-center">
                 <span class="truncate pr-2"><?= htmlspecialchars($evt['title']) ?></span>
                 <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['date'])) ?></span>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="px-2 py-2 text-gray-500">Keine Termine gefunden.</li>
-          <?php endif; ?>
-        </ul>
-      </article>
-
-      <!-- Meine Termine Widget -->
-      <article class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-md p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <a href="calendar.php" class="flex items-center">
-            <h2 class="text-lg font-semibold">Meine Termine</h2>
-            <span class="ml-2 text-gray-500">&gt;</span>
-          </a>
-          <!-- Shortcut button to create a new event inline -->
-          <button id="showInlineEventForm" class="bg-white/30 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
-            +
-          </button>
-        </div>
-        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
-        <!-- Inline Event Form (initially hidden) -->
-        <div id="inlineEventFormContainer" class="mb-4 hidden">
-          <form id="inlineEventForm" class="space-y-2">
-            <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded-lg p-2 bg-white/80" required>
-            <input type="date" name="date" class="w-full border border-gray-300 rounded-lg p-2 bg-white/80" required>
-            <button type="submit" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">
-              Termin erstellen
-            </button>
-          </form>
-        </div>
-        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
-          <?php if(!empty($events)): ?>
-            <?php foreach($events as $evt): ?>
-              <li class="px-2 py-2 flex justify-between items-center">
-                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) ?></a>
-                <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
               </li>
             <?php endforeach; ?>
           <?php else: ?>
