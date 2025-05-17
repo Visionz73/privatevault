@@ -6,15 +6,14 @@ requireLogin();
 $userId = $_SESSION['user_id'];
 
 /* ------------------------------------------------------------------
-   letzte 5 Aufgaben, die MIR zugewiesen und NICHT erledigt sind
+   Alle Aufgaben, die MIR zugewiesen und NICHT erledigt sind
 -------------------------------------------------------------------*/
 $stmt = $pdo->prepare(
     'SELECT id, title, created_at
        FROM tasks
       WHERE assigned_to = ?
-        AND is_done   != 1
-   ORDER BY id DESC           -- neueste oben
-      LIMIT 5'
+        AND is_done != 1
+   ORDER BY id DESC'
 );
 $stmt->execute([$userId]);
 $tasks = $stmt->fetchAll();
@@ -23,7 +22,7 @@ $stmt = $pdo->prepare(
     'SELECT COUNT(*)
        FROM tasks
       WHERE assigned_to = ?
-        AND is_done   != 1'
+        AND is_done != 1'
 );
 $stmt->execute([$userId]);
 $openTaskCount = (int)$stmt->fetchColumn();
