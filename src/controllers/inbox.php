@@ -33,9 +33,9 @@ $users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
 $usersMap = array_column($users, 'username', 'id');
 
 // 6) WHERE-Klausel bauen
-$where  = ['t.status != "done"'];
+$where  = ["t.status != 'done'"];
 $params = [];
-if ($filterAssignedTo !== 'all') { // Filter nur anwenden, wenn nicht "all"
+if ($filterAssignedTo !== 'all') {
     $where[]  = 't.assigned_to = ?';
     $params[] = (int)$filterAssignedTo;
 }
