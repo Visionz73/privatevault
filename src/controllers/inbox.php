@@ -23,7 +23,8 @@ $filterAssignedTo = $userId;
 
 // 4) „Done“-Flag setzen
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
-    $upd = $pdo->prepare("UPDATE tasks SET status = 'done' WHERE id = ? AND assigned_to = ?");
+    // Aktualisiere die Aufgabe als erledigt, indem is_done auf 1 gesetzt wird
+    $upd = $pdo->prepare("UPDATE tasks SET is_done = 1 WHERE id = ? AND assigned_to = ?");
     $upd->execute([(int)$_GET['done'], $userId]);
     header('Location: /inbox.php?assigned_to=' . urlencode($filterAssignedTo));
     exit;
@@ -35,7 +36,8 @@ $users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
 $usersMap = array_column($users, 'username', 'id');
 
 // 6) WHERE-Klausel bauen
-$where = ["t.status != 'done'", "t.assigned_to = ?"];
+// Zeige nur Aufgaben an, die noch nicht als erledigt markiert sind
+$where = ["t.is_done != 1", "t.assigned_to = ?"];
 $params = [(int)$userId];
 
 // 7) Tasks holen
