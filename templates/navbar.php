@@ -63,7 +63,7 @@ $user = getUser();
       </svg>
     </button>
     <a href="dashboard.php" class="flex items-center">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto" />
+      <img src="/assets/logo.png" alt="Logo" class="h-12 w-auto" />
       
     </a>
   </div>
@@ -79,7 +79,7 @@ $user = getUser();
     <!-- Centered logo -->
     <div class="flex justify-center mb-6">
       <a href="dashboard.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto" />
+        <img src="/assets/logo.png" alt="Logo" class="h-20 w-auto" />
         
       </a>
     </div>
