@@ -42,6 +42,7 @@ if ($filterAssignedTo !== 'all') {
 
 // 7) Tasks holen
 <<<<<<< HEAD
+<<<<<<< HEAD
 $sql   = "
     SELECT t.*, u.username AS creator
       FROM tasks t
@@ -75,12 +76,13 @@ $stmt = $pdo->prepare($sql);
 =======
 $sql = <<<SQL
 SELECT t.*, u.username AS creator
+=======
+$sql = "SELECT t.*, u.username AS creator
+>>>>>>> 8c1ab45d57a53431f39b55defeeec21568aea470
 FROM tasks t
 JOIN users u ON u.id = t.created_by
-WHERE %s
-ORDER BY t.id DESC
-SQL;
-$sql = sprintf($sql, implode(' AND ', $where));
+WHERE " . implode(' AND ', $where) . "
+ORDER BY t.id DESC";
 
 >>>>>>> 6b00b442aca23b8811f8b225ce36c1b8fe2628fa
 $stmt  = $pdo->prepare($sql);
