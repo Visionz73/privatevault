@@ -7,6 +7,7 @@ $userId = $_SESSION['user_id'];
 
 /* ------------------------------------------------------------------
    Alle Aufgaben, die MIR zugewiesen und NICHT erledigt sind
+   (d.h. nur Aufgaben, die noch erledigt werden müssen)
 -------------------------------------------------------------------*/
 $stmt = $pdo->prepare(
     'SELECT id, title, created_at
