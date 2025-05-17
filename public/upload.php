@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         // Use a unique file name for collision avoidance
-        $filename   = time() . '_' . basename($_FILES['file']['name']);
+        $filename   = time() . '_' . basename($_FILES['file']['name]);
         $targetFile = $uploadDir . $filename;
         if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
             // Optionally, save upload info to your database here (name, category, file path, etc.)
@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
   <div class="bg-white rounded shadow-md p-8 w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-4">Datei & Informationen hochladen</h1>
     <?php if ($error): ?>
       <div class="bg-red-100 text-red-700 p-2 rounded mb-4"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
