@@ -7,17 +7,17 @@ requireLogin();
 $userId = $_SESSION['user_id'];
 $view   = $_GET['view'] ?? 'grid';
 
-// Sonstige Dokumente laden
+// Adjust query to filter by actual category
 $stmt = $pdo->prepare(
   'SELECT d.id, d.title, d.filename, d.end_date
      FROM documents d
      JOIN document_categories c ON c.id = d.category_id
     WHERE d.user_id = ?
-      AND c.name = "Sonstige"
+      AND c.name = ?
       AND d.is_deleted = 0
  ORDER BY d.upload_date DESC'
 );
-$stmt->execute([$userId]);
+$stmt->execute([$userId, $_GET['category'] ?? 'Sonstige']);
 $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 function isImg($f) {
@@ -27,7 +27,7 @@ function isImg($f) {
 
 <div class="bg-white rounded-xl shadow p-6 space-y-6">
   <div class="flex justify-between items-center">
-    <h3 class="text-xl font-semibold text-gray-900">Sonstige Dokumente</h3>
+    <h3 class="text-xl font-semibold text-gray-900"><?= htmlspecialchars($_GET['category'] ?? 'Sonstige') ?></h3>
     <div class="inline-flex text-sm border rounded-lg overflow-hidden">
       <a href="?tab=documents&subtab=other_docs&view=list"
          class="px-3 py-1 <?= $view==='list' ? 'bg-[#4A90E2] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' ?>">
