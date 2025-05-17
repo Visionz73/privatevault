@@ -47,10 +47,12 @@
           </svg>
         </a>
         <?php 
-          // Statt zu filtern, nutzen wir alle vom Controller gelieferten Aufgaben,
-          // damit genau dieselben Aufgaben wie in public/inbox angezeigt werden.
-          $filteredTasks = $tasks;
-          $openTaskCount = count($filteredTasks);
+          // Debug-Ausgabe: Gesamter Aufgaben-Array aus dem Controller
+          echo "<!-- Debug dashboard.php: count(\$tasks) = " . count($tasks) . " -->";
+          
+          // Falls du in Dashboard zusätzlich filtern möchtest, prüfe auch hier:
+          $filteredTasks = $tasks; // (oder anderer Filter)
+          echo "<!-- Debug dashboard.php (filtered): count(\$filteredTasks) = " . count($filteredTasks) . " -->";
         ?>
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
