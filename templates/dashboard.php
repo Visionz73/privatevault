@@ -95,6 +95,11 @@
         </ul>
       </article>
 
+      <!-- Kalender Widget ----------------------------------------------->
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6">
+        <?php require_once __DIR__.'/calendar_widget.php'; ?>
+      </article>
+
       <!-- Placeholder Cards --------------------------------------------->
       <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex items-center justify-center text-gray-400 text-sm">
