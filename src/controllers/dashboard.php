@@ -49,6 +49,13 @@ $stmt = $pdo->prepare(
 $stmt->execute([$userId]);
 $docCount = (int)$stmt->fetchColumn();
 
+/* ------------------------------------------------------------------
+   Termine (alle Termine, die noch erstellt wurden)
+-------------------------------------------------------------------*/
+$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by = ? ORDER BY event_date ASC");
+$stmt->execute([$userId]);
+$events = $stmt->fetchAll();
+
 /* ------------------------------------------------------------------*/
 require_once __DIR__ . '/../../templates/dashboard.php';
 
