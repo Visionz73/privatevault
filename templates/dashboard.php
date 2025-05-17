@@ -29,8 +29,8 @@
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <!-- Ensure the main content is offset from the fixed navbar -->
-  <main class="ml-64 flex-1 p-8 space-y-10">
+  <!-- On mobile, remove the left margin -->
+  <main class="flex-1 p-8 space-y-10 ml-0 md:ml-64">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
