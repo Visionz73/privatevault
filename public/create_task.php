@@ -13,4 +13,8 @@ if (!file_exists(__DIR__ . '/../src/controllers/create_task.php')) {
 // Konfigurations- und Controller-Dateien laden
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/controllers/create_task.php';
+
+// Nach erfolgreicher Erstellung des Tasks:
+header("Location: /taskboard.php"); // Weiterleitung zu taskboard.php, anstatt automatisch in inbox.php zu landen
+exit;
 ?>
