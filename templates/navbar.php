@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Output buffering aktivieren, um Header-Probleme zu vermeiden
 // templates/navbar.php (updated with Kanban link)
 require_once __DIR__ . '/../src/lib/auth.php';
 $user = getUser();
@@ -66,9 +67,9 @@ $user = getUser();
 </nav>
 
 <script>
-  const btn=document.getElementById('toggleBtn');
-  const sidebar=document.getElementById('sidebar');
-  btn.addEventListener('click',()=>{
+  const btn = document.getElementById('toggleBtn');
+  const sidebar = document.getElementById('sidebar');
+  btn.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     sidebar.classList.toggle('w-64');
     sidebar.classList.toggle('w-16');
