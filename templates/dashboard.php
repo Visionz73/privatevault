@@ -14,23 +14,14 @@
       main { margin-left: 0 !important; padding: 1rem; }
       nav#sidebar { width: 100%; position: relative; }
     }
-
-    /* Mobile-specific styles */
-    @media (max-width: 768px) {
-      /* Remove left margin so content fills mobile screen */
-      main { margin-left: 0; padding: 1rem; }
-      /* Make sidebar relative and full width if visible */
-      nav#sidebar { position: relative; width: 100%; }
-      /* Optionally hide sidebar toggle elements */
-    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <!-- On mobile, remove the left margin -->
-  <main class="flex-1 p-8 space-y-10 ml-0 md:ml-64">
+  <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
+  <main class="ml-64 md:ml-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
@@ -112,29 +103,30 @@
       </article>
 
       <!-- Meine Termine Widget -->
-      <article class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-md p-6 flex flex-col">
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
           <a href="calendar.php" class="flex items-center">
-            <h2 class="text-lg font-semibold">Meine Termine</h2>
-            <span class="ml-2 text-gray-500">&gt;</span>
+            <h2 class="text-lg font-semibold mr-1">Meine Termine</h2>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
           </a>
-          <!-- Updated plus button: transparent, rounder, no blue -->
-          <button id="showInlineEventForm" class="bg-white/30 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <button id="showInlineEventForm" class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg shadow-sm">
             +
           </button>
         </div>
-        <!-- Inline Event Form (initially hidden) -->
+        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
+        <!-- Inline event form (initially hidden) -->
         <div id="inlineEventFormContainer" class="mb-4 hidden">
           <form id="inlineEventForm" class="space-y-2">
             <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
             <input type="date" name="date" class="w-full border border-gray-300 rounded p-2" required>
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+            <button type="submit" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200">
               Termin erstellen
             </button>
           </form>
         </div>
-        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
-        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
+        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if(!empty($events)): ?>
             <?php foreach($events as $evt): ?>
               <li class="px-2 py-2 flex justify-between items-center">
