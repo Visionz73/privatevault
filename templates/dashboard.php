@@ -101,13 +101,38 @@
       </article>
 
       <!-- Placeholder Cards --------------------------------------------->
-      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events','Kalender'] as $name): ?>
+      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex items-center justify-center text-gray-400 text-sm">
           <?= $name ?>-Widget
         </article>
       <?php endforeach; ?>
+      <!-- Neuer Kalender-Widget -->
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 cursor-pointer"
+               onclick="window.location.href='calendar.php'">
+        <div class="flex flex-col items-center">
+          <h2 class="text-lg font-semibold mb-2">Kalender</h2>
+          <!-- Mini-Kalender-Preview -->
+          <div id="miniCalendar" class="w-64 h-64"></div>
+        </div>
+      </article>
 
     </div><!-- /grid -->
   </main>
 </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/index.global.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('miniCalendar');
+    if(calendarEl) {
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: false,
+        height: '100%',
+        selectable: false,
+        events: [] // Hier können optional Vorschau-Events geladen werden
+      });
+      calendar.render();
+    }
+  });
+</script>
