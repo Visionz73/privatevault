@@ -53,8 +53,8 @@ $user = getUser();
       </svg>
     </button>
     <a href="dashboard.php" class="flex items-center ml-4">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto" />
-      <span class="ml-2 text-xl font-bold text-gray-900">O-Archive</span>
+      <img src="/assets/logo.png" alt="Logo" class="h-20 w-auto" />
+      
     </a>
   </div>
   <!-- Desktop: sidebar content -->
