@@ -9,12 +9,19 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Reverting to original styling (mobile formatting removed) */
+    /* Responsive adjustments for iPhone */
+    @media (max-width: 414px) {
+      main { margin-left: 0 !important; padding: 1rem; }
+      nav#sidebar { width: 100%; position: relative; }
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+
   <?php require_once __DIR__.'/navbar.php'; ?>
-  <main class="ml-64 flex-1 p-8 space-y-10">
+
+  <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
+  <main class="ml-64 md:ml-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
@@ -95,33 +102,6 @@
         </ul>
       </article>
 
-      <!-- Kalender Widget (neu: nur Terminliste) -->
-      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Kalender</h2>
-          <button onclick="window.location.href='calendar.php'" class="bg-blue-500 text-white px-3 py-1 rounded">
-            Termin hinzufügen
-          </button>
-        </div>
-        <?php 
-          // Annahme: $events enthält alle Termine, die diesem Benutzer zugewiesen sind
-          $eventCount = count($events ?? []);
-        ?>
-        <p class="text-sm text-gray-500 mb-4"><?= $eventCount ?> Termine</p>
-        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
-          <?php if(!empty($events)): ?>
-            <?php foreach($events as $evt): ?>
-              <li class="px-2 py-2 flex justify-between items-center">
-                <span class="truncate pr-2"><?= htmlspecialchars($evt['title']) ?></span>
-                <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['date'])) ?></span>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="px-2 py-2 text-gray-500">Keine Termine gefunden.</li>
-          <?php endif; ?>
-        </ul>
-      </article>
-
       <!-- Meine Termine Widget -->
       <article class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-md p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
@@ -129,20 +109,22 @@
             <h2 class="text-lg font-semibold">Meine Termine</h2>
             <span class="ml-2 text-gray-500">&gt;</span>
           </a>
+          <!-- Updated plus button: transparent, rounder, no blue -->
           <button id="showInlineEventForm" class="bg-white/30 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
             +
           </button>
         </div>
-        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
+        <!-- Inline Event Form (initially hidden) -->
         <div id="inlineEventFormContainer" class="mb-4 hidden">
           <form id="inlineEventForm" class="space-y-2">
-            <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded-lg p-2 bg-white/80" required>
-            <input type="date" name="date" class="w-full border border-gray-300 rounded-lg p-2 bg-white/80" required>
-            <button type="submit" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">
+            <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
+            <input type="date" name="date" class="w-full border border-gray-300 rounded p-2" required>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
               Termin erstellen
             </button>
           </form>
         </div>
+        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
         <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-200">
           <?php if(!empty($events)): ?>
             <?php foreach($events as $evt): ?>
@@ -167,3 +149,49 @@
   </main>
 </body>
 </html>
+
+<script>
+// Toggle inline event creation form
+document.getElementById('showInlineEventForm').addEventListener('click', function() {
+  document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+});
+
+// Handle inline event form submission via AJAX
+document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const title = this.title.value.trim();
+  const date = this.date.value;
+  if(title && date){
+    fetch('/create_event.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ title: title, date: date })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success){
+        // Create new list element for the event
+        const newEvent = data.event;
+        const li = document.createElement('li');
+        li.className = "px-2 py-2 flex justify-between items-center";
+        li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
+                         <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+        const eventList = document.getElementById('dashboardEventList');
+        
+        // If "Keine Termine gefunden." is present, remove it.
+        if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+          eventList.innerHTML = '';
+        }
+        eventList.appendChild(li);
+        // Update count (force a reload or recalc count)
+        // For simplicity, not auto-updating count here.
+        this.reset();
+        document.getElementById('inlineEventFormContainer').classList.add('hidden');
+      } else {
+        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+      }
+    })
+    .catch(() => alert('Fehler beim Erstellen des Termins.'));
+  }
+});
+</script>
