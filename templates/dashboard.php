@@ -9,10 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Responsive adjustments for iPhone */
-    @media (max-width: 414px) {
-      main { margin-left: 0 !important; padding: 1rem; }
-      nav#sidebar { width: 100%; position: relative; }
+    /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
+    @media (max-width: 768px) {
+      main { margin-top: 3.5rem; }
     }
   </style>
 </head>
