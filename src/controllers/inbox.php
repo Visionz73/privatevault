@@ -18,7 +18,8 @@ requireLogin();
 
 // 3) User & Filter
 $userId           = $_SESSION['user_id'];
-$filterAssignedTo = $_GET['assigned_to'] ?? $userId;
+// Entferne den "all"-Filter: Immer nur eigene Aufgaben anzeigen
+$filterAssignedTo = $userId;
 
 // 4) „Done“-Flag setzen
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
@@ -33,13 +34,9 @@ $users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
                 ->fetchAll(PDO::FETCH_ASSOC);
 $usersMap = array_column($users, 'username', 'id');
 
-// 6) WHERE-Klausel bauen
-$where  = ["t.status != 'done'"];
-$params = [];
-if ($filterAssignedTo !== 'all') {
-    $where[]  = 't.assigned_to = ?';
-    $params[] = (int)$filterAssignedTo;
-}
+// 6) WHERE-Klausel bauen: Zeige nur Aufgaben an, die dem eingeloggten Nutzer zugewiesen sind und noch nicht erledigt wurden
+$where  = ["t.status != 'done'", "t.assigned_to = ?"];
+$params = [(int)$userId];
 
 // 7) Tasks holen
 $sql = "
