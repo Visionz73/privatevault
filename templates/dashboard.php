@@ -108,10 +108,10 @@
       <?php endforeach; ?>
       <!-- Neuer Kalender-Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 cursor-pointer col-span-2" onclick="window.location.href='calendar.php'">
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center h-full">
           <h2 class="text-xl font-semibold mb-4">Kalender</h2>
-          <!-- Größerer Mini-Kalender-Preview -->
-          <div id="miniCalendar" class="w-full h-[500px]"></div>
+          <!-- Entferne fixe Höhe, damit der Kalender den verfügbaren Platz füllt -->
+          <div id="miniCalendar" class="w-full h-full"></div>
         </div>
       </article>
 
