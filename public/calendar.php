@@ -8,10 +8,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/main.min.css" rel="stylesheet" />
-  <!-- Custom Styles für 1:1 Format -->
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Passe FullCalendar an Tailwind an */
+    /* FullCalendar Anpassungen */
     .fc { background-color: white; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .fc-toolbar-title { font-size: 1.25rem; font-weight: 600; }
     .fc-button { background-color: transparent; border: 1px solid #e5e7eb; color: #374151; }
@@ -25,6 +24,14 @@
   
   <!-- Kalender Container -->
   <div id="calendar" class="mb-8"></div>
+  
+  <!-- Liste der erstellten Termine -->
+  <section class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Meine Termine</h2>
+    <ul id="eventList" class="divide-y divide-gray-200">
+      <li id="noEvents" class="py-2 text-gray-500 text-center">Keine Ereignisse gefunden.</li>
+    </ul>
+  </section>
   
   <!-- Event-Planungsformular -->
   <section class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
@@ -40,6 +47,10 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/main.global.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Array zur Speicherung der Termine
+      let myEvents = [];
+      
+      // Kalender initialisieren
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -50,21 +61,43 @@
         },
         selectable: true,
         editable: true,
-        events: [] // Hier können zukünftig Events dynamisch geladen werden
+        events: myEvents
       });
       calendar.render();
-
-      // Einfaches Client-seitiges Event hinzufügen (ohne Persistenz)
+      
+      // Funktion zum Aktualisieren der Event-Liste unter dem Kalender
+      function updateEventList() {
+        const eventList = document.getElementById('eventList');
+        eventList.innerHTML = '';
+        if (myEvents.length === 0) {
+          eventList.innerHTML = '<li class="py-2 text-gray-500 text-center">Keine Ereignisse gefunden.</li>';
+          return;
+        }
+        myEvents.forEach(function(event, index) {
+          const li = document.createElement('li');
+          li.className = "py-2 flex justify-between items-center";
+          li.innerHTML = `<span class="font-medium">${event.title}</span>
+                          <span class="text-sm text-gray-500">${new Date(event.start).toLocaleDateString('de-DE')}</span>`;
+          eventList.appendChild(li);
+        });
+      }
+      
+      // Event-Formular-Handler
       document.getElementById('eventForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const title = this.title.value;
+        const title = this.title.value.trim();
         const date = this.date.value;
         if(title && date){
-          calendar.addEvent({
+          const newEvent = {
             title: title,
             start: date,
             allDay: true
-          });
+          };
+          // Event zum Kalender hinzufügen
+          calendar.addEvent(newEvent);
+          // Event in unser Array speichern und Liste aktualisieren
+          myEvents.push(newEvent);
+          updateEventList();
           this.reset();
         }
       });
