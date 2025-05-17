@@ -22,11 +22,7 @@ $filterAssignedTo = $_GET['assigned_to'] ?? $userId;
 
 // 4) „Done“-Flag setzen
 if (isset($_GET['done']) && is_numeric($_GET['done'])) {
-    $upd = $pdo->prepare("
-        UPDATE tasks
-           SET status = 'done'
-         WHERE id = ? AND assigned_to = ?
-    ");
+    $upd = $pdo->prepare("UPDATE tasks SET status = 'done' WHERE id = ? AND assigned_to = ?");
     $upd->execute([(int)$_GET['done'], $userId]);
     header('Location: /inbox.php?assigned_to=' . urlencode($filterAssignedTo));
     exit;
@@ -88,8 +84,11 @@ FROM tasks t
 JOIN users u ON u.id = t.created_by
 WHERE " . implode(' AND ', $where) . "
 ORDER BY t.id DESC";
+<<<<<<< HEAD
 
 >>>>>>> 6b00b442aca23b8811f8b225ce36c1b8fe2628fa
+=======
+>>>>>>> d4627d3017a75c5f7220b1e9e953f8fedb3ef570
 $stmt  = $pdo->prepare($sql);
 >>>>>>> 2afea5308a465b63f73d8d8c9d0f91d1ed822722
 $stmt->execute($params);
