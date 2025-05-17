@@ -64,7 +64,7 @@ $user = getUser();
     </button>
     <a href="dashboard.php" class="flex items-center">
       <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto" />
-      <span class="ml-2 text-xl font-bold text-gray-900">O-Archive</span>
+      
     </a>
   </div>
   <!-- Desktop: sidebar content -->
@@ -80,7 +80,7 @@ $user = getUser();
     <div class="flex justify-center mb-6">
       <a href="dashboard.php" class="flex items-center">
         <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto" />
-        <span class="ml-3 text-xl font-bold text-gray-900">O-Archive</span>
+        
       </a>
     </div>
     <ul class="flex flex-col space-y-4 px-2">
