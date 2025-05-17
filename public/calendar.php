@@ -10,7 +10,8 @@ require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
 
-$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE user_id = ? ORDER BY event_date ASC");
+// Ändere "user_id" zu "created_by", da in der Tabelle events diese Spalte verwendet wird
+$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by = ? ORDER BY event_date ASC");
 $stmt->execute([$userId]);
 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
