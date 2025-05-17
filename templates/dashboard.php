@@ -107,12 +107,11 @@
         </article>
       <?php endforeach; ?>
       <!-- Neuer Kalender-Widget -->
-      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 cursor-pointer"
-               onclick="window.location.href='calendar.php'">
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 cursor-pointer col-span-2" onclick="window.location.href='calendar.php'">
         <div class="flex flex-col items-center">
-          <h2 class="text-lg font-semibold mb-2">Kalender</h2>
-          <!-- Mini-Kalender-Preview -->
-          <div id="miniCalendar" class="w-64 h-64"></div>
+          <h2 class="text-xl font-semibold mb-4">Kalender</h2>
+          <!-- Größerer Mini-Kalender-Preview -->
+          <div id="miniCalendar" class="w-full h-[500px]"></div>
         </div>
       </article>
 
