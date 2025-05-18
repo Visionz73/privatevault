@@ -87,7 +87,7 @@ $user = getUser();
       <!-- Centered logo -->
       <div class="flex justify-center mb-6">
         <a href="dashboard.php" class="flex items-center">
-          <img src="/assets/logo.png" alt="Logo" class="h-20 w-auto" />
+          <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
           
         </a>
       </div>
