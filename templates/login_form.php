@@ -18,8 +18,8 @@
     <!-- Logo -->
     <div class="flex justify-center mb-8">
       <a href="dashboard.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto" />
-        <span class="ml-3 text-xl font-bold text-gray-900">O-Archive</span>
+        <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
+        
       </a>
     </div>
 
