@@ -58,16 +58,37 @@
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if (!empty($tasks)): ?>
             <?php foreach($tasks as $idx => $t): ?>
-              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
-                <div class="flex items-center space-x-4 w-full">
-                  <span class="truncate"><?= htmlspecialchars($t['title']) ?></span>
-                  <button onclick="openEditModal(<?= $t['id'] ?>, '<?= htmlspecialchars($t['title']) ?>')" 
-                          class="ml-auto text-sm text-blue-500 hover:text-blue-700">
-                    Bearbeiten
-                  </button>
+              <li class="px-2 py-3 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col gap-2">
+                <!-- Title and Due Date -->
+                <div class="flex justify-between items-center">
+                  <span class="font-medium"><?= htmlspecialchars($t['title']) ?></span>
+                  <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
+                    <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+                      <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
+                    </span>
+                  <?php endif; ?>
+                </div>
+                
+                <!-- Description -->
+                <?php if(!empty($t['description'])): ?>
+                  <p class="text-sm text-gray-600"><?= htmlspecialchars($t['description']) ?></p>
+                <?php endif; ?>
+                
+                <!-- Creator and Assignee Info -->
+                <div class="flex gap-4 text-xs text-gray-500">
+                  <span>
+                    <span class="font-medium">Von:</span> 
+                    <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
+                  </span>
+                  <span>
+                    <span class="font-medium">Für:</span> 
+                    <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                  </span>
                 </div>
               </li>
             <?php endforeach; ?>
+          <?php else: ?>
+            <li class="px-2 py-2 text-gray-500">Keine offenen Aufgaben.</li>
           <?php endif; ?>
         </ul>
       </article>

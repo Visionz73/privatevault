@@ -72,6 +72,21 @@ $stmt = $pdo->prepare("
 $stmt->execute([$userId]);
 $tasks = $stmt->fetchAll();
 
+// Load tasks with creator and assignee information
+$stmt = $pdo->prepare("
+    SELECT 
+        t.*,
+        creator.username as creator_name,
+        assignee.username as assignee_name
+    FROM tasks t
+    LEFT JOIN users creator ON t.creator_id = creator.id
+    LEFT JOIN users assignee ON t.assignee_id = assignee.id
+    WHERE t.assignee_id = ?
+    ORDER BY t.created_at DESC
+");
+$stmt->execute([$_SESSION['user_id']]);
+$tasks = $stmt->fetchAll();
+
 // Set filtered tasks same as tasks initially
 $filteredTasks = $tasks;
 $openTaskCount = count($tasks);
