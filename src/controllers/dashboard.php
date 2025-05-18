@@ -55,18 +55,24 @@ $stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by
 $stmt->execute([$userId]);
 $events = $stmt->fetchAll();
 
-// Load tasks for current user
+/* ------------------------------------------------------------------
+   Aufgaben laden die mir zugewiesen wurden
+-------------------------------------------------------------------*/
 $stmt = $pdo->prepare("
-    SELECT t.*, u.username as creator_name, u2.username as assignee_name
-    FROM tasks t 
-    LEFT JOIN users u ON t.creator_id = u.id
-    LEFT JOIN users u2 ON t.assignee_id = u2.id
-    WHERE t.assignee_id = ? OR t.creator_id = ?
+    SELECT t.*, 
+           u1.username as creator_name,
+           u2.username as assignee_name
+    FROM tasks t
+    LEFT JOIN users u1 ON t.created_by = u1.id 
+    LEFT JOIN users u2 ON t.assigned_to = u2.id
+    WHERE t.assigned_to = ? 
+    AND (t.is_done != 1 OR t.is_done IS NULL)
     ORDER BY t.created_at DESC
 ");
-$stmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
+$stmt->execute([$userId]);
 $tasks = $stmt->fetchAll();
 
+// Set filtered tasks same as tasks initially
 $filteredTasks = $tasks;
 $openTaskCount = count($tasks);
 
