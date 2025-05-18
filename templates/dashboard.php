@@ -95,9 +95,8 @@
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if(!empty($docs)): ?>
             <?php foreach($docs as $idx=>$d): ?>
-              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
-                <span class="truncate pr-2"><?= htmlspecialchars($d['title']) ?></span>
-                <span class="text-xs text-gray-400"><?= htmlspecialchars($d['category']) ?></span>
+              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?>">
+                <span class="truncate block"><?= htmlspecialchars($d['title']) ?></span>
               </li>
             <?php endforeach; ?>
           <?php else: ?>
