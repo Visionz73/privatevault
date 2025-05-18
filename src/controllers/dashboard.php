@@ -1,6 +1,5 @@
 <?php
-// 1) Session starten / Login prüfen
-session_start();
+// 1) Session prüfen / Login prüfen - ohne session_start() da diese bereits in config.php erfolgt
 require_once __DIR__.'/../lib/auth.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
@@ -8,18 +7,17 @@ $userId = $_SESSION['user_id'];
 // 2) DB-Verbindung
 require_once __DIR__.'/../lib/db.php';
 
-// 3) Tasks zählen
+// 3) Tasks zählen - ALLE zugewiesenen Tasks
 $stmtCount = $pdo->prepare("
   SELECT COUNT(*) 
     FROM tasks t
    WHERE t.is_done != 1
      AND t.assigned_to = ?
-     AND t.created_by != ?
 ");
-$stmtCount->execute([$userId, $userId]);
+$stmtCount->execute([$userId]);
 $openTaskCount = (int)$stmtCount->fetchColumn();
 
-// 4) Tasks holen
+// 4) Tasks holen - ALLE zugewiesenen Tasks
 $stmtTasks = $pdo->prepare("
   SELECT t.*,
          u_creator.username AS creator_name,
@@ -29,10 +27,9 @@ $stmtTasks = $pdo->prepare("
     LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
    WHERE t.is_done != 1
      AND t.assigned_to = ?
-     AND t.created_by != ?
    ORDER BY t.created_at DESC
 ");
-$stmtTasks->execute([$userId, $userId]);
+$stmtTasks->execute([$userId]);
 $tasks = $stmtTasks->fetchAll(PDO::FETCH_ASSOC);
 
 // 5) Dokumente laden (need this for the documents widget)
