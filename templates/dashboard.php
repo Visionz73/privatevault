@@ -59,6 +59,12 @@
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> Aufgaben</p>
         
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
+          <?php 
+            // Ensure $filteredTasks is defined as an array to avoid warnings
+            if (!isset($filteredTasks) || !is_array($filteredTasks)) {
+              $filteredTasks = [];
+            }
+          ?>
           <?php foreach($filteredTasks as $idx=>$t): ?>
             <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col">
               <div class="flex justify-between items-center cursor-pointer task-item"
@@ -323,24 +329,17 @@ document.getElementById('subtaskForm').addEventListener('submit', function(e) {
 document.getElementById('subtasksList').addEventListener('click', function(e) {
   if(e.target.classList.contains('remove-subtask-btn')){
     const subtaskId = e.target.getAttribute('data-subtask-id');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</script>});  }    .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));    })      }        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));      } else {        e.target.closest('div').remove();      if(data.success){    .then(data => {    .then(response => response.json())    })      body: new URLSearchParams({ subtask_id: subtaskId })      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },      method: 'POST',    fetch('/remove_subtask.php', {        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+    fetch('/remove_subtask.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ subtask_id: subtaskId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success){
+        e.target.closest('div').remove();
+      } else {
+        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
       }
     })
     .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
