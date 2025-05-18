@@ -60,24 +60,37 @@
       <?php else: ?>
         <ul class="space-y-4">
           <?php foreach($tasks as $t): ?>
-            <li class="bg-card-bg rounded-xl shadow-card-lg p-5 flex justify-between items-start">
-              <div class="space-y-1">
-                <h2 class="text-base font-medium text-text"><?= htmlspecialchars($t['title']) ?></h2>
-                <?php if(!empty($t['description'])): ?>
-                  <p class="text-sm text-text-secondary"><?= nl2br(htmlspecialchars($t['description'])) ?></p>
-                <?php endif; ?>
-                <div class="text-xs text-text-secondary mt-2">
-                  Von: <strong><?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?></strong><br>
-                  Für: <strong><?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?></strong>
-                  <?php if(!empty($t['due_date'])): ?>
-                    <br>Fällig am <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+            <li class="bg-card-bg rounded-xl shadow-card-lg p-5 flex justify-between items-center hover:ring-2 hover:ring-primary/30 transition cursor-pointer"
+                onclick="openDetailModal(<?= $t['id'] ?? 0 ?>)">
+              <div class="flex items-start space-x-4">
+                <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-semibold text-primary uppercase">
+                  <?= htmlspecialchars(substr($t['creator'] ?? '', 0, 2)) ?>
+                </div>
+                <div>
+                  <h2 class="text-base font-medium text-text mb-1"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
+                  <?php if(!empty($t['description'] ?? '')): ?>
+                    <p class="text-sm text-text-secondary"><?= nl2br(htmlspecialchars($t['description'])) ?></p>
                   <?php endif; ?>
+                  <p class="text-xs text-text-secondary mt-1">
+                    von <strong><?= htmlspecialchars($t['creator'] ?? 'Unbekannt') ?></strong>
+                    <?php if(!empty($t['due_date'] ?? '')): ?>
+                      • fällig am <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+                    <?php endif; ?>
+                  </p>
                 </div>
               </div>
-              <button onclick="openDetailModal(<?= $t['id'] ?>)" 
-                      class="px-3 py-1 bg-primary text-white rounded-lg text-sm">
-                Details
-              </button>
+              <div class="flex items-center space-x-4">
+                <?php if(!empty($t['due_date'] ?? '') && strtotime($t['due_date']) < time()): ?>
+                  <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-medium">Überfällig</span>
+                <?php endif; ?>
+                <form method="post"
+                      action="/inbox.php?done=<?= $t['id'] ?? '' ?>&assigned_to=<?= urlencode($filterAssignedTo) ?>">
+                  <button type="submit"
+                          class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition text-sm">
+                    Erledigt
+                  </button>
+                </form>
+              </div>
             </li>
           <?php endforeach; ?>
         </ul>
