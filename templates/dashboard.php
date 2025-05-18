@@ -58,21 +58,16 @@
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if (!empty($tasks)): ?>
             <?php foreach($tasks as $idx => $t): ?>
-              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center cursor-pointer task-item"
-                  data-id="<?= $t['id'] ?>"
-                  data-title="<?= htmlspecialchars($t['title']) ?>"
-                  data-creator="<?= htmlspecialchars($t['creator_name']) ?>"
-                  data-assignee="<?= htmlspecialchars($t['assignee_name']) ?>">
-                <span class="truncate pr-2"><?= htmlspecialchars($t['title']) ?></span>
-                <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                  <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
-                    <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                  </span>
-                <?php endif; ?>
+              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
+                <div class="flex items-center space-x-4 w-full">
+                  <span class="truncate"><?= htmlspecialchars($t['title']) ?></span>
+                  <button onclick="openEditModal(<?= $t['id'] ?>, '<?= htmlspecialchars($t['title']) ?>')" 
+                          class="ml-auto text-sm text-blue-500 hover:text-blue-700">
+                    Bearbeiten
+                  </button>
+                </div>
               </li>
             <?php endforeach; ?>
-          <?php else: ?>
-            <li class="px-2 py-2 text-gray-500">Keine offenen Aufgaben.</li>
           <?php endif; ?>
         </ul>
       </article>
@@ -92,6 +87,50 @@
               <span class="font-medium">Zugewiesen an:</span> <span id="modalAssignee"></span>
             </p>
           </div>
+        </div>
+      </div>
+
+      <!-- Edit Task Modal -->
+      <div id="editTaskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-lg w-full">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold">Aufgabe bearbeiten</h3>
+            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+          </div>
+          <form id="editTaskForm" class="space-y-4">
+            <input type="hidden" id="editTaskId" name="task_id">
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Ersteller</label>
+              <select name="creator_id" id="editCreatorId" class="w-full px-3 py-2 border rounded-lg">
+                <?php
+                $users = $pdo->query("SELECT id, username FROM users ORDER BY username")->fetchAll();
+                foreach($users as $user): ?>
+                  <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Zugewiesen an</label>
+              <select name="assignee_id" id="editAssigneeId" class="w-full px-3 py-2 border rounded-lg">
+                <?php foreach($users as $user): ?>
+                  <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button type="button" onclick="closeEditModal()" 
+                      class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                Abbrechen
+              </button>
+              <button type="submit" 
+                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Speichern
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -116,6 +155,35 @@
         // Close on background click
         document.getElementById('taskModal').addEventListener('click', (e) => {
           if (e.target === e.currentTarget) closeTaskModal();
+        });
+
+        function openEditModal(taskId, title) {
+          document.getElementById('editTaskId').value = taskId;
+          document.getElementById('editTaskModal').classList.remove('hidden');
+          document.getElementById('editTaskModal').classList.add('flex');
+        }
+
+        function closeEditModal() {
+          document.getElementById('editTaskModal').classList.add('hidden');
+          document.getElementById('editTaskModal').classList.remove('flex');
+        }
+
+        document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          
+          fetch('/src/controllers/update_task.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              location.reload();
+            } else {
+              alert('Fehler beim Aktualisieren der Aufgabe');
+            }
+          });
         });
       </script>
 
