@@ -55,21 +55,19 @@ $stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by
 $stmt->execute([$userId]);
 $events = $stmt->fetchAll();
 
-// Load tasks
+// Load tasks for current user
 $stmt = $pdo->prepare("
     SELECT t.*, u.username as creator_name, u2.username as assignee_name
     FROM tasks t 
     LEFT JOIN users u ON t.creator_id = u.id
     LEFT JOIN users u2 ON t.assignee_id = u2.id
+    WHERE t.assignee_id = ? OR t.creator_id = ?
     ORDER BY t.created_at DESC
 ");
-$stmt->execute();
+$stmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
 $tasks = $stmt->fetchAll();
 
-// Set filtered tasks same as tasks initially
 $filteredTasks = $tasks;
-
-// Count open tasks
 $openTaskCount = count($tasks);
 
 /* ------------------------------------------------------------------*/

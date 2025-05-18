@@ -58,7 +58,11 @@
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if (!empty($tasks)): ?>
             <?php foreach($tasks as $idx => $t): ?>
-              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
+              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center cursor-pointer task-item"
+                  data-id="<?= $t['id'] ?>"
+                  data-title="<?= htmlspecialchars($t['title']) ?>"
+                  data-creator="<?= htmlspecialchars($t['creator_name']) ?>"
+                  data-assignee="<?= htmlspecialchars($t['assignee_name']) ?>">
                 <span class="truncate pr-2"><?= htmlspecialchars($t['title']) ?></span>
                 <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
                   <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
@@ -72,24 +76,48 @@
           <?php endif; ?>
         </ul>
       </article>
-      <!-- End Tasks Widget -->
 
-      <!-- Subtask Modal -->
-      <div id="subtaskModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl p-6 w-80 relative">
-          <button id="closeSubtaskModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-          <h2 class="text-xl font-bold mb-4" id="modalTaskTitle"></h2>
-          <form id="subtaskForm" class="space-y-4">
-            <input type="hidden" name="task_id" id="modalTaskId">
-            <div>
-              <label class="block text-sm text-gray-700">Unteraufgabe Titel</label>
-              <input type="text" name="subtask_title" class="w-full px-3 py-2 border rounded" required>
-            </div>
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Hinzufügen</button>
-          </form>
-          <div id="subtasksList" class="mt-4 space-y-2"></div>
+      <!-- Task Detail Modal -->
+      <div id="taskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-lg w-full">
+          <div class="flex justify-between items-start mb-4">
+            <h3 id="modalTitle" class="text-lg font-semibold"></h3>
+            <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+          </div>
+          <div id="modalContent" class="space-y-4">
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">Ersteller:</span> <span id="modalCreator"></span>
+            </p>
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">Zugewiesen an:</span> <span id="modalAssignee"></span>
+            </p>
+          </div>
         </div>
       </div>
+
+      <script>
+        document.querySelectorAll('.task-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const modal = document.getElementById('taskModal');
+            document.getElementById('modalTitle').textContent = item.dataset.title;
+            document.getElementById('modalCreator').textContent = item.dataset.creator;
+            document.getElementById('modalAssignee').textContent = item.dataset.assignee;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+          });
+        });
+
+        function closeTaskModal() {
+          const modal = document.getElementById('taskModal');
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+
+        // Close on background click
+        document.getElementById('taskModal').addEventListener('click', (e) => {
+          if (e.target === e.currentTarget) closeTaskModal();
+        });
+      </script>
 
       <!-- Dokumente Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
