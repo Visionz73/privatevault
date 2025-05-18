@@ -16,42 +16,26 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 requireLogin();
 
-// 3) User & Filter
-$userId           = $_SESSION['user_id'];
-// Entferne den "all"-Filter: Immer nur eigene Aufgaben anzeigen
-$filterAssignedTo = $userId;
+$userId = $_SESSION['user_id'];
 
-// 4) „Done“-Flag setzen
-if (isset($_GET['done']) && is_numeric($_GET['done'])) {
-    // Aktualisiere die Aufgabe als erledigt, indem is_done auf 1 gesetzt wird
-    $upd = $pdo->prepare("UPDATE tasks SET is_done = 1 WHERE id = ? AND assigned_to = ?");
-    $upd->execute([(int)$_GET['done'], $userId]);
-    header('Location: /inbox.php?assigned_to=' . urlencode($filterAssignedTo));
-    exit;
-}
-
-// 5) Nutzer für Filter-Dropdown
-$users    = $pdo->query("SELECT id, username FROM users ORDER BY username")
-                ->fetchAll(PDO::FETCH_ASSOC);
-$usersMap = array_column($users, 'username', 'id');
-
-// 6) WHERE-Klausel bauen
-// Zeige nur Aufgaben an, die noch nicht als erledigt markiert sind
-$where = ["t.is_done != 1", "t.assigned_to = ?"];
-$params = [(int)$userId];
-
-// 7) Tasks holen
-$sql = "SELECT t.*, 
-               u_creator.username AS creator_name,
-               u_assignee.username AS assignee_name
-        FROM tasks t
-        LEFT JOIN users u_creator ON u_creator.id = t.created_by
-        LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
-        WHERE t.is_done != 1 AND t.assigned_to = ?
-        ORDER BY t.created_at DESC";
-$stmt  = $pdo->prepare($sql);
+// Als erledigt markierte Tasks ausblenden und nur eigene zugewiesene laden
+$stmt = $pdo->prepare("
+  SELECT t.*, 
+         uc.username AS creator_name, 
+         ua.username AS assignee_name
+    FROM tasks t
+    LEFT JOIN users uc ON uc.id = t.created_by
+    LEFT JOIN users ua ON ua.id = t.assigned_to
+   WHERE t.assigned_to = ?
+     AND t.is_done != 1
+   ORDER BY t.created_at DESC
+");
 $stmt->execute([$userId]);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Für Dropdown (optional, wenn noch gebraucht)
+$users    = $pdo->query("SELECT id, username FROM users ORDER BY username")->fetchAll();
+$usersMap = array_column($users, 'username', 'id');
 
 // 8) Template rendern
 require_once __DIR__ . '/../../templates/inbox.php';

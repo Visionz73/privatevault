@@ -1,62 +1,38 @@
-<?php
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/auth.php';
-
+// 1) Session starten / Login prüfen
+session_start();
+require_once __DIR__.'/../lib/auth.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
 
-/* ------------------------------------------------------------------
-   Alle Aufgaben, die MIR zugewiesen und NICHT erledigt sind
-   (d.h. nur Aufgaben, die noch erledigt werden müssen)
--------------------------------------------------------------------*/
-$sql = "SELECT t.*, 
-        u_creator.username AS creator_name,
-        u_assignee.username AS assignee_name
-        FROM tasks t
-        LEFT JOIN users u_creator ON u_creator.id = t.created_by
-        LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
-        WHERE t.assigned_to = ?
-        ORDER BY t.created_at DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$userId]);
-$tasks = $stmt->fetchAll();
+// 2) DB-Verbindung
+require_once __DIR__.'/../lib/db.php';
 
-$stmt = $pdo->prepare(
-    'SELECT COUNT(*)
-       FROM tasks
-      WHERE assigned_to = ?
-        AND is_done != 1'
-);
-$stmt->execute([$userId]);
-$openTaskCount = (int)$stmt->fetchColumn();
+// 3) Tasks zählen
+$stmtCount = $pdo->prepare("
+  SELECT COUNT(*) 
+    FROM tasks t
+   WHERE t.is_done != 1
+     AND t.assigned_to = ?
+     AND t.created_by   != ?
+");
+$stmtCount->execute([$userId, $userId]);
+$openTaskCount = (int)$stmtCount->fetchColumn();
 
-/* ------------------------------------------------------------------
-   Dokumente laden
--------------------------------------------------------------------*/
-$stmt = $pdo->prepare(
-    'SELECT title, upload_date 
-     FROM documents 
-     WHERE user_id = ? 
-     AND is_deleted = 0
-     ORDER BY upload_date DESC
-     LIMIT 5'
-);
-$stmt->execute([$userId]);
-$docs = $stmt->fetchAll();
+// 4) Tasks holen
+$stmtTasks = $pdo->prepare("
+  SELECT t.*,
+         u_creator.username  AS creator_name,
+         u_assignee.username AS assignee_name
+    FROM tasks t
+    LEFT JOIN users u_creator  ON u_creator.id  = t.created_by
+    LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
+   WHERE t.is_done    != 1
+     AND t.assigned_to = ?
+     AND t.created_by   != ?
+   ORDER BY t.created_at DESC
+");
+$stmtTasks->execute([$userId, $userId]);
+$tasks = $stmtTasks->fetchAll(PDO::FETCH_ASSOC);
 
-$stmt = $pdo->prepare(
-    'SELECT COUNT(*) FROM documents WHERE user_id = ? AND is_deleted = 0'
-);
-$stmt->execute([$userId]);
-$docCount = (int)$stmt->fetchColumn();
-
-/* ------------------------------------------------------------------
-   Termine (alle Termine, die noch erstellt wurden)
--------------------------------------------------------------------*/
-$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by = ? ORDER BY event_date ASC");
-$stmt->execute([$userId]);
-$events = $stmt->fetchAll();
-
-/* ------------------------------------------------------------------*/
-require_once __DIR__ . '/../../templates/dashboard.php';
-
+// 5) Template rendern
+require_once __DIR__.'/../../templates/dashboard.php';
