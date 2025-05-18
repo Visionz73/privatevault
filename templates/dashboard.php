@@ -62,10 +62,11 @@
           echo "<!-- Debug dashboard.php (filtered): count(\$filteredTasks) = " . count($filteredTasks) . " -->";
         ?>
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
-
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php foreach($filteredTasks as $idx=>$t): ?>
-            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
+            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center cursor-pointer task-item"
+                data-title="<?= htmlspecialchars($t['title']) ?>"
+                data-due="<?= isset($t['due_date']) && $t['due_date'] ? date('d.m.Y', strtotime($t['due_date'])) : '' ?>">
               <span class="truncate pr-2">
                 <?= htmlspecialchars($t['title']) ?>
               </span>
@@ -81,6 +82,16 @@
           <?php endif; ?>
         </ul>
       </article>
+      <!-- End Inbox Widget -->
+
+      <!-- Add Task Modal (for mobile) -->
+      <div id="taskModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full relative">
+          <button id="closeTaskModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+          <h2 id="modalTaskTitle" class="text-xl font-bold mb-4"></h2>
+          <p id="modalTaskDue" class="text-sm text-gray-600"></p>
+        </div>
+      </div>
 
       <!-- Dokumente Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
@@ -196,6 +207,29 @@ document.getElementById('inlineEventForm').addEventListener('submit', function(e
       }
     })
     .catch(() => alert('Fehler beim Erstellen des Termins.'));
+  }
+});
+
+// Attach click events to task list items for mobile tap
+document.querySelectorAll('.task-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const title = item.getAttribute('data-title');
+    const due = item.getAttribute('data-due');
+    document.getElementById('modalTaskTitle').textContent = title;
+    document.getElementById('modalTaskDue').textContent = due ? 'Fällig: ' + due : '';
+    document.getElementById('taskModal').classList.remove('hidden');
+  });
+});
+
+// Close modal when clicking the close button
+document.getElementById('closeTaskModal').addEventListener('click', () => {
+  document.getElementById('taskModal').classList.add('hidden');
+});
+
+// Optional: close modal when clicking on the background
+document.getElementById('taskModal').addEventListener('click', (e) => {
+  if(e.target === document.getElementById('taskModal')){
+    document.getElementById('taskModal').classList.add('hidden');
   }
 });
 </script>
