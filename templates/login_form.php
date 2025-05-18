@@ -18,7 +18,7 @@
     <!-- Logo -->
     <div class="flex justify-center mb-8">
       <a href="dashboard.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
+        <img src="/assets/logo.png" alt="Logo" class="h-30 w-auto" />
         
       </a>
     </div>
