@@ -7,18 +7,22 @@ $activeTab = $_GET['tab'] ?? 'personal_info';
 <!DOCTYPE html>
 <html lang="de" class="h-full">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Profil | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>body{font-family:Inter,sans-serif}</style>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @media (max-width: 768px) {
+      main { margin-top: 3.5rem; }
+      .tab-content { padding: 1rem; }
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-[#F9FAFB] flex">
-<?php require_once __DIR__.'/navbar.php'; ?>
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<?php require_once 'navbar.php'; ?>
 
-<?php $initials=strtoupper(substr($user['username'],0,2)); ?>
-<div class="ml-64 flex-1 p-8 flex flex-col">
+<main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1">
   <!-- Header -->
   <header class="bg-white shadow rounded-2xl mb-10">
     <div class="max-w-5xl mx-auto flex items-center gap-6 px-8 py-8">
@@ -110,7 +114,7 @@ $activeTab = $_GET['tab'] ?? 'personal_info';
       ?>
     </section>
   </div>
-</div>
+</main>
 
 <script>
 document.getElementById('sidebarFilter').addEventListener('input',e=>{
