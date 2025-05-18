@@ -8,15 +8,15 @@ $userId = $_SESSION['user_id'];
 $view   = $_GET['view'] ?? 'grid';
 
 // Rechnungen laden
-$stmt = $pdo->prepare(
-  'SELECT d.id, d.title, d.filename, d.end_date
-     FROM documents d
-     JOIN document_categories c ON c.id = d.category_id
+$stmt = $pdo->prepare("
+    SELECT d.id, d.title, d.filename, d.end_date
+    FROM documents d
+    JOIN document_categories c ON c.id = d.category_id
     WHERE d.user_id = ? 
-      AND c.name = "Rechnungen" 
-      AND d.is_deleted = 0
- ORDER BY d.upload_date DESC'
-);
+    AND c.name = 'Rechnungen'
+    AND d.is_deleted = 0
+    ORDER BY d.upload_date DESC
+");
 $stmt->execute([$userId]);
 $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -1,24 +1,27 @@
 <?php
 // public/upload.php
 require __DIR__ . '/../config.php';
+require __DIR__ . '/../src/controllers/upload.php';
 
 session_start();
 require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
+
+// Load categories from database
+$stmt = $pdo->query('SELECT id, name FROM document_categories ORDER BY name');
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Use your existing upload processing: name, category, and file
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve existing form fields
-    $name     = trim($_POST['name'] ?? '');
-    $category = trim($_POST['category'] ?? '');
-    // ... retrieve any additional fields as needed ...
+    $title     = trim($_POST['title'] ?? '');
+    $categoryId = (int)($_POST['category_id'] ?? 0);
 
     // Basic validation (adjust as needed)
-    if (!$name || !$category) {
-        $error = 'Name und Kategorie sind erforderlich.';
+    if (!$title || !$categoryId) {
+        $error = 'Titel und Kategorie sind erforderlich.';
     } elseif (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
         $error = 'Bitte wählen Sie eine Datei aus.';
     } else {
@@ -33,8 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename   = time() . '_' . basename($_FILES['file']['name']);
         $targetFile = $uploadDir . $filename;
         if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
-            // Optionally, save upload info to your database here (name, category, file path, etc.)
-            $success = 'Datei erfolgreich hochgeladen.';
+            // Insert into database with category_id
+            $stmt = $pdo->prepare("
+                INSERT INTO documents (user_id, title, filename, category_id, upload_date) 
+                VALUES (?, ?, ?, ?, NOW())
+            ");
+            if ($stmt->execute([$_SESSION['user_id'], $title, $filename, $categoryId])) {
+                $success = 'Dokument erfolgreich hochgeladen.';
+            }
         } else {
             $error = 'Fehler beim Speichern der Datei.';
         }
@@ -61,15 +70,15 @@ $categories = ['Verträge', 'Versicherungen', 'Rechnungen', 'Sonstige'];
     <?php endif; ?>
     <form action="upload.php" method="post" enctype="multipart/form-data">
       <div class="mb-4">
-        <label for="name" class="block text-gray-700 mb-2">Name:</label>
-        <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded" required>
+        <label for="title" class="block text-gray-700 mb-2">Titel:</label>
+        <input type="text" id="title" name="title" class="w-full px-3 py-2 border rounded" required>
       </div>
       <div class="mb-4">
-        <label for="category" class="block text-gray-700 mb-2">Kategorie:</label>
-        <select id="category" name="category" class="w-full px-3 py-2 border rounded" required>
+        <label for="category_id" class="block text-gray-700 mb-2">Kategorie:</label>
+        <select id="category_id" name="category_id" class="w-full px-3 py-2 border rounded" required>
           <option value="">Bitte wählen...</option>
           <?php foreach($categories as $cat): ?>
-            <option value="<?= htmlspecialchars($cat) ?>"><?= htmlspecialchars($cat) ?></option>
+            <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
