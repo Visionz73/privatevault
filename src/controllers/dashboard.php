@@ -61,7 +61,6 @@ $stmt = $pdo->prepare("
     FROM tasks t 
     LEFT JOIN users u ON t.creator_id = u.id
     LEFT JOIN users u2 ON t.assignee_id = u2.id
-    WHERE t.is_deleted = 0
     ORDER BY t.created_at DESC
 ");
 $stmt->execute();
