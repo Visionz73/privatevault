@@ -18,12 +18,12 @@
     <!-- Logo -->
     <div class="flex justify-center mb-8">
       <a href="dashboard.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-30 w-auto" />
+        <img src="/assets/logo.png" alt="Logo" class="h-26 w-auto" />
         
       </a>
     </div>
 
-    <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Anmelden</h1>
+    
 
     <?php if (!empty($error)): ?>
       <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm">
