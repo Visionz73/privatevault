@@ -45,51 +45,68 @@
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
-      <!-- Inbox Widget --------------------------------------------------->
+      <!-- Inbox Widget: Tasks -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <a href="inbox.php" class="group inline-flex items-center mb-4">
           <h2 class="text-lg font-semibold mr-1">Inbox</h2>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
         </a>
-        <?php 
-          // Debug-Ausgabe: Gesamter Aufgaben-Array aus dem Controller
-          echo "<!-- Debug dashboard.php: count(\$tasks) = " . count($tasks) . " -->";
-          
-          // Falls du in Dashboard zusätzlich filtern möchtest, prüfe auch hier:
-          $filteredTasks = $tasks; // (oder anderer Filter)
-          echo "<!-- Debug dashboard.php (filtered): count(\$filteredTasks) = " . count($filteredTasks) . " -->";
-        ?>
-        <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
+        <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> Aufgaben</p>
+        
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php foreach($filteredTasks as $idx=>$t): ?>
-            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center cursor-pointer task-item"
-                data-title="<?= htmlspecialchars($t['title']) ?>"
-                data-due="<?= isset($t['due_date']) && $t['due_date'] ? date('d.m.Y', strtotime($t['due_date'])) : '' ?>">
-              <span class="truncate pr-2">
-                <?= htmlspecialchars($t['title']) ?>
-              </span>
-              <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
-                  <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                </span>
-              <?php endif; ?>
+            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col">
+              <div class="flex justify-between items-center cursor-pointer task-item"
+                   data-title="<?= htmlspecialchars($t['title']) ?>"
+                   data-creator="<?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>"
+                   data-assignee="<?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>"
+                   data-task-id="<?= $t['id'] ?>">
+                <span class="truncate"><?= htmlspecialchars($t['title']) ?></span>
+                <?php if(isset($t['due_date']) && $t['due_date']): 
+                        $over = strtotime($t['due_date']) < time(); ?>
+                  <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> 
+                              px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+                    <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
+                  </span>
+                <?php endif; ?>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">
+                Ersteller: <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?> |
+                Empfänger: <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+              </div>
+              <!-- Button to add subtasks -->
+              <button class="mt-2 text-blue-500 text-sm underline add-subtask-btn" 
+                      data-task-id="<?= $t['id'] ?>">
+                Unteraufgaben hinzufügen
+              </button>
             </li>
           <?php endforeach; ?>
           <?php if(empty($filteredTasks)): ?>
-            <li class="px-2 py-2 text-gray-500">Keine offenen Aufgaben.</li>
+            <li class="px-2 py-2 text-gray-500">Keine Aufgaben vorhanden.</li>
           <?php endif; ?>
         </ul>
       </article>
-      <!-- End Inbox Widget -->
+      <!-- End Tasks Widget -->
 
-      <!-- Add Task Modal (for mobile) -->
-      <div id="taskModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl p-6 max-w-sm w-full relative">
-          <button id="closeTaskModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-          <h2 id="modalTaskTitle" class="text-xl font-bold mb-4"></h2>
-          <p id="modalTaskDue" class="text-sm text-gray-600"></p>
+      <!-- Subtask Modal -->
+      <div id="subtaskModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-6 w-80 relative">
+          <button id="closeSubtaskModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+          <h2 class="text-xl font-bold mb-4" id="modalTaskTitle"></h2>
+          <form id="subtaskForm" class="space-y-4">
+            <input type="hidden" name="task_id" id="modalTaskId">
+            <div>
+              <label class="block text-sm text-gray-700">Unteraufgabe Titel</label>
+              <input type="text" name="subtask_title" class="w-full px-3 py-2 border rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Hinzufügen</button>
+          </form>
+          <div id="subtasksList" class="mt-4 space-y-2"></div>
         </div>
       </div>
 
@@ -230,6 +247,103 @@ document.getElementById('closeTaskModal').addEventListener('click', () => {
 document.getElementById('taskModal').addEventListener('click', (e) => {
   if(e.target === document.getElementById('taskModal')){
     document.getElementById('taskModal').classList.add('hidden');
+  }
+});
+
+// Subtask functionality
+document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const taskId = this.getAttribute('data-task-id');
+    document.getElementById('modalTaskId').value = taskId;
+    document.getElementById('subtaskModal').classList.remove('hidden');
+
+    // Optional: Load existing subtasks via AJAX
+    fetch('/get_subtasks.php?task_id=' + taskId)
+      .then(response => response.json())
+      .then(data => {
+        const subtasksList = document.getElementById('subtasksList');
+        subtasksList.innerHTML = ''; // Clear existing list
+        data.subtasks.forEach(subtask => {
+          const div = document.createElement('div');
+          div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+          div.innerHTML = `<span class="text-sm">${subtask.title}</span>
+                           <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${subtask.id}">&times;</button>`;
+          subtasksList.appendChild(div);
+        });
+      });
+  });
+});
+
+document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const taskId = btn.getAttribute('data-task-id');
+    document.getElementById('modalTaskId').value = taskId;
+    const taskTitle = btn.closest('li').querySelector('.task-item span').textContent;
+    document.getElementById('modalTaskTitle').textContent = 'Unteraufgaben für: ' + taskTitle;
+    document.getElementById('subtaskModal').classList.remove('hidden');
+  });
+});
+
+// Close subtask modal
+document.getElementById('closeSubtaskModal').addEventListener('click', () => {
+  document.getElementById('subtaskModal').classList.add('hidden');
+});
+
+// Handle subtask form submission
+document.getElementById('subtaskForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const taskId = this.task_id.value;
+  const subtaskTitle = this.subtask_title.value.trim();
+  if(subtaskTitle){
+    fetch('/add_subtask.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ task_id: taskId, subtask_title: subtaskTitle })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success){
+        // Add new subtask to the list
+        const newSubtask = data.subtask;
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+        div.innerHTML = `<span class="text-sm">${newSubtask.title}</span>
+                         <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${newSubtask.id}">&times;</button>`;
+        document.getElementById('subtasksList').appendChild(div);
+        this.reset();
+      } else {
+        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+      }
+    })
+    .catch(() => alert('Fehler beim Hinzufügen der Unteraufgabe.'));
+  }
+});
+
+// Remove subtask
+document.getElementById('subtasksList').addEventListener('click', function(e) {
+  if(e.target.classList.contains('remove-subtask-btn')){
+    const subtaskId = e.target.getAttribute('data-subtask-id');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>});  }    .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));    })      }        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));      } else {        e.target.closest('div').remove();      if(data.success){    .then(data => {    .then(response => response.json())    })      body: new URLSearchParams({ subtask_id: subtaskId })      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },      method: 'POST',    fetch('/remove_subtask.php', {        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+      }
+    })
+    .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
   }
 });
 </script>
