@@ -96,7 +96,7 @@
           <?php if(!empty($docs)): ?>
             <?php foreach($docs as $idx=>$d): ?>
               <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?>">
-                <span class="truncate block"><?= htmlspecialchars($d['title']) ?></span>
+                <span class="truncate block"><?= htmlspecialchars($d['title'] ?? '') ?></span>
               </li>
             <?php endforeach; ?>
           <?php else: ?>
