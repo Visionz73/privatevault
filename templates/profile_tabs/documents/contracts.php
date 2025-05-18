@@ -47,11 +47,18 @@ function isImg($f) {
     <ul class="divide-y divide-gray-200 text-sm">
       <?php foreach ($docs as $d): ?>
         <li class="py-3 flex justify-between items-center">
-          <a href="<?= isImg($d['filename']) ? 'download.php?id=' . $d['id'] : 'view_pdf.php?id=' . $d['id'] ?>"
-             class="truncate text-[#4A90E2] hover:underline" 
-             <?= isImg($d['filename']) ? 'target="_blank"' : '' ?>>
-            <?= htmlspecialchars($d['title']) ?>
-          </a>
+          <?php if (strtolower(pathinfo($d['filename'], PATHINFO_EXTENSION)) === 'pdf'): ?>
+              <a href="view_pdf.php?id=<?= $d['id'] ?>" 
+                 class="truncate text-[#4A90E2] hover:underline">
+                <?= htmlspecialchars($d['title']) ?>
+              </a>
+          <?php else: ?>
+              <a href="download.php?id=<?= $d['id'] ?>" 
+                 class="truncate text-[#4A90E2] hover:underline" 
+                 target="_blank">
+                <?= htmlspecialchars($d['title']) ?>
+              </a>
+          <?php endif; ?>
           <?php if ($d['end_date']): ?>
             <span class="text-xs text-gray-400">
               <?= date('d.m.Y', strtotime($d['end_date'])) ?>

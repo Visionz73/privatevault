@@ -19,7 +19,15 @@ if (!$doc) {
     exit;
 }
 
-$filepath = __DIR__ . '/../uploads/' . $doc['filename'];
+// Set headers for inline PDF display
+header('Content-Type: application/pdf');
+header('Content-Disposition: inline; filename="' . $doc['filename'] . '"');
+header('Cache-Control: private, max-age=0, must-revalidate');
+header('Pragma: public');
+
+// Output the PDF file
+readfile(__DIR__ . '/../uploads/' . $doc['filename']);
+exit;
 ?>
 <!DOCTYPE html>
 <html lang="de" class="h-full">
