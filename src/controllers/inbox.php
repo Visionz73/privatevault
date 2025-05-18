@@ -41,11 +41,14 @@ $where = ["t.is_done != 1", "t.assigned_to = ?"];
 $params = [(int)$userId];
 
 // 7) Tasks holen
-$sql = "SELECT t.*, u.username AS creator
-FROM tasks t
-JOIN users u ON u.id = t.created_by
-WHERE " . implode(' AND ', $where) . "
-ORDER BY t.id DESC";
+$sql = "SELECT t.*, 
+               u_creator.username AS creator_name,
+               u_assignee.username AS assignee_name
+        FROM tasks t
+        LEFT JOIN users u_creator ON u_creator.id = t.created_by
+        LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
+        WHERE " . implode(' AND ', $where) . "
+        ORDER BY t.created_at DESC";
 $stmt  = $pdo->prepare($sql);
 $stmt->execute($params);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);

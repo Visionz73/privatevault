@@ -10,11 +10,13 @@ $userId = $_SESSION['user_id'];
    (d.h. nur Aufgaben, die noch erledigt werden müssen)
 -------------------------------------------------------------------*/
 $stmt = $pdo->prepare(
-    'SELECT id, title, created_at
-       FROM tasks
-      WHERE assigned_to = ?
-        AND is_done != 1
-   ORDER BY id DESC'
+    'SELECT t.*, u.username as creator_name, u2.username as assignee_name
+     FROM tasks t
+     LEFT JOIN users u ON t.created_by = u.id
+     LEFT JOIN users u2 ON t.assigned_to = u2.id
+     WHERE t.assigned_to = ?
+     AND t.is_done != 1
+     ORDER BY t.created_at DESC'
 );
 $stmt->execute([$userId]);
 $tasks = $stmt->fetchAll();
@@ -54,42 +56,6 @@ $docCount = (int)$stmt->fetchColumn();
 $stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by = ? ORDER BY event_date ASC");
 $stmt->execute([$userId]);
 $events = $stmt->fetchAll();
-
-/* ------------------------------------------------------------------
-   Aufgaben laden die mir zugewiesen wurden
--------------------------------------------------------------------*/
-$stmt = $pdo->prepare("
-    SELECT t.*, 
-           u1.username as creator_name,
-           u2.username as assignee_name
-    FROM tasks t
-    LEFT JOIN users u1 ON t.created_by = u1.id 
-    LEFT JOIN users u2 ON t.assigned_to = u2.id
-    WHERE t.assigned_to = ? 
-    AND (t.is_done != 1 OR t.is_done IS NULL)
-    ORDER BY t.created_at DESC
-");
-$stmt->execute([$userId]);
-$tasks = $stmt->fetchAll();
-
-// Load tasks with creator and assignee information
-$stmt = $pdo->prepare("
-    SELECT 
-        t.*,
-        creator.username as creator_name,
-        assignee.username as assignee_name
-    FROM tasks t
-    LEFT JOIN users creator ON t.creator_id = creator.id
-    LEFT JOIN users assignee ON t.assignee_id = assignee.id
-    WHERE t.assignee_id = ?
-    ORDER BY t.created_at DESC
-");
-$stmt->execute([$_SESSION['user_id']]);
-$tasks = $stmt->fetchAll();
-
-// Set filtered tasks same as tasks initially
-$filteredTasks = $tasks;
-$openTaskCount = count($tasks);
 
 /* ------------------------------------------------------------------*/
 require_once __DIR__ . '/../../templates/dashboard.php';
