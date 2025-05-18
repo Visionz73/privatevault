@@ -47,10 +47,10 @@ $sql = "SELECT t.*,
         FROM tasks t
         LEFT JOIN users u_creator ON u_creator.id = t.created_by
         LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
-        WHERE " . implode(' AND ', $where) . "
+        WHERE t.is_done != 1 AND t.assigned_to = ?
         ORDER BY t.created_at DESC";
 $stmt  = $pdo->prepare($sql);
-$stmt->execute($params);
+$stmt->execute([$userId]);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 8) Template rendern
