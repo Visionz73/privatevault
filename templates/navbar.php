@@ -16,6 +16,7 @@ $user = getUser();
       backdrop-filter: blur(10px);
       border-right: 1px solid rgba(255,255,255,0.6);
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 50;
     }
     .mobile-menu { display: none; }
     .sidebar-content { display: block; }
@@ -35,21 +36,27 @@ $user = getUser();
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       z-index: 50;
     }
-    /* Use relative positioning to center the logo */
-    .mobile-menu {
-      position: relative;
-      width: 100%;
-      display: flex;
-      justify-content: center;
+    .mobile-menu { 
+      display: flex; 
       align-items: center;
+      width: 100%;
+      height: 100%;
     }
-    /* Show toggler at the left */
-    .mobile-menu button#mobileToggleBtn {
-      position: absolute;
+    .sidebar-content { 
+      display: none;
+      position: fixed;
+      top: 3.5rem;
       left: 0;
-      margin-left: 0.5rem;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 49;
+      padding: 1rem;
     }
-    .sidebar-content { display: none; }
+    .sidebar-content.active {
+      display: block;
+    }
   }
 </style>
 <nav id="sidebar">
@@ -133,10 +140,11 @@ $user = getUser();
 <script>
   // Mobile toggle: toggle sidebar content on mobile
   const mobileToggleBtn = document.getElementById('mobileToggleBtn');
-  if(mobileToggleBtn) {
+  const sidebarContent = document.querySelector('nav .sidebar-content');
+  
+  if (mobileToggleBtn) {
     mobileToggleBtn.addEventListener('click', () => {
-      const sidebarContent = document.querySelector('nav .sidebar-content');
-      sidebarContent.classList.toggle('hidden');
+      sidebarContent.classList.toggle('active');
     });
   }
   // Desktop toggle for collapse (optional)
