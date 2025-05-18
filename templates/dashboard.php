@@ -45,55 +45,30 @@
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
-      <!-- Inbox Widget: Tasks -->
+      <!-- Inbox Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <a href="inbox.php" class="group inline-flex items-center mb-4">
           <h2 class="text-lg font-semibold mr-1">Inbox</h2>
-          <svg xmlns="http://www.w3.org/2000/svg"
-               class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1"
-               fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="2" d="M9 5l7 7-7 7"/>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
         </a>
-        <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> Aufgaben</p>
-        
+        <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
+
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
-          <?php 
-            // Ensure $filteredTasks is defined as an array to avoid warnings
-            if (!isset($filteredTasks) || !is_array($filteredTasks)) {
-              $filteredTasks = [];
-            }
-          ?>
-          <?php foreach($filteredTasks as $idx=>$t): ?>
-            <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col">
-              <div class="flex justify-between items-center cursor-pointer task-item"
-                   data-title="<?= htmlspecialchars($t['title']) ?>"
-                   data-creator="<?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>"
-                   data-assignee="<?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>"
-                   data-task-id="<?= $t['id'] ?>">
-                <span class="truncate"><?= htmlspecialchars($t['title']) ?></span>
-                <?php if(isset($t['due_date']) && $t['due_date']): 
-                        $over = strtotime($t['due_date']) < time(); ?>
-                  <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> 
-                              px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+          <?php if (!empty($tasks)): ?>
+            <?php foreach($tasks as $idx => $t): ?>
+              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex justify-between items-center">
+                <span class="truncate pr-2"><?= htmlspecialchars($t['title']) ?></span>
+                <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
+                  <span class="<?= $over ? 'bg-red-100 text-red-600' : 'text-gray-400' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
                     <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
                   </span>
                 <?php endif; ?>
-              </div>
-              <div class="text-xs text-gray-500 mt-1">
-                Ersteller: <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?> |
-                Empfänger: <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
-              </div>
-              <!-- Button to add subtasks -->
-              <button class="mt-2 text-blue-500 text-sm underline add-subtask-btn" 
-                      data-task-id="<?= $t['id'] ?>">
-                Unteraufgaben hinzufügen
-              </button>
-            </li>
-          <?php endforeach; ?>
-          <?php if(empty($filteredTasks)): ?>
-            <li class="px-2 py-2 text-gray-500">Keine Aufgaben vorhanden.</li>
+              </li>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <li class="px-2 py-2 text-gray-500">Keine offenen Aufgaben.</li>
           <?php endif; ?>
         </ul>
       </article>
