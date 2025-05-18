@@ -9,15 +9,15 @@ $userId = $_SESSION['user_id'];
    Alle Aufgaben, die MIR zugewiesen und NICHT erledigt sind
    (d.h. nur Aufgaben, die noch erledigt werden müssen)
 -------------------------------------------------------------------*/
-$stmt = $pdo->prepare(
-    'SELECT t.*, u.username as creator_name, u2.username as assignee_name
-     FROM tasks t
-     LEFT JOIN users u ON t.created_by = u.id
-     LEFT JOIN users u2 ON t.assigned_to = u2.id
-     WHERE t.assigned_to = ?
-     AND t.is_done != 1
-     ORDER BY t.created_at DESC'
-);
+$sql = "SELECT t.*, 
+        u_creator.username AS creator_name,
+        u_assignee.username AS assignee_name
+        FROM tasks t
+        LEFT JOIN users u_creator ON u_creator.id = t.created_by
+        LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
+        WHERE t.assigned_to = ?
+        ORDER BY t.created_at DESC";
+$stmt = $pdo->prepare($sql);
 $stmt->execute([$userId]);
 $tasks = $stmt->fetchAll();
 
