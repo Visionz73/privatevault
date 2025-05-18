@@ -11,9 +11,10 @@ $view   = $_GET['view'] ?? 'grid';
 $stmt = $pdo->prepare(
   'SELECT d.id, d.title, d.filename, d.end_date
      FROM documents d
-     JOIN document_categories c ON c.id = d.category_id
-    WHERE d.user_id = ? AND c.name = "Verträge" AND d.is_deleted = 0
- ORDER BY d.upload_date DESC'
+    WHERE d.user_id = ? 
+      AND d.category = "Verträge" 
+      AND d.is_deleted = 0
+    ORDER BY d.upload_date DESC'
 );
 $stmt->execute([$userId]);
 $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
