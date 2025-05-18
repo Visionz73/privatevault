@@ -7,31 +7,29 @@ $userId = $_SESSION['user_id'];
 // 2) DB-Verbindung
 require_once __DIR__.'/../lib/db.php';
 
-// 3) Tasks zählen
+// 3) Tasks zählen (nur nach assigned_to, kein created_by-Filter)
 $stmtCount = $pdo->prepare("
-  SELECT COUNT(*) 
+  SELECT COUNT(*)
     FROM tasks t
-   WHERE t.is_done != 1
-     AND t.assigned_to = ?
-     AND t.created_by   != ?
+   WHERE t.assigned_to = ?
+     AND t.is_done != 1
 ");
-$stmtCount->execute([$userId, $userId]);
+$stmtCount->execute([$userId]);
 $openTaskCount = (int)$stmtCount->fetchColumn();
 
-// 4) Tasks holen
+// 4) Tasks holen (nur nach assigned_to, kein created_by-Filter)
 $stmtTasks = $pdo->prepare("
   SELECT t.*,
-         u_creator.username  AS creator_name,
-         u_assignee.username AS assignee_name
+         uc.username  AS creator_name,
+         ua.username  AS assignee_name
     FROM tasks t
-    LEFT JOIN users u_creator  ON u_creator.id  = t.created_by
-    LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
-   WHERE t.is_done    != 1
-     AND t.assigned_to = ?
-     AND t.created_by   != ?
+    LEFT JOIN users uc ON uc.id = t.created_by
+    LEFT JOIN users ua ON ua.id = t.assigned_to
+   WHERE t.assigned_to = ?
+     AND t.is_done != 1
    ORDER BY t.created_at DESC
 ");
-$stmtTasks->execute([$userId, $userId]);
+$stmtTasks->execute([$userId]);
 $tasks = $stmtTasks->fetchAll(PDO::FETCH_ASSOC);
 
 // 5) Template rendern
