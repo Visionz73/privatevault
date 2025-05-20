@@ -13,7 +13,8 @@ class Task {
      * @return array Array of tasks
      */
     public function getTasksByStatus($status) {
-        $query = "SELECT * FROM tasks WHERE status = :status ORDER BY priority DESC, due_date ASC";
+        // Modified query to remove reference to priority column
+        $query = "SELECT * FROM tasks WHERE status = :status ORDER BY due_date ASC";
         $stmt = $this->db->prepare($query);
         $stmt->execute(['status' => $status]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

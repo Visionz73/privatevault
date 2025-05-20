@@ -50,7 +50,7 @@ require_once __DIR__ . '/../src/controllers/taskboard.php';
                 <div class="task-list" data-status="todo">
                     <?php if(!empty($todoTasks)): foreach($todoTasks as $task): ?>
                     <div class="task-card" draggable="true" data-task-id="<?php echo $task['id']; ?>">
-                        <div class="task-priority <?php echo $task['priority']; ?>"></div>
+                        <div class="task-priority <?php echo isset($task['priority']) ? $task['priority'] : 'medium'; ?>"></div>
                         <h4 class="task-title"><?php echo htmlspecialchars($task['title']); ?></h4>
                         <p class="task-description"><?php echo htmlspecialchars($task['description']); ?></p>
                         <div class="task-meta">
@@ -72,7 +72,7 @@ require_once __DIR__ . '/../src/controllers/taskboard.php';
                 <div class="task-list" data-status="inprogress">
                     <?php if(!empty($inProgressTasks)): foreach($inProgressTasks as $task): ?>
                     <div class="task-card" draggable="true" data-task-id="<?php echo $task['id']; ?>">
-                        <div class="task-priority <?php echo $task['priority']; ?>"></div>
+                        <div class="task-priority <?php echo isset($task['priority']) ? $task['priority'] : 'medium'; ?>"></div>
                         <h4 class="task-title"><?php echo htmlspecialchars($task['title']); ?></h4>
                         <p class="task-description"><?php echo htmlspecialchars($task['description']); ?></p>
                         <div class="task-meta">
@@ -94,7 +94,7 @@ require_once __DIR__ . '/../src/controllers/taskboard.php';
                 <div class="task-list" data-status="completed">
                     <?php if(!empty($completedTasks)): foreach($completedTasks as $task): ?>
                     <div class="task-card" draggable="true" data-task-id="<?php echo $task['id']; ?>">
-                        <div class="task-priority <?php echo $task['priority']; ?>"></div>
+                        <div class="task-priority <?php echo isset($task['priority']) ? $task['priority'] : 'medium'; ?>"></div>
                         <h4 class="task-title"><?php echo htmlspecialchars($task['title']); ?></h4>
                         <p class="task-description"><?php echo htmlspecialchars($task['description']); ?></p>
                         <div class="task-meta">
