@@ -23,7 +23,7 @@ $filterType = $_GET['filter'] ?? 'mine';
 $filterGroupId = $_GET['group_id'] ?? null;
 
 // 3) Tasks zählen - basierend auf Filter
-$countParams = [$userId];
+$countParams = []; // Initialize as empty array
 $countWhere = ["t.is_done != 1"];
 
 if ($filterType === 'group' && is_numeric($filterGroupId)) {
@@ -51,7 +51,7 @@ $stmtCount->execute($countParams);
 $openTaskCount = (int)$stmtCount->fetchColumn();
 
 // 4) Tasks holen - mit denselben Filtern
-$taskParams = $countParams;
+$taskParams = $countParams; // This will now correctly match the parameter count
 $taskWhere = $countWhere;
 
 $taskSql = "
