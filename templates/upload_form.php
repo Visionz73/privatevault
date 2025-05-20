@@ -19,7 +19,7 @@
 
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
 
-  <?php require_once __DIR__.'/../templates/navbar.php'; ?>
+  <?php require_once __DIR__.'/navbar.php'; ?>
 
   <main class="flex-1 flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl shadow-2xl overflow-hidden">
