@@ -611,7 +611,7 @@
                         body: `event_id=${eventId}`
                     })
                     .then(response => response.json())
-                    .then(data => {
+                    .then data => {
                         if (data.success) {
                             window.location.reload();
                         } else {
