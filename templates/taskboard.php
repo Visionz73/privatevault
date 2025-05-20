@@ -44,23 +44,36 @@ foreach ($all as $t) {
     <div class="flex gap-6">
       <?php foreach ($statuses as $key => $label): ?>
         <section
-          class="w-72 flex-shrink-0 bg-gray-100 rounded-xl p-4 space-y-4 overflow-y-auto border border-gray-200"
+          class="w-72 flex-shrink-0 bg-white/60 backdrop-blur-sm rounded-xl p-4 space-y-4 overflow-y-auto border border-white/40 shadow-sm"
           data-status="<?= $key ?>"
           ondragover="event.preventDefault()" ondrop="dropTask(event,this)"
         >
           <div class="flex items-center justify-between text-sm font-semibold uppercase tracking-wider mb-2">
             <span><?= $label ?></span>
-            <button onclick="openNewTask('<?= $key ?>')" class="text-primary text-lg leading-none">+</button>
+            <button onclick="openNewTask('<?= $key ?>')" class="text-[#4A90E2] text-lg leading-none">+</button>
           </div>
 
           <?php foreach ($tasksByStatus[$key] as $t): ?>
             <article
-               class="bg-white rounded-lg shadow p-3 hover:shadow-md transition cursor-grab"
+               class="bg-white rounded-lg shadow-sm p-3 hover:shadow transition cursor-grab"
                draggable="true" ondragstart="dragTask(event)"
-               data-id="<?= $t['id'] ?>" onclick="openTask(<?= $t['id'] ?>)"
+               data-id="<?= $t['id'] ?>" onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'; event.stopPropagation();"
             >
-              <h3 class="font-semibold text-gray-800"><?= htmlspecialchars($t['title']) ?></h3>
-              <p class="text-sm text-gray-500 mt-1"><?= nl2br(htmlspecialchars(substr($t['description'],0,80))) ?></p>
+              <h3 class="font-medium text-gray-800"><?= htmlspecialchars($t['title']) ?></h3>
+              <?php if(!empty($t['description'])): ?>
+                <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?= htmlspecialchars($t['description']) ?></p>
+              <?php endif; ?>
+              
+              <?php if(!empty($t['due_date'])): ?>
+                <div class="flex items-center mt-2 text-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="<?= strtotime($t['due_date']) < time() ? 'text-red-500' : 'text-gray-500' ?>">
+                    <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+                  </span>
+                </div>
+              <?php endif; ?>
             </article>
           <?php endforeach; ?>
         </section>

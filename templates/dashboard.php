@@ -58,7 +58,8 @@
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if (!empty($tasks)): ?>
             <?php foreach($tasks as $idx => $t): ?>
-              <li class="px-2 py-3 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col gap-2">
+              <li class="px-2 py-3 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col gap-2 hover:bg-gray-100 cursor-pointer"
+                  onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
                 <!-- Title and Due Date -->
                 <div class="flex justify-between items-center">
                   <span class="font-medium"><?= htmlspecialchars($t['title']) ?></span>
@@ -69,9 +70,9 @@
                   <?php endif; ?>
                 </div>
                 
-                <!-- Description -->
+                <!-- Description (short) -->
                 <?php if(!empty($t['description'])): ?>
-                  <p class="text-sm text-gray-600"><?= htmlspecialchars($t['description']) ?></p>
+                  <p class="text-sm text-gray-600 line-clamp-1"><?= htmlspecialchars($t['description']) ?></p>
                 <?php endif; ?>
                 
                 <!-- Creator and Assignee Info -->

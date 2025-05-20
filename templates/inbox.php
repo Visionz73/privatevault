@@ -54,42 +54,39 @@
 
       <!-- Aufgabenliste -->
       <?php if(empty($tasks)): ?>
-        <div class="p-6 bg-card-bg rounded-xl shadow-card-lg text-center text-text-secondary">
+        <div class="p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-sm text-center text-gray-500">
           Du hast keine offenen Aufgaben.
         </div>
       <?php else: ?>
         <ul class="space-y-4">
           <?php foreach($tasks as $t): ?>
-            <li class="bg-card-bg rounded-xl shadow-card-lg p-5 flex justify-between items-center hover:ring-2 hover:ring-primary/30 transition cursor-pointer"
-                onclick="openDetailModal(<?= $t['id'] ?? 0 ?>)">
-              <div class="flex items-start space-x-4">
-                <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-semibold text-primary uppercase">
-                  <?= htmlspecialchars(substr($t['creator'] ?? '', 0, 2)) ?>
+            <li class="bg-white/60 backdrop-blur-sm rounded-xl shadow-sm p-5 hover:bg-white/80 transition cursor-pointer"
+                onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
+              <div class="flex items-start gap-4">
+                <div class="h-10 w-10 rounded-full bg-[#4A90E2]/10 flex items-center justify-center font-semibold text-[#4A90E2] uppercase">
+                  <?= htmlspecialchars(substr($t['creator_name'] ?? '', 0, 2)) ?>
                 </div>
-                <div>
-                  <h2 class="text-base font-medium text-text mb-1"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
-                  <?php if(!empty($t['description'] ?? '')): ?>
-                    <p class="text-sm text-text-secondary"><?= nl2br(htmlspecialchars($t['description'])) ?></p>
+                <div class="flex-1">
+                  <h2 class="text-base font-medium text-gray-900 mb-1"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
+                  <?php if(!empty($t['description'])): ?>
+                    <p class="text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($t['description']) ?></p>
                   <?php endif; ?>
-                  <p class="text-xs text-text-secondary mt-1">
-                    von <strong><?= htmlspecialchars($t['creator'] ?? 'Unbekannt') ?></strong>
-                    <?php if(!empty($t['due_date'] ?? '')): ?>
-                      • fällig am <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+                  <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
+                    <span>
+                      <span class="font-medium">Von:</span> 
+                      <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
+                    </span>
+                    <?php if(!empty($t['due_date'])): ?>
+                      <span>
+                        <span class="font-medium">Fällig:</span>
+                        <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+                      </span>
                     <?php endif; ?>
-                  </p>
+                    <?php if(isset($t['due_date']) && strtotime($t['due_date']) < time()): ?>
+                      <span class="px-2 py-0.5 bg-red-100 text-red-600 rounded-full">Überfällig</span>
+                    <?php endif; ?>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-center space-x-4">
-                <?php if(!empty($t['due_date'] ?? '') && strtotime($t['due_date']) < time()): ?>
-                  <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-medium">Überfällig</span>
-                <?php endif; ?>
-                <form method="post"
-                      action="/inbox.php?done=<?= $t['id'] ?? '' ?>&assigned_to=<?= urlencode($filterAssignedTo) ?>">
-                  <button type="submit"
-                          class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition text-sm">
-                    Erledigt
-                  </button>
-                </form>
               </div>
             </li>
           <?php endforeach; ?>
