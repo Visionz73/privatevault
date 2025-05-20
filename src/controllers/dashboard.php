@@ -7,29 +7,68 @@ $userId = $_SESSION['user_id'];
 // 2) DB-Verbindung
 require_once __DIR__.'/../lib/db.php';
 
-// 3) Tasks zählen - ALLE zugewiesenen Tasks
-$stmtCount = $pdo->prepare("
-  SELECT COUNT(*) 
-    FROM tasks t
-   WHERE t.is_done != 1
-     AND t.assigned_to = ?
+// Gruppen des Benutzers laden
+$stmtGroups = $pdo->prepare("
+  SELECT g.id, g.name 
+  FROM user_groups g
+  JOIN user_group_members m ON g.id = m.group_id
+  WHERE m.user_id = ?
+  ORDER BY g.name
 ");
-$stmtCount->execute([$userId]);
+$stmtGroups->execute([$userId]);
+$userGroups = $stmtGroups->fetchAll(PDO::FETCH_ASSOC);
+
+// Filterparameter (Standard: Nur eigene Aufgaben)
+$filterType = $_GET['filter'] ?? 'mine';
+$filterGroupId = $_GET['group_id'] ?? null;
+
+// 3) Tasks zählen - basierend auf Filter
+$countParams = [$userId];
+$countWhere = ["t.is_done != 1"];
+
+if ($filterType === 'group' && is_numeric($filterGroupId)) {
+    // Sicherstellen, dass der Benutzer dieser Gruppe angehört
+    $checkMembership = $pdo->prepare("SELECT COUNT(*) FROM user_group_members WHERE user_id = ? AND group_id = ?");
+    $checkMembership->execute([$userId, $filterGroupId]);
+    
+    if ($checkMembership->fetchColumn() > 0) {
+        $countWhere[] = "t.assigned_group_id = ?";
+        $countParams[] = $filterGroupId;
+    } else {
+        // Wenn kein Mitglied, auf eigene Aufgaben zurückfallen
+        $countWhere[] = "t.assigned_to = ?";
+        $countParams[] = $userId;
+    }
+} else {
+    // Standardfall: Eigene Aufgaben
+    $countWhere[] = "t.assigned_to = ?";
+    $countParams[] = $userId;
+}
+
+$countSql = "SELECT COUNT(*) FROM tasks t WHERE " . implode(' AND ', $countWhere);
+$stmtCount = $pdo->prepare($countSql);
+$stmtCount->execute($countParams);
 $openTaskCount = (int)$stmtCount->fetchColumn();
 
-// 4) Tasks holen - ALLE zugewiesenen Tasks
-$stmtTasks = $pdo->prepare("
+// 4) Tasks holen - mit denselben Filtern
+$taskParams = $countParams;
+$taskWhere = $countWhere;
+
+$taskSql = "
   SELECT t.*,
          u_creator.username AS creator_name,
-         u_assignee.username AS assignee_name
+         u_assignee.username AS assignee_name,
+         g.name AS group_name
     FROM tasks t
     LEFT JOIN users u_creator ON u_creator.id = t.created_by
     LEFT JOIN users u_assignee ON u_assignee.id = t.assigned_to
-   WHERE t.is_done != 1
-     AND t.assigned_to = ?
+    LEFT JOIN user_groups g ON g.id = t.assigned_group_id
+   WHERE " . implode(' AND ', $taskWhere) . "
    ORDER BY t.created_at DESC
-");
-$stmtTasks->execute([$userId]);
+   LIMIT 5
+";
+$stmtTasks = $pdo->prepare($taskSql);
+$stmtTasks->execute($taskParams);
 $tasks = $stmtTasks->fetchAll(PDO::FETCH_ASSOC);
 
 // 5) Dokumente laden (need this for the documents widget)

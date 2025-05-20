@@ -47,12 +47,52 @@
 
       <!-- Inbox Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
-        <a href="inbox.php" class="group inline-flex items-center mb-4">
-          <h2 class="text-lg font-semibold mr-1">Inbox</h2>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
+        <div class="flex justify-between items-center mb-4">
+          <a href="inbox.php" class="group inline-flex items-center">
+            <h2 class="text-lg font-semibold mr-1">Inbox</h2>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          
+          <!-- Group Filter Dropdown -->
+          <div class="relative">
+            <button id="groupFilterBtn" class="text-sm text-gray-600 flex items-center">
+              <?php if ($filterType === 'mine'): ?>
+                Meine Aufgaben
+              <?php else: ?>
+                <?php 
+                $groupName = "Gruppe";
+                foreach ($userGroups as $g) {
+                  if ($g['id'] == $filterGroupId) {
+                    $groupName = $g['name'];
+                    break;
+                  }
+                }
+                ?>
+                Gruppe: <?= htmlspecialchars($groupName) ?>
+              <?php endif; ?>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div id="groupFilterMenu" class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-20">
+              <a href="?filter=mine" class="block px-4 py-2 hover:bg-gray-100 <?= $filterType==='mine' ? 'bg-gray-100' : '' ?>">
+                Meine Aufgaben
+              </a>
+              <?php if (!empty($userGroups)): ?>
+                <div class="border-t border-gray-200 my-1"></div>
+                <?php foreach($userGroups as $g): ?>
+                  <a href="?filter=group&group_id=<?= $g['id'] ?>" 
+                     class="block px-4 py-2 hover:bg-gray-100 <?= ($filterType==='group' && $filterGroupId==$g['id']) ? 'bg-gray-100' : '' ?>">
+                    <?= htmlspecialchars($g['name']) ?>
+                  </a>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+        
         <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
         <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
@@ -83,7 +123,13 @@
                   </span>
                   <span>
                     <span class="font-medium">Für:</span> 
-                    <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                    <?php if ($t['assigned_group_id']): ?>
+                      <span class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded-full">
+                        Gruppe: <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
+                      </span>
+                    <?php else: ?>
+                      <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                    <?php endif; ?>
                   </span>
                 </div>
               </li>
@@ -278,164 +324,181 @@
       <?php endforeach; ?>
     </div><!-- /grid -->
   </main>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Group filter dropdown
+      const groupFilterBtn = document.getElementById('groupFilterBtn');
+      const groupFilterMenu = document.getElementById('groupFilterMenu');
+      
+      if (groupFilterBtn && groupFilterMenu) {
+        groupFilterBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          groupFilterMenu.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', () => {
+          groupFilterMenu.classList.add('hidden');
+        });
+      }
+    });
+    
+    // Toggle inline event creation form
+    document.getElementById('showInlineEventForm').addEventListener('click', function() {
+      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+    });
+
+    // Handle inline event form submission via AJAX
+    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = this.title.value.trim();
+      const date = this.date.value;
+      if(title && date){
+        fetch('/create_event.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ title: title, date: date })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            // Create new list element for the event
+            const newEvent = data.event;
+            const li = document.createElement('li');
+            li.className = "px-2 py-2 flex justify-between items-center";
+            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
+                             <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+            const eventList = document.getElementById('dashboardEventList');
+            
+            // If "Keine Termine gefunden." is present, remove it.
+            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+              eventList.innerHTML = '';
+            }
+            eventList.appendChild(li);
+            // Update count (force a reload or recalc count)
+            // For simplicity, not auto-updating count here.
+            this.reset();
+            document.getElementById('inlineEventFormContainer').classList.add('hidden');
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Erstellen des Termins.'));
+      }
+    });
+
+    // Attach click events to task list items for mobile tap
+    document.querySelectorAll('.task-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const title = item.getAttribute('data-title');
+        const due = item.getAttribute('data-due');
+        document.getElementById('modalTaskTitle').textContent = title;
+        document.getElementById('modalTaskDue').textContent = due ? 'Fällig: ' + due : '';
+        document.getElementById('taskModal').classList.remove('hidden');
+      });
+    });
+
+    // Close modal when clicking the close button
+    document.getElementById('closeTaskModal').addEventListener('click', () => {
+      document.getElementById('taskModal').classList.add('hidden');
+    });
+
+    // Optional: close modal when clicking on the background
+    document.getElementById('taskModal').addEventListener('click', (e) => {
+      if(e.target === document.getElementById('taskModal')){
+        document.getElementById('taskModal').classList.add('hidden');
+      }
+    });
+
+    // Subtask functionality
+    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const taskId = this.getAttribute('data-task-id');
+        document.getElementById('modalTaskId').value = taskId;
+        document.getElementById('subtaskModal').classList.remove('hidden');
+
+        // Optional: Load existing subtasks via AJAX
+        fetch('/get_subtasks.php?task_id=' + taskId)
+          .then(response => response.json())
+          .then(data => {
+            const subtasksList = document.getElementById('subtasksList');
+            subtasksList.innerHTML = ''; // Clear existing list
+            data.subtasks.forEach(subtask => {
+              const div = document.createElement('div');
+              div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+              div.innerHTML = `<span class="text-sm">${subtask.title}</span>
+                               <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${subtask.id}">&times;</button>`;
+              subtasksList.appendChild(div);
+            });
+          });
+      });
+    });
+
+    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const taskId = btn.getAttribute('data-task-id');
+        document.getElementById('modalTaskId').value = taskId;
+        const taskTitle = btn.closest('li').querySelector('.task-item span').textContent;
+        document.getElementById('modalTaskTitle').textContent = 'Unteraufgaben für: ' + taskTitle;
+        document.getElementById('subtaskModal').classList.remove('hidden');
+      });
+    });
+
+    // Close subtask modal
+    document.getElementById('closeSubtaskModal').addEventListener('click', () => {
+      document.getElementById('subtaskModal').classList.add('hidden');
+    });
+
+    // Handle subtask form submission
+    document.getElementById('subtaskForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const taskId = this.task_id.value;
+      const subtaskTitle = this.subtask_title.value.trim();
+      if(subtaskTitle){
+        fetch('/add_subtask.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ task_id: taskId, subtask_title: subtaskTitle })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            // Add new subtask to the list
+            const newSubtask = data.subtask;
+            const div = document.createElement('div');
+            div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+            div.innerHTML = `<span class="text-sm">${newSubtask.title}</span>
+                             <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${newSubtask.id}">&times;</button>`;
+            document.getElementById('subtasksList').appendChild(div);
+            this.reset();
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Hinzufügen der Unteraufgabe.'));
+      }
+    });
+
+    // Remove subtask
+    document.getElementById('subtasksList').addEventListener('click', function(e) {
+      if(e.target.classList.contains('remove-subtask-btn')){
+        const subtaskId = e.target.getAttribute('data-subtask-id');
+        fetch('/remove_subtask.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ subtask_id: subtaskId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            e.target.closest('div').remove();
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
+      }
+    });
+  </script>
 </body>
 </html>
-
-<script>
-// Toggle inline event creation form
-document.getElementById('showInlineEventForm').addEventListener('click', function() {
-  document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-});
-
-// Handle inline event form submission via AJAX
-document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const title = this.title.value.trim();
-  const date = this.date.value;
-  if(title && date){
-    fetch('/create_event.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ title: title, date: date })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success){
-        // Create new list element for the event
-        const newEvent = data.event;
-        const li = document.createElement('li');
-        li.className = "px-2 py-2 flex justify-between items-center";
-        li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
-                         <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-        const eventList = document.getElementById('dashboardEventList');
-        
-        // If "Keine Termine gefunden." is present, remove it.
-        if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-          eventList.innerHTML = '';
-        }
-        eventList.appendChild(li);
-        // Update count (force a reload or recalc count)
-        // For simplicity, not auto-updating count here.
-        this.reset();
-        document.getElementById('inlineEventFormContainer').classList.add('hidden');
-      } else {
-        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-      }
-    })
-    .catch(() => alert('Fehler beim Erstellen des Termins.'));
-  }
-});
-
-// Attach click events to task list items for mobile tap
-document.querySelectorAll('.task-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const title = item.getAttribute('data-title');
-    const due = item.getAttribute('data-due');
-    document.getElementById('modalTaskTitle').textContent = title;
-    document.getElementById('modalTaskDue').textContent = due ? 'Fällig: ' + due : '';
-    document.getElementById('taskModal').classList.remove('hidden');
-  });
-});
-
-// Close modal when clicking the close button
-document.getElementById('closeTaskModal').addEventListener('click', () => {
-  document.getElementById('taskModal').classList.add('hidden');
-});
-
-// Optional: close modal when clicking on the background
-document.getElementById('taskModal').addEventListener('click', (e) => {
-  if(e.target === document.getElementById('taskModal')){
-    document.getElementById('taskModal').classList.add('hidden');
-  }
-});
-
-// Subtask functionality
-document.querySelectorAll('.add-subtask-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const taskId = this.getAttribute('data-task-id');
-    document.getElementById('modalTaskId').value = taskId;
-    document.getElementById('subtaskModal').classList.remove('hidden');
-
-    // Optional: Load existing subtasks via AJAX
-    fetch('/get_subtasks.php?task_id=' + taskId)
-      .then(response => response.json())
-      .then(data => {
-        const subtasksList = document.getElementById('subtasksList');
-        subtasksList.innerHTML = ''; // Clear existing list
-        data.subtasks.forEach(subtask => {
-          const div = document.createElement('div');
-          div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
-          div.innerHTML = `<span class="text-sm">${subtask.title}</span>
-                           <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${subtask.id}">&times;</button>`;
-          subtasksList.appendChild(div);
-        });
-      });
-  });
-});
-
-document.querySelectorAll('.add-subtask-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const taskId = btn.getAttribute('data-task-id');
-    document.getElementById('modalTaskId').value = taskId;
-    const taskTitle = btn.closest('li').querySelector('.task-item span').textContent;
-    document.getElementById('modalTaskTitle').textContent = 'Unteraufgaben für: ' + taskTitle;
-    document.getElementById('subtaskModal').classList.remove('hidden');
-  });
-});
-
-// Close subtask modal
-document.getElementById('closeSubtaskModal').addEventListener('click', () => {
-  document.getElementById('subtaskModal').classList.add('hidden');
-});
-
-// Handle subtask form submission
-document.getElementById('subtaskForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const taskId = this.task_id.value;
-  const subtaskTitle = this.subtask_title.value.trim();
-  if(subtaskTitle){
-    fetch('/add_subtask.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ task_id: taskId, subtask_title: subtaskTitle })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success){
-        // Add new subtask to the list
-        const newSubtask = data.subtask;
-        const div = document.createElement('div');
-        div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
-        div.innerHTML = `<span class="text-sm">${newSubtask.title}</span>
-                         <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${newSubtask.id}">&times;</button>`;
-        document.getElementById('subtasksList').appendChild(div);
-        this.reset();
-      } else {
-        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-      }
-    })
-    .catch(() => alert('Fehler beim Hinzufügen der Unteraufgabe.'));
-  }
-});
-
-// Remove subtask
-document.getElementById('subtasksList').addEventListener('click', function(e) {
-  if(e.target.classList.contains('remove-subtask-btn')){
-    const subtaskId = e.target.getAttribute('data-subtask-id');
-    fetch('/remove_subtask.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ subtask_id: subtaskId })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success){
-        e.target.closest('div').remove();
-      } else {
-        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-      }
-    })
-    .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
-  }
-});
-</script>
