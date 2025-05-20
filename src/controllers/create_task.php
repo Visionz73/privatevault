@@ -9,80 +9,113 @@ require_once __DIR__ . '/../lib/auth.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// Debug-Fallback
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1;
-}
+requireLogin();
 
 $allUsers = [];
 $allGroups = [];
-$errors   = [];
+$errors = [];
+$success = '';
 
-// 3) Nutzer für „assigned_to“-Dropdown
+// 3) Nutzer für „assigned_to"-Dropdown
 try {
     $stmt = $pdo->query("SELECT id, username FROM users ORDER BY username");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    $stmt = $pdo->query("
-        SELECT g.id, g.name, COUNT(gm.user_id) as member_count 
-        FROM user_groups g
-        LEFT JOIN user_group_members gm ON g.id = gm.group_id
-        GROUP BY g.id
-        ORDER BY g.name
-    ");
+} catch (PDOException $e) {
+    $errors[] = 'Error loading users: ' . $e->getMessage();
+}
+
+// 3b) Gruppen für "assigned_group"-Dropdown
+try {
+    $stmt = $pdo->query("SELECT g.id, g.name, COUNT(m.user_id) as member_count 
+                         FROM user_groups g 
+                         LEFT JOIN group_members m ON g.id = m.group_id 
+                         GROUP BY g.id 
+                         ORDER BY g.name");
     $allGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errors[] = 'Error loading users or groups: ' . $e->getMessage();
+    $errors[] = 'Error loading groups: ' . $e->getMessage();
 }
 
 // 4) Formularverarbeitung
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Prüfen, ob der Array-Key "due_date" gesetzt ist und einen Default-Wert zuweisen
-    $due_date = $_POST['due_date'] ?? '';
-
-    // Prüfen, ob wir einen Benutzer oder eine Gruppe zuweisen
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
     $assignmentType = $_POST['assignment_type'] ?? 'user';
-    $assignedTo = null;
-    $assignedGroupId = null;
+    $dueDate = $_POST['due_date'] ?? '';
     
-    if ($assignmentType === 'user') {
-        $assignedTo = $_POST['assigned_to'] ?? $_SESSION['user_id'];
-        if (empty($assignedTo)) {
-            $errors[] = 'Bitte wählen Sie einen Benutzer aus.';
-        }
-    } else {
-        $assignedGroupId = $_POST['assigned_group'] ?? null;
-        if (empty($assignedGroupId)) {
-            $errors[] = 'Bitte wählen Sie eine Gruppe aus.';
-        }
+    // Validate inputs
+    if (empty($title)) {
+        $errors[] = 'Titel ist erforderlich.';
     }
     
+    if ($assignmentType === 'user' && empty($_POST['assigned_to'])) {
+        $errors[] = 'Bitte wählen Sie einen Benutzer aus.';
+    }
+    
+    if ($assignmentType === 'group' && empty($_POST['assigned_group'])) {
+        $errors[] = 'Bitte wählen Sie eine Gruppe aus.';
+    }
+    
+    // Process if no errors
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("
-                INSERT INTO tasks
-                  (title, description, assigned_to, assigned_group_id, due_date, status, created_by, user_id)
-                VALUES
-                  (?, ?, ?, ?, ?, 'todo', ?, ?)
-            ");
-            $stmt->execute([
-                $_POST['title']       ?? '',
-                $_POST['description'] ?? '',
-                $assignedTo,
-                $assignedGroupId,
-                $due_date,
-                $_SESSION['user_id'],
-                $_SESSION['user_id'] // This adds the user_id field that was missing
-            ]);
-
-            if ($stmt->rowCount() > 0) {
-                header('Location: /inbox.php');
-                exit;
+            if ($assignmentType === 'user') {
+                // Individual user assignment
+                $assignedTo = $_POST['assigned_to'];
+                
+                $stmt = $pdo->prepare("
+                    INSERT INTO tasks
+                      (title, description, created_by, assigned_to, due_date, status, is_done)
+                    VALUES
+                      (?, ?, ?, ?, ?, 'todo', 0)
+                ");
+                
+                $stmt->execute([$title, $description, $_SESSION['user_id'], $assignedTo, $dueDate]);
+                $success = 'Aufgabe wurde erstellt und dem Benutzer zugewiesen.';
+                
             } else {
-                $errors[] = 'Task wurde nicht angelegt. Bitte Eingaben prüfen.';
+                // Group assignment - create tasks for all group members
+                $groupId = $_POST['assigned_group'];
+                
+                // Get all users in the group
+                $stmt = $pdo->prepare("
+                    SELECT user_id FROM group_members WHERE group_id = ?
+                ");
+                $stmt->execute([$groupId]);
+                $groupMembers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                
+                if (empty($groupMembers)) {
+                    $errors[] = 'Die ausgewählte Gruppe hat keine Mitglieder.';
+                } else {
+                    // Start transaction
+                    $pdo->beginTransaction();
+                    
+                    $stmt = $pdo->prepare("
+                        INSERT INTO tasks
+                          (title, description, created_by, assigned_to, due_date, status, is_done)
+                        VALUES
+                          (?, ?, ?, ?, ?, 'todo', 0)
+                    ");
+                    
+                    foreach ($groupMembers as $memberId) {
+                        $stmt->execute([$title, $description, $_SESSION['user_id'], $memberId, $dueDate]);
+                    }
+                    
+                    $pdo->commit();
+                    $success = 'Aufgabe wurde erstellt und allen Gruppenmitgliedern zugewiesen.';
+                }
             }
+            
+            if (!empty($success)) {
+                // Reset form after successful submission
+                $_POST = [];
+            }
+            
         } catch (PDOException $e) {
-            $errors[] = 'Error creating task: ' . $e->getMessage();
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            $errors[] = 'Datenbankfehler: ' . $e->getMessage();
         }
     }
 }

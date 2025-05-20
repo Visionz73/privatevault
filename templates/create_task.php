@@ -68,7 +68,7 @@ if (!isset($errors)) {
                         <div>
                             <label class="inline-flex items-center">
                                 <input type="radio" name="assignment_type" value="user" checked 
-                                        onclick="document.getElementById('user_assignment').style.display='block'; document.getElementById('group_assignment').style.display='none';"
+                                        onclick="toggleAssignmentType('user')"
                                         class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                 <span class="ml-2">Einzelner Benutzer</span>
                             </label>
@@ -76,7 +76,7 @@ if (!isset($errors)) {
                         <div>
                             <label class="inline-flex items-center">
                                 <input type="radio" name="assignment_type" value="group"
-                                        onclick="document.getElementById('user_assignment').style.display='none'; document.getElementById('group_assignment').style.display='block';"
+                                        onclick="toggleAssignmentType('group')"
                                         class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                 <span class="ml-2">Benutzergruppe</span>
                             </label>
@@ -128,4 +128,27 @@ if (!isset($errors)) {
         </div>
     </main>
 </body>
+<script>
+    function toggleAssignmentType(type) {
+        if (type === 'user') {
+            document.getElementById('user_assignment').style.display = 'block';
+            document.getElementById('group_assignment').style.display = 'none';
+            document.getElementById('assigned_to').setAttribute('required', 'required');
+            document.getElementById('assigned_group').removeAttribute('required');
+        } else {
+            document.getElementById('user_assignment').style.display = 'none';
+            document.getElementById('group_assignment').style.display = 'block';
+            document.getElementById('assigned_to').removeAttribute('required');
+            document.getElementById('assigned_group').setAttribute('required', 'required');
+        }
+    }
+
+    // Check if assignment type is already set (in case of form resubmission)
+    document.addEventListener('DOMContentLoaded', function() {
+        const assignmentType = document.querySelector('input[name="assignment_type"]:checked').value;
+        if (assignmentType) {
+            toggleAssignmentType(assignmentType);
+        }
+    });
+</script>
 </html>
