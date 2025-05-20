@@ -127,4 +127,3 @@ foreach ($groupsData as $group) {
 
 // Include the template
 require_once __DIR__ . '/../../../templates/admin/groups.php';
-```
