@@ -1,110 +1,161 @@
 <!DOCTYPE html>
 <html lang="de" class="h-full">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dokument hochladen | Private Vault</title>
-  <!-- Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <!-- Tailwind CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
     @media (max-width: 768px) {
       main { margin-top: 3.5rem; }
-      .container { margin: 1rem; }
+    }
+    .file-drop-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border: 2px dashed #e5e7eb;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .file-drop-area.is-active {
+      border-color: #4A90E2;
+      background-color: rgba(74, 144, 226, 0.05);
+    }
+    .file-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      cursor: pointer;
+      opacity: 0;
+    }
+    .file-msg {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
 </head>
-
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
-
   <?php require_once __DIR__.'/navbar.php'; ?>
-
-  <main class="flex-1 flex items-center justify-center p-4">
-    <div class="relative w-full max-w-md bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl shadow-2xl overflow-hidden">
-      <!-- Deko -->
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-gradient-to-tr from-[#4A90E2]/40 to-transparent rounded-full blur-2xl"></div>
-      <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-bl from-[#357ABD]/40 to-transparent rounded-full blur-2xl"></div>
-
-      <div class="relative z-10 p-8">
-        <h1 class="text-center text-3xl font-extrabold text-gray-900 mb-6">Neues Dokument</h1>
-
-        <?php if (!empty($uploadError)): ?>
-          <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-800 rounded-lg shadow-inner">
-            <?= htmlspecialchars($uploadError) ?>
-          </div>
-        <?php elseif (!empty($uploadSuccess)): ?>
-          <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg shadow-inner">
-            <?= htmlspecialchars($uploadSuccess) ?>
-          </div>
-        <?php endif; ?>
-
-        <form action="upload.php" method="post" enctype="multipart/form-data" class="space-y-5">
-          <!-- Titel -->
+  
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Dokument hochladen</h1>
+      <p class="mt-2 text-gray-600">Laden Sie ein neues Dokument in Ihre private Ablage hoch.</p>
+    </header>
+    
+    <?php if (!empty($uploadSuccess)): ?>
+      <div class="mb-6 bg-green-100 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <?= htmlspecialchars($uploadSuccess) ?>
+        </div>
+      </div>
+    <?php endif; ?>
+    
+    <?php if (!empty($uploadError)): ?>
+      <div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <?= htmlspecialchars($uploadError) ?>
+        </div>
+      </div>
+    <?php endif; ?>
+    
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
           <div>
-            <label for="title" class="block text-sm font-semibold text-indigo-900 mb-2">Titel</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              required
-              value="<?= htmlspecialchars($_POST['title'] ?? '') ?>"
-              class="w-full px-5 py-3 rounded-2xl bg-gray-100 border border-gray-300 focus:ring-2 focus:ring-[#4A90E2] focus:border-transparent transition-shadow shadow-inner"
-            />
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+            <input type="text" id="title" name="title" required
+                   placeholder="Geben Sie einen Titel für das Dokument ein"
+                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2] transition-colors">
           </div>
-
-          <!-- Kategorie -->
+          
           <div>
-            <label for="category_id" class="block text-sm font-semibold text-indigo-900 mb-2">Kategorie</label>
-            <select
-              id="category_id"
-              name="category_id"
-              required
-              class="w-full px-5 py-3 rounded-2xl bg-gray-100 border border-gray-300 focus:ring-2 focus:ring-[#4A90E2] focus:border-transparent transition-shadow shadow-inner"
-            >
-              <option value="">– bitte auswählen –</option>
-              <?php foreach ($cats as $c): ?>
-                <option value="<?= $c['id'] ?>"
-                  <?= (($_POST['category_id'] ?? '') == $c['id']) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($c['name']) ?>
-                </option>
+            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Kategorie *</label>
+            <select id="category_id" name="category_id" required
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2] transition-colors">
+              <option value="">Bitte wählen Sie eine Kategorie</option>
+              <?php foreach ($cats as $cat): ?>
+                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>
-
-          <!-- Datei -->
+          
           <div>
-            <label for="docfile" class="block text-sm font-semibold text-indigo-900 mb-2">Datei hochladen</label>
-            <label for="docfile"
-                   class="flex items-center justify-center cursor-pointer px-5 py-3 border-2 border-dashed border-gray-300 rounded-2xl bg-white hover:bg-gray-50 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mr-2" fill="none"
-                   viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round"
-                   stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v8m0-8l-3 3m3-3l3 3M4 12h16" /></svg>
-              <span class="text-sm text-gray-600">Datei auswählen …</span>
-              <input type="file" id="docfile" name="docfile" required class="hidden"/>
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Dokument *</label>
+            <div class="file-drop-area rounded-lg bg-gray-50">
+              <span class="file-msg text-gray-500">Datei hierher ziehen oder klicken zum Auswählen</span>
+              <input type="file" id="docfile" name="docfile" required accept=".pdf,.png,.jpeg,.jpg,.docx" class="file-input">
+            </div>
+            <p class="mt-2 text-xs text-gray-500">Erlaubte Dateitypen: PDF, PNG, JPEG, JPG, DOCX</p>
           </div>
-
-          <!-- Knopf -->
-          <button
-            type="submit"
-            class="w-full py-3 font-semibold text-white uppercase rounded-2xl bg-gradient-to-r from-[#4A90E2] to-[#357ABD] hover:from-[#357ABD] hover:to-[#4A90E2] transition-transform transform hover:scale-105 shadow-lg"
-          >
-            <span class="inline-flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                   viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round"
-                   stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h10a4 4 0 004-4M16 8l-4-4m0 0L8 8m4-4v12" /></svg>
-              Hochladen
-            </span>
-          </button>
+          
+          <div class="pt-4">
+            <button type="submit" class="w-full md:w-auto px-6 py-3 bg-[#4A90E2] text-white font-medium rounded-lg shadow hover:bg-[#4A90E2]/90 transition-colors">
+              <span class="flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                Dokument hochladen
+              </span>
+            </button>
+          </div>
         </form>
-
-        <p class="text-center text-sm text-gray-700 mt-5">
-          <a href="dashboard.php" class="underline hover:text-indigo-600">Zurück zum Dashboard</a>
-        </p>
       </div>
     </div>
   </main>
+  
+  <script>
+    // File drop area functionality
+    const fileDropArea = document.querySelector('.file-drop-area');
+    const fileInput = document.querySelector('.file-input');
+    const fileMsg = document.querySelector('.file-msg');
+    
+    // Highlight drop area when dragging file over it
+    ['dragover', 'dragenter'].forEach(eventName => {
+      fileDropArea.addEventListener(eventName, function(e) {
+        e.preventDefault();
+        this.classList.add('is-active');
+      });
+    });
+    
+    ['dragleave', 'dragend'].forEach(eventName => {
+      fileDropArea.addEventListener(eventName, function() {
+        this.classList.remove('is-active');
+      });
+    });
+    
+    // Handle file selection and display filename
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files.length) {
+        fileMsg.textContent = this.files[0].name;
+      }
+    });
+    
+    // Handle file drop
+    fileDropArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('is-active');
+      
+      if (e.dataTransfer.files && e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        fileMsg.textContent = e.dataTransfer.files[0].name;
+      }
+    });
+  </script>
 </body>
 </html>
