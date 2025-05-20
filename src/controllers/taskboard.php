@@ -1,190 +1,153 @@
 <?php
-require_once __DIR__ . '/../lib/db.php';
+// src/controllers/taskboard.php - Updated controller for the Kanban board
+
+// Database connection
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../lib/auth.php';
-require_once __DIR__ . '/../models/Task.php';
 
-requireLogin();                  // alle Rollen dürfen lesen
-requireRole(['admin','member']);  // Gäste ausgeschlossen
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login.php');
+    exit;
+}
 
-// Get current user ID
-$userId = $_SESSION['user_id'];
-
-// Filter mode: 'all' or 'user'
+$user_id = $_SESSION['user_id'];
 $filterMode = $_GET['filter'] ?? 'all';
 
-/* ------------------------------------------------------------------
-   Aufgaben nach Status gruppiert mit Filter-Option
--------------------------------------------------------------------*/
-$columns = ['todo'=>[], 'doing'=>[], 'done'=>[]];
+// Tasks by Status
+$todoTasks = [];
+$inProgressTasks = [];
+$completedTasks = [];
 
-// Basis Query
-$query = "
-    SELECT t.id, t.title, t.description, t.created_by, t.assigned_to, t.due_date, t.status,
-           uc.username AS creator_name, ua.username AS assignee_name
-    FROM tasks t
-    LEFT JOIN users uc ON t.created_by = uc.id
-    LEFT JOIN users ua ON t.assigned_to = ua.id
-";
-
-// Filter anwenden - NUR zugewiesene Aufgaben anzeigen
-if ($filterMode === 'user') {
-    $query .= " WHERE t.assigned_to = ?";  // Nur zugewiesene Aufgaben 
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$userId]);
-} else {
-    $stmt = $pdo->query($query);
-}
-
-// Gruppieren nach Status
-foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-    // Fallback wenn Status nicht existiert
-    $status = in_array($row['status'], array_keys($columns)) ? $row['status'] : 'todo';
-    $columns[$status][] = $row;
-}
-
-/* ------------------------------------------------------------------
-   Alle Users fürs Dropdown
--------------------------------------------------------------------*/
-$allUsers = $pdo->query(
-  'SELECT id, username FROM users ORDER BY username'
-)->fetchAll();
-
-/* ------------------------------------------------------------------
-   AJAX Request Handling für Drag & Drop
--------------------------------------------------------------------*/
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-    strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-    
-    // Handle API endpoints
-    $endpoint = $_SERVER['REQUEST_URI'];
-    
-    if ($endpoint === '/api/tasks/update-status' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Process the drag and drop status update
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (isset($data['taskId']) && isset($data['status'])) {
-            $taskId = $data['taskId'];
-            $newStatus = $data['status'];
-            
-            try {
-                $taskModel = new Task($pdo);
-                $success = $taskModel->updateStatus($taskId, $newStatus);
-                
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => $success,
-                    'message' => $success ? 'Task status updated' : 'Failed to update task status'
-                ]);
-            } catch (Exception $e) {
-                header('Content-Type: application/json');
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Server error: ' . $e->getMessage()
-                ]);
-            }
-        } else {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Missing required parameters'
-            ]);
-        }
-        exit;
-    } elseif (preg_match('/^\/api\/tasks\/(\d+)$/', $endpoint, $matches) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        // Get a specific task
-        $taskId = $matches[1];
-        
-        try {
-            $taskModel = new Task($pdo);
-            $task = $taskModel->getTask($taskId);
-            
-            if ($task) {
-                header('Content-Type: application/json');
-                echo json_encode($task);
-            } else {
-                header('Content-Type: application/json');
-                http_response_code(404);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Task not found'
-                ]);
-            }
-        } catch (Exception $e) {
-            header('Content-Type: application/json');
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
-        }
-        exit;
-    } elseif ($endpoint === '/api/tasks/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Create a new task
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        try {
-            $taskModel = new Task($pdo);
-            $taskId = $taskModel->createTask($data);
-            
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'taskId' => $taskId,
-                'message' => 'Task created successfully'
-            ]);
-        } catch (Exception $e) {
-            header('Content-Type: application/json');
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
-            ]);
-        }
-        exit;
-    } elseif ($endpoint === '/api/tasks/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Update an existing task
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (isset($data['id'])) {
-            try {
-                $taskModel = new Task($pdo);
-                $success = $taskModel->updateTask($data);
-                
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => $success,
-                    'message' => $success ? 'Task updated successfully' : 'Failed to update task'
-                ]);
-            } catch (Exception $e) {
-                header('Content-Type: application/json');
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Server error: ' . $e->getMessage()
-                ]);
-            }
-        } else {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Missing required parameters'
-            ]);
-        }
-        exit;
-    }
-}
-
-// For the normal page load, get all tasks
 try {
-    $taskModel = new Task($pdo);
-    $todoTasks = $taskModel->getTasksByStatus('todo');
-    $inProgressTasks = $taskModel->getTasksByStatus('inprogress');
-    $completedTasks = $taskModel->getTasksByStatus('completed');
-} catch (Exception $e) {
+    // Prepare base query - different query based on filter mode
+    if ($filterMode === 'user') {
+        // Show only tasks assigned directly to this user
+        $baseQuery = "
+            SELECT t.*, u.username, g.name as group_name 
+            FROM tasks t 
+            LEFT JOIN users u ON t.assigned_to = u.id
+            LEFT JOIN user_groups g ON t.assigned_group_id = g.id
+            WHERE t.assigned_to = :user_id
+        ";
+        $params = [':user_id' => $user_id];
+    } else if ($filterMode === 'group') {
+        // Show only tasks assigned to groups this user belongs to
+        $baseQuery = "
+            SELECT t.*, u.username, g.name as group_name
+            FROM tasks t
+            LEFT JOIN users u ON t.assigned_to = u.id
+            LEFT JOIN user_groups g ON t.assigned_group_id = g.id
+            JOIN user_group_members m ON t.assigned_group_id = m.group_id AND m.user_id = :user_id
+            WHERE t.assigned_group_id IS NOT NULL
+        ";
+        $params = [':user_id' => $user_id];
+    } else {
+        // Show all tasks: created by user, assigned to user, or in user's groups
+        $baseQuery = "
+            SELECT t.*, u.username, g.name as group_name
+            FROM tasks t
+            LEFT JOIN users u ON t.assigned_to = u.id
+            LEFT JOIN user_groups g ON t.assigned_group_id = g.id
+            LEFT JOIN user_group_members m ON t.assigned_group_id = m.group_id AND m.user_id = :user_id
+            WHERE t.created_by = :user_id OR t.assigned_to = :user_id OR m.user_id = :user_id
+            GROUP BY t.id
+        ";
+        $params = [':user_id' => $user_id];
+    }
+
+    // Get To Do tasks
+    $todoQuery = $baseQuery . " AND t.status = 'todo' ORDER BY t.due_date ASC";
+    $stmt = $pdo->prepare($todoQuery);
+    $stmt->execute($params);
+    $todoTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get In Progress tasks
+    $inProgressQuery = $baseQuery . " AND t.status = 'doing' ORDER BY t.due_date ASC";
+    $stmt = $pdo->prepare($inProgressQuery);
+    $stmt->execute($params);
+    $inProgressTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get Completed tasks
+    $completedQuery = $baseQuery . " AND t.status = 'done' ORDER BY t.due_date ASC";
+    $stmt = $pdo->prepare($completedQuery);
+    $stmt->execute($params);
+    $completedTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
     // Handle database errors
-    echo "Error loading tasks: " . $e->getMessage();
+    error_log("Database error in taskboard: " . $e->getMessage());
+    // You could show an error message to the user
+}
+
+// Helper functions for displaying task data
+function formatDate($date) {
+    if (empty($date)) return '';
+    return date('d.m.Y', strtotime($date));
+}
+
+function getUserName($userId) {
+    global $pdo;
+    if (empty($userId)) return '';
+    
+    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ? $result['username'] : '';
+}
+
+function getUserInitials($userId) {
+    $name = getUserName($userId);
+    if (empty($name)) return '';
+    
+    $parts = explode(' ', $name);
+    $initials = '';
+    
+    foreach ($parts as $part) {
+        if (!empty($part)) {
+            $initials .= strtoupper(substr($part, 0, 1));
+        }
+    }
+    
+    return $initials;
+}
+
+function getGroupName($groupId) {
+    global $pdo;
+    if (empty($groupId)) return '';
+    
+    $stmt = $pdo->prepare("SELECT name FROM user_groups WHERE id = ?");
+    $stmt->execute([$groupId]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ? $result['name'] : '';
+}
+
+function getGroupInitials($groupId) {
+    $name = getGroupName($groupId);
+    if (empty($name)) return '';
+    
+    $parts = explode(' ', $name);
+    $initials = '';
+    
+    foreach ($parts as $part) {
+        if (!empty($part)) {
+            $initials .= strtoupper(substr($part, 0, 1));
+        }
+    }
+    
+    return $initials;
+}
+
+function getPriorityClass($task) {
+    if (isset($task['priority'])) {
+        switch ($task['priority']) {
+            case 'high': return 'bg-red-500';
+            case 'medium': return 'bg-yellow-500';
+            case 'low': return 'bg-green-500';
+            default: return 'bg-blue-500';
+        }
+    }
+    
+    // Default priority indicator if not set
+    return 'bg-blue-500';
 }
 ?>
