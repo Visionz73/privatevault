@@ -31,86 +31,13 @@ $userGroups = $stmtGroups->fetchAll(PDO::FETCH_ASSOC);
 $stmtUsers = $pdo->query("SELECT id, username FROM users ORDER BY username");
 $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
 
-$message = '';
-$messageType = '';
+// Get any form errors or data from session
+$formErrors = $_SESSION['event_form_errors'] ?? [];
+$formData = $_SESSION['event_form_data'] ?? [];
+$successMessage = $_SESSION['event_success'] ?? '';
 
-// Process form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Log submission data
-    error_log('Event submission data: ' . print_r($_POST, true));
-    
-    // Get form data
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $location = trim($_POST['location'] ?? '');
-    $startDate = trim($_POST['start_date'] ?? '');
-    $startTime = trim($_POST['start_time'] ?? '');
-    $endDate = trim($_POST['end_date'] ?? $startDate);
-    $endTime = trim($_POST['end_time'] ?? date('H:i', strtotime('+1 hour', strtotime("$startDate $startTime"))));
-    $assignedTo = !empty($_POST['assigned_to']) ? intval($_POST['assigned_to']) : null;
-    $assignedGroup = !empty($_POST['assigned_group']) ? intval($_POST['assigned_group']) : null;
-    $color = trim($_POST['color'] ?? '#3498db');
-    
-    // Validate required fields
-    $errors = [];
-    
-    if (empty($title)) $errors[] = "Title is required";
-    if (empty($startDate)) $errors[] = "Start date is required";
-    if (empty($startTime)) $errors[] = "Start time is required";
-    if (empty($endDate)) $errors[] = "End date is required";
-    if (empty($endTime)) $errors[] = "End time is required";
-    
-    // Format dates for MySQL
-    $startDateTime = $startDate . ' ' . $startTime . ':00';
-    $endDateTime = $endDate . ' ' . $endTime . ':00';
-    
-    if (empty($errors)) {
-        try {
-            // Insert into database using direct values to minimize errors
-            $stmt = $pdo->prepare("
-                INSERT INTO events (
-                    title, description, location, 
-                    start_datetime, end_datetime, 
-                    created_by, assigned_to, assigned_group_id, 
-                    color, created_at, updated_at
-                ) VALUES (
-                    ?, ?, ?, 
-                    ?, ?, 
-                    ?, ?, ?, 
-                    ?, NOW(), NOW()
-                )
-            ");
-            
-            // Set null for empty fields
-            if ($assignedTo === 0) $assignedTo = null;
-            if ($assignedGroup === 0) $assignedGroup = null;
-            
-            $result = $stmt->execute([
-                $title, $description, $location,
-                $startDateTime, $endDateTime,
-                $userId, $assignedTo, $assignedGroup,
-                $color
-            ]);
-            
-            if ($result) {
-                // Redirect to calendar view
-                header("Location: calendar.php?view=day&date=$startDate&event_added=1");
-                exit;
-            } else {
-                $message = "Failed to save event. Database error.";
-                $messageType = "danger";
-                error_log("Database error on event save: " . print_r($stmt->errorInfo(), true));
-            }
-        } catch (PDOException $e) {
-            $message = "Database error: " . $e->getMessage();
-            $messageType = "danger";
-            error_log("PDO Exception on event save: " . $e->getMessage());
-        }
-    } else {
-        $message = "Please fix the following errors: " . implode(", ", $errors);
-        $messageType = "warning";
-    }
-}
+// Clear session data
+unset($_SESSION['event_form_errors'], $_SESSION['event_form_data'], $_SESSION['event_success']);
 
 $pageTitle = 'Add Event';
 require_once __DIR__ . '/../templates/header.php';
@@ -124,40 +51,52 @@ require_once __DIR__ . '/../templates/header.php';
                     <h2><i class="fas fa-calendar-plus"></i> Add New Event</h2>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($message)): ?>
-                        <div class="alert alert-<?= $messageType ?>">
-                            <?= htmlspecialchars($message) ?>
+                    <?php if (!empty($formErrors)): ?>
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong>
+                            <ul class="mb-0">
+                                <?php foreach ($formErrors as $error): ?>
+                                    <li><?= htmlspecialchars($error) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
                     <?php endif; ?>
                     
-                    <form method="post" action="" id="event-form">
+                    <?php if (!empty($successMessage)): ?>
+                        <div class="alert alert-success">
+                            <?= htmlspecialchars($successMessage) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Form with explicit action to save_event.php -->
+                    <form method="post" action="save_event.php" id="event-form">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title*</label>
                             <input type="text" class="form-control" id="title" name="title" 
-                                value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required>
+                                value="<?= htmlspecialchars($formData['title'] ?? '') ?>" required>
                         </div>
                         
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="3"><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
                         </div>
                         
                         <div class="mb-3">
                             <label for="location" class="form-label">Location</label>
                             <input type="text" class="form-control" id="location" name="location" 
-                                value="<?= htmlspecialchars($_POST['location'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="start_date" class="form-label">Start Date*</label>
                                 <input type="date" class="form-control" id="start_date" name="start_date" 
-                                    value="<?= htmlspecialchars($_POST['start_date'] ?? $defaultDate) ?>" required>
+                                    value="<?= htmlspecialchars($formData['start_date'] ?? $defaultDate) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="start_time" class="form-label">Start Time*</label>
                                 <input type="time" class="form-control" id="start_time" name="start_time" 
-                                    value="<?= htmlspecialchars($_POST['start_time'] ?? $defaultStartTime) ?>" required>
+                                    value="<?= htmlspecialchars($formData['start_time'] ?? $defaultStartTime) ?>" required>
                             </div>
                         </div>
                         
@@ -165,12 +104,12 @@ require_once __DIR__ . '/../templates/header.php';
                             <div class="col-md-6">
                                 <label for="end_date" class="form-label">End Date*</label>
                                 <input type="date" class="form-control" id="end_date" name="end_date" 
-                                    value="<?= htmlspecialchars($_POST['end_date'] ?? $defaultDate) ?>" required>
+                                    value="<?= htmlspecialchars($formData['end_date'] ?? $defaultDate) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="end_time" class="form-label">End Time*</label>
                                 <input type="time" class="form-control" id="end_time" name="end_time" 
-                                    value="<?= htmlspecialchars($_POST['end_time'] ?? $defaultEndTime) ?>" required>
+                                    value="<?= htmlspecialchars($formData['end_time'] ?? $defaultEndTime) ?>" required>
                             </div>
                         </div>
                         
@@ -180,7 +119,7 @@ require_once __DIR__ . '/../templates/header.php';
                                 <select class="form-select" id="assigned_to" name="assigned_to">
                                     <option value="0">None</option>
                                     <?php foreach ($users as $user): ?>
-                                        <option value="<?= $user['id'] ?>">
+                                        <option value="<?= $user['id'] ?>" <?= (isset($formData['assigned_to']) && $formData['assigned_to'] == $user['id']) ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($user['username']) ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -192,7 +131,7 @@ require_once __DIR__ . '/../templates/header.php';
                                 <select class="form-select" id="assigned_group" name="assigned_group">
                                     <option value="0">None</option>
                                     <?php foreach ($userGroups as $group): ?>
-                                        <option value="<?= $group['id'] ?>">
+                                        <option value="<?= $group['id'] ?>" <?= (isset($formData['assigned_group']) && $formData['assigned_group'] == $group['id']) ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($group['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -203,7 +142,7 @@ require_once __DIR__ . '/../templates/header.php';
                         <div class="mb-3">
                             <label for="color" class="form-label">Event Color</label>
                             <input type="color" class="form-control form-control-color" id="color" name="color" 
-                                value="<?= htmlspecialchars($_POST['color'] ?? '#3498db') ?>" title="Choose event color">
+                                value="<?= htmlspecialchars($formData['color'] ?? '#3498db') ?>" title="Choose event color">
                         </div>
                         
                         <div class="d-flex justify-content-between">
@@ -217,6 +156,23 @@ require_once __DIR__ . '/../templates/header.php';
                     </form>
                 </div>
             </div>
+            
+            <!-- Debug information in development mode -->
+            <?php if (defined('DEBUG') && DEBUG): ?>
+            <div class="card mt-3">
+                <div class="card-header bg-secondary text-white">
+                    Debug Information
+                </div>
+                <div class="card-body">
+                    <p>To troubleshoot the event saving issue, check the following:</p>
+                    <ul>
+                        <li>Verify the database table structure matches the query (run: <code>DESCRIBE events</code>)</li>
+                        <li>Check error logs at <code>/logs/event_errors.log</code></li>
+                        <li>Ensure proper database permissions are set</li>
+                    </ul>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
