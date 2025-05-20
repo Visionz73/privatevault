@@ -73,11 +73,15 @@
                 <div class="mt-4">
                   <h4 class="text-sm font-medium text-gray-700">Mitglieder (<?= $group['member_count'] ?>):</h4>
                   <div class="flex flex-wrap gap-2 mt-2">
-                    <?php foreach ($group['members'] as $member): ?>
-                      <span class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
-                        <?= htmlspecialchars($member['username']) ?>
-                      </span>
-                    <?php endforeach; ?>
+                    <?php if (empty($group['members'])): ?>
+                      <span class="text-gray-500 text-xs">Keine Mitglieder gefunden.</span>
+                    <?php else: ?>
+                      <?php foreach ($group['members'] as $member): ?>
+                        <span class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
+                          <?= htmlspecialchars($member['username']) ?>
+                        </span>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
                   </div>
                 </div>
               </div>

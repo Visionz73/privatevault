@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Get all users in the group
                 $stmt = $pdo->prepare("
-                    SELECT user_id FROM group_members WHERE group_id = ?
+                    SELECT user_id FROM user_group_members WHERE group_id = ?
                 ");
                 $stmt->execute([$groupId]);
                 $groupMembers = $stmt->fetchAll(PDO::FETCH_COLUMN);

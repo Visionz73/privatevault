@@ -105,6 +105,10 @@ $stmt = $pdo->query('SELECT * FROM user_groups ORDER BY name');
 $groupsData = $stmt->fetchAll();
 
 foreach ($groupsData as $group) {
+    // Debug: Log the query for a specific group
+    error_log("Loading members for group ID: " . $group['id']);
+    
+    // Use correct table name - user_group_members
     $stmt = $pdo->prepare('
         SELECT u.id, u.username, u.email 
         FROM users u
@@ -115,11 +119,14 @@ foreach ($groupsData as $group) {
     $stmt->execute([$group['id']]);
     $members = $stmt->fetchAll();
     
+    // Debug: Log the number of members found
+    error_log("Found " . count($members) . " members");
+    
     $groups[] = [
         'id' => $group['id'],
         'name' => $group['name'],
         'description' => $group['description'],
-        'created_at' => $group['created_at'],
+        'created_at' => $group['created_at'], 
         'members' => $members,
         'member_count' => count($members)
     ];

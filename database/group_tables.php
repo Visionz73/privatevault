@@ -15,18 +15,17 @@ try {
         ) ENGINE=InnoDB;
     ");
 
-    // Create user_group_members table if it doesn't exist
+    // Use consistent table name - user_group_members
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS user_group_members (
-            id INT AUTO_INCREMENT PRIMARY KEY,
             group_id INT NOT NULL,
             user_id INT NOT NULL,
             added_by INT NOT NULL,
             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (group_id, user_id),
             FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE CASCADE,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (added_by) REFERENCES users(id),
-            UNIQUE (group_id, user_id)
+            FOREIGN KEY (added_by) REFERENCES users(id)
         ) ENGINE=InnoDB;
     ");
 
@@ -41,7 +40,7 @@ try {
     
     $row = $result->fetch(PDO::FETCH_ASSOC);
     if ($row['idx_exists'] == 0) {
-        $pdo->exec("CREATE INDEX user_group_idx ON user_group_members(group_id, user_id)");
+        $pdo->exec("CREATE INDEX user_group_idx ON user_group_members(user_id)");
     }
 
 } catch (PDOException $e) {
