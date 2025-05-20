@@ -8,23 +8,90 @@ requireRole(['admin']);
 
 $success = '';
 $errors = [];
+$action = $_POST['action'] ?? '';
 
-// Rolle ändern
+// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_POST['user_id'] ?? '';
-    $role    = $_POST['role']    ?? '';
-
-    if (in_array($role, ['admin','member','guest'], true) && is_numeric($user_id)) {
-        $stmt = $pdo->prepare('UPDATE users SET role = ?, updated_at = NOW() WHERE id = ?');
-        $stmt->execute([$role, $user_id]);
-        $success = 'Rolle erfolgreich aktualisiert.';
-    } else {
-        $errors[] = 'Ungültiger User oder Rolle.';
+    $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+    
+    // Validate user exists (except for new user creation)
+    if ($user_id > 0 && $action !== 'create_user') {
+        $check = $pdo->prepare('SELECT COUNT(*) FROM users WHERE id = ?');
+        $check->execute([$user_id]);
+        if ($check->fetchColumn() == 0) {
+            $errors[] = 'Benutzer nicht gefunden.';
+        }
+    }
+    
+    // Skip current user for certain actions
+    if ($user_id === (int)$_SESSION['user_id'] && in_array($action, ['delete_user'])) {
+        $errors[] = 'Sie können Ihren eigenen Account nicht löschen.';
+    }
+    
+    if (empty($errors)) {
+        switch ($action) {
+            case 'update_role':
+                $role = $_POST['role'] ?? '';
+                if (in_array($role, ['admin', 'member', 'guest'], true)) {
+                    $stmt = $pdo->prepare('UPDATE users SET role = ?, updated_at = NOW() WHERE id = ?');
+                    $stmt->execute([$role, $user_id]);
+                    $success = 'Rolle erfolgreich aktualisiert.';
+                } else {
+                    $errors[] = 'Ungültige Rolle.';
+                }
+                break;
+                
+            case 'delete_user':
+                // Begin transaction for atomicity
+                $pdo->beginTransaction();
+                try {
+                    // Delete user's tasks
+                    $stmt = $pdo->prepare('DELETE FROM tasks WHERE created_by = ? OR assigned_to = ?');
+                    $stmt->execute([$user_id, $user_id]);
+                    
+                    // Delete user's documents
+                    $stmt = $pdo->prepare('UPDATE documents SET is_deleted = 1 WHERE user_id = ?');
+                    $stmt->execute([$user_id]);
+                    
+                    // Delete the user
+                    $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
+                    $stmt->execute([$user_id]);
+                    
+                    $pdo->commit();
+                    $success = 'Benutzer und zugehörige Daten wurden erfolgreich gelöscht.';
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    $errors[] = 'Fehler beim Löschen des Benutzers: ' . $e->getMessage();
+                }
+                break;
+                
+            // You could add more actions here
+        }
     }
 }
 
-// Alle User laden
-$stmt  = $pdo->query('SELECT id, username, email, role, created_at FROM users ORDER BY id');
+// Load statistics for dashboard
+$stats = [
+    'users' => $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn(),
+    'tasks' => $pdo->query('SELECT COUNT(*) FROM tasks')->fetchColumn(),
+    'documents' => $pdo->query('SELECT COUNT(*) FROM documents WHERE is_deleted = 0')->fetchColumn()
+];
+
+// Get task distribution by status
+$tasksByStatus = $pdo->query('
+    SELECT status, COUNT(*) as count 
+    FROM tasks 
+    GROUP BY status
+')->fetchAll(PDO::FETCH_KEY_PAIR);
+
+// Load all users for management
+$stmt = $pdo->query('
+    SELECT u.id, u.username, u.email, u.role, u.created_at,
+           (SELECT COUNT(*) FROM tasks WHERE created_by = u.id OR assigned_to = u.id) AS task_count,
+           (SELECT COUNT(*) FROM documents WHERE user_id = u.id AND is_deleted = 0) AS doc_count
+    FROM users u
+    ORDER BY u.id
+');
 $users = $stmt->fetchAll();
 
 // Template rendern
