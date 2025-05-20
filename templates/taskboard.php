@@ -153,38 +153,44 @@ foreach ($all as $t) {
     let sourceStatus = null;
 
     function dragStart(event, taskId, status) {
-        event.target.classList.add('dragging');
         draggedTaskId = taskId;
         sourceStatus = status;
+        event.target.classList.add('dragging');
+        // Set data required for Firefox
+        event.dataTransfer.setData('text/plain', taskId);
+        event.dataTransfer.effectAllowed = 'move';
     }
 
     function dropTask(event, targetStatus) {
         event.preventDefault();
-        if (!draggedTaskId) return;
+        const taskId = draggedTaskId || event.dataTransfer.getData('text/plain');
         
-        const taskCard = document.querySelector(`.task-card[data-id="${draggedTaskId}"]`);
+        if (!taskId) return;
+        
+        const taskCard = document.querySelector(`.task-card[data-id="${taskId}"]`);
         if (taskCard) {
             taskCard.classList.remove('dragging');
             
             if (sourceStatus !== targetStatus) {
                 // Move in DOM
                 const targetContainer = document.querySelector(`.task-column[data-status="${targetStatus}"] .task-container`);
+                const addButton = targetContainer.querySelector('button:last-child');
+                
+                // Remove empty placeholder if it exists
                 const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
                 if (emptyPlaceholder) emptyPlaceholder.remove();
                 
-                // Insert before the "add task" button
-                const addButton = targetContainer.querySelector('button:last-child');
                 targetContainer.insertBefore(taskCard, addButton);
+                
+                // Update task data attribute
+                taskCard.setAttribute('ondragstart', `dragStart(event, '${taskId}', '${targetStatus}')`);
                 
                 // Update counters
                 updateColumnCounter(sourceStatus);
                 updateColumnCounter(targetStatus);
                 
-                // Update task data attribute for future operations
-                taskCard.setAttribute('data-status', targetStatus);
-                
-                // IMPORTANT: Save to database
-                updateTaskStatus(draggedTaskId, targetStatus);
+                // Save to database with better error handling
+                updateTaskStatus(taskId, targetStatus);
             }
         }
         
@@ -193,62 +199,10 @@ foreach ($all as $t) {
     }
 
     function updateColumnCounter(status) {
-      const column = document.querySelector(`.task-column[data-status="${status}"]`);
-      const counter = column.querySelector('h3 span');
-      const taskCount = column.querySelectorAll('.task-card').length;
-      counter.textContent = `(${taskCount})`;
-    }
-
-    function updateTaskStatus(taskId, status) {
-        // Debug output
-        console.log(`Updating task ${taskId} to status ${status}`);
+        const column = document.querySelector(`.task-column[data-status="${status}"]`);
+        if (!column) return;
         
-        // Send to server
-        fetch('/src/api/task_update.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `id=${taskId}&status=${status}`
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(data => {
-            console.log('Status updated successfully');
-        })
-        .catch(error => {
-            console.error('Error updating status:', error);
-            alert('Fehler beim Aktualisieren des Status. Bitte aktualisieren Sie die Seite.');
-        });
-    }
-    
-    // Modal functionality
-    function openTaskModal(id) {
-      loadModalContent(`/templates/task_modal.php?id=${id}`);
-    }
-    
-    function openNewTaskModal(defaultStatus = 'todo') {
-      loadModalContent(`/templates/task_modal.php?status=${defaultStatus}`);
-    }
-    
-    function loadModalContent(url) {
-      fetch(url)
-        .then(response => response.text())
-        .then(html => {
-          document.getElementById('modalContent').innerHTML = html;
-          document.getElementById('taskModal').classList.remove('hidden');
-          document.getElementById('taskModal').classList.add('flex');
-        });
-    }
-    
-    document.getElementById('taskModal').addEventListener('click', (e) => {
-      if (e.target.id === 'taskModal') {
-        e.target.classList.add('hidden');
-        e.target.classList.remove('flex');
-      }
-    });
-  </script>
-</body>
-</html>
+        const counter = column.querySelector('h3 span');
+        const taskCount = column.querySelectorAll('.task-card').length;
+        
+        if
