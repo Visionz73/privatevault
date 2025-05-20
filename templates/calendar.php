@@ -255,16 +255,19 @@
                     </div>
                   <?php elseif ($event['start_time']): ?>
                     <?php 
+                      // Fix time calculation for correct positioning
                       $hour = (int)substr($event['start_time'], 0, 2);
                       $minute = (int)substr($event['start_time'], 3, 2);
+                      // Use hour directly for positioning (12px per hour)
                       $top = ($hour * 12) + ($minute / 5);
                       $height = 12; // Default 1-hour height
                       
                       if ($event['end_time']) {
                         $endHour = (int)substr($event['end_time'], 0, 2);
                         $endMinute = (int)substr($event['end_time'], 3, 2);
+                        // Calculate end position correctly
                         $endTop = ($endHour * 12) + ($endMinute / 5);
-                        $height = $endTop - $top;
+                        $height = max(4, $endTop - $top); // Ensure minimum height
                       }
                     ?>
                     <div class="absolute px-1 py-0.5 text-xs truncate cursor-pointer"
@@ -410,16 +413,17 @@
           <label for="all_day" class="ml-2 text-sm text-gray-700">Ganztägiger Termin</label>
         </div>
         
+        <!-- Time Selection Section - Updated handling for all-day events -->
         <div id="timeSelectionGroup" class="grid grid-cols-2 gap-4 hidden">
           <div>
             <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Startzeit</label>
-            <input type="time" id="start_time" name="start_time" 
+            <input type="time" id="start_time" name="start_time" value="00:00"
                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
           </div>
           
           <div>
             <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">Endzeit</label>
-            <input type="time" id="end_time" name="end_time" 
+            <input type="time" id="end_time" name="end_time" value="23:59"
                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
           </div>
         </div>
@@ -527,10 +531,21 @@
     allDayCheckbox.addEventListener('change', () => {
       timeSelectionGroup.classList.toggle('hidden', allDayCheckbox.checked);
       
-      // Clear time values when all-day is checked to avoid sending empty strings
+      // Set default values for all-day events (instead of clearing)
+      const startTimeInput = document.getElementById('start_time');
+      const endTimeInput = document.getElementById('end_time');
+      
       if (allDayCheckbox.checked) {
-        document.getElementById('start_time').value = '';
-        document.getElementById('end_time').value = '';
+        // For all-day events, use 00:00 and 23:59
+        startTimeInput.value = "00:00";
+        endTimeInput.value = "23:59";
+      } else {
+        // For non-all-day events, set current time as default if empty
+        if (!startTimeInput.value) {
+          const now = new Date();
+          startTimeInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          endTimeInput.value = `${String((now.getHours() + 1) % 24).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
       }
     });
     
