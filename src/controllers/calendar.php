@@ -155,6 +155,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $errors[] = 'Das Datum ist erforderlich.';
         }
         
+        // Validate time fields - convert empty strings to NULL
+        if (isset($_POST['start_time']) && $_POST['start_time'] === '') {
+            $_POST['start_time'] = null;
+        }
+
+        if (isset($_POST['end_time']) && $_POST['end_time'] === '') {
+            $_POST['end_time'] = null;
+        }
+        
         if (empty($errors)) {
             try {
                 $stmt = $pdo->prepare("

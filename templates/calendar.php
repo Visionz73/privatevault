@@ -526,6 +526,12 @@
     // Toggle time selection based on all-day checkbox
     allDayCheckbox.addEventListener('change', () => {
       timeSelectionGroup.classList.toggle('hidden', allDayCheckbox.checked);
+      
+      // Clear time values when all-day is checked to avoid sending empty strings
+      if (allDayCheckbox.checked) {
+        document.getElementById('start_time').value = '';
+        document.getElementById('end_time').value = '';
+      }
     });
     
     // Open modal with default values
