@@ -74,12 +74,12 @@ foreach ($all as $t) {
       <?php foreach ($statuses as $key => $label): ?>
         <div class="task-column w-80 flex-shrink-0 bg-gray-50 rounded-xl shadow-sm p-3" data-status="<?= $key ?>">
           <div class="flex justify-between items-center p-2 mb-3">
-            <h3 class="font-semibold text-gray-700"><?= $label ?> <span class="text-sm text-gray-500">(<?= count($columns[$key]) ?>)</span></h3>
+            <h3 class="font-semibold text-gray-700"><?= $label ?> <span class="text-sm text-gray-500">(<?= count($tasksByStatus[$key]) ?>)</span></h3>
           </div>
 
           <!-- Task Container -->
           <div class="task-container min-h-[100px] space-y-3" ondragover="event.preventDefault()" ondrop="dropTask(event, '<?= $key ?>')">
-            <?php foreach ($columns[$key] as $task): ?>
+            <?php foreach ($tasksByStatus[$key] as $task): ?>
               <div class="task-card bg-white rounded-lg shadow p-3 cursor-grab" 
                    draggable="true" 
                    ondragstart="dragStart(event, '<?= $task['id'] ?>', '<?= $key ?>')"
@@ -126,7 +126,7 @@ foreach ($all as $t) {
               </div>
             <?php endforeach; ?>
             
-            <?php if(count($columns[$key]) === 0): ?>
+            <?php if(count($tasksByStatus[$key]) === 0): ?>
               <div class="empty-placeholder text-center py-6 text-sm text-gray-400">
                 Keine Aufgaben
               </div>
@@ -205,4 +205,95 @@ foreach ($all as $t) {
         const counter = column.querySelector('h3 span');
         const taskCount = column.querySelectorAll('.task-card').length;
         
-        if
+        if (counter) {
+            counter.textContent = `(${taskCount})`;
+        }
+    }
+
+    // New Task Modal
+    function openNewTaskModal(defaultStatus = 'todo') {
+        const modal = document.getElementById('taskModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        modalContent.innerHTML = `
+          <div class="flex flex-col">
+            <h2 class="text-lg font-semibold mb-4">Neue Aufgabe</h2>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Titel</label>
+              <input type="text" id="newTaskTitle" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Aufgabe Titel">
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+              <textarea id="newTaskDescription" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" rows="3" placeholder="Aufgabe Beschreibung"></textarea>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fälligkeitsdatum</label>
+              <input type="date" id="newTaskDueDate" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select id="newTaskStatus" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <?php foreach ($statuses as $statusKey => $statusLabel): ?>
+                  <option value="<?= $statusKey ?>" <?= ($statusKey === 'todo') ? 'selected' : '' ?>><?= $statusLabel ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            
+            <div class="flex justify-end mt-4">
+              <button onclick="saveNewTask()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold">
+                Aufgabe erstellen
+              </button>
+            </div>
+          </div>
+        `;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Set default status
+        document.getElementById('newTaskStatus').value = defaultStatus;
+      }
+
+      function saveNewTask() {
+        const title = document.getElementById('newTaskTitle').value.trim();
+        const description = document.getElementById('newTaskDescription').value.trim();
+        const dueDate = document.getElementById('newTaskDueDate').value;
+        const status = document.getElementById('newTaskStatus').value;
+        
+        if (!title) {
+          alert('Bitte geben Sie einen Titel für die Aufgabe ein.');
+          return;
+        }
+        
+        // AJAX request to create new task
+        fetch('/api/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({ title, description, due_date: dueDate, status }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Close modal
+            document.getElementById('taskModal').classList.add('hidden');
+            
+            // Reset form
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskDescription').value = '';
+            document.getElementById('newTaskDueDate').value = '';
+            document.getElementById('newTaskStatus').value = 'todo';
+            
+            // Add new task to the correct column
+            const newTask = data.task;
+            const targetContainer = document.querySelector(`.task-column[data-status="${newTask.status}"] .task-container`);
+            const addButton = targetContainer.querySelector('button:last-child');
+            
+            // Remove empty placeholder if it exists
+            const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
