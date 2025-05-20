@@ -44,10 +44,10 @@ $params = [];
 
 // Filter by ownership/assignment
 if ($filterType === 'mine') {
-    $whereClauses[] = "(created_by = ? OR assigned_to = ?)";
+    $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ?)";
     array_push($params, $userId, $userId);
 } elseif ($filterType === 'group' && !empty($filterGroupId)) {
-    $whereClauses[] = "assigned_group_id = ?";
+    $whereClauses[] = "e.assigned_group_id = ?";
     $params[] = $filterGroupId;
 } else {
     // Show all events the user can see (created by user, assigned to user, or assigned to user's groups)
@@ -56,11 +56,11 @@ if ($filterType === 'mine') {
     
     if (!empty($groupIds)) {
         $groupPlaceholders = implode(',', array_fill(0, count($groupIds), '?'));
-        $whereClauses[] = "(created_by = ? OR assigned_to = ? OR assigned_group_id IN ($groupPlaceholders))";
+        $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ? OR e.assigned_group_id IN ($groupPlaceholders))";
         array_push($params, $userId, $userId);
         $params = array_merge($params, $groupIds);
     } else {
-        $whereClauses[] = "(created_by = ? OR assigned_to = ?)";
+        $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ?)";
         array_push($params, $userId, $userId);
     }
 }
@@ -79,7 +79,7 @@ if ($view === 'month') {
     $daysToAdd = 6 - $lastDayOfWeek;
     $lastDay = date('Y-m-d', strtotime("+$daysToAdd days", strtotime($lastDay)));
     
-    $whereClauses[] = "DATE(start_datetime) BETWEEN ? AND ?";
+    $whereClauses[] = "DATE(e.start_datetime) BETWEEN ? AND ?";
     array_push($params, $firstDay, $lastDay);
 } elseif ($view === 'week') {
     // Get first and last day of week
@@ -87,10 +87,10 @@ if ($view === 'month') {
     $firstDay = date('Y-m-d', strtotime("-$dayOfWeek days", $timestamp));
     $lastDay = date('Y-m-d', strtotime("+6 days", strtotime($firstDay)));
     
-    $whereClauses[] = "DATE(start_datetime) BETWEEN ? AND ?";
+    $whereClauses[] = "DATE(e.start_datetime) BETWEEN ? AND ?";
     array_push($params, $firstDay, $lastDay);
 } elseif ($view === 'day') {
-    $whereClauses[] = "DATE(start_datetime) = ?";
+    $whereClauses[] = "DATE(e.start_datetime) = ?";
     array_push($params, date('Y-m-d', $timestamp));
 }
 
