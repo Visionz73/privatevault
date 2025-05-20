@@ -112,7 +112,7 @@ $stmt = $pdo->prepare("
             SELECT group_id FROM user_group_members WHERE user_id = ?
         )
     )
-    ORDER BY e.event_date, e.start_time
+    ORDER BY e.event_date, e.all_day DESC, IFNULL(e.start_time, '') ASC
 ");
 
 array_push($params, $userId, $userId, $userId);
