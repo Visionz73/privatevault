@@ -65,45 +65,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $stmt = $pdo->prepare("
                     INSERT INTO tasks
-                      (title, description, created_by, assigned_to, due_date, status, is_done)
+                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done)
                     VALUES
-                      (?, ?, ?, ?, ?, 'todo', 0)
+                      (?, ?, ?, ?, NULL, ?, 'todo', 0)
                 ");
                 
                 $stmt->execute([$title, $description, $_SESSION['user_id'], $assignedTo, $dueDate]);
                 $success = 'Aufgabe wurde erstellt und dem Benutzer zugewiesen.';
                 
             } else {
-                // Group assignment - create tasks for all group members
+                // Group assignment
                 $groupId = $_POST['assigned_group'];
                 
-                // Get all users in the group
+                // Create a single task assigned to the group
                 $stmt = $pdo->prepare("
-                    SELECT user_id FROM user_group_members WHERE group_id = ?
+                    INSERT INTO tasks
+                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done)
+                    VALUES
+                      (?, ?, ?, NULL, ?, ?, 'todo', 0)
                 ");
-                $stmt->execute([$groupId]);
-                $groupMembers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                $stmt->execute([$title, $description, $_SESSION['user_id'], $groupId, $dueDate]);
                 
-                if (empty($groupMembers)) {
-                    $errors[] = 'Die ausgewählte Gruppe hat keine Mitglieder.';
-                } else {
-                    // Start transaction
-                    $pdo->beginTransaction();
-                    
-                    $stmt = $pdo->prepare("
-                        INSERT INTO tasks
-                          (title, description, created_by, assigned_to, due_date, status, is_done)
-                        VALUES
-                          (?, ?, ?, ?, ?, 'todo', 0)
-                    ");
-                    
-                    foreach ($groupMembers as $memberId) {
-                        $stmt->execute([$title, $description, $_SESSION['user_id'], $memberId, $dueDate]);
-                    }
-                    
-                    $pdo->commit();
-                    $success = 'Aufgabe wurde erstellt und allen Gruppenmitgliedern zugewiesen.';
-                }
+                $success = 'Aufgabe wurde erstellt und der Gruppe zugewiesen.';
             }
             
             if (!empty($success)) {
@@ -112,9 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
         } catch (PDOException $e) {
-            if (isset($pdo) && $pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
             $errors[] = 'Datenbankfehler: ' . $e->getMessage();
         }
     }

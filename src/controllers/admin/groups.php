@@ -105,22 +105,22 @@ $stmt = $pdo->query('SELECT * FROM user_groups ORDER BY name');
 $groupsData = $stmt->fetchAll();
 
 foreach ($groupsData as $group) {
-    // Debug: Log the query for a specific group
+    // Debug output to help troubleshooting
     error_log("Loading members for group ID: " . $group['id']);
     
-    // Use correct table name - user_group_members
+    // Make sure we're using the correct table name (user_group_members)
     $stmt = $pdo->prepare('
-        SELECT u.id, u.username, u.email 
+        SELECT u.* 
         FROM users u
-        JOIN user_group_members gm ON u.id = gm.user_id
-        WHERE gm.group_id = ?
+        JOIN user_group_members m ON u.id = m.user_id
+        WHERE m.group_id = ?
         ORDER BY u.username
     ');
     $stmt->execute([$group['id']]);
     $members = $stmt->fetchAll();
     
-    // Debug: Log the number of members found
-    error_log("Found " . count($members) . " members");
+    // Add debug output
+    error_log("Found " . count($members) . " members for group " . $group['name']);
     
     $groups[] = [
         'id' => $group['id'],
