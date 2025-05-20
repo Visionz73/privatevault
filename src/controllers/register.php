@@ -1,15 +1,19 @@
 <?php
-// src/controllers/register.php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../lib/db.php';
 
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Fallbacks, damit kein Notice entsteht
-    $email           = trim($_POST['email']           ?? '');
-    $username        = trim($_POST['username']        ?? '');
-    $password        = $_POST['password']             ?? '';
-    $confirmPassword = $_POST['confirm_password']     ?? '';
+    $email           = trim($_POST['email'] ?? '');
+    $username        = trim($_POST['username'] ?? '');
+    $password        = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
 
     // Validierung
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -38,9 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare(
-            'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)'
+            'INSERT INTO users (username, password_hash, email, role, created_at) VALUES (?, ?, ?, ?, NOW())'
         );
-        $stmt->execute([$username, $hash, $email]);
+        $stmt->execute([$username, $hash, $email, 'member']);
 
         // Automatisches Einloggen
         $_SESSION['user_id'] = $pdo->lastInsertId();

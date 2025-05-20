@@ -18,15 +18,18 @@
     <div class="flex justify-center mb-8">
       <a href="dashboard.php" class="flex items-center">
         <img src="/assets/logo.png" alt="Logo" class="h-26 w-auto" />
-        
       </a>
     </div>
 
-    
+    <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Registrieren</h1>
 
-    <?php if (!empty($error)): ?>
+    <?php if (!empty($errors)): ?>
       <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm">
-        <?= htmlspecialchars($error) ?>
+        <ul class="list-disc pl-4">
+          <?php foreach($errors as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
       </div>
     <?php endif; ?>
 
@@ -39,14 +42,21 @@
       </div>
 
       <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">E-Mail</label>
+        <input type="email" id="email" name="email" required 
+               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+               class="w-full px-4 py-2 bg-white/80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]" />
+      </div>
+
+      <div>
         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Passwort</label>
         <input type="password" id="password" name="password" required 
                class="w-full px-4 py-2 bg-white/80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]" />
       </div>
 
       <div>
-        <label for="password_confirm" class="block text-sm font-medium text-gray-700 mb-2">Passwort bestätigen</label>
-        <input type="password" id="password_confirm" name="password_confirm" required 
+        <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">Passwort bestätigen</label>
+        <input type="password" id="confirm_password" name="confirm_password" required 
                class="w-full px-4 py-2 bg-white/80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]" />
       </div>
 
