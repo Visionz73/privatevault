@@ -28,7 +28,7 @@ try {
 try {
     $stmt = $pdo->query("SELECT g.id, g.name, COUNT(m.user_id) as member_count 
                          FROM user_groups g 
-                         LEFT JOIN group_members m ON g.id = m.group_id 
+                         LEFT JOIN user_group_members m ON g.id = m.group_id 
                          GROUP BY g.id 
                          ORDER BY g.name");
     $allGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
