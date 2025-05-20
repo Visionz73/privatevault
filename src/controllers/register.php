@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Automatisches Einloggen
         $_SESSION['user_id'] = $pdo->lastInsertId();
-        header('Location: dashboard.php');
+        header('Location: /dashboard.php');
         exit;
     }
 }

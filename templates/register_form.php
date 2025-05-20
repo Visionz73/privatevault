@@ -16,7 +16,7 @@
   <div class="w-full max-w-md bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm p-8">
     <!-- Logo -->
     <div class="flex justify-center mb-8">
-      <a href="dashboard.php" class="flex items-center">
+      <a href="/index.php" class="flex items-center">
         <img src="/assets/logo.png" alt="Logo" class="h-26 w-auto" />
       </a>
     </div>
