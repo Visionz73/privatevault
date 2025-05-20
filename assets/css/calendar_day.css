@@ -1,0 +1,69 @@
+.day-calendar {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.time-slot {
+    display: flex;
+    min-height: 60px;
+    border-bottom: 1px solid #ddd;
+}
+
+.time-slot:last-child {
+    border-bottom: none;
+}
+
+.time-label {
+    width: 80px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+    text-align: right;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.events-container {
+    flex-grow: 1;
+    padding: 5px;
+    position: relative;
+}
+
+.event {
+    background-color: #3788d8;
+    color: white;
+    border-radius: 3px;
+    padding: 5px 8px;
+    margin-bottom: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.event:hover {
+    filter: brightness(1.1);
+    transform: scale(1.01);
+}
+
+.event-title {
+    font-weight: bold;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-time {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .time-label {
+        width: 60px;
+        font-size: 0.8rem;
+    }
+}
