@@ -13,12 +13,17 @@
   <title>Inbox | Private Vault</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <style>body{font-family:'Inter',sans-serif}</style>
+  <style>
+    body{font-family:'Inter',sans-serif}
+    @media (max-width: 768px) {
+      main { margin-top: 3.5rem; }
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-bg flex">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
   <?php require_once __DIR__ . '/navbar.php'; ?>
 
-  <main class="ml-64 flex-1 p-8">
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <div class="max-w-5xl mx-auto space-y-6">
 
       <!-- Header mit Filter-Button -->
