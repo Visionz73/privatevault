@@ -9,14 +9,16 @@ if (!$taskId) {
     exit;
 }
 
-// Aufgabe laden inkl. Erstellername und Empfängername
+// Aufgabe laden inkl. Erstellername, Empfängername und Gruppenname
 $stmt = $pdo->prepare("
     SELECT t.*, 
            creator.username as creator_name, 
-           assignee.username as assignee_name
+           assignee.username as assignee_name,
+           g.name as group_name
     FROM tasks t
     LEFT JOIN users creator ON creator.id = t.created_by
     LEFT JOIN users assignee ON assignee.id = t.assigned_to
+    LEFT JOIN user_groups g ON g.id = t.assigned_group_id
     WHERE t.id = ?
 ");
 $stmt->execute([$taskId]);
