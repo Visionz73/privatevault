@@ -37,19 +37,39 @@ $usersMap = array_column($users, 'username', 'id');
 $where = ["t.is_done != 1"];
 $params = [];
 
-// Nur bestimmte zugewiesene Aufgaben oder alle Aufgaben
+// Get user's group memberships
+$stmtGroups = $pdo->prepare("
+    SELECT group_id FROM user_group_members WHERE user_id = ?
+");
+$stmtGroups->execute([$userId]);
+$userGroupIds = $stmtGroups->fetchAll(PDO::FETCH_COLUMN);
+
+// Only for specific assignee or all tasks
 if ($filterAssignedTo !== 'all' && is_numeric($filterAssignedTo)) {
     $where[] = "t.assigned_to = ?";
     $params[] = (int)$filterAssignedTo;
+} else {
+    // Tasks either directly assigned to the user OR to a group they belong to
+    $groupCondition = '';
+    if (!empty($userGroupIds)) {
+        $placeholders = implode(',', array_fill(0, count($userGroupIds), '?'));
+        $groupCondition = " OR t.assigned_group_id IN ($placeholders)";
+        $params = array_merge($params, $userGroupIds);
+    }
+    
+    $where[] = "(t.assigned_to = ?$groupCondition)";
+    $params[] = (int)$userId;
 }
 
 // 7) Tasks holen
 $sql = "SELECT t.*, 
-               creator.username AS creator_name,
-               assignee.username AS assignee_name
+              creator.username AS creator_name,
+              assignee.username AS assignee_name,
+              g.name AS group_name
         FROM tasks t
         LEFT JOIN users creator ON creator.id = t.created_by
         LEFT JOIN users assignee ON assignee.id = t.assigned_to
+        LEFT JOIN user_groups g ON g.id = t.assigned_group_id
         WHERE " . implode(' AND ', $where) . "
         ORDER BY t.created_at DESC";
 $stmt = $pdo->prepare($sql);

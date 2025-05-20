@@ -80,7 +80,13 @@
                     </span>
                     <span>
                       <span class="font-medium">Für:</span> 
-                      <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                      <?php if ($t['assigned_group_id']): ?>
+                        <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs">
+                          Gruppe: <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
+                        </span>
+                      <?php else: ?>
+                        <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                      <?php endif; ?>
                     </span>
                     <?php if(!empty($t['due_date'])): ?>
                       <span>
