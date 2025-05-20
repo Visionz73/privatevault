@@ -121,3 +121,6 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </main>
 </body>
 </html>
+<?php
+require_once __DIR__ . '/../src/controllers/calendar.php';
+?>
