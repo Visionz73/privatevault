@@ -30,18 +30,21 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 12h12M3 20h6"/>
             </svg>
-            <?= $filterAssignedTo==='all' 
-                 ? 'Alle Aufgaben' 
-                 : 'Von: '.htmlspecialchars($usersMap[$filterAssignedTo] ?? 'Unbekannt') ?>
+            <?php if ($filterAssignedTo === 'all'): ?>
+              Alle Aufgaben
+            <?php else: ?>
+              Aufgaben für: <?= htmlspecialchars($usersMap[$filterAssignedTo] ?? 'Unbekannt') ?>
+            <?php endif; ?>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
           </button>
-          <div id="filterMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-20">
+          <div id="filterMenu" class="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-20 max-h-80 overflow-y-auto">
             <a href="/inbox.php?assigned_to=all"
                class="block px-4 py-2 hover:bg-gray-100 <?= $filterAssignedTo==='all'?'bg-gray-100':'' ?>">
               Alle Aufgaben
             </a>
+            <div class="border-t border-gray-200 my-1"></div>
             <?php foreach($users as $u): ?>
               <a href="/inbox.php?assigned_to=<?= $u['id'] ?>"
                  class="block px-4 py-2 hover:bg-gray-100 <?= ((string)$filterAssignedTo)===(string)$u['id']?'bg-gray-100':'' ?>">
@@ -55,18 +58,17 @@
       <!-- Aufgabenliste -->
       <?php if(empty($tasks)): ?>
         <div class="p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-sm text-center text-gray-500">
-          Du hast keine offenen Aufgaben.
+          Keine Aufgaben gefunden.
         </div>
       <?php else: ?>
         <ul class="space-y-4">
           <?php foreach($tasks as $t): ?>
-            <li class="bg-white/60 backdrop-blur-sm rounded-xl shadow-sm p-5 hover:bg-white/80 transition cursor-pointer"
-                onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
+            <li class="bg-white/60 backdrop-blur-sm rounded-xl shadow-sm p-5 relative">
               <div class="flex items-start gap-4">
                 <div class="h-10 w-10 rounded-full bg-[#4A90E2]/10 flex items-center justify-center font-semibold text-[#4A90E2] uppercase">
                   <?= htmlspecialchars(substr($t['creator_name'] ?? '', 0, 2)) ?>
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 cursor-pointer" onclick="openDetailModal(<?= $t['id'] ?>)">
                   <h2 class="text-base font-medium text-gray-900 mb-1"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
                   <?php if(!empty($t['description'])): ?>
                     <p class="text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($t['description']) ?></p>
@@ -75,6 +77,10 @@
                     <span>
                       <span class="font-medium">Von:</span> 
                       <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
+                    </span>
+                    <span>
+                      <span class="font-medium">Für:</span> 
+                      <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
                     </span>
                     <?php if(!empty($t['due_date'])): ?>
                       <span>
@@ -87,6 +93,14 @@
                     <?php endif; ?>
                   </div>
                 </div>
+                <!-- Done button -->
+                <form method="get" class="absolute top-2 right-2">
+                  <input type="hidden" name="done" value="<?= $t['id'] ?>">
+                  <input type="hidden" name="assigned_to" value="<?= htmlspecialchars($filterAssignedTo) ?>">
+                  <button type="submit" class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs">
+                    Erledigt
+                  </button>
+                </form>
               </div>
             </li>
           <?php endforeach; ?>
