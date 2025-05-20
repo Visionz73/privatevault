@@ -93,13 +93,16 @@ echo "CREATE TABLE IF NOT EXISTS tasks (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   created_by INT NOT NULL,
-  assigned_to INT NOT NULL,
+  assigned_to INT,
+  assigned_group_id INT,
+  user_id INT NOT NULL,
   due_date DATE,
   status ENUM('todo', 'doing', 'done') DEFAULT 'todo',
   is_done TINYINT(1) DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (created_by) REFERENCES users(id),
-  FOREIGN KEY (assigned_to) REFERENCES users(id)
+  FOREIGN KEY (assigned_to) REFERENCES users(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );\n\n";
 
 // Subtasks table SQL

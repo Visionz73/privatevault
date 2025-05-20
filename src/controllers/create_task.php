@@ -61,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO tasks
-                  (title, description, assigned_to, assigned_group_id, due_date, status, created_by)
+                  (title, description, assigned_to, assigned_group_id, due_date, status, created_by, user_id)
                 VALUES
-                  (?, ?, ?, ?, ?, 'todo', ?)
+                  (?, ?, ?, ?, ?, 'todo', ?, ?)
             ");
             $stmt->execute([
                 $_POST['title']       ?? '',
@@ -71,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $assignedTo,
                 $assignedGroupId,
                 $due_date,
-                $_SESSION['user_id']
+                $_SESSION['user_id'],
+                $_SESSION['user_id'] // This adds the user_id field that was missing
             ]);
 
             if ($stmt->rowCount() > 0) {
