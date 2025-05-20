@@ -21,11 +21,3 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Enable DEBUG mode for development
-define('DEBUG', true);
-
-// Make sure logs directory exists
-if (!file_exists(__DIR__ . '/logs')) {
-    mkdir(__DIR__ . '/logs', 0755, true);
-}
-

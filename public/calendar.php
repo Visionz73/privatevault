@@ -5,112 +5,119 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/db.php';
-
+require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
 
-// Get view parameters
-$view = $_GET['view'] ?? 'month';  // month, week, day
-$date = $_GET['date'] ?? date('Y-m-d');
-$timestamp = strtotime($date);
-$year = date('Y', $timestamp);
-$month = date('m', $timestamp);
-$day = date('d', $timestamp);
-
-// Get user groups for filtering
-$stmtGroups = $pdo->prepare("
-    SELECT g.id, g.name 
-    FROM user_groups g
-    JOIN user_group_members m ON g.id = m.group_id
-    WHERE m.user_id = ?
-");
-$stmtGroups->execute([$userId]);
-$userGroups = $stmtGroups->fetchAll(PDO::FETCH_ASSOC);
-
-// Get all users for assignment
-$stmtUsers = $pdo->query("SELECT id, username FROM users ORDER BY username");
-$users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
-
-// Get selected filters
-$filterType = $_GET['filter'] ?? 'all';  // all, mine, group
-$filterGroupId = $_GET['group_id'] ?? null;
-
-// Fetch events based on view and filters
-$whereClauses = [];
-$params = [];
-
-// Filter by ownership/assignment
-if ($filterType === 'mine') {
-    $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ?)";
-    array_push($params, $userId, $userId);
-} elseif ($filterType === 'group' && !empty($filterGroupId)) {
-    $whereClauses[] = "e.assigned_group_id = ?";
-    $params[] = $filterGroupId;
-} else {
-    // Show all events the user can see (created by user, assigned to user, or assigned to user's groups)
-    $groupIds = array_column($userGroups, 'id');
-    $groupPlaceholders = '';
-    
-    if (!empty($groupIds)) {
-        $groupPlaceholders = implode(',', array_fill(0, count($groupIds), '?'));
-        $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ? OR e.assigned_group_id IN ($groupPlaceholders))";
-        array_push($params, $userId, $userId);
-        $params = array_merge($params, $groupIds);
-    } else {
-        $whereClauses[] = "(e.created_by = ? OR e.assigned_to = ?)";
-        array_push($params, $userId, $userId);
-    }
-}
-
-// Date range based on view
-if ($view === 'month') {
-    // Get first and last day of month
-    $firstDay = date('Y-m-01', $timestamp);
-    $lastDay = date('Y-m-t', $timestamp);
-    
-    // Get a few days from previous and next month to fill calendar
-    $prevDays = date('w', strtotime($firstDay));
-    $firstDay = date('Y-m-d', strtotime("-$prevDays days", strtotime($firstDay)));
-    
-    $lastDayOfWeek = date('w', strtotime($lastDay));
-    $daysToAdd = 6 - $lastDayOfWeek;
-    $lastDay = date('Y-m-d', strtotime("+$daysToAdd days", strtotime($lastDay)));
-    
-    $whereClauses[] = "DATE(e.start_datetime) BETWEEN ? AND ?";
-    array_push($params, $firstDay, $lastDay);
-} elseif ($view === 'week') {
-    // Get first and last day of week
-    $dayOfWeek = date('w', $timestamp);
-    $firstDay = date('Y-m-d', strtotime("-$dayOfWeek days", $timestamp));
-    $lastDay = date('Y-m-d', strtotime("+6 days", strtotime($firstDay)));
-    
-    $whereClauses[] = "DATE(e.start_datetime) BETWEEN ? AND ?";
-    array_push($params, $firstDay, $lastDay);
-} elseif ($view === 'day') {
-    $whereClauses[] = "DATE(e.start_datetime) = ?";
-    array_push($params, date('Y-m-d', $timestamp));
-}
-
-// Build and execute the query
-$whereClause = !empty($whereClauses) ? 'WHERE ' . implode(' AND ', $whereClauses) : '';
-$query = "
-    SELECT e.*, 
-           creator.username as creator_name,
-           assignee.username as assignee_name,
-           g.name as group_name
-    FROM events e
-    LEFT JOIN users creator ON creator.id = e.created_by
-    LEFT JOIN users assignee ON assignee.id = e.assigned_to
-    LEFT JOIN user_groups g ON g.id = e.assigned_group_id
-    $whereClause
-    ORDER BY e.start_datetime ASC
-";
-
-$stmt = $pdo->prepare($query);
-$stmt->execute($params);
+// Ändere "user_id" zu "created_by", da in der Tabelle events diese Spalte verwendet wird
+$stmt = $pdo->prepare("SELECT id, title, event_date FROM events WHERE created_by = ? ORDER BY event_date ASC");
+$stmt->execute([$userId]);
 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-require_once __DIR__ . '/../templates/calendar.php';
+?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Kalender | Private Vault</title>
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @media (max-width: 768px) {
+      main { margin-top: 3.5rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+  <?php require_once __DIR__.'/../templates/navbar.php'; ?>
+  
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Kalender</h1>
+    </header>
+    
+    <!-- Terminliste Widget -->
+    <section class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Meine Termine</h2>
+        <button id="showFormBtn" class="bg-blue-500 text-white px-3 py-1 rounded">Termin hinzufügen</button>
+      </div>
+      <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
+      <ul id="eventList" class="divide-y divide-gray-200">
+        <?php if(!empty($events)): ?>
+          <?php foreach($events as $evt): ?>
+            <li class="py-2 flex justify-between items-center">
+              <span class="font-medium"><?= htmlspecialchars($evt['title']) ?></span>
+              <span class="text-sm text-gray-500"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
+            </li>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <li class="py-2 text-gray-500 text-center" id="noEvents">Keine Termine gefunden.</li>
+        <?php endif; ?>
+      </ul>
+    </section>
+    
+    <!-- Event-Planungsformular (initial versteckt) -->
+    <section id="eventFormContainer" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow mb-8 hidden">
+      <h2 class="text-xl font-semibold mb-4">Neues Event hinzufügen</h2>
+      <form id="eventForm" class="space-y-4">
+        <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
+        <input type="date" name="date" class="w-full border border-gray-300 rounded p-2" required>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Hinzufügen</button>
+      </form>
+    </section>
+    
+    <script>
+      // Toggle Formularanzeige
+      document.getElementById('showFormBtn').addEventListener('click', function() {
+        const formContainer = document.getElementById('eventFormContainer');
+        formContainer.classList.toggle('hidden');
+      });
+      
+      // Updates der Terminliste
+      function updateEventList(newEvent) {
+        const eventList = document.getElementById('eventList');
+        // Entferne "Keine Termine gefunden." falls vorhanden
+        const noEventsEl = document.getElementById('noEvents');
+        if(noEventsEl) noEventsEl.remove();
+        
+        // Füge neues Event ans Ende der Liste hinzu
+        const li = document.createElement('li');
+        li.className = "py-2 flex justify-between items-center";
+        li.innerHTML = `<span class="font-medium">${newEvent.title}</span>
+                        <span class="text-sm text-gray-500">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+        eventList.appendChild(li);
+      }
+      
+      // Event-Formular-Handler per AJAX
+      document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = this.title.value.trim();
+        const date = this.date.value;
+        if(title && date){
+          // Update URL to the public endpoint
+          fetch('/create_event.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ title: title, date: date })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if(data.success){
+              updateEventList(data.event);
+              this.reset();
+              // Formular ausblenden
+              document.getElementById('eventFormContainer').classList.add('hidden');
+            } else {
+              alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+            }
+          })
+          .catch(() => alert('Fehler beim Erstellen des Termins.'));
+        }
+      });
+    </script>
+  </main>
+</body>
+</html>
