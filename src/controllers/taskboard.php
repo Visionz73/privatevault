@@ -25,11 +25,11 @@ $query = "
     LEFT JOIN users ua ON t.assigned_to = ua.id
 ";
 
-// Filter anwenden
+// Filter anwenden - NUR zugewiesene Aufgaben anzeigen
 if ($filterMode === 'user') {
-    $query .= " WHERE t.created_by = ? OR t.assigned_to = ?";
+    $query .= " WHERE t.assigned_to = ?";  // Nur zugewiesene Aufgaben 
     $stmt = $pdo->prepare($query);
-    $stmt->execute([$userId, $userId]);
+    $stmt->execute([$userId]);
 } else {
     $stmt = $pdo->query($query);
 }

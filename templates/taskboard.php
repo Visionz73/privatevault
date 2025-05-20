@@ -153,40 +153,43 @@ foreach ($all as $t) {
     let sourceStatus = null;
 
     function dragStart(event, taskId, status) {
-      event.target.classList.add('dragging');
-      draggedTaskId = taskId;
-      sourceStatus = status;
+        event.target.classList.add('dragging');
+        draggedTaskId = taskId;
+        sourceStatus = status;
     }
 
     function dropTask(event, targetStatus) {
-      event.preventDefault();
-      if (!draggedTaskId) return;
-      
-      const taskCard = document.querySelector(`.task-card[data-id="${draggedTaskId}"]`);
-      if (taskCard) {
-        taskCard.classList.remove('dragging');
+        event.preventDefault();
+        if (!draggedTaskId) return;
         
-        if (sourceStatus !== targetStatus) {
-          // Move in DOM
-          const targetContainer = document.querySelector(`.task-column[data-status="${targetStatus}"] .task-container`);
-          const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
-          if (emptyPlaceholder) emptyPlaceholder.remove();
-          
-          // Insert before the "add task" button
-          const addButton = targetContainer.querySelector('button:last-child');
-          targetContainer.insertBefore(taskCard, addButton);
-          
-          // Update counters
-          updateColumnCounter(sourceStatus);
-          updateColumnCounter(targetStatus);
-          
-          // Save to database
-          updateTaskStatus(draggedTaskId, targetStatus);
+        const taskCard = document.querySelector(`.task-card[data-id="${draggedTaskId}"]`);
+        if (taskCard) {
+            taskCard.classList.remove('dragging');
+            
+            if (sourceStatus !== targetStatus) {
+                // Move in DOM
+                const targetContainer = document.querySelector(`.task-column[data-status="${targetStatus}"] .task-container`);
+                const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
+                if (emptyPlaceholder) emptyPlaceholder.remove();
+                
+                // Insert before the "add task" button
+                const addButton = targetContainer.querySelector('button:last-child');
+                targetContainer.insertBefore(taskCard, addButton);
+                
+                // Update counters
+                updateColumnCounter(sourceStatus);
+                updateColumnCounter(targetStatus);
+                
+                // Update task data attribute for future operations
+                taskCard.setAttribute('data-status', targetStatus);
+                
+                // IMPORTANT: Save to database
+                updateTaskStatus(draggedTaskId, targetStatus);
+            }
         }
-      }
-      
-      draggedTaskId = null;
-      sourceStatus = null;
+        
+        draggedTaskId = null;
+        sourceStatus = null;
     }
 
     function updateColumnCounter(status) {
@@ -197,11 +200,28 @@ foreach ($all as $t) {
     }
 
     function updateTaskStatus(taskId, status) {
-      fetch('/src/api/task_update.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `id=${taskId}&status=${status}`
-      });
+        // Debug output
+        console.log(`Updating task ${taskId} to status ${status}`);
+        
+        // Send to server
+        fetch('/src/api/task_update.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `id=${taskId}&status=${status}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Status updated successfully');
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            alert('Fehler beim Aktualisieren des Status. Bitte aktualisieren Sie die Seite.');
+        });
     }
     
     // Modal functionality
