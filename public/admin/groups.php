@@ -14,6 +14,7 @@ require_once __DIR__ . '/../../config.php';
 
 // Create required tables if they don't exist
 require_once __DIR__ . '/../../database/group_tables.php';
+require_once __DIR__ . '/../../database/group_tags_table.php';
 
 // Load the controller
 require_once __DIR__ . '/../../src/controllers/admin/groups.php';
