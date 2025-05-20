@@ -33,6 +33,13 @@
         </a>
       </div>
       
+      <!-- Success Message -->
+      <?php if (!empty($successMessage)): ?>
+      <div class="mb-4 p-4 bg-green-100 rounded-lg text-green-700" role="alert">
+        <?= htmlspecialchars($successMessage) ?>
+      </div>
+      <?php endif; ?>
+      
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Net Balance -->

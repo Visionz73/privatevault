@@ -8,7 +8,16 @@ requireLogin();
 $userId = $_SESSION['user_id'];
 
 // Make sure tables exist
+$tableMessage = '';
+ob_start();
 require_once __DIR__ . '/../../database/havetopay_tables.php';
+$tableMessage = ob_get_clean();
+
+// For success message handling
+$successMessage = '';
+if (!empty($tableMessage) && strpos($tableMessage, 'successfully') !== false) {
+    $successMessage = $tableMessage;
+}
 
 // Get balances between current user and others
 function getBalances($pdo, $userId) {
@@ -100,5 +109,5 @@ $userStmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $userStmt->execute([$userId]);
 $currentUser = $userStmt->fetch(PDO::FETCH_ASSOC);
 
-// Template rendering
+// Template rendering - pass the success message to the template
 require_once __DIR__ . '/../../templates/havetopay.php';
