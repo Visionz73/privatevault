@@ -72,71 +72,42 @@ foreach ($all as $t) {
     <!-- Columns Container -->
     <div class="flex space-x-4 columns-container overflow-x-auto pb-6">
       <?php foreach ($statuses as $key => $label): ?>
-        <div class="task-column w-80 flex-shrink-0 bg-gray-50 rounded-xl shadow-sm p-3" data-status="<?= $key ?>">
-          <div class="flex justify-between items-center p-2 mb-3">
-            <h3 class="font-semibold text-gray-700"><?= $label ?> <span class="text-sm text-gray-500">(<?= count($tasksByStatus[$key]) ?>)</span></h3>
-          </div>
-
-          <!-- Task Container -->
-          <div class="task-container min-h-[100px] space-y-3" ondragover="event.preventDefault()" ondrop="dropTask(event, '<?= $key ?>')">
-            <?php foreach ($tasksByStatus[$key] as $task): ?>
-              <div class="task-card bg-white rounded-lg shadow p-3 cursor-grab" 
+        <div id="column-<?= $key ?>"
+             class="task-column bg-gray-100/80 backdrop-blur-sm rounded-lg p-3 md:p-4 w-full md:w-1/3 shadow"
+             ondragover="event.preventDefault()" 
+             ondrop="dropTask(event, '<?= $key ?>')">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3"><?= $label ?> (<span id="count-<?= $key ?>"><?= count($tasksByStatus[$key] ?? []) ?></span>)</h2>
+          <div id="tasks-<?= $key ?>" class="space-y-3 min-h-[50px]">
+            <?php foreach (($tasksByStatus[$key] ?? []) as $task): ?>
+              <div id="task-<?= $task['id'] ?>" 
+                   class="bg-white rounded-md shadow-sm p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-150"
                    draggable="true" 
-                   ondragstart="dragStart(event, '<?= $task['id'] ?>', '<?= $key ?>')"
-                   data-id="<?= $task['id'] ?>">
-                
-                <div class="flex justify-between items-start">
-                  <h4 class="font-medium text-gray-800"><?= htmlspecialchars($task['title']) ?></h4>
-                  
-                  <!-- Due Date Badge -->
-                  <?php if(!empty($task['due_date'])): 
-                    $dueDate = strtotime($task['due_date']);
-                    $isOverdue = $dueDate < time();
-                  ?>
-                    <span class="<?= $isOverdue ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' ?> px-2 py-0.5 rounded-full text-xs">
-                      <?= date('d.m.Y', $dueDate) ?>
-                    </span>
-                  <?php endif; ?>
-                </div>
-                
-                <?php if(!empty($task['description'])): ?>
-                  <p class="mt-2 text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($task['description']) ?></p>
+                   ondragstart="dragStart(event, <?= $task['id'] ?>, '<?= $key ?>')"
+                   onclick="openTaskModal(<?= $task['id'] ?>)">
+                <h3 class="font-medium text-gray-900"><?= htmlspecialchars($task['title']) ?></h3>
+                <?php if (!empty($task['description'])): ?>
+                  <p class="text-sm text-gray-600 mt-1 truncate"><?= htmlspecialchars($task['description']) ?></p>
                 <?php endif; ?>
-                
-                <div class="mt-3 flex justify-between items-center">
-                  <!-- Assignee info -->
-                  <div class="text-xs text-gray-500">
-                    <?php if(!empty($task['assignee_name'])): ?>
-                      <span class="flex items-center">
-                        <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 inline-flex items-center justify-center mr-1 text-[10px] font-bold">
-                          <?= strtoupper(substr($task['assignee_name'], 0, 1)) ?>
-                        </span>
-                        <?= htmlspecialchars($task['assignee_name']) ?>
-                      </span>
-                    <?php else: ?>
-                      <span>Nicht zugewiesen</span>
-                    <?php endif; ?>
-                  </div>
-                  
-                  <!-- Edit button -->
-                  <button onclick="event.stopPropagation(); openTaskModal(<?= $task['id'] ?>)" class="text-xs text-gray-500 hover:text-blue-500">
-                    Details
-                  </button>
-                </div>
+                <?php if (!empty($task['due_date'])): ?>
+                  <p class="text-xs text-gray-500 mt-2">Fällig: <?= date('d.m.Y', strtotime($task['due_date'])) ?></p>
+                <?php endif; ?>
+                 <?php if (($task['recurrence_type'] ?? 'none') !== 'none'): ?>
+                    <p class="text-xs text-gray-500 mt-1">Wiederholung: 
+                        <?php 
+                        echo htmlspecialchars(ucfirst($task['recurrence_type']));
+                        if (!empty($task['recurrence_interval'])) {
+                            echo " (alle ".htmlspecialchars($task['recurrence_interval']).")";
+                        }
+                        if (!empty($task['recurrence_end_date'])) {
+                            echo " bis ".date('d.m.Y', strtotime($task['recurrence_end_date']));
+                        }
+                        ?>
+                    </p>
+                <?php endif; ?>
               </div>
             <?php endforeach; ?>
-            
-            <?php if(count($tasksByStatus[$key]) === 0): ?>
-              <div class="empty-placeholder text-center py-6 text-sm text-gray-400">
-                Keine Aufgaben
-              </div>
-            <?php endif; ?>
-            
-            <!-- Add task button per column -->
-            <button onclick="openNewTaskModal('<?= $key ?>')" class="w-full mt-2 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded text-center">
-              + Aufgabe hinzufügen
-            </button>
           </div>
+          <button onclick="openNewTaskModal('<?= $key ?>')" class="mt-3 w-full text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 p-2 rounded-md transition-colors duration-150">+ Aufgabe hinzufügen</button>
         </div>
       <?php endforeach; ?>
     </div>
@@ -155,145 +126,131 @@ foreach ($all as $t) {
     function dragStart(event, taskId, status) {
         draggedTaskId = taskId;
         sourceStatus = status;
+        event.dataTransfer.setData('text/plain', taskId); // Wichtig für Firefox
         event.target.classList.add('dragging');
-        // Set data required for Firefox
-        event.dataTransfer.setData('text/plain', taskId);
-        event.dataTransfer.effectAllowed = 'move';
+    }
+
+    function dragEnd(event) {
+        event.target.classList.remove('dragging');
     }
 
     function dropTask(event, targetStatus) {
         event.preventDefault();
-        const taskId = draggedTaskId || event.dataTransfer.getData('text/plain');
-        
-        if (!taskId) return;
-        
-        const taskCard = document.querySelector(`.task-card[data-id="${taskId}"]`);
-        if (taskCard) {
-            taskCard.classList.remove('dragging');
-            
-            if (sourceStatus !== targetStatus) {
-                // Move in DOM
-                const targetContainer = document.querySelector(`.task-column[data-status="${targetStatus}"] .task-container`);
-                const addButton = targetContainer.querySelector('button:last-child');
-                
-                // Remove empty placeholder if it exists
-                const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
-                if (emptyPlaceholder) emptyPlaceholder.remove();
-                
-                targetContainer.insertBefore(taskCard, addButton);
-                
-                // Update task data attribute
-                taskCard.setAttribute('ondragstart', `dragStart(event, '${taskId}', '${targetStatus}')`);
-                
-                // Update counters
-                updateColumnCounter(sourceStatus);
-                updateColumnCounter(targetStatus);
-                
-                // Save to database with better error handling
-                updateTaskStatus(taskId, targetStatus);
+        if (!draggedTaskId || sourceStatus === targetStatus) return;
+
+        const taskElement = document.getElementById(`task-${draggedTaskId}`);
+        if (!taskElement) return;
+
+        // API-Aufruf zum Aktualisieren des Task-Status
+        const formData = new FormData();
+        formData.append('id', draggedTaskId);
+        formData.append('status', targetStatus);
+
+        fetch('/src/api/task_update.php', { 
+            method: 'POST', 
+            body: formData 
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error('Fehler beim Aktualisieren: ' + text); });
             }
-        }
-        
-        draggedTaskId = null;
-        sourceStatus = null;
+            return response.text();
+        })
+        .then(data => {
+            console.log(data); // Erfolgsmeldung vom Server
+            // UI aktualisieren
+            document.getElementById(`tasks-${targetStatus}`).appendChild(taskElement);
+            updateColumnCounter(sourceStatus);
+            updateColumnCounter(targetStatus);
+            // Reset draggedTaskId and sourceStatus
+            draggedTaskId = null;
+            sourceStatus = null;
+        })
+        .catch(error => {
+            console.error('Error updating task status:', error);
+            alert(error.message);
+            // Ggf. Task zurück in die ursprüngliche Spalte verschieben oder Fehler anzeigen
+        });
     }
 
     function updateColumnCounter(status) {
-        const column = document.querySelector(`.task-column[data-status="${status}"]`);
-        if (!column) return;
-        
-        const counter = column.querySelector('h3 span');
-        const taskCount = column.querySelectorAll('.task-card').length;
-        
-        if (counter) {
-            counter.textContent = `(${taskCount})`;
+        const countElement = document.getElementById(`count-${status}`);
+        const tasksContainer = document.getElementById(`tasks-${status}`);
+        if (countElement && tasksContainer) {
+            countElement.textContent = tasksContainer.children.length;
         }
     }
 
     // New Task Modal
     function openNewTaskModal(defaultStatus = 'todo') {
-        const modal = document.getElementById('taskModal');
-        const modalContent = document.getElementById('modalContent');
-        
-        modalContent.innerHTML = `
-          <div class="flex flex-col">
-            <h2 class="text-lg font-semibold mb-4">Neue Aufgabe</h2>
-            
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Titel</label>
-              <input type="text" id="newTaskTitle" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Aufgabe Titel">
-            </div>
-            
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
-              <textarea id="newTaskDescription" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" rows="3" placeholder="Aufgabe Beschreibung"></textarea>
-            </div>
-            
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Fälligkeitsdatum</label>
-              <input type="date" id="newTaskDueDate" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            </div>
-            
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select id="newTaskStatus" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <?php foreach ($statuses as $statusKey => $statusLabel): ?>
-                  <option value="<?= $statusKey ?>" <?= ($statusKey === 'todo') ? 'selected' : '' ?>><?= $statusLabel ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-            
-            <div class="flex justify-end mt-4">
-              <button onclick="saveNewTask()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold">
-                Aufgabe erstellen
-              </button>
-            </div>
-          </div>
-        `;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        // Set default status
-        document.getElementById('newTaskStatus').value = defaultStatus;
-      }
+        fetch('/templates/task_modal.php?status=' + defaultStatus)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('taskModal').classList.remove('hidden');
+                document.getElementById('taskModal').classList.add('flex');
+                // Event-Listener für das neue Formular im Modal neu binden
+                const taskForm = document.getElementById('taskForm');
+                if(taskForm) {
+                    taskForm.addEventListener('submit', handleTaskFormSubmit);
+                }
+            });
+    }
+    
+    function openTaskModal(taskId) {
+        fetch('/templates/task_modal.php?id=' + taskId)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('taskModal').classList.remove('hidden');
+                document.getElementById('taskModal').classList.add('flex');
+                 // Event-Listener für das neue Formular im Modal neu binden
+                const taskForm = document.getElementById('taskForm');
+                if(taskForm) {
+                    taskForm.addEventListener('submit', handleTaskFormSubmit);
+                }
+            });
+    }
 
-      function saveNewTask() {
-        const title = document.getElementById('newTaskTitle').value.trim();
-        const description = document.getElementById('newTaskDescription').value.trim();
-        const dueDate = document.getElementById('newTaskDueDate').value;
-        const status = document.getElementById('newTaskStatus').value;
-        
-        if (!title) {
-          alert('Bitte geben Sie einen Titel für die Aufgabe ein.');
-          return;
+    function handleTaskFormSubmit(event) {
+        event.preventDefault();
+        const fd = new FormData(event.target);
+        const recurrenceType = fd.get('recurrence_type');
+        if (recurrenceType === 'none') {
+            fd.delete('recurrence_interval');
+            fd.delete('recurrence_end_date');
         }
-        
-        // AJAX request to create new task
-        fetch('/api/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: JSON.stringify({ title, description, due_date: dueDate, status }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Close modal
-            document.getElementById('taskModal').classList.add('hidden');
-            
-            // Reset form
-            document.getElementById('newTaskTitle').value = '';
-            document.getElementById('newTaskDescription').value = '';
-            document.getElementById('newTaskDueDate').value = '';
-            document.getElementById('newTaskStatus').value = 'todo';
-            
-            // Add new task to the correct column
-            const newTask = data.task;
-            const targetContainer = document.querySelector(`.task-column[data-status="${newTask.status}"] .task-container`);
-            const addButton = targetContainer.querySelector('button:last-child');
-            
-            // Remove empty placeholder if it exists
-            const emptyPlaceholder = targetContainer.querySelector('.empty-placeholder');
+
+        fetch('/src/api/task_save.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    location.reload(); // Einfachste Lösung: Seite neu laden, um Änderungen zu sehen
+                } else {
+                    alert(res.error || 'Fehler beim Speichern des Tasks.');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving task:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+            });
+    }
+
+    // Close Modal
+    document.getElementById('taskModal').addEventListener('click', function(event) {
+        if (event.target === this) { // Klick auf den Hintergrund
+            this.classList.add('hidden');
+            this.classList.remove('flex');
+        }
+    });
+
+    // Initialisiere Spaltenzähler beim Laden der Seite
+    document.addEventListener('DOMContentLoaded', () => {
+        <?php foreach (array_keys($statuses) as $statusKey): ?>
+        updateColumnCounter('<?= $statusKey ?>');
+        <?php endforeach; ?>
+    });
+
+  </script>
+</body>
+</html>
