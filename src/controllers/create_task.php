@@ -65,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $stmt = $pdo->prepare("
                     INSERT INTO tasks
-                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done)
+                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done, user_id)
                     VALUES
-                      (?, ?, ?, ?, NULL, ?, 'todo', 0)
+                      (?, ?, ?, ?, NULL, ?, 'todo', 0, ?)
                 ");
                 
-                $stmt->execute([$title, $description, $_SESSION['user_id'], $assignedTo, $dueDate]);
+                $stmt->execute([$title, $description, $_SESSION['user_id'], $assignedTo, $dueDate, $_SESSION['user_id']]);
                 $success = 'Aufgabe wurde erstellt und dem Benutzer zugewiesen.';
                 
             } else {
@@ -80,11 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Create a single task assigned to the group
                 $stmt = $pdo->prepare("
                     INSERT INTO tasks
-                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done)
+                      (title, description, created_by, assigned_to, assigned_group_id, due_date, status, is_done, user_id)
                     VALUES
-                      (?, ?, ?, NULL, ?, ?, 'todo', 0)
+                      (?, ?, ?, NULL, ?, ?, 'todo', 0, ?)
                 ");
-                $stmt->execute([$title, $description, $_SESSION['user_id'], $groupId, $dueDate]);
+                $stmt->execute([$title, $description, $_SESSION['user_id'], $groupId, $dueDate, $_SESSION['user_id']]);
                 
                 $success = 'Aufgabe wurde erstellt und der Gruppe zugewiesen.';
             }
