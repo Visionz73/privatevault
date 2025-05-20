@@ -25,7 +25,7 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
     .sidebar-content { display: block; }
   }
 
-  /* Mobile topbar styling */
+  /* Mobile topbar styling - Fixed to be fully opaque */
   @media (max-width: 768px) {
     nav#sidebar {
       position: fixed;
@@ -33,9 +33,8 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
       left: 0;
       right: 0;
       height: 3.5rem; /* fixed top bar height */
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.6);
+      background: #ffffff; /* Fully opaque white background */
+      border-bottom: 1px solid #e5e7eb;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       z-index: 50;
     }
@@ -52,13 +51,26 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
+      background: #ffffff; /* Fully opaque white background */
       z-index: 49;
       padding: 1rem;
+      overflow-y: auto; /* Allow scrolling if many menu items */
     }
     .sidebar-content.active {
       display: block;
+    }
+    /* Improved mobile menu item styling */
+    .sidebar-content ul li {
+      margin-bottom: 0.75rem;
+    }
+    .sidebar-content ul li a {
+      display: block;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-content ul li a:hover {
+      background-color: #f3f4f6;
     }
   }
 </style>
@@ -158,8 +170,19 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
   if (mobileToggleBtn) {
     mobileToggleBtn.addEventListener('click', () => {
       sidebarContent.classList.toggle('active');
+      // Add body class to prevent scrolling when menu is open
+      document.body.classList.toggle('overflow-hidden');
+    });
+    
+    // Close menu when clicking on a link (better mobile UX)
+    document.querySelectorAll('.sidebar-content a').forEach(link => {
+      link.addEventListener('click', () => {
+        sidebarContent.classList.remove('active');
+        document.body.classList.remove('overflow-hidden');
+      });
     });
   }
+  
   // Desktop toggle for collapse (optional)
   const btn = document.getElementById('toggleBtn');
   if(btn) {
