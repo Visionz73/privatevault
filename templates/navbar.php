@@ -1,7 +1,11 @@
 <?php
-// Adjusted Navbar for Mobile and Desktop
+// Adjusted Navbar with dynamic path handling
 require_once __DIR__ . '/../src/lib/auth.php';
 $user = getUser();
+
+// Detect if we're in the admin directory to adjust paths
+$isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
+$basePath = $isAdminPage ? '../' : '';
 ?>
 <style>
   /* Desktop sidebar styling */
@@ -69,7 +73,7 @@ $user = getUser();
               d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
-    <a href="dashboard.php" class="flex items-center">
+    <a href="<?= $basePath ?>dashboard.php" class="flex items-center">
       <img src="/assets/logo.png" alt="Logo" class="h-12 w-auto" />
       
     </a>
@@ -86,7 +90,7 @@ $user = getUser();
       </button>
       <!-- Centered logo -->
       <div class="flex justify-center mb-6">
-        <a href="dashboard.php" class="flex items-center">
+        <a href="<?= $basePath ?>dashboard.php" class="flex items-center">
           <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
           
         </a>
@@ -103,7 +107,7 @@ $user = getUser();
         ];
         foreach ($links as $l): ?>
           <li>
-            <a href="<?= $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="<?= $basePath . $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <?= $l['icon'] ?>
@@ -114,17 +118,17 @@ $user = getUser();
         <?php endforeach; ?>
         <?php if ($user && $user['role'] === 'admin'): ?>
           <li>
-            <a href="admin.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="<?= $isAdminPage ? 'index.php' : 'admin/index.php' ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span class="ml-3">Admin</span>
+              <span class="ml-3">Admin Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="admin/groups.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="<?= $isAdminPage ? 'groups.php' : 'admin/groups.php' ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -137,7 +141,7 @@ $user = getUser();
       </ul>
     </div>
     <div class="px-4 py-2 w-full mt-auto">
-      <a href="logout.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+      <a href="<?= $basePath ?>logout.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
         </svg>
