@@ -31,8 +31,10 @@ try {
     if (!tableExists($pdo, 'expenses')) {
         $sql = "CREATE TABLE expenses (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            description VARCHAR(255) NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
             amount DECIMAL(10, 2) NOT NULL,
+            currency VARCHAR(3) DEFAULT 'EUR',
             payer_id INT NOT NULL,
             expense_date DATE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -41,6 +43,25 @@ try {
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expenses';
+    } else {
+        // Check if we need to alter the table to add missing columns
+        $columns = [];
+        $columnQuery = $pdo->query("SHOW COLUMNS FROM expenses");
+        while($col = $columnQuery->fetch(PDO::FETCH_ASSOC)) {
+            $columns[] = strtolower($col['Field']);
+        }
+        
+        // Add title column if missing
+        if (!in_array('title', $columns)) {
+            $pdo->exec("ALTER TABLE expenses ADD COLUMN title VARCHAR(255) NOT NULL AFTER id");
+            $tablesCreated[] = 'expenses (added title column)';
+        }
+        
+        // Add currency column if missing
+        if (!in_array('currency', $columns)) {
+            $pdo->exec("ALTER TABLE expenses ADD COLUMN currency VARCHAR(3) DEFAULT 'EUR' AFTER amount");
+            $tablesCreated[] = 'expenses (added currency column)';
+        }
     }
     
     // 2. Create expense_participants table if not exists
@@ -51,6 +72,7 @@ try {
             user_id INT NOT NULL,
             share_amount DECIMAL(10, 2) NOT NULL,
             is_settled TINYINT(1) DEFAULT 0,
+            settled_at DATETIME DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (expense_id) REFERENCES expenses(id) ON DELETE CASCADE,
@@ -59,6 +81,18 @@ try {
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expense_participants';
+    } else {
+        // Check if we need to add settled_at column
+        $columns = [];
+        $columnQuery = $pdo->query("SHOW COLUMNS FROM expense_participants");
+        while($col = $columnQuery->fetch(PDO::FETCH_ASSOC)) {
+            $columns[] = strtolower($col['Field']);
+        }
+        
+        if (!in_array('settled_at', $columns)) {
+            $pdo->exec("ALTER TABLE expense_participants ADD COLUMN settled_at DATETIME DEFAULT NULL AFTER is_settled");
+            $tablesCreated[] = 'expense_participants (added settled_at column)';
+        }
     }
     
     // Commit the transaction
