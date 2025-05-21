@@ -40,6 +40,13 @@
       </div>
       <?php endif; ?>
       
+      <!-- Error Message -->
+      <?php if (!empty($errorMessage)): ?>
+      <div class="mb-4 p-4 bg-red-100 rounded-lg text-red-700" role="alert">
+        <?= htmlspecialchars($errorMessage) ?>
+      </div>
+      <?php endif; ?>
+      
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Net Balance -->
