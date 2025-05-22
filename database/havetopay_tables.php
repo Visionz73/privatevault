@@ -26,11 +26,19 @@ try {
     
     // Track created tables
     $tablesCreated = [];
+
+    // 1. First check if users table has required fields
+    $userColumnsExist = false;
+    try {
+        $stmt = $pdo->query("DESCRIBE users");
+        $userColumnsExist = true;
+    } catch (PDOException $e) {
+        echo "Error: Users table not found. Please create a users table first.<br>";
+        throw $e;
+    }
     
-    // Check if we need to create the groups table for foreign key references
-    $needsGroupsTable = false;
+    // 2. Check and create groups table if needed
     if (!tableExists($pdo, 'groups')) {
-        $needsGroupsTable = true;
         $sql = "CREATE TABLE groups (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -38,12 +46,17 @@ try {
             created_by INT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT
+            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'groups';
         
-        // Create group_members table
+        // Add a default group
+        $pdo->exec("INSERT INTO groups (name, description, created_by) VALUES ('Default Group', 'Default expense group', 1)");
+    }
+    
+    // 3. Check and create group_members table if needed
+    if (!tableExists($pdo, 'group_members')) {
         $sql = "CREATE TABLE group_members (
             id INT AUTO_INCREMENT PRIMARY KEY,
             group_id INT NOT NULL,
@@ -58,32 +71,27 @@ try {
         $tablesCreated[] = 'group_members';
     }
     
-    // 1. Create expenses table if not exists
+    // 4. Check and create expenses table if needed
     if (!tableExists($pdo, 'expenses')) {
-        $foreignKeyGroupClause = $needsGroupsTable ? 
-            ", FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL" : 
-            "";
-            
         $sql = "CREATE TABLE expenses (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(255) NOT NULL, -- Added title field
-            description TEXT NULL, -- Changed description to allow NULL
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
             amount DECIMAL(10, 2) NOT NULL,
             payer_id INT NOT NULL,
             group_id INT NULL,
             expense_date DATE NOT NULL,
-            expense_category VARCHAR(50) NULL,
-            notes TEXT NULL,
+            expense_category VARCHAR(50) DEFAULT 'Other',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (payer_id) REFERENCES users(id) ON DELETE CASCADE
-            $foreignKeyGroupClause
+            FOREIGN KEY (payer_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expenses';
     }
     
-    // 2. Create expense_participants table if not exists
+    // 5. Check and create expense_participants table if needed
     if (!tableExists($pdo, 'expense_participants')) {
         $sql = "CREATE TABLE expense_participants (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -102,24 +110,7 @@ try {
         $tablesCreated[] = 'expense_participants';
     }
     
-    // 3. Create settlements table if not exists
-    if (!tableExists($pdo, 'settlements')) {
-        $sql = "CREATE TABLE settlements (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            payer_id INT NOT NULL,
-            receiver_id INT NOT NULL,
-            amount DECIMAL(10, 2) NOT NULL,
-            settlement_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            notes TEXT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (payer_id) REFERENCES users(id) ON DELETE RESTRICT,
-            FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE RESTRICT
-        )";
-        $pdo->exec($sql);
-        $tablesCreated[] = 'settlements';
-    }
-    
-    // 4. Create expense_categories table if not exists
+    // 6. Check and create expense_categories table if needed
     if (!tableExists($pdo, 'expense_categories')) {
         $sql = "CREATE TABLE expense_categories (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -144,25 +135,27 @@ try {
             ['Other', 'fa-question-circle']
         ];
         
-        $stmt = $pdo->prepare("INSERT INTO expense_categories (name, icon) VALUES (?, ?)");
+        $insertStmt = $pdo->prepare("INSERT INTO expense_categories (name, icon) VALUES (?, ?)");
         foreach ($categories as $category) {
-            // Catch and ignore duplicate key errors
             try {
-                $stmt->execute($category);
+                $insertStmt->execute($category);
             } catch (PDOException $e) {
-                if ($e->getCode() != 23000) { // 23000 is duplicate key error
+                // Ignore duplicate key errors (23000)
+                if ($e->getCode() != '23000') {
                     throw $e;
                 }
             }
         }
     }
-    
+
     // Commit the transaction
     $pdo->commit();
     
-    // Show success message if any tables were created
+    // Display success message
     if (!empty($tablesCreated)) {
         echo "HaveToPay tables created successfully: " . implode(', ', $tablesCreated);
+    } else {
+        echo "All required HaveToPay tables already exist.";
     }
     
 } catch (PDOException $e) {
@@ -171,11 +164,8 @@ try {
         $pdo->rollBack();
     }
     
-    // Output error information (consider logging this instead in production)
+    // Output error information
     echo "Database error: " . $e->getMessage();
-    
-    // If this was included via require, we should still let the script continue
-    // but log the error for investigation
     error_log("HaveToPay tables creation error: " . $e->getMessage());
 }
 ?>

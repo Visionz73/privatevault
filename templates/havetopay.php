@@ -70,6 +70,13 @@
             </div>
         </div>
 
+        <!-- Add Expense Button -->
+        <div class="text-end mb-4">
+            <a href="havetopay_add.php" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Add New Expense
+            </a>
+        </div>
+
         <!-- Main Dashboard -->
         <div class="row">
             <!-- Balance Summary -->

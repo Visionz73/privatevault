@@ -16,26 +16,34 @@ try {
     ");
     $userStmt->execute([$userId]);
     $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get all groups
+    $groupStmt = $pdo->prepare("
+        SELECT g.id, g.name, g.description
+        FROM groups g
+        JOIN group_members gm ON g.id = gm.group_id
+        WHERE gm.user_id = ?
+    ");
+    $groupStmt->execute([$userId]);
+    $allGroups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get expense categories
+    $categoryStmt = $pdo->query("SELECT id, name, icon FROM expense_categories ORDER BY name");
+    $categories = $categoryStmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $title = trim($_POST['title'] ?? ''); // Read title
+        $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $amount = floatval($_POST['amount'] ?? 0);
-        $currency = $_POST['currency'] ?? 'EUR';
         $expenseDate = $_POST['expense_date'] ?? date('Y-m-d');
+        $expenseCategory = $_POST['category'] ?? 'Other';
         $participants = $_POST['participants'] ?? [];
+        $groupId = !empty($_POST['group_id']) ? intval($_POST['group_id']) : null;
         
         // Form validation
-        if (empty($title)) { // Validate title
+        if (empty($title)) {
             $errors[] = 'Title is required';
-        }
-        if (empty($description) && !empty($title) && $title === ($description = trim($_POST['description'] ?? ''))) {
-            // If description was initially empty but title was provided,
-            // and they happen to be the same (e.g. if description was auto-filled from title by browser),
-            // we can consider description optional or set it to title.
-            // For now, let's make description optional if title is present.
-            // Or, you might decide description is also required.
         }
         
         if ($amount <= 0) {
@@ -53,10 +61,10 @@ try {
                 
                 // Insert the expense
                 $expenseStmt = $pdo->prepare("
-                    INSERT INTO expenses (title, description, amount, payer_id, expense_date)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO expenses (title, description, amount, payer_id, group_id, expense_date, expense_category)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 ");
-                $expenseStmt->execute([$title, $description, $amount, $userId, $expenseDate]);
+                $expenseStmt->execute([$title, $description, $amount, $userId, $groupId, $expenseDate, $expenseCategory]);
                 $expenseId = $pdo->lastInsertId();
                 
                 // Calculate equal share
@@ -91,9 +99,12 @@ try {
     $errors[] = 'An error occurred. Please try again later.';
     error_log('HaveToPay add page error: ' . $e->getMessage());
     
-    // If users can't be loaded, provide empty array
+    // If data can't be loaded, provide empty arrays
     $allUsers = [];
+    $allGroups = [];
+    $categories = [];
 }
 
 // Template rendering
 require_once __DIR__ . '/../../templates/havetopay_add.php';
+?>
