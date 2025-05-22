@@ -33,8 +33,23 @@
             color: var(--text-dark);
         }
         
+        /* Content container fix */
         .content-container {
             padding: 2rem 1rem 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content-container {
+                padding-top: 4.5rem !important;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .content-container {
+                margin-left: 16rem;
+                width: calc(100% - 16rem);
+                padding-bottom: 3rem;
+            }
         }
         
         /* Modern card styling */
@@ -260,7 +275,7 @@
             .content-container {
                 margin-left: 16rem;
                 width: calc(100% - 16rem);
-                padding: 2rem 1.5rem 3rem;
+                padding-bottom: 3rem;
             }
         }
         
@@ -271,54 +286,47 @@
         }
     </style>
 </head>
-<body>
-    <?php if (file_exists(__DIR__.'/navbar.php')) require_once __DIR__.'/navbar.php'; ?>
+<body class="haveToPay-layout">
+    <?php require_once __DIR__.'/navbar.php'; ?>
     
     <div class="content-container">
-        <div class="container main-content">
-            <!-- Back Link -->
-            <div class="mb-4">
-                <a href="havetopay.php" class="back-link">
+        <div class="container">
+            <!-- Form header with back button -->
+            <div class="d-flex align-items-center mb-4">
+                <a href="havetopay.php" class="btn-link-modern me-3">
                     <i class="fas fa-arrow-left"></i>
                     Back to HaveToPay
                 </a>
+                <h1 class="m-0">Add New Expense</h1>
             </div>
             
-            <!-- Header -->
-            <div class="mb-4">
-                <h1 class="fw-bold mb-1">Add New Expense</h1>
-                <p class="text-muted">Split expenses with your friends and track who owes what</p>
-            </div>
-            
-            <!-- Error and Success Messages -->
+            <!-- Error display -->
             <?php if (!empty($errors)): ?>
-                <div class="modern-alert warning">
+                <div class="modern-alert warning mb-4">
                     <i class="fas fa-exclamation-circle"></i>
                     <div>
-                        <strong>Please fix the following errors:</strong>
-                        <ul class="mb-0 ps-3 mt-1">
-                            <?php foreach ($errors as $error): ?>
-                                <li><?php echo htmlspecialchars($error); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <?php foreach ($errors as $error): ?>
+                            <div><?php echo htmlspecialchars($error); ?></div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             <?php endif; ?>
             
-            <?php if (!empty($success)): ?>
-                <div class="modern-alert success">
+            <!-- Success message -->
+            <?php if ($success): ?>
+                <div class="modern-alert success mb-4">
                     <i class="fas fa-check-circle"></i>
                     <?php echo htmlspecialchars($success); ?>
                 </div>
             <?php endif; ?>
             
-            <!-- Add Expense Form -->
-            <div class="modern-card mb-4">
+            <!-- Expense form -->
+            <div class="modern-card">
                 <div class="card-header">
-                    <h2 class="card-title mb-0 fw-bold">Expense Details</h2>
+                    <h5 class="m-0 fw-bold">Expense Details</h5>
                 </div>
                 <div class="card-body">
-                    <form action="" method="POST">
+                    <form method="POST" action="" class="row g-4">
                         <!-- Basic Information Section -->
                         <div class="form-section">
                             <h3 class="form-section-title">
@@ -415,8 +423,8 @@
         </div>
     </div>
     
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {

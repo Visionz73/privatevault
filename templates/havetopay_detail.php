@@ -284,9 +284,16 @@
                 padding: 2rem 1.5rem 3rem;
             }
         }
+        
+        /* Mobile specific fix */
+        @media (max-width: 768px) {
+            .content-container {
+                padding-top: 4.5rem !important;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="haveToPay-layout">
     <?php require_once __DIR__.'/navbar.php'; ?>
     
     <div class="content-container">

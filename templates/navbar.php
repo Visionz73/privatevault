@@ -5,6 +5,11 @@ $user = getUser();
 
 // Only groups.php is in the admin directory
 $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
+
+// Determine if we're on the havetopay page to add specific styling
+$isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' || 
+                   basename($_SERVER['PHP_SELF']) === 'havetopay_add.php' ||
+                   basename($_SERVER['PHP_SELF']) === 'havetopay_detail.php';
 ?>
 <style>
   /* Desktop sidebar styling */
@@ -73,7 +78,28 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
       background-color: #f3f4f6;
     }
   }
+  
+  /* Fix for HaveToPay pages - ensure content appears correctly */
+  .haveToPay-layout {
+    padding-top: 0 !important;
+  }
+  
+  @media (min-width: 769px) {
+    body.haveToPay-layout main, 
+    body.haveToPay-layout .content-container {
+      margin-left: 16rem !important;
+      width: calc(100% - 16rem) !important;
+    }
+  }
 </style>
+
+<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
+<script>
+  if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
+    document.body.classList.add('haveToPay-layout');
+  }
+</script>
+
 <nav id="sidebar">
   <!-- Mobile top bar -->
   <div class="mobile-menu">
@@ -115,10 +141,13 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
           ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />', 'label'=>'MyTask'],
           ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />', 'label'=>'Create Task'],
           ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />', 'label'=>'Kanban'],
+          ['href'=>'havetopay.php',   'icon'=>'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', 'label'=>'HaveToPay'],
         ];
-        foreach ($links as $l): ?>
+        foreach ($links as $l): 
+          $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
+        ?>
           <li>
-            <a href="/<?= $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="/<?= $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg <?= $isActive ? 'bg-blue-50 text-blue-700 font-medium' : '' ?>">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <?= $l['icon'] ?>
@@ -127,7 +156,7 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
             </a>
           </li>
         <?php endforeach; ?>
-        <?php if ($user && $user['role'] === 'admin'): ?>
+        <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
           <li>
             <a href="/admin.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
@@ -145,59 +174,25 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span class="ml-3">Gruppen</span>
+              <span class="ml-3">Manage Groups</span>
             </a>
           </li>
         <?php endif; ?>
-        <!-- Add the HaveToPay link to the navigation menu -->
-        <li class="px-2">
-            <a href="havetopay.php" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#EEF2F6] text-text transition-colors">
-                <i class="fas fa-wallet text-primary w-6 text-center"></i>
-                <span class="flex-1 font-medium text-sm">HaveToPay</span>
-            </a>
-        </li>
       </ul>
-    </div>
-    <div class="px-4 py-2 w-full mt-auto">
-      <a href="/logout.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-        </svg>
-        <span class="ml-3">Abmelden</span>
-      </a>
     </div>
   </div>
 </nav>
 
+<!-- Mobile navigation toggle script -->
 <script>
-  // Mobile toggle: toggle sidebar content on mobile
-  const mobileToggleBtn = document.getElementById('mobileToggleBtn');
-  const sidebarContent = document.querySelector('nav .sidebar-content');
-  
-  if (mobileToggleBtn) {
-    mobileToggleBtn.addEventListener('click', () => {
-      sidebarContent.classList.toggle('active');
-      // Add body class to prevent scrolling when menu is open
-      document.body.classList.toggle('overflow-hidden');
-    });
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggleBtn = document.getElementById('mobileToggleBtn');
+    const sidebar = document.querySelector('.sidebar-content');
     
-    // Close menu when clicking on a link (better mobile UX)
-    document.querySelectorAll('.sidebar-content a').forEach(link => {
-      link.addEventListener('click', () => {
-        sidebarContent.classList.remove('active');
-        document.body.classList.remove('overflow-hidden');
+    if (mobileToggleBtn && sidebar) {
+      mobileToggleBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
       });
-    });
-  }
-  
-  // Desktop toggle for collapse (optional)
-  const btn = document.getElementById('toggleBtn');
-  if(btn) {
-    btn.addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('collapsed');
-      sidebar.classList.toggle('w-64');
-      sidebar.classList.toggle('w-16');
-    });
-  }
+    }
+  });
 </script>

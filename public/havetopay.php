@@ -7,7 +7,7 @@ try {
     // Log error
     error_log("Error in HaveToPay module: " . $e->getMessage());
     
-    // Show a user-friendly error page with modern design
+    // Show a user-friendly error page
     echo "<!DOCTYPE html>
     <html>
     <head>

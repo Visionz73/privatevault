@@ -278,7 +278,7 @@
             font-size: 1.25rem;
         }
         
-        /* Content area spacing */
+        /* Content area spacing - Updated to fix overlap issues */
         .content-container {
             padding-top: 2rem;
             padding-bottom: 3rem;
@@ -302,10 +302,19 @@
             .btn-modern-primary, .btn-modern-outline {
                 width: 100%;
             }
+            
+            /* Mobile padding for content with navbar */
+            .content-container {
+                padding-top: 4.5rem !important;
+            }
         }
 
         /* Adjustment for navbar integration */
         @media (min-width: 769px) {
+            body {
+                margin-left: 0;
+            }
+            
             .content-container {
                 margin-left: 16rem;
                 width: calc(100% - 16rem);
@@ -314,8 +323,8 @@
         }
     </style>
 </head>
-<body>
-    <?php if (file_exists(__DIR__.'/navbar.php')) require_once __DIR__.'/navbar.php'; ?>
+<body class="haveToPay-layout">
+    <?php require_once __DIR__.'/navbar.php'; ?>
     
     <div class="content-container">
         <div class="container main-content">
