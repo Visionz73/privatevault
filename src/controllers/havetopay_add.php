@@ -42,20 +42,46 @@ try {
             $user['username'];
     }
     
+    // Determine which groups table is in use
+    $groupsTable = 'user_groups';
+    $groupMembersTable = 'user_group_members';
+    
+    try {
+        $pdo->query("SELECT 1 FROM $groupsTable LIMIT 1");
+    } catch (Exception $e) {
+        $groupsTable = 'groups';
+        $groupMembersTable = 'group_members';
+    }
+    
     // Get user groups
-    $groupStmt = $pdo->prepare("
-        SELECT g.id, g.name
-        FROM user_groups g
-        JOIN user_group_members m ON g.id = m.group_id
-        WHERE m.user_id = ?
-        ORDER BY g.name
-    ");
-    $groupStmt->execute([$userId]);
-    $allGroups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $groupStmt = $pdo->prepare("
+            SELECT g.id, g.name
+            FROM $groupsTable g
+            JOIN $groupMembersTable m ON g.id = m.group_id
+            WHERE m.user_id = ?
+            ORDER BY g.name
+        ");
+        $groupStmt->execute([$userId]);
+        $allGroups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        // If there's an error, provide empty groups array
+        $allGroups = [];
+        error_log('Error fetching groups: ' . $e->getMessage());
+    }
     
     // Get expense categories
-    $categoryStmt = $pdo->query("SELECT id, name, icon FROM expense_categories ORDER BY name");
-    $categories = $categoryStmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $categoryStmt = $pdo->query("SELECT id, name, icon FROM expense_categories ORDER BY name");
+        $categories = $categoryStmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        // Provide default categories if table doesn't exist
+        $categories = [
+            ['id' => 1, 'name' => 'Food', 'icon' => 'fa-utensils'],
+            ['id' => 2, 'name' => 'Transportation', 'icon' => 'fa-car'],
+            ['id' => 9, 'name' => 'Other', 'icon' => 'fa-question-circle']
+        ];
+    }
 
     // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -85,12 +111,50 @@ try {
             try {
                 $pdo->beginTransaction();
                 
-                // Insert the expense
-                $expenseStmt = $pdo->prepare("
-                    INSERT INTO expenses (title, description, amount, payer_id, group_id, expense_date, expense_category)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                ");
-                $expenseStmt->execute([$title, $description, $amount, $userId, $groupId, $expenseDate, $expenseCategory]);
+                // Check if the expenses table has the right columns
+                $hasGroupIdColumn = true;
+                $hasCategoryColumn = true;
+                
+                try {
+                    $columnsResult = $pdo->query("DESCRIBE expenses");
+                    $expenseColumns = [];
+                    while ($column = $columnsResult->fetch(PDO::FETCH_ASSOC)) {
+                        $expenseColumns[] = $column['Field'];
+                    }
+                    $hasGroupIdColumn = in_array('group_id', $expenseColumns);
+                    $hasCategoryColumn = in_array('expense_category', $expenseColumns);
+                } catch (Exception $e) {
+                    $hasGroupIdColumn = false;
+                    $hasCategoryColumn = false;
+                }
+                
+                // Insert the expense with appropriate columns
+                if ($hasGroupIdColumn && $hasCategoryColumn) {
+                    $expenseStmt = $pdo->prepare("
+                        INSERT INTO expenses (title, description, amount, payer_id, group_id, expense_date, expense_category)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $expenseStmt->execute([$title, $description, $amount, $userId, $groupId, $expenseDate, $expenseCategory]);
+                } elseif ($hasGroupIdColumn) {
+                    $expenseStmt = $pdo->prepare("
+                        INSERT INTO expenses (title, description, amount, payer_id, group_id, expense_date)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    ");
+                    $expenseStmt->execute([$title, $description, $amount, $userId, $groupId, $expenseDate]);
+                } elseif ($hasCategoryColumn) {
+                    $expenseStmt = $pdo->prepare("
+                        INSERT INTO expenses (title, description, amount, payer_id, expense_date, expense_category)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    ");
+                    $expenseStmt->execute([$title, $description, $amount, $userId, $expenseDate, $expenseCategory]);
+                } else {
+                    $expenseStmt = $pdo->prepare("
+                        INSERT INTO expenses (title, description, amount, payer_id, expense_date)
+                        VALUES (?, ?, ?, ?, ?)
+                    ");
+                    $expenseStmt->execute([$title, $description, $amount, $userId, $expenseDate]);
+                }
+                
                 $expenseId = $pdo->lastInsertId();
                 
                 // Calculate equal share

@@ -19,14 +19,64 @@ function tableExists($pdo, $table) {
     }
 }
 
+// Function to check if a column exists in a table
+function columnExists($pdo, $table, $column) {
+    try {
+        $stmt = $pdo->prepare("SELECT $column FROM $table LIMIT 0");
+        $stmt->execute();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
 try {
     // Begin transaction
     $pdo->beginTransaction();
     
-    // Track created tables
+    // Track created tables and modifications
     $tablesCreated = [];
+    $tablesModified = [];
     
-    // 1. Create expenses table if not exists
+    // Determine which groups table exists (user_groups or groups)
+    $groupsTable = 'user_groups';
+    $groupMembersTable = 'user_group_members';
+    
+    if (!tableExists($pdo, 'user_groups') && tableExists($pdo, 'groups')) {
+        $groupsTable = 'groups';
+        $groupMembersTable = 'group_members';
+    }
+    
+    // Create the groups table if it doesn't exist at all
+    if (!tableExists($pdo, $groupsTable)) {
+        $sql = "CREATE TABLE $groupsTable (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT NULL,
+            created_by INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+        )";
+        $pdo->exec($sql);
+        $tablesCreated[] = $groupsTable;
+        
+        // Also create the group members table
+        $sql = "CREATE TABLE $groupMembersTable (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            group_id INT NOT NULL,
+            user_id INT NOT NULL,
+            is_admin TINYINT(1) DEFAULT 0,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (group_id) REFERENCES $groupsTable(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE KEY unique_membership (group_id, user_id)
+        )";
+        $pdo->exec($sql);
+        $tablesCreated[] = $groupMembersTable;
+    }
+    
+    // 1. Create or modify expenses table
     if (!tableExists($pdo, 'expenses')) {
         $sql = "CREATE TABLE expenses (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -40,10 +90,35 @@ try {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (payer_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE SET NULL
+            FOREIGN KEY (group_id) REFERENCES $groupsTable(id) ON DELETE SET NULL
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expenses';
+    } else {
+        // Check and add title column if missing
+        if (!columnExists($pdo, 'expenses', 'title')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN title VARCHAR(255) NOT NULL DEFAULT 'Unnamed Expense' AFTER id";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added title column)';
+        }
+        
+        // Check and add group_id column if missing
+        if (!columnExists($pdo, 'expenses', 'group_id')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN group_id INT NULL AFTER payer_id";
+            $pdo->exec($sql);
+            
+            // Add foreign key constraint
+            $sql = "ALTER TABLE expenses ADD CONSTRAINT fk_expense_group FOREIGN KEY (group_id) REFERENCES $groupsTable(id) ON DELETE SET NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added group_id column)';
+        }
+        
+        // Check and add expense_category column if missing
+        if (!columnExists($pdo, 'expenses', 'expense_category')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN expense_category VARCHAR(50) DEFAULT 'Other' AFTER expense_date";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added expense_category column)';
+        }
     }
     
     // 2. Create expense_participants table if not exists
@@ -54,7 +129,7 @@ try {
             user_id INT NOT NULL,
             share_amount DECIMAL(10, 2) NOT NULL,
             is_settled TINYINT(1) DEFAULT 0,
-            settled_date TIMESTAMP NULL,
+            settled_date TIMESTAMP NULL DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (expense_id) REFERENCES expenses(id) ON DELETE CASCADE,
@@ -63,6 +138,13 @@ try {
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expense_participants';
+    } else {
+        // Check and add settled_date column if missing
+        if (!columnExists($pdo, 'expense_participants', 'settled_date')) {
+            $sql = "ALTER TABLE expense_participants ADD COLUMN settled_date TIMESTAMP NULL DEFAULT NULL AFTER is_settled";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expense_participants (added settled_date column)';
+        }
     }
     
     // 3. Create expense_categories table if not exists
@@ -106,9 +188,19 @@ try {
     // Commit the transaction
     $pdo->commit();
     
-    // Show success message if any tables were created
+    // Show success message
+    $messages = [];
     if (!empty($tablesCreated)) {
-        echo "HaveToPay tables created successfully: " . implode(', ', $tablesCreated);
+        $messages[] = "Tables created: " . implode(', ', $tablesCreated);
+    }
+    if (!empty($tablesModified)) {
+        $messages[] = "Tables modified: " . implode(', ', $tablesModified);
+    }
+    
+    if (!empty($messages)) {
+        echo "HaveToPay tables setup successfully. " . implode(' ', $messages);
+    } else {
+        echo "All HaveToPay tables already exist with the correct structure.";
     }
     
 } catch (PDOException $e) {
