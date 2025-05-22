@@ -207,7 +207,7 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
+                                    <th>Title</th> <!-- Changed from Description -->
                                     <th>Amount</th>
                                     <th>Paid By</th>
                                     <th>Date</th>
@@ -217,7 +217,14 @@
                             <tbody>
                                 <?php foreach ($recentExpenses as $expense): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($expense['description']); ?></td>
+                                    <td>
+                                        <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>">
+                                            <?php echo htmlspecialchars($expense['title']); ?>
+                                        </a>
+                                        <?php if(!empty($expense['description'])): ?>
+                                            <small class="d-block text-muted"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 50, "...")); ?></small>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>€<?php echo number_format($expense['amount'], 2); ?></td>
                                     <td><?php echo htmlspecialchars($expense['payer_display_name'] ?? $expense['payer_name']); ?></td>
                                     <td><?php echo htmlspecialchars($expense['expense_date']); ?></td>

@@ -37,21 +37,21 @@ if (isset($_GET['add_test_data']) && $_GET['add_test_data'] == '1') {
         $sampleExpenses = [
             [
                 'title' => 'Team Lunch',
-                'description' => 'Lunch at the Italian restaurant',
+                'description' => 'Lunch at the Italian restaurant with the team.',
                 'amount' => 45.50,
                 'payer_id' => $users[0]['id'],
                 'expense_date' => date('Y-m-d', strtotime('-5 days'))
             ],
             [
-                'title' => 'Movie Night',
-                'description' => 'Tickets and snacks',
+                'title' => 'Movie Night Tickets',
+                'description' => 'Tickets for the new action movie and some snacks.',
                 'amount' => 32.75,
                 'payer_id' => $users[1]['id'],
                 'expense_date' => date('Y-m-d', strtotime('-2 days'))
             ],
             [
-                'title' => 'Groceries',
-                'description' => 'Weekly shopping',
+                'title' => 'Weekly Groceries',
+                'description' => 'Standard weekly grocery shopping.',
                 'amount' => 67.20,
                 'payer_id' => $users[0]['id'],
                 'expense_date' => date('Y-m-d', strtotime('-1 day'))

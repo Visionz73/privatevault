@@ -19,6 +19,7 @@ try {
 
     // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $title = trim($_POST['title'] ?? ''); // Read title
         $description = trim($_POST['description'] ?? '');
         $amount = floatval($_POST['amount'] ?? 0);
         $currency = $_POST['currency'] ?? 'EUR';
@@ -26,8 +27,15 @@ try {
         $participants = $_POST['participants'] ?? [];
         
         // Form validation
-        if (empty($description)) {
-            $errors[] = 'Description is required';
+        if (empty($title)) { // Validate title
+            $errors[] = 'Title is required';
+        }
+        if (empty($description) && !empty($title) && $title === ($description = trim($_POST['description'] ?? ''))) {
+            // If description was initially empty but title was provided,
+            // and they happen to be the same (e.g. if description was auto-filled from title by browser),
+            // we can consider description optional or set it to title.
+            // For now, let's make description optional if title is present.
+            // Or, you might decide description is also required.
         }
         
         if ($amount <= 0) {
@@ -45,10 +53,10 @@ try {
                 
                 // Insert the expense
                 $expenseStmt = $pdo->prepare("
-                    INSERT INTO expenses (description, amount, payer_id, expense_date)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO expenses (title, description, amount, payer_id, expense_date)
+                    VALUES (?, ?, ?, ?, ?)
                 ");
-                $expenseStmt->execute([$description, $amount, $userId, $expenseDate]);
+                $expenseStmt->execute([$title, $description, $amount, $userId, $expenseDate]);
                 $expenseId = $pdo->lastInsertId();
                 
                 // Calculate equal share

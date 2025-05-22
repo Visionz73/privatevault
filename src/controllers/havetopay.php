@@ -124,7 +124,7 @@ try {
     // Get recent expenses involving the current user
     function getRecentExpenses($pdo, $userId, $nameFields) {
         $query = "
-            SELECT e.*, 
+            SELECT e.*,  -- e.* will include title
                 u.username as payer_name,
                 $nameFields,
                 (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count

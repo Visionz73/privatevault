@@ -3,7 +3,8 @@
 -- Table for expenses
 CREATE TABLE IF NOT EXISTS expenses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    description VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL, -- Added title field
+    description TEXT NULL, -- Changed description to allow NULL or provide a default
     amount DECIMAL(10, 2) NOT NULL,
     payer_id INT NOT NULL,
     group_id INT NULL,
