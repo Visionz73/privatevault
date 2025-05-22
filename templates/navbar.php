@@ -150,13 +150,11 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
           </li>
         <?php endif; ?>
         <!-- Add the HaveToPay link to the navigation menu -->
-        <li>
-          <a href="/havetopay.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span class="ml-3">HaveToPay</span>
-          </a>
+        <li class="px-2">
+            <a href="havetopay.php" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#EEF2F6] text-text transition-colors">
+                <i class="fas fa-wallet text-primary w-6 text-center"></i>
+                <span class="flex-1 font-medium text-sm">HaveToPay</span>
+            </a>
         </li>
       </ul>
     </div>
