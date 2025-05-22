@@ -10,17 +10,36 @@ $errors = [];
 $success = '';
 
 try {
+    // First, check users table structure
+    $columnsResult = $pdo->query("DESCRIBE users");
+    $userColumns = [];
+    while ($column = $columnsResult->fetch(PDO::FETCH_ASSOC)) {
+        $userColumns[] = $column['Field'];
+    }
+    
+    // Determine if name fields exist
+    $hasFirstName = in_array('first_name', $userColumns);
+    $hasLastName = in_array('last_name', $userColumns);
+    
     // Get all users for participant selection
-    $userStmt = $pdo->prepare("
-        SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username
-    ");
+    if ($hasFirstName && $hasLastName) {
+        $userStmt = $pdo->prepare("
+            SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username
+        ");
+    } else {
+        $userStmt = $pdo->prepare("
+            SELECT id, username FROM users WHERE id != ? ORDER BY username
+        ");
+    }
     $userStmt->execute([$userId]);
     $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add display name to users
     foreach ($allUsers as &$user) {
-        $user['display_name'] = !empty($user['first_name']) && !empty($user['last_name']) ? 
-            $user['first_name'] . ' ' . $user['last_name'] : $user['username'];
+        $user['display_name'] = $hasFirstName && $hasLastName && 
+            !empty($user['first_name']) && !empty($user['last_name']) ? 
+            $user['first_name'] . ' ' . $user['last_name'] : 
+            $user['username'];
     }
     
     // Get user groups

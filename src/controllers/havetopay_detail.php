@@ -12,13 +12,28 @@ $success = '';
 $errors = [];
 
 if (!$expenseId) {
-    header('Location: /havetopay.php?error=no_expense');
+    header('Location: havetopay.php?error=no_expense');
     exit;
 }
 
-// Get the expense details
+// Check users table structure
+$columnsResult = $pdo->query("DESCRIBE users");
+$userColumns = [];
+while ($column = $columnsResult->fetch(PDO::FETCH_ASSOC)) {
+    $userColumns[] = $column['Field'];
+}
+
+// Determine if name fields exist
+$hasFirstName = in_array('first_name', $userColumns);
+$hasLastName = in_array('last_name', $userColumns);
+
+// Get the expense details with appropriate name fields
+$nameFields = $hasFirstName && $hasLastName ? 
+    "CONCAT(u.first_name, ' ', u.last_name) as payer_full_name" : 
+    "u.username as payer_full_name";
+
 $expenseStmt = $pdo->prepare("
-    SELECT e.*, u.username as payer_name, CONCAT(u.first_name, ' ', u.last_name) as payer_full_name
+    SELECT e.*, u.username as payer_name, $nameFields
     FROM expenses e
     JOIN users u ON e.payer_id = u.id
     WHERE e.id = ?
@@ -27,7 +42,7 @@ $expenseStmt->execute([$expenseId]);
 $expense = $expenseStmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$expense) {
-    header('Location: /havetopay.php?error=expense_not_found');
+    header('Location: havetopay.php?error=expense_not_found');
     exit;
 }
 
@@ -40,14 +55,18 @@ $accessStmt->execute([$expenseId, $userId]);
 $userHasAccess = ($accessStmt->fetchColumn() > 0) || ($expense['payer_id'] == $userId);
 
 if (!$userHasAccess) {
-    header('Location: /havetopay.php?error=permission_denied');
+    header('Location: havetopay.php?error=permission_denied');
     exit;
 }
 
-// Get participants
+// Get participants with appropriate name fields
+$participantNameFields = $hasFirstName && $hasLastName ? 
+    "CONCAT(u.first_name, ' ', u.last_name) as full_name" : 
+    "u.username as full_name";
+
 $participantsStmt = $pdo->prepare("
     SELECT ep.*, 
-           u.username, CONCAT(u.first_name, ' ', u.last_name) as full_name
+           u.username, $participantNameFields
     FROM expense_participants ep
     JOIN users u ON ep.user_id = u.id
     WHERE ep.expense_id = ?

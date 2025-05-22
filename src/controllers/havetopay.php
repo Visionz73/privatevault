@@ -19,6 +19,17 @@ $currentUser = [];
 $allUsers = [];
 
 try {
+    // First, check users table structure
+    $columnsResult = $pdo->query("DESCRIBE users");
+    $userColumns = [];
+    while ($column = $columnsResult->fetch(PDO::FETCH_ASSOC)) {
+        $userColumns[] = $column['Field'];
+    }
+    
+    // Determine if name fields exist
+    $hasFirstName = in_array('first_name', $userColumns);
+    $hasLastName = in_array('last_name', $userColumns);
+    
     // Make sure tables exist
     $tableCreationOutput = '';
     ob_start();
@@ -35,7 +46,11 @@ try {
     }
     
     // Get current user data
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    if ($hasFirstName && $hasLastName) {
+        $stmt = $pdo->prepare("SELECT id, username, first_name, last_name FROM users WHERE id = ?");
+    } else {
+        $stmt = $pdo->prepare("SELECT id, username FROM users WHERE id = ?");
+    }
     $stmt->execute([$userId]);
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -44,25 +59,35 @@ try {
     }
     
     // Prepare user display name
-    $currentUser['display_name'] = isset($currentUser['first_name']) && isset($currentUser['last_name']) ? 
+    $currentUser['display_name'] = $hasFirstName && $hasLastName && 
+        !empty($currentUser['first_name']) && !empty($currentUser['last_name']) ? 
         $currentUser['first_name'] . ' ' . $currentUser['last_name'] : 
         $currentUser['username'];
     
     // Get all users for expense participant selection
-    $stmt = $pdo->prepare("SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username");
+    if ($hasFirstName && $hasLastName) {
+        $stmt = $pdo->prepare("SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username");
+    } else {
+        $stmt = $pdo->prepare("SELECT id, username FROM users WHERE id != ? ORDER BY username");
+    }
     $stmt->execute([$userId]);
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add display names to all users
     foreach ($allUsers as &$user) {
-        $user['display_name'] = isset($user['first_name']) && isset($user['last_name']) ? 
+        $user['display_name'] = $hasFirstName && $hasLastName && 
+            !empty($user['first_name']) && !empty($user['last_name']) ? 
             $user['first_name'] . ' ' . $user['last_name'] : 
             $user['username'];
     }
     
     // Get balances: what others owe current user
+    $nameFields = $hasFirstName && $hasLastName ? 
+        "u.first_name, u.last_name" : 
+        "u.username as name";
+        
     $stmt = $pdo->prepare("
-        SELECT u.id, u.username, u.first_name, u.last_name, 
+        SELECT u.id, u.username, $nameFields,
                SUM(ep.share_amount) as amount_owed
         FROM expenses e
         JOIN expense_participants ep ON e.id = ep.expense_id
@@ -75,7 +100,8 @@ try {
     
     // Add display names to balances
     foreach ($othersOwe as $balance) {
-        $balance['display_name'] = isset($balance['first_name']) && isset($balance['last_name']) ? 
+        $balance['display_name'] = $hasFirstName && $hasLastName && 
+            !empty($balance['first_name']) && !empty($balance['last_name']) ? 
             $balance['first_name'] . ' ' . $balance['last_name'] : 
             $balance['username'];
         $balances['others_owe'][] = $balance;
@@ -83,7 +109,7 @@ try {
     
     // Get balances: what current user owes others
     $stmt = $pdo->prepare("
-        SELECT u.id, u.username, u.first_name, u.last_name,
+        SELECT u.id, u.username, $nameFields,
                SUM(ep.share_amount) as amount_owed
         FROM expenses e
         JOIN expense_participants ep ON e.id = ep.expense_id
@@ -96,18 +122,22 @@ try {
     
     // Add display names to balances
     foreach ($userOwes as $balance) {
-        $balance['display_name'] = isset($balance['first_name']) && isset($balance['last_name']) ? 
+        $balance['display_name'] = $hasFirstName && $hasLastName && 
+            !empty($balance['first_name']) && !empty($balance['last_name']) ? 
             $balance['first_name'] . ' ' . $balance['last_name'] : 
             $balance['username'];
         $balances['user_owes'][] = $balance;
     }
     
     // Get recent expenses involving the current user
+    $userNameFields = $hasFirstName && $hasLastName ? 
+        "u.first_name as payer_first_name, u.last_name as payer_last_name," : 
+        "";
+        
     $stmt = $pdo->prepare("
         SELECT e.*,
                u.username as payer_name,
-               u.first_name as payer_first_name,
-               u.last_name as payer_last_name,
+               $userNameFields
                (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
         FROM expenses e
         JOIN users u ON e.payer_id = u.id
@@ -121,7 +151,8 @@ try {
     
     // Add display names to expenses
     foreach ($expenses as $expense) {
-        $expense['payer_display_name'] = isset($expense['payer_first_name']) && isset($expense['payer_last_name']) ? 
+        $expense['payer_display_name'] = $hasFirstName && $hasLastName && 
+            !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
             $expense['payer_first_name'] . ' ' . $expense['payer_last_name'] : 
             $expense['payer_name'];
         $recentExpenses[] = $expense;
