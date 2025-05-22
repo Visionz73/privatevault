@@ -9,103 +9,82 @@ $userId = $_SESSION['user_id'];
 $errors = [];
 $success = '';
 
-// Get all users for participant selection
-$userStmt = $pdo->prepare("
-    SELECT id, username, CONCAT(first_name, ' ', last_name) as full_name 
-    FROM users 
-    WHERE id != ? 
-    ORDER BY username
-");
-$userStmt->execute([$userId]);
-$allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    // Get all users for participant selection
+    $userStmt = $pdo->prepare("
+        SELECT id, username FROM users WHERE id != ? ORDER BY username
+    ");
+    $userStmt->execute([$userId]);
+    $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $amount = floatval($_POST['amount'] ?? 0);
-    $currency = $_POST['currency'] ?? 'EUR';
-    $expenseDate = $_POST['expense_date'] ?? date('Y-m-d');
-    $participants = $_POST['participants'] ?? [];
-    $splitMethod = $_POST['split_method'] ?? 'equal';
-    $customAmounts = $_POST['custom_amounts'] ?? [];
-    
-    // Form validation
-    if (empty($title)) {
-        $errors[] = 'Titel ist erforderlich';
-    }
-    
-    if ($amount <= 0) {
-        $errors[] = 'Betrag muss größer als Null sein';
-    }
-    
-    if (empty($participants)) {
-        $errors[] = 'Wähle mindestens einen Teilnehmer aus';
-    }
-    
-    // Process if no errors
-    if (empty($errors)) {
-        try {
-            $pdo->beginTransaction();
-            
-            // Insert the expense
-            $expenseStmt = $pdo->prepare("
-                INSERT INTO expenses (title, description, amount, currency, payer_id, expense_date)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-            $expenseStmt->execute([$title, $description, $amount, $currency, $userId, $expenseDate]);
-            $expenseId = $pdo->lastInsertId();
-            
-            // Calculate shares based on split method
-            $shares = [];
-            
-            if ($splitMethod === 'equal') {
-                // Include the payer in the participant count for equal splitting
-                $participantCount = count($participants) + 1;
+    // Handle form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $description = trim($_POST['description'] ?? '');
+        $amount = floatval($_POST['amount'] ?? 0);
+        $currency = $_POST['currency'] ?? 'EUR';
+        $expenseDate = $_POST['expense_date'] ?? date('Y-m-d');
+        $participants = $_POST['participants'] ?? [];
+        
+        // Form validation
+        if (empty($description)) {
+            $errors[] = 'Description is required';
+        }
+        
+        if ($amount <= 0) {
+            $errors[] = 'Amount must be greater than zero';
+        }
+        
+        if (empty($participants)) {
+            $errors[] = 'Select at least one participant';
+        }
+        
+        // Process if no errors
+        if (empty($errors)) {
+            try {
+                $pdo->beginTransaction();
+                
+                // Insert the expense
+                $expenseStmt = $pdo->prepare("
+                    INSERT INTO expenses (description, amount, payer_id, expense_date)
+                    VALUES (?, ?, ?, ?)
+                ");
+                $expenseStmt->execute([$description, $amount, $userId, $expenseDate]);
+                $expenseId = $pdo->lastInsertId();
+                
+                // Calculate equal share
+                $participantCount = count($participants);
                 $equalShare = $amount / $participantCount;
                 
-                // Add shares for each participant (excluding the payer)
+                // Insert participant records
+                $participantStmt = $pdo->prepare("
+                    INSERT INTO expense_participants (expense_id, user_id, share_amount)
+                    VALUES (?, ?, ?)
+                ");
+                
                 foreach ($participants as $participantId) {
-                    $shares[$participantId] = $equalShare;
+                    $participantStmt->execute([$expenseId, $participantId, $equalShare]);
                 }
                 
-            } else if ($splitMethod === 'custom') {
-                // Custom splitting - use provided amounts
-                $totalCustomAmount = 0;
-                foreach ($participants as $participantId) {
-                    $customAmount = floatval($customAmounts[$participantId] ?? 0);
-                    $shares[$participantId] = $customAmount;
-                    $totalCustomAmount += $customAmount;
-                }
+                $pdo->commit();
+                $success = 'Expense added successfully';
                 
-                // Validate total matches expense amount
-                if (abs($totalCustomAmount - $amount) > 0.01) {
-                    throw new Exception('Die Summe der individuellen Anteile stimmt nicht mit dem Gesamtbetrag überein');
-                }
+                // Redirect to the main HaveToPay page
+                header('Location: havetopay.php?success=added');
+                exit;
+                
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                $errors[] = 'Database error: ' . $e->getMessage();
+                error_log('HaveToPay add expense error: ' . $e->getMessage());
             }
-            
-            // Insert participant records
-            $participantStmt = $pdo->prepare("
-                INSERT INTO expense_participants (expense_id, user_id, share_amount)
-                VALUES (?, ?, ?)
-            ");
-            
-            foreach ($shares as $participantId => $shareAmount) {
-                $participantStmt->execute([$expenseId, $participantId, $shareAmount]);
-            }
-            
-            $pdo->commit();
-            $success = 'Ausgabe erfolgreich hinzugefügt';
-            
-            // Redirect to the main HaveToPay page
-            header('Location: /havetopay.php?success=added');
-            exit;
-            
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            $errors[] = 'Fehler: ' . $e->getMessage();
         }
     }
+} catch (Exception $e) {
+    $errors[] = 'An error occurred. Please try again later.';
+    error_log('HaveToPay add page error: ' . $e->getMessage());
+    
+    // If users can't be loaded, provide empty array
+    $allUsers = [];
 }
 
 // Template rendering
