@@ -82,7 +82,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
             description TEXT NULL,
-            amount DECIMAL(10, 2) NOT NULL,
+            amount DECIMAL(15, 2) NOT NULL,  -- Changed from DECIMAL(10, 2) to allow larger amounts
             payer_id INT NOT NULL,
             group_id INT NULL,
             expense_date DATE NOT NULL,
@@ -119,6 +119,15 @@ try {
             $pdo->exec($sql);
             $tablesModified[] = 'expenses (added expense_category column)';
         }
+        
+        // Fix amount column size if it exists
+        try {
+            $sql = "ALTER TABLE expenses MODIFY amount DECIMAL(15, 2) NOT NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (increased amount column size)';
+        } catch (Exception $e) {
+            error_log("Failed to alter expenses.amount: " . $e->getMessage());
+        }
     }
     
     // 2. Create expense_participants table if not exists
@@ -127,7 +136,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             expense_id INT NOT NULL,
             user_id INT NOT NULL,
-            share_amount DECIMAL(10, 2) NOT NULL,
+            share_amount DECIMAL(15, 2) NOT NULL,  -- Changed from DECIMAL(10, 2) to allow larger amounts
             is_settled TINYINT(1) DEFAULT 0,
             settled_date TIMESTAMP NULL DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -144,6 +153,15 @@ try {
             $sql = "ALTER TABLE expense_participants ADD COLUMN settled_date TIMESTAMP NULL DEFAULT NULL AFTER is_settled";
             $pdo->exec($sql);
             $tablesModified[] = 'expense_participants (added settled_date column)';
+        }
+        
+        // Fix share_amount column size
+        try {
+            $sql = "ALTER TABLE expense_participants MODIFY share_amount DECIMAL(15, 2) NOT NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expense_participants (increased share_amount column size)';
+        } catch (Exception $e) {
+            error_log("Failed to alter expense_participants.share_amount: " . $e->getMessage());
         }
     }
     
