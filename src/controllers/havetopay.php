@@ -7,7 +7,7 @@ require_once __DIR__ . '/../lib/db.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
 
-// Make sure tables exist - uncommented to ensure proper table creation
+// Make sure tables exist
 $tableMessage = '';
 ob_start();
 require_once __DIR__ . '/../../database/havetopay_tables.php';
@@ -15,126 +15,166 @@ $tableMessage = ob_get_clean();
 
 // For success message handling
 $successMessage = '';
-$errorMessage = '';
-if (!empty($tableMessage)) {
-    if (strpos($tableMessage, 'successfully') !== false) {
-        $successMessage = $tableMessage;
-    } elseif (strpos($tableMessage, 'error') !== false) {
-        $errorMessage = $tableMessage;
-    }
+if (!empty($tableMessage) && strpos($tableMessage, 'successfully') !== false) {
+    $successMessage = $tableMessage;
 }
 
-// Check if required tables exist
-$tablesExist = true;
+// First, get the structure of the users table to determine available columns
+$userColumns = [];
 try {
-    $pdo->query("SELECT 1 FROM expenses LIMIT 1");
-    $pdo->query("SELECT 1 FROM expense_participants LIMIT 1");
-} catch (Exception $e) {
-    $tablesExist = false;
-    $errorMessage = "HaveToPay module requires database tables that don't exist. Please run the setup.";
+    $columnsQuery = $pdo->query("SHOW COLUMNS FROM users");
+    while ($column = $columnsQuery->fetch(PDO::FETCH_ASSOC)) {
+        $userColumns[] = $column['Field'];
+    }
+} catch (PDOException $e) {
+    $errorMessage = "Error accessing user information: " . $e->getMessage();
 }
 
-// Only proceed with the rest of the controller if tables exist
-if ($tablesExist) {
-    // Get balances between current user and others
-    function getBalances($pdo, $userId) {
-        // This calculates what others owe the current user
-        $othersOweQuery = "
-            SELECT u.id, u.username, u.first_name, u.last_name, 
-                   SUM(ep.share_amount) as amount_owed
-            FROM expenses e
-            JOIN expense_participants ep ON e.id = ep.expense_id
-            JOIN users u ON ep.user_id = u.id
-            WHERE e.payer_id = ? AND ep.user_id != ? AND ep.is_settled = 0
-            GROUP BY u.id
-        ";
-        
-        // This calculates what the current user owes others
-        $userOwesQuery = "
-            SELECT u.id, u.username, u.first_name, u.last_name, 
-                   SUM(ep.share_amount) as amount_owed
-            FROM expenses e
-            JOIN expense_participants ep ON e.id = ep.expense_id
-            JOIN users u ON e.payer_id = u.id
-            WHERE ep.user_id = ? AND e.payer_id != ? AND ep.is_settled = 0
-            GROUP BY u.id
-        ";
-        
-        $balances = [
-            'others_owe' => [],
-            'user_owes' => []
-        ];
-        
-        $stmt = $pdo->prepare($othersOweQuery);
-        $stmt->execute([$userId, $userId]);
-        $balances['others_owe'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $stmt = $pdo->prepare($userOwesQuery);
-        $stmt->execute([$userId, $userId]);
-        $balances['user_owes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return $balances;
+// Define display name fields based on what's available in the database
+$nameFields = '';
+if (in_array('name', $userColumns)) {
+    $nameFields = 'u.name';
+} elseif (in_array('fullname', $userColumns)) {
+    $nameFields = 'u.fullname';
+} elseif (in_array('first_name', $userColumns) && in_array('last_name', $userColumns)) {
+    $nameFields = 'u.first_name, u.last_name';
+} elseif (in_array('display_name', $userColumns)) {
+    $nameFields = 'u.display_name';
+} else {
+    // Fallback to username if no name fields are available
+    $nameFields = 'u.username AS name';
+}
+
+// Get balances between current user and others
+function getBalances($pdo, $userId, $nameFields) {
+    // This calculates what others owe the current user
+    $othersOweQuery = "
+        SELECT u.id, u.username, $nameFields,
+               SUM(ep.share_amount) as amount_owed
+        FROM expenses e
+        JOIN expense_participants ep ON e.id = ep.expense_id
+        JOIN users u ON ep.user_id = u.id
+        WHERE e.payer_id = ? AND ep.user_id != ? AND ep.is_settled = 0
+        GROUP BY u.id
+    ";
+    
+    // This calculates what the current user owes others
+    $userOwesQuery = "
+        SELECT u.id, u.username, $nameFields,
+               SUM(ep.share_amount) as amount_owed
+        FROM expenses e
+        JOIN expense_participants ep ON e.id = ep.expense_id
+        JOIN users u ON e.payer_id = u.id
+        WHERE ep.user_id = ? AND e.payer_id != ? AND ep.is_settled = 0
+        GROUP BY u.id
+    ";
+    
+    $balances = [
+        'others_owe' => [],
+        'user_owes' => []
+    ];
+    
+    $stmt = $pdo->prepare($othersOweQuery);
+    $stmt->execute([$userId, $userId]);
+    $othersOwe = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Process results to ensure consistent format regardless of name fields
+    foreach ($othersOwe as $balance) {
+        $displayName = getDisplayName($balance);
+        $balance['display_name'] = $displayName;
+        $balances['others_owe'][] = $balance;
     }
-
-    // Get recent expenses involving the current user
-    function getRecentExpenses($pdo, $userId) {
-        $query = "
-            SELECT e.*, 
-                   u.username as payer_name,
-                   (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
-            FROM expenses e
-            JOIN users u ON e.payer_id = u.id
-            WHERE e.payer_id = ? 
-               OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
-            ORDER BY e.created_at DESC
-            LIMIT 10
-        ";
-        
-        $stmt = $pdo->prepare($query);
-        $stmt->execute([$userId, $userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $stmt = $pdo->prepare($userOwesQuery);
+    $stmt->execute([$userId, $userId]);
+    $userOwes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Process results to ensure consistent format regardless of name fields
+    foreach ($userOwes as $balance) {
+        $displayName = getDisplayName($balance);
+        $balance['display_name'] = $displayName;
+        $balances['user_owes'][] = $balance;
     }
+    
+    return $balances;
+}
 
-    try {
-        // Get all users for expense participant selection
-        $userQuery = "SELECT id, username, CONCAT(IFNULL(first_name, ''), ' ', IFNULL(last_name, '')) as full_name 
-                      FROM users 
-                      WHERE id != ? 
-                      ORDER BY username";
-        $userStmt = $pdo->prepare($userQuery);
-        $userStmt->execute([$userId]);
-        $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Get balances and recent expenses
-        $balances = getBalances($pdo, $userId);
-        $recentExpenses = getRecentExpenses($pdo, $userId);
-
-        // Calculate total balance
-        $totalOwed = 0;
-        foreach ($balances['others_owe'] as $balance) {
-            $totalOwed += $balance['amount_owed'];
-        }
-
-        $totalOwing = 0;
-        foreach ($balances['user_owes'] as $balance) {
-            $totalOwing += $balance['amount_owed'];
-        }
-
-        $netBalance = $totalOwed - $totalOwing;
-
-        // Get current user data
-        $userStmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $userStmt->execute([$userId]);
-        $currentUser = $userStmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$currentUser) {
-            throw new Exception("User not found");
-        }
-    } catch (Exception $e) {
-        $errorMessage = "Error loading data: " . $e->getMessage();
+// Helper function to get display name from various field combinations
+function getDisplayName($userData) {
+    if (isset($userData['first_name']) && isset($userData['last_name'])) {
+        return $userData['first_name'] . ' ' . $userData['last_name'];
+    } elseif (isset($userData['name'])) {
+        return $userData['name'];
+    } elseif (isset($userData['fullname'])) {
+        return $userData['fullname'];
+    } elseif (isset($userData['display_name'])) {
+        return $userData['display_name'];
+    } else {
+        return $userData['username'];
     }
 }
 
-// Template rendering
+// Get recent expenses involving the current user
+function getRecentExpenses($pdo, $userId, $nameFields) {
+    $query = "
+        SELECT e.*, 
+               u.username as payer_name,
+               $nameFields,
+               (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+        FROM expenses e
+        JOIN users u ON e.payer_id = u.id
+        WHERE e.payer_id = ? 
+           OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
+        ORDER BY e.created_at DESC
+        LIMIT 10
+    ";
+    
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$userId, $userId]);
+    $expenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Process results to ensure consistent format
+    foreach ($expenses as &$expense) {
+        $expense['payer_display_name'] = getDisplayName($expense);
+    }
+    
+    return $expenses;
+}
+
+// Get all users for expense participant selection
+$userQuery = "SELECT id, username, $nameFields FROM users WHERE id != ? ORDER BY username";
+$userStmt = $pdo->prepare($userQuery);
+$userStmt->execute([$userId]);
+$allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Add display names to all users
+foreach ($allUsers as &$user) {
+    $user['display_name'] = getDisplayName($user);
+}
+
+// Get balances and recent expenses
+$balances = getBalances($pdo, $userId, $nameFields);
+$recentExpenses = getRecentExpenses($pdo, $userId, $nameFields);
+
+// Calculate total balance
+$totalOwed = 0;
+foreach ($balances['others_owe'] as $balance) {
+    $totalOwed += $balance['amount_owed'];
+}
+
+$totalOwing = 0;
+foreach ($balances['user_owes'] as $balance) {
+    $totalOwing += $balance['amount_owed'];
+}
+
+$netBalance = $totalOwed - $totalOwing;
+
+// Get current user data
+$userStmt = $pdo->prepare("SELECT *, $nameFields FROM users WHERE id = ?");
+$userStmt->execute([$userId]);
+$currentUser = $userStmt->fetch(PDO::FETCH_ASSOC);
+$currentUser['display_name'] = getDisplayName($currentUser);
+
+// Template rendering - pass the success message to the template
 require_once __DIR__ . '/../../templates/havetopay.php';
 ?>
