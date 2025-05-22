@@ -12,17 +12,24 @@ $success = '';
 try {
     // Get all users for participant selection
     $userStmt = $pdo->prepare("
-        SELECT id, username FROM users WHERE id != ? ORDER BY username
+        SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username
     ");
     $userStmt->execute([$userId]);
     $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Get all groups
+    // Add display name to users
+    foreach ($allUsers as &$user) {
+        $user['display_name'] = !empty($user['first_name']) && !empty($user['last_name']) ? 
+            $user['first_name'] . ' ' . $user['last_name'] : $user['username'];
+    }
+    
+    // Get user groups
     $groupStmt = $pdo->prepare("
-        SELECT g.id, g.name, g.description
-        FROM groups g
-        JOIN group_members gm ON g.id = gm.group_id
-        WHERE gm.user_id = ?
+        SELECT g.id, g.name
+        FROM user_groups g
+        JOIN user_group_members m ON g.id = m.group_id
+        WHERE m.user_id = ?
+        ORDER BY g.name
     ");
     $groupStmt->execute([$userId]);
     $allGroups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -96,7 +103,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    $errors[] = 'An error occurred. Please try again later.';
+    $errors[] = 'An error occurred: ' . $e->getMessage();
     error_log('HaveToPay add page error: ' . $e->getMessage());
     
     // If data can't be loaded, provide empty arrays

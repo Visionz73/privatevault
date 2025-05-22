@@ -21,22 +21,12 @@
             border-radius: 15px 15px 0 0 !important;
             border: none;
         }
-        .btn-primary {
-            background: linear-gradient(45deg, #3a7bd5, #00d2ff);
-            border: none;
-            border-radius: 50px;
-            padding: 10px 25px;
-            font-weight: 500;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #3a7bd5, #3a7bd5);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
+    <?php if (file_exists(__DIR__.'/navbar.php')) require_once __DIR__.'/navbar.php'; ?>
+    
+    <div class="container mt-4 mb-4">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Add New Expense</h1>
@@ -72,17 +62,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="title" class="form-label">Title*</label>
-                            <input type="text" class="form-control" id="title" name="title" required
-                                   value="<?= htmlspecialchars($_POST['title'] ?? '') ?>"
-                                   placeholder="e.g. Pizza for Movie Night">
+                            <input type="text" class="form-control" id="title" name="title" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="amount" class="form-label">Amount*</label>
                             <div class="input-group">
                                 <span class="input-group-text">€</span>
-                                <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" required
-                                       value="<?= htmlspecialchars($_POST['amount'] ?? '') ?>"
-                                       placeholder="0.00">
+                                <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" required>
                             </div>
                         </div>
                     </div>
@@ -90,15 +76,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="expense_date" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="expense_date" name="expense_date" required
-                                   value="<?= htmlspecialchars($_POST['expense_date'] ?? date('Y-m-d')) ?>">
+                            <input type="date" class="form-control" id="expense_date" name="expense_date" value="<?php echo date('Y-m-d'); ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-select" id="category" name="category">
                                 <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo htmlspecialchars($category['name']); ?>">
-                                    <i class="fas <?php echo htmlspecialchars($category['icon']); ?>"></i> 
                                     <?php echo htmlspecialchars($category['name']); ?>
                                 </option>
                                 <?php endforeach; ?>
@@ -108,8 +92,7 @@
                     
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"
-                                  placeholder="Optional details about the expense"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                     </div>
                     
                     <div class="row">
@@ -129,7 +112,7 @@
                             <select class="form-select" id="participants" name="participants[]" multiple required>
                                 <?php foreach ($allUsers as $user): ?>
                                 <option value="<?php echo $user['id']; ?>">
-                                    <?php echo htmlspecialchars($user['username']); ?>
+                                    <?php echo htmlspecialchars($user['display_name']); ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>

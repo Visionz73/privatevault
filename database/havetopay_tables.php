@@ -1,7 +1,6 @@
 <?php
 /**
- * This file creates the necessary tables for the HaveToPay module
- * if they don't already exist.
+ * Creates the necessary tables for the HaveToPay module
  */
 
 // Check if we already have a database connection
@@ -26,57 +25,13 @@ try {
     
     // Track created tables
     $tablesCreated = [];
-
-    // 1. First check if users table has required fields
-    $userColumnsExist = false;
-    try {
-        $stmt = $pdo->query("DESCRIBE users");
-        $userColumnsExist = true;
-    } catch (PDOException $e) {
-        echo "Error: Users table not found. Please create a users table first.<br>";
-        throw $e;
-    }
     
-    // 2. Check and create groups table if needed
-    if (!tableExists($pdo, 'groups')) {
-        $sql = "CREATE TABLE groups (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            description TEXT NULL,
-            created_by INT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
-        )";
-        $pdo->exec($sql);
-        $tablesCreated[] = 'groups';
-        
-        // Add a default group
-        $pdo->exec("INSERT INTO groups (name, description, created_by) VALUES ('Default Group', 'Default expense group', 1)");
-    }
-    
-    // 3. Check and create group_members table if needed
-    if (!tableExists($pdo, 'group_members')) {
-        $sql = "CREATE TABLE group_members (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            group_id INT NOT NULL,
-            user_id INT NOT NULL,
-            is_admin TINYINT(1) DEFAULT 0,
-            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            UNIQUE KEY unique_membership (group_id, user_id)
-        )";
-        $pdo->exec($sql);
-        $tablesCreated[] = 'group_members';
-    }
-    
-    // 4. Check and create expenses table if needed
+    // 1. Create expenses table if not exists
     if (!tableExists($pdo, 'expenses')) {
         $sql = "CREATE TABLE expenses (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
-            description TEXT,
+            description TEXT NULL,
             amount DECIMAL(10, 2) NOT NULL,
             payer_id INT NOT NULL,
             group_id INT NULL,
@@ -85,13 +40,13 @@ try {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (payer_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL
+            FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE SET NULL
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expenses';
     }
     
-    // 5. Check and create expense_participants table if needed
+    // 2. Create expense_participants table if not exists
     if (!tableExists($pdo, 'expense_participants')) {
         $sql = "CREATE TABLE expense_participants (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -110,7 +65,7 @@ try {
         $tablesCreated[] = 'expense_participants';
     }
     
-    // 6. Check and create expense_categories table if needed
+    // 3. Create expense_categories table if not exists
     if (!tableExists($pdo, 'expense_categories')) {
         $sql = "CREATE TABLE expense_categories (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -140,7 +95,7 @@ try {
             try {
                 $insertStmt->execute($category);
             } catch (PDOException $e) {
-                // Ignore duplicate key errors (23000)
+                // Ignore duplicate key errors
                 if ($e->getCode() != '23000') {
                     throw $e;
                 }
@@ -151,11 +106,9 @@ try {
     // Commit the transaction
     $pdo->commit();
     
-    // Display success message
+    // Show success message if any tables were created
     if (!empty($tablesCreated)) {
         echo "HaveToPay tables created successfully: " . implode(', ', $tablesCreated);
-    } else {
-        echo "All required HaveToPay tables already exist.";
     }
     
 } catch (PDOException $e) {
