@@ -10,7 +10,6 @@ $userId = $_SESSION['user_id'];
 // Initialize variables
 $errorMessage = '';
 $successMessage = '';
-$pageTitle = 'HaveToPay Dashboard'; // Set page title for header
 $balances = ['others_owe' => [], 'user_owes' => []];
 $totalOwed = 0;
 $totalOwing = 0;
@@ -187,8 +186,7 @@ if (isset($_GET['success'])) {
     }
 }
 
-// Template rendering
-require_once __DIR__ . '/../../templates/header.php'; // Include header with fixed navbar
+// Use existing navbar.php instead of header/footer
+require_once __DIR__ . '/../../templates/navbar.php';
 require_once __DIR__ . '/../../templates/havetopay.php';
-require_once __DIR__ . '/../../templates/footer.php'; // Include footer with JS
 ?>

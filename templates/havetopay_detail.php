@@ -4,467 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($expense['title']) ?> | HaveToPay</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #4F46E5;
-            --primary-light: #EEF2FF;
-            --primary-dark: #3730A3;
-            --success-color: #10B981;
-            --success-light: #ECFDF5;
-            --danger-color: #EF4444;
-            --danger-light: #FEF2F2;
-            --warning-color: #F59E0B;
-            --text-dark: #1F2937;
-            --text-muted: #6B7280;
-            --surface-card: #FFFFFF;
-            --surface-bg: #F9FAFB;
-            --border-radius: 16px;
-            --transition: all 0.3s ease;
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 4rem !important;
+            }
         }
         
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--surface-bg);
-            color: var(--text-dark);
-            min-height: 100vh;
-        }
-        
-        .content-container {
-            padding: 2rem 1rem 3rem;
-        }
-        
-        /* Modern Cards */
-        .modern-card {
-            background-color: var(--surface-card);
-            border-radius: var(--border-radius);
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
-            border: none;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-        
-        /* Buttons */
-        .btn-modern-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0px 4px 12px rgba(79, 70, 229, 0.3);
-            transition: var(--transition);
-        }
-        
-        .btn-modern-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0px 6px 16px rgba(79, 70, 229, 0.4);
-            color: white;
-        }
-        
-        .btn-link-modern {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            transition: var(--transition);
-        }
-        
-        .btn-link-modern:hover {
-            color: var(--primary-dark);
-            transform: translateX(-3px);
-        }
-        
-        .btn-link-modern i {
-            margin-right: 8px;
-            transition: var(--transition);
-        }
-        
-        .btn-link-modern:hover i {
-            transform: translateX(-3px);
-        }
-        
-        /* Status Badges */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .status-badge i {
-            margin-right: 6px;
-        }
-        
-        .status-badge.settled {
-            background-color: var(--success-light);
-            color: var(--success-color);
-        }
-        
-        .status-badge.pending {
-            background-color: var(--warning-color);
-            color: white;
-        }
-        
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        .fade-in-delay-1 {
-            animation: fadeIn 0.6s ease-out;
-            animation-delay: 0.2s;
-            animation-fill-mode: both;
-        }
-        
-        .fade-in-delay-2 {
-            animation: fadeIn 0.6s ease-out;
-            animation-delay: 0.4s;
-            animation-fill-mode: both;
-        }
-        
-        /* Alert Messages */
-        .modern-alert {
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            border: none;
-            display: flex;
-            align-items: center;
-        }
-        
-        .modern-alert.success {
-            background-color: var(--success-light);
-            color: var(--success-color);
-        }
-        
-        .modern-alert.warning {
-            background-color: var(--danger-light);
-            color: var(--danger-color);
-        }
-        
-        .modern-alert i {
-            margin-right: 0.75rem;
-            font-size: 1.25rem;
-        }
-        
-        /* Detail section styling */
-        .expense-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-        
-        .expense-amount {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary-color);
-        }
-        
-        .expense-meta {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        
-        .expense-meta i {
-            width: 20px;
-            text-align: center;
-            margin-right: 8px;
-        }
-        
-        .expense-description {
-            background-color: var(--primary-light);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .expense-user {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 12px;
-            font-size: 1rem;
-        }
-        
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .user-username {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
-        /* Table styling */
-        .modern-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        
-        .modern-table th {
-            text-align: left;
-            padding: 1rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            font-size: 0.85rem;
-        }
-        
-        .modern-table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .modern-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .modern-table tbody tr:hover {
-            background-color: rgba(0,0,0,0.01);
-        }
-        
-        /* Settled row styling */
-        .row-settled {
-            background-color: var(--success-light) !important;
-        }
-        
-        /* Settle button */
-        .btn-settle {
-            color: var(--primary-color);
-            background-color: transparent;
-            border: none;
-            font-weight: 600;
-            padding: 0;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        
-        .btn-settle:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-        
-        /* Adjustments for navbar integration */
+        /* Desktop adjustments */
         @media (min-width: 769px) {
-            .content-container {
+            .main-content {
                 margin-left: 16rem;
                 width: calc(100% - 16rem);
-                padding: 2rem 1.5rem 3rem;
             }
         }
         
-        /* Mobile specific fix */
-        @media (max-width: 768px) {
-            .content-container {
-                padding-top: 4.5rem !important;
-            }
+        .modern-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
-<body class="haveToPay-layout">
-    <?php require_once __DIR__.'/navbar.php'; ?>
-    
-    <div class="content-container">
-        <div class="container-fluid mt-4">
-            <!-- Back Link -->
-            <div class="mb-4">
-                <a href="havetopay.php" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to HaveToPay
-                </a>
-            </div>
-            
-            <!-- Success/Error Messages -->
-            <?php if (!empty($success)): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                <?php echo htmlspecialchars($success); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <?php foreach ($errors as $error): ?>
-                    <div><?php echo htmlspecialchars($error); ?></div>
-                <?php endforeach; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Expense Details -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h1 class="h2"><?php echo htmlspecialchars($expense['title']); ?></h1>
-                                    
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 50px; height: 50px;">
-                                            <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">
-                                                <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
-                                                <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
-                                            </h6>
-                                            <small class="text-muted">@<?php echo htmlspecialchars($expense['payer_name']); ?></small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                                            <?php echo date('d M Y', strtotime($expense['expense_date'])); ?>
-                                        </div>
-                                        <?php if(!empty($expense['expense_category'])): ?>
-                                        <div class="col-auto">
-                                            <i class="fas fa-tag me-2 text-muted"></i>
-                                            <?php echo htmlspecialchars($expense['expense_category']); ?>
-                                        </div>
-                                        <?php endif; ?>
-                                        <div class="col-auto">
-                                            <i class="fas fa-users me-2 text-muted"></i>
-                                            <?php echo count($participants); ?> participants
-                                        </div>
-                                    </div>
-                                    
-                                    <?php if (!empty($expense['description'])): ?>
-                                    <div class="alert alert-info">
-                                        <h6 class="fw-bold mb-2">Description</h6>
-                                        <p class="mb-0"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
-                                    </div>
-                                    <?php endif; ?>
+<body class="bg-gray-50">
+    <div class="main-content p-6">
+        <!-- Back Link -->
+        <div class="mb-6">
+            <a href="havetopay.php" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>Back to HaveToPay
+            </a>
+        </div>
+        
+        <!-- Success/Error Messages -->
+        <?php if (!empty($success)): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center">
+            <i class="fas fa-check-circle mr-3"></i>
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($errors)): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <?php foreach ($errors as $error): ?>
+                <div><?php echo htmlspecialchars($error); ?></div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        
+        <!-- Expense Details -->
+        <div class="modern-card mb-6">
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($expense['title']); ?></h1>
+                        
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
+                                <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
+                            </div>
+                            <div>
+                                <div class="font-semibold">
+                                    <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
+                                    <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
                                 </div>
-                                
-                                <div class="col-md-4 text-center">
-                                    <div class="display-4 text-primary fw-bold">€<?php echo number_format($expense['amount'], 2); ?></div>
-                                    <div class="text-muted">Total amount</div>
-                                </div>
+                                <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($expense['payer_name']); ?></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Participants List -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Participants</h5>
-                        </div>
-                        <div class="card-body">
-                            <?php if (empty($participants)): ?>
-                                <div class="text-center py-4">
-                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No participants found</p>
-                                </div>
-                            <?php else: ?>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Participant</th>
-                                                <th>Share Amount</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($participants as $participant): ?>
-                                            <tr class="<?php echo $participant['is_settled'] ? 'table-success' : ''; ?>">
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="bg-<?php echo $participant['is_settled'] ? 'success' : 'primary'; ?> text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                                             style="width: 40px; height: 40px;">
-                                                            <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">
-                                                                <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
-                                                                <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
-                                                            </h6>
-                                                            <small class="text-muted">@<?php echo htmlspecialchars($participant['username']); ?></small>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="fw-bold">
-                                                    <?php echo number_format($participant['share_amount'], 2); ?> €
-                                                </td>
-                                                <td>
-                                                    <?php if ($participant['is_settled']): ?>
-                                                        <span class="badge bg-success">
-                                                            <i class="fas fa-check-circle me-1"></i>
-                                                            Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
-                                                        </span>
-                                                    <?php else: ?>
-                                                        <span class="badge bg-warning text-dark">
-                                                            <i class="fas fa-clock me-1"></i>
-                                                            Pending
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td>
-                                                    <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
-                                                        <form method="post" class="d-inline">
-                                                            <input type="hidden" name="action" value="settle">
-                                                            <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                            <button type="submit" class="btn btn-sm btn-outline-success">
-                                                                <i class="fas fa-check-circle me-1"></i>
-                                                                Mark as Settled
-                                                            </button>
-                                                        </form>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                        
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <?php echo date('d M Y', strtotime($expense['expense_date'])); ?>
+                            </div>
+                            <?php if(!empty($expense['expense_category'])): ?>
+                            <div class="flex items-center">
+                                <i class="fas fa-tag mr-2"></i>
+                                <?php echo htmlspecialchars($expense['expense_category']); ?>
+                            </div>
                             <?php endif; ?>
+                            <div class="flex items-center">
+                                <i class="fas fa-users mr-2"></i>
+                                <?php echo count($participants); ?> participants
+                            </div>
                         </div>
+                        
+                        <?php if (!empty($expense['description'])): ?>
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                            <h6 class="font-semibold text-indigo-900 mb-2">Description</h6>
+                            <p class="text-indigo-800"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-indigo-600">€<?php echo number_format($expense['amount'], 2); ?></div>
+                        <div class="text-gray-500">Total amount</div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Participants List -->
+        <div class="modern-card">
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 rounded-t-2xl">
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-users mr-3"></i>Participants
+                </h3>
+            </div>
+            <div class="p-6">
+                <?php if (empty($participants)): ?>
+                    <div class="text-center py-8">
+                        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No participants found</p>
+                    </div>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-200">
+                                <tr>
+                                    <th class="text-left py-3 font-medium text-gray-600">Participant</th>
+                                    <th class="text-left py-3 font-medium text-gray-600">Share Amount</th>
+                                    <th class="text-left py-3 font-medium text-gray-600">Status</th>
+                                    <th class="text-left py-3 font-medium text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <?php foreach ($participants as $participant): ?>
+                                <tr class="<?php echo $participant['is_settled'] ? 'bg-green-50' : ''; ?>">
+                                    <td class="py-4">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-<?php echo $participant['is_settled'] ? 'green' : 'indigo'; ?>-600 text-white rounded-full flex items-center justify-center font-semibold mr-3">
+                                                <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">
+                                                    <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
+                                                    <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
+                                                </div>
+                                                <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($participant['username']); ?></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 font-semibold">
+                                        <?php echo number_format($participant['share_amount'], 2); ?> €
+                                    </td>
+                                    <td class="py-4">
+                                        <?php if ($participant['is_settled']): ?>
+                                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                Pending
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="py-4">
+                                        <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
+                                            <form method="post" class="inline">
+                                                <input type="hidden" name="action" value="settle">
+                                                <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
+                                                <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-sm">
+                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                    Mark as Settled
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
