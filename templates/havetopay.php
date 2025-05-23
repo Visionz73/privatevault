@@ -146,213 +146,246 @@
     <div class="main-content p-6 animated-bg">
         <!-- Success/Error Messages -->
         <?php if (!empty($successMessage)): ?>
-        <div class="glass-card border-l-4 border-green-500 p-4 mb-6 flex items-center">
-            <i class="fas fa-check-circle mr-3 text-green-500 text-xl"></i>
-            <p class="text-green-700"><?php echo htmlspecialchars($successMessage); ?></p>
+        <div class="alert alert-success py-2 px-3 d-flex align-items-center mb-3 shadow-sm" style="border-radius: 8px;">
+            <i class="fas fa-check-circle me-2"></i>
+            <small><?php echo htmlspecialchars($successMessage); ?></small>
+            <button type="button" class="btn-close btn-sm ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php endif; ?>
 
         <?php if (!empty($errorMessage)): ?>
-        <div class="glass-card border-l-4 border-red-500 p-4 mb-6 flex items-center">
-            <i class="fas fa-exclamation-circle mr-3 text-red-500 text-xl"></i>
-            <p class="text-red-700"><?php echo htmlspecialchars($errorMessage); ?></p>
+        <div class="alert alert-danger py-2 px-3 d-flex align-items-center mb-3 shadow-sm" style="border-radius: 8px;">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <small><?php echo htmlspecialchars($errorMessage); ?></small>
+            <button type="button" class="btn-close btn-sm ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php endif; ?>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-wallet mr-3 text-indigo-600"></i>HaveToPay
-            </h1>
-            <div class="flex gap-3">
-                <a href="havetopay_add.php" class="apple-btn apple-btn-primary">
-                    <i class="fas fa-plus mr-2"></i>Add Expense
-                </a>
-                <a href="index.php" class="apple-btn apple-btn-secondary">
-                    <i class="fas fa-home mr-2"></i>Dashboard
+        <!-- Header Row -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 d-flex align-items-center">
+                <i class="fas fa-wallet text-primary me-2"></i>
+                HaveToPay
+            </h5>
+            <div>
+                <a href="havetopay_add.php" class="btn btn-sm btn-primary rounded-pill shadow-sm">
+                    <i class="fas fa-plus me-1"></i>Add
                 </a>
             </div>
         </div>
 
         <!-- Balance Summary Card -->
-        <div class="glass-card balance-card mb-8">
-            <div class="gradient-primary text-white p-6 rounded-t-3xl">
-                <h2 class="text-xl font-bold">Your Balance Summary</h2>
-            </div>
-            <div class="p-6 backdrop-blur-sm">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You are owed</div>
-                        <div class="text-3xl font-bold text-green-600 mt-2"><?php echo number_format($totalOwed, 2); ?> €</div>
+        <div class="card shadow-sm mb-4 overflow-hidden" style="border-radius: 12px;">
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    <!-- Balance Visualization -->
+                    <div class="col-12 col-md-8">
+                        <div class="p-3">
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <span class="badge bg-light text-secondary px-3 py-1 rounded-pill">Net Balance</span>
+                            </div>
+                            
+                            <!-- Balance Value -->
+                            <h3 class="text-center mb-3 <?php echo $netBalance >= 0 ? 'text-success' : 'text-danger'; ?>">
+                                <?php echo number_format($netBalance, 2); ?> €
+                            </h3>
+                            
+                            <!-- Balance Bar -->
+                            <div class="progress mb-2" style="height: 8px; border-radius: 4px; background-color: #f5f5f5;">
+                                <?php
+                                $totalAmount = abs($totalOwed) + abs($totalOwing);
+                                $owedPercentage = $totalAmount > 0 ? (abs($totalOwed) / $totalAmount) * 100 : 0;
+                                ?>
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                    style="width: <?php echo $owedPercentage; ?>%" 
+                                    aria-valuenow="<?php echo $owedPercentage; ?>" 
+                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar bg-danger" role="progressbar" 
+                                    style="width: <?php echo 100 - $owedPercentage; ?>%" 
+                                    aria-valuenow="<?php echo 100 - $owedPercentage; ?>" 
+                                    aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            
+                            <!-- Balance Legend -->
+                            <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                                <div><i class="fas fa-arrow-down text-success me-1"></i> Owed to you</div>
+                                <div><i class="fas fa-arrow-up text-danger me-1"></i> You owe</div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">Your net balance</div>
-                        <div class="text-3xl font-bold <?php echo $netBalance >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-2">
-                            <?php echo number_format($netBalance, 2); ?> €
+                    <!-- Balance Details -->
+                    <div class="col-12 col-md-4 bg-light">
+                        <div class="p-3">
+                            <div class="row g-0 text-center">
+                                <div class="col-6 border-end">
+                                    <div class="text-muted mb-1" style="font-size: 0.7rem;">INCOMING</div>
+                                    <div class="text-success fw-semibold"><?php echo number_format($totalOwed, 2); ?> €</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;"><?php echo count($balances['others_owe']); ?> people</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted mb-1" style="font-size: 0.7rem;">OUTGOING</div>
+                                    <div class="text-danger fw-semibold"><?php echo number_format($totalOwing, 2); ?> €</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;"><?php echo count($balances['user_owes']); ?> people</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-2">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
-                                <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> mr-1"></i>
-                                <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?> Balance
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You owe</div>
-                        <div class="text-3xl font-bold text-red-600 mt-2"><?php echo number_format($totalOwing, 2); ?> €</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- People who owe me -->
-            <div class="glass-card">
-                <div class="gradient-success text-white p-4 rounded-t-3xl flex justify-between items-center">
-                    <h3 class="font-bold">People Who Owe You</h3>
-                    <span class="bg-white text-green-600 px-3 py-1 rounded-full text-sm font-medium shadow">
-                        <?php echo count($balances['others_owe']); ?> people
-                    </span>
-                </div>
-                <div class="p-4">
-                    <?php if (empty($balances['others_owe'])): ?>
-                        <div class="text-center py-8">
-                            <i class="fas fa-check-circle text-6xl text-gray-300 mb-4"></i>
-                            <p class="text-gray-500">No one owes you money at the moment.</p>
+        <!-- Main Content Row -->
+        <div class="row g-3 mb-4">
+            <!-- People Who Owe You -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm h-100" style="border-radius: 12px; border-top: 3px solid #10b981;">
+                    <div class="card-header bg-transparent border-0 py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="fas fa-arrow-down text-success me-2"></i>
+                                People Who Owe You
+                            </h6>
+                            <span class="badge bg-success rounded-pill">
+                                <?php echo count($balances['others_owe']); ?>
+                            </span>
                         </div>
-                    <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($balances['others_owe'] as $balance): ?>
-                            <div class="flex items-center justify-between p-3 bg-white/50 backdrop-blur-sm rounded-2xl hover:bg-white/70 transition-colors">
-                                <div class="flex items-center">
-                                    <div class="avatar w-10 h-10 mr-3">
-                                        <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                        <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 250px; overflow-y: auto;">
+                        <?php if (empty($balances['others_owe'])): ?>
+                            <div class="text-center py-3">
+                                <i class="fas fa-check-circle text-muted mb-2" style="font-size: 1.5rem;"></i>
+                                <p class="text-muted small">No one owes you money at the moment.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($balances['others_owe'] as $balance): ?>
+                                <div class="list-group-item border-0 py-2 px-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-2"
+                                                 style="width: 28px; height: 28px; background-color: #10b981; font-size: 0.7rem;">
+                                                <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
+                                            </div>
+                                            <div>
+                                                <div class="fw-medium" style="font-size: 0.85rem;"><?php echo htmlspecialchars($balance['display_name']); ?></div>
+                                                <div class="text-muted" style="font-size: 0.7rem;">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-success fw-medium"><?php echo number_format($balance['amount_owed'], 2); ?> €</span>
                                     </div>
                                 </div>
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                                    <?php echo number_format($balance['amount_owed'], 2); ?> €
-                                </span>
+                                <?php endforeach; ?>
                             </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 
-            <!-- People I owe -->
-            <div class="glass-card">
-                <div class="gradient-danger text-white p-4 rounded-t-3xl flex justify-between items-center">
-                    <h3 class="font-bold">People You Owe</h3>
-                    <span class="bg-white text-red-600 px-3 py-1 rounded-full text-sm font-medium shadow">
-                        <?php echo count($balances['user_owes']); ?> people
-                    </span>
-                </div>
-                <div class="p-4">
-                    <?php if (empty($balances['user_owes'])): ?>
-                        <div class="text-center py-8">
-                            <i class="fas fa-smile text-6xl text-gray-300 mb-4"></i>
-                            <p class="text-gray-500">You don't owe anyone money at the moment.</p>
+            <!-- People You Owe -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm h-100" style="border-radius: 12px; border-top: 3px solid #ef4444;">
+                    <div class="card-header bg-transparent border-0 py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="fas fa-arrow-up text-danger me-2"></i>
+                                People You Owe
+                            </h6>
+                            <span class="badge bg-danger rounded-pill">
+                                <?php echo count($balances['user_owes']); ?>
+                            </span>
                         </div>
-                    <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($balances['user_owes'] as $balance): ?>
-                            <div class="flex items-center justify-between p-3 bg-white/50 backdrop-blur-sm rounded-2xl hover:bg-white/70 transition-colors">
-                                <div class="flex items-center">
-                                    <div class="avatar w-10 h-10 mr-3" style="background: linear-gradient(135deg, #f56565 0%, #c53030 100%);">
-                                        <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                        <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 250px; overflow-y: auto;">
+                        <?php if (empty($balances['user_owes'])): ?>
+                            <div class="text-center py-3">
+                                <i class="fas fa-smile text-muted mb-2" style="font-size: 1.5rem;"></i>
+                                <p class="text-muted small">You don't owe anyone money at the moment.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($balances['user_owes'] as $balance): ?>
+                                <div class="list-group-item border-0 py-2 px-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-2"
+                                                 style="width: 28px; height: 28px; background-color: #ef4444; font-size: 0.7rem;">
+                                                <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
+                                            </div>
+                                            <div>
+                                                <div class="fw-medium" style="font-size: 0.85rem;"><?php echo htmlspecialchars($balance['display_name']); ?></div>
+                                                <div class="text-muted" style="font-size: 0.7rem;">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-danger fw-medium"><?php echo number_format($balance['amount_owed'], 2); ?> €</span>
                                     </div>
                                 </div>
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-medium">
-                                    <?php echo number_format($balance['amount_owed'], 2); ?> €
-                                </span>
+                                <?php endforeach; ?>
                             </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Recent Expenses -->
-        <div class="glass-card">
-            <div class="gradient-primary text-white p-4 rounded-t-3xl flex justify-between items-center">
-                <h3 class="font-bold">Recent Expenses</h3>
-                <span class="bg-white text-indigo-600 px-3 py-1 rounded-full text-sm font-medium shadow">
-                    <?php echo count($recentExpenses); ?> expenses
-                </span>
+        <div class="card shadow-sm mb-3" style="border-radius: 12px;">
+            <div class="card-header bg-transparent border-0 py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-receipt text-primary me-2"></i>
+                        Recent Expenses
+                    </h6>
+                    <span class="badge bg-primary rounded-pill">
+                        <?php echo count($recentExpenses); ?>
+                    </span>
+                </div>
             </div>
-            <div class="p-4">
+            <div class="card-body p-0">
                 <?php if (empty($recentExpenses)): ?>
-                    <div class="text-center py-12">
-                        <i class="fas fa-receipt text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 mb-4">No expenses recorded yet.</p>
-                        <a href="havetopay_add.php" class="apple-btn apple-btn-primary inline-block">
-                            <i class="fas fa-plus mr-2"></i>Add Your First Expense
+                    <div class="text-center py-4">
+                        <i class="fas fa-receipt text-muted mb-2" style="font-size: 1.5rem;"></i>
+                        <p class="text-muted">No expenses recorded yet.</p>
+                        <a href="havetopay_add.php" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add First Expense
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="overflow-x-auto">
-                        <table class="w-full modern-table">
-                            <thead class="border-b border-gray-100">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm m-0" style="font-size: 0.85rem;">
+                            <thead class="table-light">
                                 <tr>
-                                    <th class="text-left">Expense</th>
-                                    <th class="text-left">Amount</th>
-                                    <th class="text-left">Paid By</th>
-                                    <th class="text-left">Date</th>
-                                    <th class="text-left">Participants</th>
-                                    <th class="text-left">Actions</th>
+                                    <th class="ps-3">Expense</th>
+                                    <th>Amount</th>
+                                    <th>Paid By</th>
+                                    <th>Date</th>
+                                    <th class="text-end pe-3">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody>
                                 <?php foreach ($recentExpenses as $expense): ?>
-                                <tr class="hover:bg-gray-50/50 backdrop-blur-sm">
-                                    <td class="py-4 px-3">
-                                        <div class="font-medium"><?php echo htmlspecialchars($expense['title']); ?></div>
-                                        <?php if(!empty($expense['description'])): ?>
-                                            <div class="text-sm text-gray-500"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 50, "...")); ?></div>
-                                        <?php endif; ?>
+                                <tr>
+                                    <td class="ps-3">
+                                        <?php echo htmlspecialchars($expense['title']); ?>
                                     </td>
-                                    <td class="py-4 px-3 font-semibold"><?php echo number_format($expense['amount'], 2); ?> €</td>
-                                    <td class="py-4 px-3">
-                                        <div class="flex items-center">
-                                            <div class="avatar w-7 h-7 mr-2">
+                                    <td class="fw-medium"><?php echo number_format($expense['amount'], 2); ?> €</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-1" 
+                                                 style="width: 20px; height: 20px; font-size: 0.65rem;">
                                                 <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                                             </div>
-                                            <span class="text-sm"><?php echo htmlspecialchars($expense['payer_display_name']); ?></span>
+                                            <span class="text-truncate" style="max-width: 100px;">
+                                                <?php echo htmlspecialchars($expense['payer_display_name']); ?>
+                                            </span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-3 text-sm text-gray-600"><?php echo date('d M Y', strtotime($expense['expense_date'])); ?></td>
-                                    <td class="py-4 px-3">
-                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                                            <i class="fas fa-users mr-1"></i> 
-                                            <?php echo $expense['participant_count']; ?> people
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-3">
-                                        <div class="flex gap-2">
-                                            <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
-                                               class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
-                                                <i class="fas fa-eye mr-1"></i>Details
-                                            </a>
-                                            <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
-                                                <button type="button" 
-                                                        class="text-red-600 hover:text-red-800 font-medium text-sm border-none bg-transparent cursor-pointer"
-                                                        onclick="confirmDelete(<?php echo $expense['id']; ?>, '<?php echo htmlspecialchars($expense['title'], ENT_QUOTES); ?>')">
-                                                    <i class="fas fa-trash mr-1"></i>Delete
-                                                </button>
-                                            <?php endif; ?>
-                                        </div>
+                                    <td><?php echo date('d.m.y', strtotime($expense['expense_date'])); ?></td>
+                                    <td class="text-end pe-3">
+                                        <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
+                                           class="btn btn-sm btn-outline-secondary px-1 py-0">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
