@@ -20,10 +20,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       top: 0;
       bottom: 0;
       width: 16rem; /* w-64 */
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
       z-index: 50;
     }
     .mobile-menu { display: none; }
@@ -56,7 +54,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       left: 0;
       right: 0;
       bottom: 0;
-      background: #ffffff; /* Fully opaque white background */
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       z-index: 49;
       padding: 1rem;
       overflow-y: auto; /* Allow scrolling if many menu items */
@@ -71,11 +69,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     .sidebar-content ul li a {
       display: block;
       padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
+      border-radius: 0.75rem;
       transition: all 0.2s ease;
+      color: rgba(255, 255, 255, 0.8);
     }
     .sidebar-content ul li a:hover {
-      background-color: #f3f4f6;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
     }
   }
   
@@ -90,6 +90,62 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       margin-left: 16rem !important;
       width: calc(100% - 16rem) !important;
     }
+  }
+
+  /* Modern Logout Button */
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+    text-decoration: none;
+  }
+
+  .logout-btn i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  /* Nav links styling */
+  .nav-link-modern {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-link-modern:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateX(4px);
+  }
+
+  .nav-link-modern.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-link-modern i, .nav-link-modern svg {
+    margin-right: 0.75rem;
   }
 </style>
 
@@ -119,7 +175,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   <div class="sidebar-content flex flex-col h-full">
     <div class="flex-1 overflow-y-auto mt-2">
       <button id="toggleBtn" class="p-4 focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" 
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" 
              viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                 d="M4 6h16M4 12h16M4 18h16" />
@@ -129,7 +185,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <div class="flex justify-center mb-6">
         <a href="/dashboard.php" class="flex items-center">
           <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
-          
         </a>
       </div>
       <ul class="flex flex-col space-y-4 px-2">
@@ -147,38 +202,46 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
         ?>
           <li>
-            <a href="/<?= $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg <?= $isActive ? 'bg-blue-50 text-blue-700 font-medium' : '' ?>">
+            <a href="/<?= $l['href'] ?>" class="nav-link-modern <?= $isActive ? 'active' : '' ?>">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <?= $l['icon'] ?>
               </svg>
-              <span class="ml-3"><?= $l['label'] ?></span>
+              <span><?= $l['label'] ?></span>
             </a>
           </li>
         <?php endforeach; ?>
         <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
           <li>
-            <a href="/admin.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="/admin.php" class="nav-link-modern">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span class="ml-3">Admin Dashboard</span>
+              <span>Admin Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="/admin/groups.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
+            <a href="/admin/groups.php" class="nav-link-modern">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span class="ml-3">Manage Groups</span>
+              <span>Manage Groups</span>
             </a>
           </li>
         <?php endif; ?>
       </ul>
+
+      <!-- Added Logout Button -->
+      <?php if (isset($_SESSION['user_id'])): ?>
+      <a href="/logout.php" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+      <?php endif; ?>
     </div>
   </div>
 </nav>
