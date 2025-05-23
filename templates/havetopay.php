@@ -91,48 +91,46 @@
         <?php endif; ?>
 
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-wallet mr-3 text-indigo-600"></i>HaveToPay
-            </h1>
-            <div class="flex gap-3">
-                <a href="havetopay_add.php" class="btn-modern bg-indigo-600 text-white hover:bg-indigo-700 flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Add Expense
+        <div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+            <h1 class="h2"><i class="fas fa-wallet me-3 text-primary"></i>HaveToPay</h1>
+            <div class="d-flex gap-2">
+                <a href="havetopay_add.php" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add Expense
                 </a>
-                <a href="index.php" class="btn-modern bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center">
-                    <i class="fas fa-home mr-2"></i>Dashboard
+                <a href="index.php" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-2"></i>Dashboard
                 </a>
             </div>
         </div>
 
         <!-- Balance Summary Card -->
-        <div class="modern-card balance-card mb-8">
-            <div class="gradient-primary text-white p-6 rounded-t-2xl">
-                <h2 class="text-xl font-bold">Your Balance Summary</h2>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You are owed</div>
-                        <div class="text-3xl font-bold text-green-600 mt-2"><?php echo number_format($totalOwed, 2); ?> €</div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card slide-up">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Your Balance Summary</h5>
                     </div>
-                    
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">Your net balance</div>
-                        <div class="text-3xl font-bold <?php echo $netBalance >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-2">
-                            <?php echo number_format($netBalance, 2); ?> €
+                    <div class="card-body">
+                        <div class="row text-center g-4">
+                            <div class="col-md-4">
+                                <div class="text-muted mb-2">You are owed</div>
+                                <h3 class="text-success mb-0"><?php echo number_format($totalOwed, 2); ?> €</h3>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted mb-2">Your net balance</div>
+                                <h3 class="<?php echo $netBalance >= 0 ? 'text-success' : 'text-danger'; ?> mb-2">
+                                    <?php echo number_format($netBalance, 2); ?> €
+                                </h3>
+                                <span class="badge <?php echo $netBalance >= 0 ? 'bg-success' : 'bg-danger'; ?>">
+                                    <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> me-1"></i>
+                                    <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?> Balance
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted mb-2">You owe</div>
+                                <h3 class="text-danger mb-0"><?php echo number_format($totalOwing, 2); ?> €</h3>
+                            </div>
                         </div>
-                        <div class="mt-2">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
-                                <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> mr-1"></i>
-                                <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?> Balance
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You owe</div>
-                        <div class="text-3xl font-bold text-red-600 mt-2"><?php echo number_format($totalOwing, 2); ?> €</div>
                     </div>
                 </div>
             </div>
