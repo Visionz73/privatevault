@@ -271,10 +271,19 @@
                                         </span>
                                     </td>
                                     <td class="py-4">
-                                        <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
-                                           class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
-                                            <i class="fas fa-eye mr-1"></i>Details
-                                        </a>
+                                        <div class="flex gap-2">
+                                            <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
+                                               class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                                                <i class="fas fa-eye mr-1"></i>Details
+                                            </a>
+                                            <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
+                                                <button type="button" 
+                                                        class="text-red-600 hover:text-red-800 font-medium text-sm border-none bg-transparent cursor-pointer"
+                                                        onclick="confirmDelete(<?php echo $expense['id']; ?>, '<?php echo htmlspecialchars($expense['title'], ENT_QUOTES); ?>')">
+                                                    <i class="fas fa-trash mr-1"></i>Delete
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -285,5 +294,49 @@
             </div>
         </div>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold">Confirm Delete</h3>
+            </div>
+            <p class="text-gray-600 mb-6">Are you sure you want to delete "<span id="expenseTitle" class="font-medium"></span>"? This action cannot be undone.</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <form method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="delete_expense">
+                    <input type="hidden" name="expense_id" id="deleteExpenseId" value="">
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function confirmDelete(expenseId, expenseTitle) {
+            document.getElementById('deleteExpenseId').value = expenseId;
+            document.getElementById('expenseTitle').textContent = expenseTitle;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+        }
+        
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
 </body>
 </html>

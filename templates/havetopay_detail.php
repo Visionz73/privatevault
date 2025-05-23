@@ -60,7 +60,16 @@
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="md:col-span-2">
-                        <h1 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($expense['title']); ?></h1>
+                        <div class="flex justify-between items-start mb-4">
+                            <h1 class="text-3xl font-bold text-gray-800"><?php echo htmlspecialchars($expense['title']); ?></h1>
+                            <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
+                                <button type="button" 
+                                        onclick="confirmDeleteExpense()"
+                                        class="text-red-600 hover:text-red-800 font-medium bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors">
+                                    <i class="fas fa-trash mr-2"></i>Delete Expense
+                                </button>
+                            <?php endif; ?>
+                        </div>
                         
                         <div class="flex items-center mb-4">
                             <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
@@ -166,16 +175,27 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="py-4">
-                                        <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
-                                            <form method="post" class="inline">
-                                                <input type="hidden" name="action" value="settle">
-                                                <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-sm">
-                                                    <i class="fas fa-check-circle mr-1"></i>
-                                                    Mark as Settled
+                                        <div class="flex gap-2">
+                                            <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
+                                                <form method="post" class="inline">
+                                                    <input type="hidden" name="action" value="settle">
+                                                    <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
+                                                    <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-sm">
+                                                        <i class="fas fa-check-circle mr-1"></i>
+                                                        Mark as Settled
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                            
+                                            <?php if ($expense['payer_id'] == $userId || $participant['user_id'] == $userId): ?>
+                                                <button type="button" 
+                                                        onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
+                                                        class="text-red-600 hover:text-red-800 font-medium text-sm">
+                                                    <i class="fas fa-user-minus mr-1"></i>
+                                                    Remove
                                                 </button>
-                                            </form>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -186,5 +206,89 @@
             </div>
         </div>
     </div>
+    
+    <!-- Delete Expense Confirmation Modal -->
+    <div id="deleteExpenseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold">Delete Expense</h3>
+            </div>
+            <p class="text-gray-600 mb-6">
+                Are you sure you want to delete this entire expense? This will remove the expense and all associated participant records. This action cannot be undone.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeDeleteExpenseModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <form method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="delete_expense">
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        <i class="fas fa-trash mr-2"></i>Delete Expense
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Remove Participant Confirmation Modal -->
+    <div id="removeParticipantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-user-minus text-orange-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold">Remove Participant</h3>
+            </div>
+            <p class="text-gray-600 mb-6">
+                Are you sure you want to remove "<span id="participantName" class="font-medium"></span>" from this expense? 
+                The remaining participants' shares will be recalculated automatically.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeRemoveParticipantModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <form method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="remove_participant">
+                    <input type="hidden" name="participant_id" id="removeParticipantId" value="">
+                    <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                        <i class="fas fa-user-minus mr-2"></i>Remove
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function confirmDeleteExpense() {
+            document.getElementById('deleteExpenseModal').classList.remove('hidden');
+            document.getElementById('deleteExpenseModal').classList.add('flex');
+        }
+        
+        function closeDeleteExpenseModal() {
+            document.getElementById('deleteExpenseModal').classList.add('hidden');
+            document.getElementById('deleteExpenseModal').classList.remove('flex');
+        }
+        
+        function confirmRemoveParticipant(participantId, participantName) {
+            document.getElementById('removeParticipantId').value = participantId;
+            document.getElementById('participantName').textContent = participantName;
+            document.getElementById('removeParticipantModal').classList.remove('hidden');
+            document.getElementById('removeParticipantModal').classList.add('flex');
+        }
+        
+        function closeRemoveParticipantModal() {
+            document.getElementById('removeParticipantModal').classList.add('hidden');
+            document.getElementById('removeParticipantModal').classList.remove('flex');
+        }
+        
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'deleteExpenseModal') {
+                closeDeleteExpenseModal();
+            }
+            if (e.target.id === 'removeParticipantModal') {
+                closeRemoveParticipantModal();
+            }
+        });
+    </script>
 </body>
 </html>

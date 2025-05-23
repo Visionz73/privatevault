@@ -75,7 +75,7 @@ $participantsStmt = $pdo->prepare("
 $participantsStmt->execute([$expenseId]);
 $participants = $participantsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle settling debts
+// Handle settling debts and deleting expenses
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'settle' && isset($_POST['participant_id'])) {
         $participantId = (int)$_POST['participant_id'];
@@ -109,6 +109,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         } else {
             $errors[] = 'Keine Berechtigung, diese Zahlung als beglichen zu markieren';
+        }
+    } elseif ($_POST['action'] === 'delete_expense') {
+        // Check if the current user is the payer or an admin
+        if ($userId == $expense['payer_id'] || ($_SESSION['is_admin'] ?? false)) {
+            try {
+                $pdo->beginTransaction();
+                
+                // Delete participants first (due to foreign key constraints)
+                $deleteParticipantsStmt = $pdo->prepare("DELETE FROM expense_participants WHERE expense_id = ?");
+                $deleteParticipantsStmt->execute([$expenseId]);
+                
+                // Delete the expense
+                $deleteExpenseStmt = $pdo->prepare("DELETE FROM expenses WHERE id = ?");
+                $deleteExpenseStmt->execute([$expenseId]);
+                
+                $pdo->commit();
+                
+                // Redirect to main page with success message
+                header('Location: havetopay.php?success=deleted');
+                exit;
+                
+            } catch (Exception $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                $errors[] = 'Error deleting expense: ' . $e->getMessage();
+                error_log('HaveToPay delete error: ' . $e->getMessage());
+            }
+        } else {
+            $errors[] = 'You do not have permission to delete this expense';
+        }
+    } elseif ($_POST['action'] === 'remove_participant' && isset($_POST['participant_id'])) {
+        $participantId = (int)$_POST['participant_id'];
+        
+        // Check if the current user is the payer or the participant being removed
+        $checkStmt = $pdo->prepare("
+            SELECT ep.id, e.payer_id, ep.user_id, ep.share_amount 
+            FROM expense_participants ep
+            JOIN expenses e ON ep.expense_id = e.id
+            WHERE ep.id = ? AND ep.expense_id = ?
+        ");
+        $checkStmt->execute([$participantId, $expenseId]);
+        $participant = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($participant && ($userId == $participant['payer_id'] || $userId == $participant['user_id'])) {
+            try {
+                $pdo->beginTransaction();
+                
+                // Remove the participant
+                $removeStmt = $pdo->prepare("DELETE FROM expense_participants WHERE id = ?");
+                $removeStmt->execute([$participantId]);
+                
+                // Recalculate shares for remaining participants
+                $remainingStmt = $pdo->prepare("SELECT COUNT(*) FROM expense_participants WHERE expense_id = ?");
+                $remainingStmt->execute([$expenseId]);
+                $remainingCount = $remainingStmt->fetchColumn();
+                
+                if ($remainingCount > 0) {
+                    $newShare = $expense['amount'] / $remainingCount;
+                    $updateShareStmt = $pdo->prepare("UPDATE expense_participants SET share_amount = ? WHERE expense_id = ?");
+                    $updateShareStmt->execute([$newShare, $expenseId]);
+                }
+                
+                $pdo->commit();
+                $success = 'Participant removed successfully';
+                
+                // Refresh participant data
+                $participantsStmt->execute([$expenseId]);
+                $participants = $participantsStmt->fetchAll(PDO::FETCH_ASSOC);
+                
+            } catch (Exception $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                $errors[] = 'Error removing participant: ' . $e->getMessage();
+            }
+        } else {
+            $errors[] = 'No permission to remove this participant';
         }
     }
 }
