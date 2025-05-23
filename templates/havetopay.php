@@ -4,59 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaveToPay | PrivateVault</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4F46E5;
-            --success-color: #10B981;
-            --danger-color: #EF4444;
+            --sf-blue: #007AFF;
+            --sf-green: #34C759;
+            --sf-red: #FF3B30;
+            --sf-orange: #FF9500;
+            --sf-gray: #8E8E93;
+            --sf-gray-light: #F2F2F7;
+            --sf-gray-medium: #E5E5EA;
+            --sf-gray-dark: #3A3A3C;
+            --sf-background: #FFFFFF;
+            --sf-secondary-background: #F2F2F7;
+            --sf-text-primary: #000000;
+            --sf-text-secondary: #8E8E93;
+            --sf-divider: #E5E5EA;
         }
-        
-        .modern-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--sf-secondary-background);
+            color: var(--sf-text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
         }
-        
-        .modern-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .gradient-primary {
-            background: linear-gradient(135deg, var(--primary-color), #3730A3);
-        }
-        
-        .gradient-success {
-            background: linear-gradient(135deg, var(--success-color), #059669);
-        }
-        
-        .gradient-danger {
-            background: linear-gradient(135deg, var(--danger-color), #B91C1C);
-        }
-        
-        .btn-modern {
-            border-radius: 12px;
-            padding: 12px 24px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-modern:hover {
-            transform: translateY(-2px);
-        }
-        
-        .balance-card {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+
         /* Mobile adjustments */
         @media (max-width: 768px) {
             body {
@@ -71,216 +46,559 @@
                 width: calc(100% - 16rem);
             }
         }
+
+        .main-content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Apple-style cards */
+        .card {
+            background: var(--sf-background);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background: var(--sf-background);
+            border-bottom: 1px solid var(--sf-divider);
+            padding: 20px 24px;
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--sf-text-primary);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 0 8px;
+        }
+
+        .page-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--sf-text-primary);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Apple-style buttons */
+        .btn {
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 500;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--sf-blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--sf-gray-light);
+            color: var(--sf-text-primary);
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Balance summary */
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: var(--sf-divider);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .balance-item {
+            background: var(--sf-background);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: var(--sf-text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount.positive {
+            color: var(--sf-green);
+        }
+
+        .balance-amount.negative {
+            color: var(--sf-red);
+        }
+
+        .balance-amount.neutral {
+            color: var(--sf-text-primary);
+        }
+
+        .balance-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balance-badge.positive {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--sf-green);
+        }
+
+        .balance-badge.negative {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--sf-red);
+        }
+
+        /* Lists */
+        .list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .list-item {
+            background: var(--sf-background);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--sf-divider);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: var(--sf-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .avatar.owe {
+            background: var(--sf-red);
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--sf-text-primary);
+        }
+
+        .user-details small {
+            color: var(--sf-text-secondary);
+            font-size: 14px;
+        }
+
+        .amount-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .amount-badge.positive {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--sf-green);
+        }
+
+        .amount-badge.negative {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--sf-red);
+        }
+
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--sf-gray);
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            color: var(--sf-text-secondary);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            background: var(--sf-background);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--sf-gray-light);
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--sf-text-primary);
+            font-size: 14px;
+            border-bottom: 1px solid var(--sf-divider);
+        }
+
+        .table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--sf-divider);
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover {
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .expense-title {
+            font-weight: 600;
+            color: var(--sf-text-primary);
+            margin-bottom: 4px;
+        }
+
+        .expense-description {
+            color: var(--sf-text-secondary);
+            font-size: 14px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--sf-gray-light);
+            color: var(--sf-text-secondary);
+        }
+
+        .tag.participants {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--sf-blue);
+        }
+
+        /* Action buttons */
+        .action-link {
+            color: var(--sf-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-link.danger {
+            color: var(--sf-red);
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: none;
+        }
+
+        .alert.success {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--sf-green);
+        }
+
+        .alert.error {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--sf-red);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+
+            .list-container {
+                grid-template-columns: 1fr;
+            }
+
+            .balance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="main-content p-6">
-        <!-- Success/Error Messages -->
+<body>
+    <div class="main-content">
+        <!-- Alerts -->
         <?php if (!empty($successMessage)): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center">
-            <i class="fas fa-check-circle mr-3"></i>
+        <div class="alert success">
+            <i class="fas fa-check-circle"></i>
             <?php echo htmlspecialchars($successMessage); ?>
         </div>
         <?php endif; ?>
 
         <?php if (!empty($errorMessage)): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center">
-            <i class="fas fa-exclamation-circle mr-3"></i>
+        <div class="alert error">
+            <i class="fas fa-exclamation-circle"></i>
             <?php echo htmlspecialchars($errorMessage); ?>
         </div>
         <?php endif; ?>
 
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-wallet mr-3 text-indigo-600"></i>HaveToPay
-            </h1>
-            <div class="flex gap-3">
-                <a href="havetopay_add.php" class="btn-modern bg-indigo-600 text-white hover:bg-indigo-700 flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Add Expense
+        <div class="page-header">
+            <h1 class="page-title">HaveToPay</h1>
+            <div class="header-actions">
+                <a href="havetopay_add.php" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Expense
                 </a>
-                <a href="index.php" class="btn-modern bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center">
-                    <i class="fas fa-home mr-2"></i>Dashboard
+                <a href="index.php" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Dashboard
                 </a>
             </div>
         </div>
 
-        <!-- Balance Summary Card -->
-        <div class="modern-card balance-card mb-8">
-            <div class="gradient-primary text-white p-6 rounded-t-2xl">
-                <h2 class="text-xl font-bold">Your Balance Summary</h2>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You are owed</div>
-                        <div class="text-3xl font-bold text-green-600 mt-2"><?php echo number_format($totalOwed, 2); ?> €</div>
+        <!-- Balance Summary -->
+        <div class="card">
+            <div class="card-header">Balance Overview</div>
+            <div class="card-body">
+                <div class="balance-grid">
+                    <div class="balance-item">
+                        <div class="balance-label">You are owed</div>
+                        <div class="balance-amount positive">€<?php echo number_format($totalOwed, 2); ?></div>
                     </div>
-                    
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">Your net balance</div>
-                        <div class="text-3xl font-bold <?php echo $netBalance >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-2">
-                            <?php echo number_format($netBalance, 2); ?> €
+                    <div class="balance-item">
+                        <div class="balance-label">Net Balance</div>
+                        <div class="balance-amount <?php echo $netBalance >= 0 ? 'positive' : 'negative'; ?>">
+                            €<?php echo number_format($netBalance, 2); ?>
                         </div>
-                        <div class="mt-2">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
-                                <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> mr-1"></i>
-                                <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?> Balance
-                            </span>
+                        <div class="balance-badge <?php echo $netBalance >= 0 ? 'positive' : 'negative'; ?>">
+                            <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?>
                         </div>
                     </div>
-                    
-                    <div>
-                        <div class="text-gray-600 text-sm font-medium">You owe</div>
-                        <div class="text-3xl font-bold text-red-600 mt-2"><?php echo number_format($totalOwing, 2); ?> €</div>
+                    <div class="balance-item">
+                        <div class="balance-label">You owe</div>
+                        <div class="balance-amount negative">€<?php echo number_format($totalOwing, 2); ?></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- People who owe me -->
-            <div class="modern-card">
-                <div class="gradient-success text-white p-4 rounded-t-2xl flex justify-between items-center">
-                    <h3 class="font-bold">People Who Owe You</h3>
-                    <span class="bg-white text-green-600 px-3 py-1 rounded-full text-sm font-medium">
-                        <?php echo count($balances['others_owe']); ?> people
-                    </span>
+        <!-- Balance Lists -->
+        <div class="list-container">
+            <!-- People who owe you -->
+            <div class="card">
+                <div class="card-header">
+                    People Who Owe You
+                    <span class="tag"><?php echo count($balances['others_owe']); ?> people</span>
                 </div>
-                <div class="p-4">
+                <div class="card-body">
                     <?php if (empty($balances['others_owe'])): ?>
-                        <div class="text-center py-8">
-                            <i class="fas fa-check-circle text-6xl text-gray-300 mb-4"></i>
-                            <p class="text-gray-500">No one owes you money at the moment.</p>
+                        <div class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No one owes you money</p>
                         </div>
                     <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($balances['others_owe'] as $balance): ?>
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold mr-3">
-                                        <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                        <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($balance['username']); ?></div>
-                                    </div>
+                        <?php foreach ($balances['others_owe'] as $balance): ?>
+                        <div class="list-item">
+                            <div class="user-info">
+                                <div class="avatar">
+                                    <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                 </div>
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                                    <?php echo number_format($balance['amount_owed'], 2); ?> €
-                                </span>
+                                <div class="user-details">
+                                    <h6><?php echo htmlspecialchars($balance['display_name']); ?></h6>
+                                    <small>@<?php echo htmlspecialchars($balance['username']); ?></small>
+                                </div>
                             </div>
-                            <?php endforeach; ?>
+                            <div class="amount-badge positive">
+                                €<?php echo number_format($balance['amount_owed'], 2); ?>
+                            </div>
                         </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
 
-            <!-- People I owe -->
-            <div class="modern-card">
-                <div class="gradient-danger text-white p-4 rounded-t-2xl flex justify-between items-center">
-                    <h3 class="font-bold">People You Owe</h3>
-                    <span class="bg-white text-red-600 px-3 py-1 rounded-full text-sm font-medium">
-                        <?php echo count($balances['user_owes']); ?> people
-                    </span>
+            <!-- People you owe -->
+            <div class="card">
+                <div class="card-header">
+                    People You Owe
+                    <span class="tag"><?php echo count($balances['user_owes']); ?> people</span>
                 </div>
-                <div class="p-4">
+                <div class="card-body">
                     <?php if (empty($balances['user_owes'])): ?>
-                        <div class="text-center py-8">
-                            <i class="fas fa-smile text-6xl text-gray-300 mb-4"></i>
-                            <p class="text-gray-500">You don't owe anyone money at the moment.</p>
+                        <div class="empty-state">
+                            <i class="fas fa-smile"></i>
+                            <p>You don't owe anyone</p>
                         </div>
                     <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($balances['user_owes'] as $balance): ?>
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center font-semibold mr-3">
-                                        <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                        <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($balance['username']); ?></div>
-                                    </div>
+                        <?php foreach ($balances['user_owes'] as $balance): ?>
+                        <div class="list-item">
+                            <div class="user-info">
+                                <div class="avatar owe">
+                                    <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                 </div>
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-medium">
-                                    <?php echo number_format($balance['amount_owed'], 2); ?> €
-                                </span>
+                                <div class="user-details">
+                                    <h6><?php echo htmlspecialchars($balance['display_name']); ?></h6>
+                                    <small>@<?php echo htmlspecialchars($balance['username']); ?></small>
+                                </div>
                             </div>
-                            <?php endforeach; ?>
+                            <div class="amount-badge negative">
+                                €<?php echo number_format($balance['amount_owed'], 2); ?>
+                            </div>
                         </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
 
         <!-- Recent Expenses -->
-        <div class="modern-card">
-            <div class="gradient-primary text-white p-4 rounded-t-2xl flex justify-between items-center">
-                <h3 class="font-bold">Recent Expenses</h3>
-                <span class="bg-white text-indigo-600 px-3 py-1 rounded-full text-sm font-medium">
-                    <?php echo count($recentExpenses); ?> expenses
-                </span>
+        <div class="card">
+            <div class="card-header">
+                Recent Expenses
+                <span class="tag"><?php echo count($recentExpenses); ?> expenses</span>
             </div>
-            <div class="p-4">
+            <div class="card-body">
                 <?php if (empty($recentExpenses)): ?>
-                    <div class="text-center py-12">
-                        <i class="fas fa-receipt text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 mb-4">No expenses recorded yet.</p>
-                        <a href="havetopay_add.php" class="btn-modern bg-indigo-600 text-white hover:bg-indigo-700">
-                            <i class="fas fa-plus mr-2"></i>Add Your First Expense
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No expenses recorded yet</p>
+                        <a href="havetopay_add.php" class="btn btn-primary" style="margin-top: 16px;">
+                            <i class="fas fa-plus"></i>
+                            Add Your First Expense
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-200">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <th class="text-left py-3 font-medium text-gray-600">Expense</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Amount</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Paid By</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Date</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Participants</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Actions</th>
+                                    <th>Expense</th>
+                                    <th>Amount</th>
+                                    <th>Paid By</th>
+                                    <th>Date</th>
+                                    <th>Participants</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody>
                                 <?php foreach ($recentExpenses as $expense): ?>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="py-4">
-                                        <div class="font-medium"><?php echo htmlspecialchars($expense['title']); ?></div>
+                                <tr>
+                                    <td>
+                                        <div class="expense-title"><?php echo htmlspecialchars($expense['title']); ?></div>
                                         <?php if(!empty($expense['description'])): ?>
-                                            <div class="text-sm text-gray-500"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 50, "...")); ?></div>
+                                            <div class="expense-description"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 50, "...")); ?></div>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="py-4 font-semibold"><?php echo number_format($expense['amount'], 2); ?> €</td>
-                                    <td class="py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-7 h-7 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">
+                                    <td>
+                                        <strong>€<?php echo number_format($expense['amount'], 2); ?></strong>
+                                    </td>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="avatar" style="width: 24px; height: 24px; font-size: 12px;">
                                                 <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                                             </div>
-                                            <span class="text-sm"><?php echo htmlspecialchars($expense['payer_display_name']); ?></span>
+                                            <span><?php echo htmlspecialchars($expense['payer_display_name']); ?></span>
                                         </div>
                                     </td>
-                                    <td class="py-4 text-sm text-gray-600"><?php echo date('d M Y', strtotime($expense['expense_date'])); ?></td>
-                                    <td class="py-4">
-                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                                            <i class="fas fa-users mr-1"></i> 
+                                    <td><?php echo date('M j', strtotime($expense['expense_date'])); ?></td>
+                                    <td>
+                                        <span class="tag participants">
                                             <?php echo $expense['participant_count']; ?> people
                                         </span>
                                     </td>
-                                    <td class="py-4">
-                                        <div class="flex gap-2">
-                                            <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
-                                               class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
-                                                <i class="fas fa-eye mr-1"></i>Details
+                                    <td>
+                                        <div style="display: flex; gap: 12px;">
+                                            <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" class="action-link">
+                                                Details
                                             </a>
                                             <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
                                                 <button type="button" 
-                                                        class="text-red-600 hover:text-red-800 font-medium text-sm border-none bg-transparent cursor-pointer"
+                                                        class="action-link danger"
+                                                        style="background: none; border: none; cursor: pointer;"
                                                         onclick="confirmDelete(<?php echo $expense['id']; ?>, '<?php echo htmlspecialchars($expense['title'], ENT_QUOTES); ?>')">
-                                                    <i class="fas fa-trash mr-1"></i>Delete
+                                                    Delete
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -295,24 +613,19 @@
         </div>
     </div>
     
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
-            <div class="flex items-center mb-4">
-                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
-                <h3 class="text-lg font-semibold">Confirm Delete</h3>
-            </div>
-            <p class="text-gray-600 mb-6">Are you sure you want to delete "<span id="expenseTitle" class="font-medium"></span>"? This action cannot be undone.</p>
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
-                    Cancel
-                </button>
+    <!-- Delete Modal -->
+    <div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; padding: 24px; max-width: 400px; margin: 20px;">
+            <h3 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600;">Delete Expense</h3>
+            <p style="margin: 0 0 24px 0; color: var(--sf-text-secondary);">
+                Are you sure you want to delete "<span id="expenseTitle"></span>"? This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="delete_expense">
                     <input type="hidden" name="expense_id" id="deleteExpenseId" value="">
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                        <i class="fas fa-trash mr-2"></i>Delete
-                    </button>
+                    <button type="submit" style="background: var(--sf-red); color: white;" class="btn">Delete</button>
                 </form>
             </div>
         </div>
@@ -322,20 +635,16 @@
         function confirmDelete(expenseId, expenseTitle) {
             document.getElementById('deleteExpenseId').value = expenseId;
             document.getElementById('expenseTitle').textContent = expenseTitle;
-            document.getElementById('deleteModal').classList.remove('hidden');
-            document.getElementById('deleteModal').classList.add('flex');
+            const modal = document.getElementById('deleteModal');
+            modal.style.display = 'flex';
         }
         
         function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-            document.getElementById('deleteModal').classList.remove('flex');
+            document.getElementById('deleteModal').style.display = 'none';
         }
         
-        // Close modal when clicking outside
         document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDeleteModal();
-            }
+            if (e.target === this) closeDeleteModal();
         });
     </script>
 </body>
