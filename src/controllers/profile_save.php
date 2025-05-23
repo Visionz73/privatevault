@@ -20,6 +20,26 @@ if ($sub === 'public_profile') {
     $stmt->execute([$bio, json_encode($links), $userId]);
 }
 
+/* -------- HR Information -------------------------------------------- */
+if ($sub === 'hr_information') {
+    $data = [
+      'job_title'     => $_POST['job_title']     ?? null,
+      'department'    => $_POST['department']    ?? null,
+      'employee_id'   => $_POST['employee_id']   ?? null,
+      'start_date'    => $_POST['start_date']    ?: null,
+      'manager'       => $_POST['manager']       ?? null,
+      'work_location' => $_POST['work_location'] ?? null,
+    ];
+
+    $set = [];
+    foreach ($data as $col=>$val) $set[] = "`$col` = :$col";
+    $sql = 'UPDATE users SET '.implode(', ',$set).' WHERE id = :id';
+
+    $stmt = $pdo->prepare($sql);
+    $data['id'] = $userId;
+    $stmt->execute($data);
+}
+
 /* -------- Personal data --------------------------------------------- */
 if ($sub === 'personal_data') {
     $data = [
