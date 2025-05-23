@@ -214,6 +214,84 @@ function getUserInitials($user) {
       width: calc(100% - 16rem) !important;
     }
   }
+
+  /* Profile Modal Styling */
+  .profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  .profile-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .profile-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+  }
+  .profile-modal.active .profile-modal-content {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .profile-modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .profile-modal-body {
+    padding: 1.5rem;
+  }
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .close-modal:hover {
+    color: #374151;
+  }
+  .modal-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #374151;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .modal-menu-item:hover {
+    background: #f3f4f6;
+    color: #667eea;
+    border-color: #e5e7eb;
+  }
+  .modal-menu-item svg {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 </style>
 
 <!-- Add the haveToPay-layout class to body if on HaveToPay page -->
@@ -240,28 +318,8 @@ function getUserInitials($user) {
     <!-- Mobile Profile Avatar -->
     <?php if ($user): ?>
     <div class="relative">
-      <div class="profile-avatar" onclick="toggleProfileDropdown()">
+      <div class="profile-avatar" onclick="openProfileModal()">
         <?= getUserInitials($user) ?>
-      </div>
-      <div id="profileDropdown" class="profile-dropdown">
-        <a href="/profile.php">
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          Profil
-        </a>
-        <a href="/settings.php">
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Einstellungen
-        </a>
-        <a href="/logout.php">
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-          Abmelden
-        </a>
       </div>
     </div>
     <?php endif; ?>
@@ -289,31 +347,11 @@ function getUserInitials($user) {
       <!-- Desktop Profile Section -->
       <?php if ($user): ?>
       <div class="flex flex-col items-center mb-6 px-4">
-        <div class="profile-avatar mb-3" onclick="toggleProfileDropdown()">
+        <div class="profile-avatar mb-3" onclick="openProfileModal()">
           <?= getUserInitials($user) ?>
         </div>
         <div class="text-center relative">
           <p class="text-white font-medium"><?= htmlspecialchars($user['username']) ?></p>
-          <div id="profileDropdownDesktop" class="profile-dropdown">
-            <a href="/profile.php">
-              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-              Profil
-            </a>
-            <a href="/settings.php">
-              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              Einstellungen
-            </a>
-            <a href="/logout.php">
-              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-              </svg>
-              Abmelden
-            </a>
-          </div>
         </div>
       </div>
       <?php endif; ?>
@@ -368,6 +406,61 @@ function getUserInitials($user) {
   </div>
 </nav>
 
+<!-- Profile Modal -->
+<?php if ($user): ?>
+<div id="profileModal" class="profile-modal">
+  <div class="profile-modal-content">
+    <div class="profile-modal-header">
+      <div class="flex items-center">
+        <div class="profile-avatar mr-3" style="width: 3rem; height: 3rem;">
+          <?= getUserInitials($user) ?>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
+          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
+        </div>
+      </div>
+      <button class="close-modal" onclick="closeProfileModal()">&times;</button>
+    </div>
+    <div class="profile-modal-body">
+      <nav class="space-y-1">
+        <a href="/profile.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          Profil bearbeiten
+        </a>
+        <a href="/settings.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Einstellungen
+        </a>
+        <a href="/notifications.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
+          </svg>
+          Benachrichtigungen
+        </a>
+        <a href="/security.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+          Sicherheit
+        </a>
+        <hr class="my-3">
+        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Abmelden
+        </a>
+      </nav>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <!-- Enhanced navigation scripts -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -388,6 +481,22 @@ function getUserInitials($user) {
     }
   }
 
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
   // Close dropdown when clicking outside
   document.addEventListener('click', function(event) {
     const profileAvatar = document.querySelector('.profile-avatar');
@@ -395,6 +504,21 @@ function getUserInitials($user) {
     
     if (dropdown && !profileAvatar.contains(event.target) && !dropdown.contains(event.target)) {
       dropdown.classList.remove('active');
+    }
+  });
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    const modal = document.getElementById('profileModal');
+    if (modal && event.target === modal) {
+      closeProfileModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeProfileModal();
     }
   });
 </script>
