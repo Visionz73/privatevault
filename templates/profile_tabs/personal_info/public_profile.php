@@ -5,13 +5,13 @@
     <p class="text-gray-600">Diese Informationen sind für andere Benutzer sichtbar.</p>
   </div>
 
-  <?php if ($publicSuccess): ?>
+  <?php if (!empty($publicSuccess)): ?>
     <div class="bg-green-50 border border-green-200 rounded-lg p-4">
       <p class="text-green-800"><?= htmlspecialchars($publicSuccess) ?></p>
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="/src/controllers/profile_save.php" class="space-y-6">
+  <form method="POST" action="/privatevault/src/controllers/profile_save.php" class="space-y-6">
     <input type="hidden" name="subtab" value="public_profile">
     
     <!-- Bio -->

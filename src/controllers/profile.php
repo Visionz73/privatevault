@@ -48,18 +48,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 // 4) POST-Handling für Public Profile
 $publicSuccess = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST'
-    && $activeTab === 'personal_info'
-    && $subTab === 'public_profile'
+    && isset($_POST['subtab'])
+    && $_POST['subtab'] === 'public_profile'
 ) {
-    $linkedin = trim($_POST['linkedin'] ?? '');
-    $twitter  = trim($_POST['twitter']  ?? '');
-    $xing     = trim($_POST['xing']     ?? '');
+    $bio = trim($_POST['bio'] ?? '');
+    $links = $_POST['links'] ?? [];
+    
+    // nur nicht-leere Links speichern
+    $links = array_filter($links, fn($v) => $v !== '');
 
-    $stmt = $pdo->prepare("
-      UPDATE users SET linkedin = ?, twitter = ?, xing = ?, updated_at = NOW()
-      WHERE id = ?
-    ");
-    $stmt->execute([$linkedin, $twitter, $xing, $_SESSION['user_id']]);
+    $stmt = $pdo->prepare('UPDATE users SET bio = ?, links = ? WHERE id = ?');
+    $stmt->execute([$bio, json_encode($links), $_SESSION['user_id']]);
     $publicSuccess = 'Public Profile wurde gespeichert.';
 }
 
