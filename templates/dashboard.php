@@ -8,14 +8,107 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+    }
+
+    /* Custom gradient background - will be overridden by JS if custom colors are set */
+    .custom-gradient-bg {
+      background: linear-gradient(135deg, #f0f4ff 0%, #eef7ff 50%, #f9fdf2 100%);
+    }
+    
+    /* Color picker tool styling */
+    .gradient-customizer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 15px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      width: 320px;
+      transform: translateY(calc(100% - 50px));
+    }
+    
+    .gradient-customizer:hover,
+    .gradient-customizer.active {
+      transform: translateY(0);
+    }
+    
+    .customizer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+    
+    .color-inputs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .color-input-group {
+      flex: 1;
+    }
+    
+    .color-input-group input[type="color"] {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .color-input-group label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: #666;
+    }
+    
+    .customizer-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .reset-btn {
+      background: #f1f5f9;
+      color: #334155;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .save-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
     /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
       main { margin-top: 3.5rem; }
+      
+      .gradient-customizer {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<body class="min-h-screen custom-gradient-bg flex flex-col">
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
@@ -325,179 +418,121 @@
     </div><!-- /grid -->
   </main>
   
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Group filter dropdown
-      const groupFilterBtn = document.getElementById('groupFilterBtn');
-      const groupFilterMenu = document.getElementById('groupFilterMenu');
-      
-      if (groupFilterBtn && groupFilterMenu) {
-        groupFilterBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          groupFilterMenu.classList.toggle('hidden');
-        });
-        
-        document.addEventListener('click', () => {
-          groupFilterMenu.classList.add('hidden');
-        });
-      }
-    });
+  <!-- Gradient Customizer Tool -->
+  <div class="gradient-customizer" id="gradientCustomizer">
+    <div class="customizer-header" id="customizerHeader">
+      <h3 class="font-semibold text-sm">Hintergrund anpassen</h3>
+      <span class="toggle-icon">▲</span>
+    </div>
     
-    // Toggle inline event creation form
-    document.getElementById('showInlineEventForm').addEventListener('click', function() {
-      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-    });
+    <div class="customizer-content">
+      <div class="color-inputs">
+        <div class="color-input-group">
+          <label for="startColor">Start</label>
+          <input type="color" id="startColor" value="#f0f4ff">
+        </div>
+        
+        <div class="color-input-group">
+          <label for="midColor">Mitte</label>
+          <input type="color" id="midColor" value="#eef7ff">
+        </div>
+        
+        <div class="color-input-group">
+          <label for="endColor">Ende</label>
+          <input type="color" id="endColor" value="#f9fdf2">
+        </div>
+      </div>
+      
+      <div class="customizer-actions">
+        <button class="reset-btn" id="resetGradient">Zurücksetzen</button>
+        <button class="save-btn" id="saveGradient">Speichern</button>
+      </div>
+    </div>
+  </div>
 
-    // Handle inline event form submission via AJAX
-    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const title = this.title.value.trim();
-      const date = this.date.value;
-      if(title && date){
-        fetch('/create_event.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ title: title, date: date })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            // Create new list element for the event
-            const newEvent = data.event;
-            const li = document.createElement('li');
-            li.className = "px-2 py-2 flex justify-between items-center";
-            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
-                             <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-            const eventList = document.getElementById('dashboardEventList');
-            
-            // If "Keine Termine gefunden." is present, remove it.
-            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-              eventList.innerHTML = '';
-            }
-            eventList.appendChild(li);
-            // Update count (force a reload or recalc count)
-            // For simplicity, not auto-updating count here.
-            this.reset();
-            document.getElementById('inlineEventFormContainer').classList.add('hidden');
-          } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-          }
-        })
-        .catch(() => alert('Fehler beim Erstellen des Termins.'));
+  <script>
+    // Gradient customizer functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const startColorInput = document.getElementById('startColor');
+      const midColorInput = document.getElementById('midColor');
+      const endColorInput = document.getElementById('endColor');
+      const resetButton = document.getElementById('resetGradient');
+      const saveButton = document.getElementById('saveGradient');
+      const customizerHeader = document.getElementById('customizerHeader');
+      const gradientCustomizer = document.getElementById('gradientCustomizer');
+      
+      // Default colors
+      const defaultColors = {
+        start: '#f0f4ff',
+        mid: '#eef7ff',
+        end: '#f9fdf2'
+      };
+      
+      // Load saved colors from localStorage if available
+      function loadSavedColors() {
+        const savedColors = JSON.parse(localStorage.getItem('dashboardGradient') || '{}');
+        
+        if (savedColors.start && savedColors.mid && savedColors.end) {
+          startColorInput.value = savedColors.start;
+          midColorInput.value = savedColors.mid;
+          endColorInput.value = savedColors.end;
+          
+          applyGradient(savedColors.start, savedColors.mid, savedColors.end);
+        }
       }
-    });
-
-    // Attach click events to task list items for mobile tap
-    document.querySelectorAll('.task-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const title = item.getAttribute('data-title');
-        const due = item.getAttribute('data-due');
-        document.getElementById('modalTaskTitle').textContent = title;
-        document.getElementById('modalTaskDue').textContent = due ? 'Fällig: ' + due : '';
-        document.getElementById('taskModal').classList.remove('hidden');
+      
+      // Apply gradient to body
+      function applyGradient(start, mid, end) {
+        document.body.style.background = 
+          `linear-gradient(135deg, ${start} 0%, ${mid} 50%, ${end} 100%)`;
+      }
+      
+      // Update gradient on color input change
+      [startColorInput, midColorInput, endColorInput].forEach(input => {
+        input.addEventListener('input', () => {
+          applyGradient(startColorInput.value, midColorInput.value, endColorInput.value);
+        });
       });
-    });
-
-    // Close modal when clicking the close button
-    document.getElementById('closeTaskModal').addEventListener('click', () => {
-      document.getElementById('taskModal').classList.add('hidden');
-    });
-
-    // Optional: close modal when clicking on the background
-    document.getElementById('taskModal').addEventListener('click', (e) => {
-      if(e.target === document.getElementById('taskModal')){
-        document.getElementById('taskModal').classList.add('hidden');
-      }
-    });
-
-    // Subtask functionality
-    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const taskId = this.getAttribute('data-task-id');
-        document.getElementById('modalTaskId').value = taskId;
-        document.getElementById('subtaskModal').classList.remove('hidden');
-
-        // Optional: Load existing subtasks via AJAX
-        fetch('/get_subtasks.php?task_id=' + taskId)
-          .then(response => response.json())
-          .then(data => {
-            const subtasksList = document.getElementById('subtasksList');
-            subtasksList.innerHTML = ''; // Clear existing list
-            data.subtasks.forEach(subtask => {
-              const div = document.createElement('div');
-              div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
-              div.innerHTML = `<span class="text-sm">${subtask.title}</span>
-                               <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${subtask.id}">&times;</button>`;
-              subtasksList.appendChild(div);
-            });
-          });
+      
+      // Reset to default colors
+      resetButton.addEventListener('click', () => {
+        startColorInput.value = defaultColors.start;
+        midColorInput.value = defaultColors.mid;
+        endColorInput.value = defaultColors.end;
+        
+        applyGradient(defaultColors.start, defaultColors.mid, defaultColors.end);
+        localStorage.removeItem('dashboardGradient');
       });
-    });
-
-    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const taskId = btn.getAttribute('data-task-id');
-        document.getElementById('modalTaskId').value = taskId;
-        const taskTitle = btn.closest('li').querySelector('.task-item span').textContent;
-        document.getElementById('modalTaskTitle').textContent = 'Unteraufgaben für: ' + taskTitle;
-        document.getElementById('subtaskModal').classList.remove('hidden');
+      
+      // Save current gradient
+      saveButton.addEventListener('click', () => {
+        const colors = {
+          start: startColorInput.value,
+          mid: midColorInput.value,
+          end: endColorInput.value
+        };
+        
+        localStorage.setItem('dashboardGradient', JSON.stringify(colors));
+        
+        // Show brief confirmation
+        saveButton.textContent = 'Gespeichert!';
+        saveButton.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        
+        setTimeout(() => {
+          saveButton.textContent = 'Speichern';
+          saveButton.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }, 2000);
       });
-    });
-
-    // Close subtask modal
-    document.getElementById('closeSubtaskModal').addEventListener('click', () => {
-      document.getElementById('subtaskModal').classList.add('hidden');
-    });
-
-    // Handle subtask form submission
-    document.getElementById('subtaskForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const taskId = this.task_id.value;
-      const subtaskTitle = this.subtask_title.value.trim();
-      if(subtaskTitle){
-        fetch('/add_subtask.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ task_id: taskId, subtask_title: subtaskTitle })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            // Add new subtask to the list
-            const newSubtask = data.subtask;
-            const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
-            div.innerHTML = `<span class="text-sm">${newSubtask.title}</span>
-                             <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${newSubtask.id}">&times;</button>`;
-            document.getElementById('subtasksList').appendChild(div);
-            this.reset();
-          } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-          }
-        })
-        .catch(() => alert('Fehler beim Hinzufügen der Unteraufgabe.'));
-      }
-    });
-
-    // Remove subtask
-    document.getElementById('subtasksList').addEventListener('click', function(e) {
-      if(e.target.classList.contains('remove-subtask-btn')){
-        const subtaskId = e.target.getAttribute('data-subtask-id');
-        fetch('/remove_subtask.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ subtask_id: subtaskId })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            e.target.closest('div').remove();
-          } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-          }
-        })
-        .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
-      }
+      
+      // Toggle customizer panel
+      customizerHeader.addEventListener('click', () => {
+        gradientCustomizer.classList.toggle('active');
+        const toggleIcon = customizerHeader.querySelector('.toggle-icon');
+        toggleIcon.textContent = gradientCustomizer.classList.contains('active') ? '▼' : '▲';
+      });
+      
+      // Load saved colors on page load
+      loadSavedColors();
     });
   </script>
 </body>
