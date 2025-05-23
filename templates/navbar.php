@@ -11,188 +11,309 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
                    basename($_SERVER['PHP_SELF']) === 'havetopay_add.php' ||
                    basename($_SERVER['PHP_SELF']) === 'havetopay_detail.php';
 ?>
-<style>
-  /* Desktop sidebar styling */
-  @media (min-width: 769px) {
-    nav#sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 16rem; /* w-64 */
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      z-index: 50;
-    }
-    .mobile-menu { display: none; }
-    .sidebar-content { display: block; }
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $pageTitle ?? 'PrivateVault'; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
 
-  /* Mobile topbar styling - Fixed to be fully opaque */
-  @media (max-width: 768px) {
-    nav#sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3.5rem; /* fixed top bar height */
-      background: #ffffff; /* Fully opaque white background */
-      border-bottom: 1px solid #e5e7eb;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      z-index: 50;
-    }
-    .mobile-menu { 
-      display: flex; 
-      align-items: center;
-      width: 100%;
-      height: 100%;
-    }
-    .sidebar-content { 
-      display: none;
-      position: fixed;
-      top: 3.5rem;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #ffffff; /* Fully opaque white background */
-      z-index: 49;
-      padding: 1rem;
-      overflow-y: auto; /* Allow scrolling if many menu items */
-    }
-    .sidebar-content.active {
-      display: block;
-    }
-    /* Improved mobile menu item styling */
-    .sidebar-content ul li {
-      margin-bottom: 0.75rem;
-    }
-    .sidebar-content ul li a {
-      display: block;
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease;
-    }
-    .sidebar-content ul li a:hover {
-      background-color: #f3f4f6;
-    }
-  }
-  
-  /* Fix for HaveToPay pages - ensure content appears correctly */
-  .haveToPay-layout {
-    padding-top: 0 !important;
-  }
-  
-  @media (min-width: 769px) {
-    body.haveToPay-layout main, 
-    body.haveToPay-layout .content-container {
-      margin-left: 16rem !important;
-      width: calc(100% - 16rem) !important;
-    }
-  }
-</style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
-<script>
-  if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
-    document.body.classList.add('haveToPay-layout');
-  }
-</script>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
 
-<nav id="sidebar">
-  <!-- Mobile top bar -->
-  <div class="mobile-menu">
-    <button id="mobileToggleBtn" class="p-2 focus:outline-none">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-brand:hover {
+            color: white;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* User Profile Section */
+        .user-profile {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .user-details small {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .mobile-toggle {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1001;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        /* Cards and modern components */
+        .modern-card {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .card-header-modern {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .btn-modern {
+            border-radius: 0.75rem;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modern-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-modern-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle d-md-none" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
     </button>
-    <a href="/dashboard.php" class="flex items-center">
-      <img src="/assets/logo.png" alt="Logo" class="h-12 w-auto" />
-      
-    </a>
-  </div>
-  <!-- Desktop: sidebar content -->
-  <div class="sidebar-content flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto mt-2">
-      <button id="toggleBtn" class="p-4 focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" 
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <!-- Centered logo -->
-      <div class="flex justify-center mb-6">
-        <a href="/dashboard.php" class="flex items-center">
-          <img src="/assets/logo.png" alt="Logo" class="h-24 w-auto" />
-          
-        </a>
-      </div>
-      <ul class="flex flex-col space-y-4 px-2">
-        <?php
-        $links = [
-          ['href'=>'dashboard.php',   'icon'=>'<path d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8" />', 'label'=>'Dashboard'],
-          ['href'=>'upload.php',      'icon'=>'<path d="M12 4v16m8-8H4" />', 'label'=>'Upload'],
-          ['href'=>'profile.php',     'icon'=>'<path d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M12 12a4 4 0 100-8 4 4 0 000 8z" />', 'label'=>'Profil'],
-          ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />', 'label'=>'MyTask'],
-          ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />', 'label'=>'Create Task'],
-          ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />', 'label'=>'Kanban'],
-          ['href'=>'havetopay.php',   'icon'=>'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', 'label'=>'HaveToPay'],
-        ];
-        foreach ($links as $l): 
-          $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
-        ?>
-          <li>
-            <a href="/<?= $l['href'] ?>" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg <?= $isActive ? 'bg-blue-50 text-blue-700 font-medium' : '' ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <?= $l['icon'] ?>
-              </svg>
-              <span class="ml-3"><?= $l['label'] ?></span>
-            </a>
-          </li>
-        <?php endforeach; ?>
-        <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
-          <li>
-            <a href="/admin.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span class="ml-3">Admin Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/groups.php" class="flex items-center w-full text-gray-700 hover:text-primary transition px-4 py-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span class="ml-3">Manage Groups</span>
-            </a>
-          </li>
-        <?php endif; ?>
-      </ul>
-    </div>
-  </div>
-</nav>
 
-<!-- Mobile navigation toggle script -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggleBtn = document.getElementById('mobileToggleBtn');
-    const sidebar = document.querySelector('.sidebar-content');
-    
-    if (mobileToggleBtn && sidebar) {
-      mobileToggleBtn.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-      });
-    }
-  });
-</script>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.php" class="sidebar-brand">
+                <i class="fas fa-vault"></i>
+                PrivateVault
+            </a>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                
+                <div class="nav-item">
+                    <a href="index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="taskboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'taskboard.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-tasks"></i>
+                        Taskboard
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="havetopay.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'havetopay.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-money-bill-wave"></i>
+                        HaveToPay
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Tools</div>
+                
+                <div class="nav-item">
+                    <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="settings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="user-profile">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?>
+                </div>
+                <div class="user-details">
+                    <h6><?php echo htmlspecialchars($_SESSION['username']); ?></h6>
+                    <small>Online</small>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a href="logout.php" class="nav-link" style="margin: 0; justify-content: center;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
