@@ -297,84 +297,84 @@
     <?php require_once __DIR__.'/navbar.php'; ?>
     
     <div class="content-container">
-        <div class="container">
+        <div class="container-fluid mt-4">
             <!-- Back Link -->
-            <div class="mb-4 fade-in">
-                <a href="havetopay.php" class="btn-link-modern">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to HaveToPay
+            <div class="mb-4">
+                <a href="havetopay.php" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to HaveToPay
                 </a>
             </div>
             
             <!-- Success/Error Messages -->
             <?php if (!empty($success)): ?>
-            <div class="modern-alert success">
-                <i class="fas fa-check-circle"></i>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
                 <?php echo htmlspecialchars($success); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <?php endif; ?>
             
             <?php if (!empty($errors)): ?>
-            <div class="modern-alert warning">
-                <i class="fas fa-exclamation-circle"></i>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
                 <?php foreach ($errors as $error): ?>
                     <div><?php echo htmlspecialchars($error); ?></div>
                 <?php endforeach; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <?php endif; ?>
             
             <!-- Expense Details -->
             <div class="row mb-4">
-                <div class="col-lg-12">
-                    <div class="modern-card fade-in">
-                        <div class="card-body p-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-md-8">
-                                    <h1 class="expense-title"><?php echo htmlspecialchars($expense['title']); ?></h1>
+                                    <h1 class="h2"><?php echo htmlspecialchars($expense['title']); ?></h1>
                                     
-                                    <div class="expense-user">
-                                        <div class="user-avatar">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 50px; height: 50px;">
                                             <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                                         </div>
-                                        <div class="user-details">
-                                            <span class="user-name">
+                                        <div>
+                                            <h6 class="mb-0">
                                                 <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
                                                 <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
-                                            </span>
-                                            <span class="user-username">@<?php echo htmlspecialchars($expense['payer_name']); ?></span>
+                                            </h6>
+                                            <small class="text-muted">@<?php echo htmlspecialchars($expense['payer_name']); ?></small>
                                         </div>
                                     </div>
                                     
-                                    <div class="d-flex flex-wrap gap-4 mt-3">
-                                        <div class="expense-meta">
-                                            <i class="fas fa-calendar-alt"></i>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
                                             <?php echo date('d M Y', strtotime($expense['expense_date'])); ?>
                                         </div>
-                                        
                                         <?php if(!empty($expense['expense_category'])): ?>
-                                        <div class="expense-meta">
-                                            <i class="fas fa-tag"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-tag me-2 text-muted"></i>
                                             <?php echo htmlspecialchars($expense['expense_category']); ?>
                                         </div>
                                         <?php endif; ?>
-                                        
-                                        <div class="expense-meta">
-                                            <i class="fas fa-users"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-users me-2 text-muted"></i>
                                             <?php echo count($participants); ?> participants
                                         </div>
                                     </div>
                                     
                                     <?php if (!empty($expense['description'])): ?>
-                                    <div class="expense-description">
+                                    <div class="alert alert-info">
                                         <h6 class="fw-bold mb-2">Description</h6>
                                         <p class="mb-0"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
                                     </div>
                                     <?php endif; ?>
                                 </div>
                                 
-                                <div class="col-md-4 text-md-end text-center mt-4 mt-md-0">
-                                    <div class="expense-amount mb-2">€<?php echo number_format($expense['amount'], 2, ',', '.'); ?></div>
-                                    <span class="expense-meta">Total amount</span>
+                                <div class="col-md-4 text-center">
+                                    <div class="display-4 text-primary fw-bold">€<?php echo number_format($expense['amount'], 2); ?></div>
+                                    <div class="text-muted">Total amount</div>
                                 </div>
                             </div>
                         </div>
@@ -385,66 +385,67 @@
             <!-- Participants List -->
             <div class="row">
                 <div class="col-12">
-                    <div class="modern-card fade-in-delay-1">
-                        <div class="card-header bg-primary text-white p-4">
-                            <h3 class="mb-0 fw-bold">Participants</h3>
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Participants</h5>
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body">
                             <?php if (empty($participants)): ?>
-                                <div class="text-center p-5">
+                                <div class="text-center py-4">
                                     <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                     <p class="text-muted">No participants found</p>
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
-                                    <table class="modern-table">
-                                        <thead>
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
                                             <tr>
                                                 <th>Participant</th>
                                                 <th>Share Amount</th>
                                                 <th>Status</th>
-                                                <th class="text-end">Actions</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php foreach ($participants as $participant): ?>
-                                            <tr class="<?php echo $participant['is_settled'] ? 'row-settled' : ''; ?>">
+                                            <tr class="<?php echo $participant['is_settled'] ? 'table-success' : ''; ?>">
                                                 <td>
-                                                    <div class="expense-user mb-0">
-                                                        <div class="user-avatar" style="width: 36px; height: 36px; font-size: 0.9rem; background-color: <?php echo $participant['is_settled'] ? '#10B981' : '#4F46E5'; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-<?php echo $participant['is_settled'] ? 'success' : 'primary'; ?> text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                             style="width: 40px; height: 40px;">
                                                             <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
                                                         </div>
-                                                        <div class="user-details">
-                                                            <span class="user-name">
+                                                        <div>
+                                                            <h6 class="mb-0">
                                                                 <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
                                                                 <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
-                                                            </span>
-                                                            <span class="user-username">@<?php echo htmlspecialchars($participant['username']); ?></span>
+                                                            </h6>
+                                                            <small class="text-muted">@<?php echo htmlspecialchars($participant['username']); ?></small>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="fw-semibold">
-                                                    <?php echo number_format($participant['share_amount'], 2, ',', '.'); ?> €
+                                                <td class="fw-bold">
+                                                    <?php echo number_format($participant['share_amount'], 2); ?> €
                                                 </td>
                                                 <td>
                                                     <?php if ($participant['is_settled']): ?>
-                                                        <span class="status-badge settled">
-                                                            <i class="fas fa-check-circle"></i>
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-check-circle me-1"></i>
                                                             Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
                                                         </span>
                                                     <?php else: ?>
-                                                        <span class="status-badge pending">
-                                                            <i class="fas fa-clock"></i>
+                                                        <span class="badge bg-warning text-dark">
+                                                            <i class="fas fa-clock me-1"></i>
                                                             Pending
                                                         </span>
                                                     <?php endif; ?>
                                                 </td>
-                                                <td class="text-end">
+                                                <td>
                                                     <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
                                                         <form method="post" class="d-inline">
                                                             <input type="hidden" name="action" value="settle">
                                                             <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                            <button type="submit" class="btn-settle">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success">
                                                                 <i class="fas fa-check-circle me-1"></i>
                                                                 Mark as Settled
                                                             </button>

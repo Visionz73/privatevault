@@ -290,130 +290,120 @@
     <?php require_once __DIR__.'/navbar.php'; ?>
     
     <div class="content-container">
-        <div class="container">
-            <!-- Form header with back button -->
-            <div class="d-flex align-items-center mb-4">
-                <a href="havetopay.php" class="btn-link-modern me-3">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to HaveToPay
+        <div class="container-fluid mt-4">
+            <!-- Back Link -->
+            <div class="mb-4">
+                <a href="havetopay.php" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to HaveToPay
                 </a>
-                <h1 class="m-0">Add New Expense</h1>
             </div>
             
-            <!-- Error display -->
+            <!-- Header -->
+            <div class="mb-4">
+                <h1 class="h2">Add New Expense</h1>
+                <p class="text-muted">Split expenses with your friends and track who owes what</p>
+            </div>
+            
+            <!-- Error and Success Messages -->
             <?php if (!empty($errors)): ?>
-                <div class="modern-alert warning mb-4">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <div>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Please fix the following errors:</strong>
+                    <ul class="mb-0 mt-2">
                         <?php foreach ($errors as $error): ?>
-                            <div><?php echo htmlspecialchars($error); ?></div>
+                            <li><?php echo htmlspecialchars($error); ?></li>
                         <?php endforeach; ?>
-                    </div>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
             
-            <!-- Success message -->
-            <?php if ($success): ?>
-                <div class="modern-alert success mb-4">
-                    <i class="fas fa-check-circle"></i>
+            <?php if (!empty($success)): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
                     <?php echo htmlspecialchars($success); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
             
-            <!-- Expense form -->
-            <div class="modern-card">
-                <div class="card-header">
-                    <h5 class="m-0 fw-bold">Expense Details</h5>
+            <!-- Add Expense Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Expense Details</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="" class="row g-4">
-                        <!-- Basic Information Section -->
-                        <div class="form-section">
-                            <h3 class="form-section-title">
-                                <i class="fas fa-info-circle"></i>Basic Information
-                            </h3>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label for="title" class="form-label">Title*</label>
-                                    <input type="text" class="form-control" id="title" name="title" placeholder="What is this expense for?" required>
-                                    <div class="form-text">Give your expense a clear name</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="amount" class="form-label">Amount*</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">€</span>
-                                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" placeholder="0.00" required>
-                                    </div>
-                                    <div class="form-text">Enter the total amount paid</div>
+                    <form action="" method="POST">
+                        <div class="row g-3">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <label for="title" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       placeholder="What is this expense for?" required
+                                       value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">€</span>
+                                    <input type="number" class="form-control" id="amount" name="amount" 
+                                           step="0.01" min="0.01" placeholder="0.00" required
+                                           value="<?php echo htmlspecialchars($_POST['amount'] ?? ''); ?>">
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Details Section -->
-                        <div class="form-section">
-                            <h3 class="form-section-title">
-                                <i class="fas fa-clipboard-list"></i>Details
-                            </h3>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label for="expense_date" class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="expense_date" name="expense_date" value="<?php echo date('Y-m-d'); ?>">
-                                    <div class="form-text">When did you make this payment?</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="category" class="form-label">Category</label>
-                                    <select class="form-select" id="category" name="category">
-                                        <?php foreach ($categories as $category): ?>
-                                        <option value="<?php echo htmlspecialchars($category['name']); ?>">
-                                            <i class="fas <?php echo htmlspecialchars($category['icon']); ?>"></i> 
-                                            <?php echo htmlspecialchars($category['name']); ?>
-                                        </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="form-text">Select a category for this expense</div>
-                                </div>
-                                <div class="col-12">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Add any details about this expense..."></textarea>
-                                    <div class="form-text">Optional: Add more details about this expense</div>
-                                </div>
+                            
+                            <!-- Details -->
+                            <div class="col-md-6">
+                                <label for="expense_date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="expense_date" name="expense_date" 
+                                       value="<?php echo htmlspecialchars($_POST['expense_date'] ?? date('Y-m-d')); ?>">
                             </div>
-                        </div>
-                        
-                        <!-- Split Section -->
-                        <div class="form-section">
-                            <h3 class="form-section-title">
-                                <i class="fas fa-users"></i>Split With
-                            </h3>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label for="group_id" class="form-label">Group (Optional)</label>
-                                    <select class="form-select" id="group_id" name="group_id">
-                                        <option value="">-- No Group --</option>
-                                        <?php foreach ($allGroups as $group): ?>
-                                        <option value="<?php echo $group['id']; ?>">
-                                            <?php echo htmlspecialchars($group['name']); ?>
-                                        </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="form-text">Optionally assign to a group</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="participants" class="form-label">Split With*</label>
-                                    <select class="form-select participants-select" id="participants" name="participants[]" multiple required>
-                                        <?php foreach ($allUsers as $user): ?>
-                                        <option value="<?php echo $user['id']; ?>">
-                                            <?php echo htmlspecialchars($user['display_name']); ?>
-                                        </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="form-text">Select who to split this expense with</div>
-                                </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo htmlspecialchars($category['name']); ?>"
+                                            <?php echo ($_POST['category'] ?? '') == $category['name'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="Add any details about this expense..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                            </div>
+                            
+                            <!-- Split Information -->
+                            <div class="col-md-6">
+                                <label for="group_id" class="form-label">Group (Optional)</label>
+                                <select class="form-select" id="group_id" name="group_id">
+                                    <option value="">-- No Group --</option>
+                                    <?php foreach ($allGroups as $group): ?>
+                                    <option value="<?php echo $group['id']; ?>"
+                                            <?php echo ($_POST['group_id'] ?? '') == $group['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($group['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="participants" class="form-label">Split With *</label>
+                                <select class="form-select" id="participants" name="participants[]" multiple required>
+                                    <?php foreach ($allUsers as $user): ?>
+                                    <option value="<?php echo $user['id']; ?>"
+                                            <?php echo in_array($user['id'], $_POST['participants'] ?? []) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($user['display_name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="form-text">Hold Ctrl/Cmd to select multiple participants</div>
                             </div>
                         </div>
                         
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn-modern-primary">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-plus-circle me-2"></i>Add Expense
                             </button>
                         </div>
