@@ -10,7 +10,6 @@ $userId = $_SESSION['user_id'];
 // Initialize variables
 $errorMessage = '';
 $successMessage = '';
-$pageTitle = 'HaveToPay Dashboard';
 $balances = ['others_owe' => [], 'user_owes' => []];
 $totalOwed = 0;
 $totalOwing = 0;
@@ -184,10 +183,54 @@ if (isset($_GET['success'])) {
         case 'settled':
             $successMessage = 'Payment marked as settled';
             break;
+        case 'deleted':
+            $successMessage = 'Expense deleted successfully';
+            break;
     }
 }
 
-// Use navbar.php and havetopay.php template
+// Handle delete request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_expense') {
+    $expenseId = intval($_POST['expense_id'] ?? 0);
+    
+    if ($expenseId > 0) {
+        try {
+            // Check if user owns this expense or is an admin
+            $checkStmt = $pdo->prepare("SELECT payer_id FROM expenses WHERE id = ?");
+            $checkStmt->execute([$expenseId]);
+            $expense = $checkStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($expense && ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false))) {
+                $pdo->beginTransaction();
+                
+                // Delete participants first (due to foreign key constraints)
+                $deleteParticipantsStmt = $pdo->prepare("DELETE FROM expense_participants WHERE expense_id = ?");
+                $deleteParticipantsStmt->execute([$expenseId]);
+                
+                // Delete the expense
+                $deleteExpenseStmt = $pdo->prepare("DELETE FROM expenses WHERE id = ?");
+                $deleteExpenseStmt->execute([$expenseId]);
+                
+                $pdo->commit();
+                $successMessage = 'Expense deleted successfully';
+                
+                // Redirect to avoid resubmission
+                header('Location: havetopay.php?success=deleted');
+                exit;
+            } else {
+                $errorMessage = 'You do not have permission to delete this expense';
+            }
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            $errorMessage = 'Error deleting expense: ' . $e->getMessage();
+            error_log('HaveToPay delete error: ' . $e->getMessage());
+        }
+    }
+}
+
+// Use existing navbar.php instead of header/footer
 require_once __DIR__ . '/../../templates/navbar.php';
 require_once __DIR__ . '/../../templates/havetopay.php';
 ?>
