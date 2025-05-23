@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Expense | HaveToPay</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Mobile adjustments */
@@ -26,68 +26,6 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* Form styling */
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--sf-text-primary);
-            font-size: 16px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid var(--sf-divider);
-            border-radius: 12px;
-            background: var(--sf-background);
-            font-size: 16px;
-            color: var(--sf-text-primary);
-            font-family: inherit;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--sf-blue);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        .form-text {
-            font-size: 14px;
-            color: var(--sf-text-secondary);
-            margin-top: 6px;
-        }
-
-        select.form-control {
-            cursor: pointer;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .submit-container {
-            text-align: center;
-            margin-top: 32px;
-        }
-
-        .btn-large {
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -139,33 +77,41 @@
             </div>
             <div class="p-6">
                 <form action="" method="POST" class="space-y-6">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" id="title" name="title" class="form-control" 
-                                   placeholder="What is this expense for?" required
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Title -->
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                            <input type="text" id="title" name="title" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="What is this expense for?"
                                    value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="amount" class="form-label">Amount</label>
-                            <div style="position: relative;">
-                                <span style="position: absolute; left: 16px; top: 16px; color: var(--sf-text-secondary);">€</span>
-                                <input type="number" id="amount" name="amount" class="form-control" 
-                                       style="padding-left: 40px;" step="0.01" min="0.01" placeholder="0.00" required
+                        <!-- Amount -->
+                        <div>
+                            <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2 text-gray-500">€</span>
+                                <input type="number" id="amount" name="amount" step="0.01" min="0.01" required
+                                       class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                       placeholder="0.00"
                                        value="<?php echo htmlspecialchars($_POST['amount'] ?? ''); ?>">
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="expense_date" class="form-label">Date</label>
-                            <input type="date" id="expense_date" name="expense_date" class="form-control"
+                        <!-- Date -->
+                        <div>
+                            <label for="expense_date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <input type="date" id="expense_date" name="expense_date"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                    value="<?php echo htmlspecialchars($_POST['expense_date'] ?? date('Y-m-d')); ?>">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="category" class="form-label">Category</label>
-                            <select id="category" name="category" class="form-control">
+                        <!-- Category -->
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="category" name="category"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo htmlspecialchars($category['name']); ?>"
                                         <?php echo ($_POST['category'] ?? '') == $category['name'] ? 'selected' : ''; ?>>
@@ -175,9 +121,11 @@
                             </select>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="group_id" class="form-label">Group (Optional)</label>
-                            <select id="group_id" name="group_id" class="form-control">
+                        <!-- Group -->
+                        <div>
+                            <label for="group_id" class="block text-sm font-medium text-gray-700 mb-2">Group (Optional)</label>
+                            <select id="group_id" name="group_id"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">-- No Group --</option>
                                 <?php foreach ($allGroups as $group): ?>
                                 <option value="<?php echo $group['id']; ?>"
@@ -188,10 +136,12 @@
                             </select>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="participants" class="form-label">Split With</label>
-                            <select id="participants" name="participants[]" multiple class="form-control" 
-                                    style="min-height: 120px;" required>
+                        <!-- Participants -->
+                        <div>
+                            <label for="participants" class="block text-sm font-medium text-gray-700 mb-2">Split With *</label>
+                            <select id="participants" name="participants[]" multiple required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    style="min-height: 120px;">
                                 <?php foreach ($allUsers as $user): ?>
                                 <option value="<?php echo $user['id']; ?>"
                                         <?php echo in_array($user['id'], $_POST['participants'] ?? []) ? 'selected' : ''; ?>>
@@ -199,20 +149,23 @@
                                 </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div class="form-text">Hold Ctrl/Cmd to select multiple participants</div>
+                            <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple participants</p>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea id="description" name="description" class="form-control"
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="description" name="description" rows="3"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                   placeholder="Add any details about this expense..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                     </div>
                     
-                    <div class="submit-container">
-                        <button type="submit" class="btn btn-primary btn-large">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Expense
+                    <!-- Submit Button -->
+                    <div class="flex justify-center">
+                        <button type="submit"
+                                class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                            <i class="fas fa-plus-circle mr-2"></i>Add Expense
                         </button>
                     </div>
                 </form>
