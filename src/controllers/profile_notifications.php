@@ -22,5 +22,5 @@ $stmt = $pdo->prepare('UPDATE users SET notification_settings = ?, updated_at = 
 $stmt->execute([json_encode($settings), $userId]);
 
 $_SESSION['success'] = 'Benachrichtigungseinstellungen gespeichert.';
-header('Location: /public/profile.php?tab=notifications');
+header('Location: /privatevault/profile.php?tab=notifications');
 exit;

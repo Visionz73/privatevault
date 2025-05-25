@@ -14,13 +14,13 @@ if ($action === 'change_password') {
     // Validate passwords
     if ($newPassword !== $confirmPassword) {
         $_SESSION['error'] = 'Passwörter stimmen nicht überein.';
-        header('Location: /public/profile.php?tab=security');
+        header('Location: /privatevault/profile.php?tab=security');
         exit;
     }
     
     if (strlen($newPassword) < 8) {
         $_SESSION['error'] = 'Passwort muss mindestens 8 Zeichen lang sein.';
-        header('Location: /public/profile.php?tab=security');
+        header('Location: /privatevault/profile.php?tab=security');
         exit;
     }
     
@@ -31,7 +31,7 @@ if ($action === 'change_password') {
     
     if (!password_verify($currentPassword, $user['password'])) {
         $_SESSION['error'] = 'Aktuelles Passwort ist falsch.';
-        header('Location: /public/profile.php?tab=security');
+        header('Location: /privatevault/profile.php?tab=security');
         exit;
     }
     
@@ -43,5 +43,5 @@ if ($action === 'change_password') {
     $_SESSION['success'] = 'Passwort erfolgreich geändert.';
 }
 
-header('Location: /public/profile.php?tab=security');
+header('Location: /privatevault/profile.php?tab=security');
 exit;
