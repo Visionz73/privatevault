@@ -8,6 +8,8 @@ $routes = [
     '/upload'          => 'src/controllers/upload.php',
     '/profile.php'     => 'src/controllers/profile.php',
     '/settings.php'    => 'src/controllers/settings.php',
+    '/security.php'    => 'src/controllers/security.php',
+    '/docs.php'        => 'src/controllers/docs.php',
     // weitere Routen ...
 ];
 
