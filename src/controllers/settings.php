@@ -1,85 +1,103 @@
 <?php
-// Ensure this controller is included by an entry point file in public/
-// (e.g., public/settings.php which should handle session_start, config, and auth.php)
+// src/controllers/settings.php
 
-// $pdo is available globally from config.php
-// session is started in public/settings.php
-// requireLogin() is called in public/settings.php
-// getUser() is available from src/lib/auth.php (included in public/settings.php)
+// Session is started by public/settings.php (which includes config.php)
+// auth.php is included by public/settings.php, so requireLogin() is called there.
+// $pdo is available globally from config.php (via db.php or directly if public/settings.php includes it)
 
-$pageTitle = "Settings";
-$errors = []; // To store validation errors
+$pageTitle = "User Settings";
 
-// Fetch current user data
-$user = getUser(); // From src/lib/auth.php
+// CSRF Token Generation for settings form
+// A new token is generated if one doesn't exist or if a POST request used/invalidated the previous one.
+if (empty($_SESSION['csrf_token_settings'])) {
+    $_SESSION['csrf_token_settings'] = bin2hex(random_bytes(32));
+}
+$csrf_token_settings = $_SESSION['csrf_token_settings'];
 
-if ($user) {
-    // Assuming 'username' is used for display name and 'email' for email.
-    // Adjust if your 'users' table schema has a specific 'display_name' column.
-    $currentDisplayName = $user['username'] ?? ''; 
-    $currentEmail = $user['email'] ?? '';
-} else {
-    // This case should ideally be prevented by requireLogin()
-    // Or if getUser() returns null for a logged-in user (e.g., user deleted mid-session)
+// Fetch current user data (needed for pre-filling form and for the navbar)
+$user = getUser(); // From src/lib/auth.php, included via public/settings.php
+
+if (!$user) {
+    // This case should be rare due to requireLogin() in public/settings.php
     $_SESSION['error_message'] = "User data could not be retrieved. Please try logging in again.";
-    // Redirect to logout or login page might be more appropriate here
-    header('Location: logout.php'); 
+    header('Location: logout.php'); // Redirect to logout or login
     exit;
 }
 
+$currentDisplayName = $user['username'] ?? ''; 
+$currentEmail = $user['email'] ?? '';
+
 // Handle form submission for account information changes
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveAccountChanges'])) {
+    // CSRF Token Validation
+    if (!isset($_POST['csrf_token_settings']) || !hash_equals($_SESSION['csrf_token_settings'], $_POST['csrf_token_settings'])) {
+        $_SESSION['error_message'] = "Invalid security token. Please try submitting the form again.";
+        unset($_SESSION['csrf_token_settings']); // Invalidate current token
+        header('Location: settings.php');        // Redirect to refresh form with new token
+        exit;
+    }
+    // Valid token, unset it for one-time use for this submission.
+    // A new one will be generated on the next page load by the logic at the top.
+    unset($_SESSION['csrf_token_settings']);
+
     $newDisplayName = trim($_POST['displayName'] ?? '');
     $newEmail = trim($_POST['email'] ?? '');
+    $validationErrors = []; // Local array for this submission's field validation errors
 
-    // Validation
     if (empty($newDisplayName)) {
-        $errors[] = "Display Name cannot be empty.";
+        $validationErrors[] = "Display Name cannot be empty.";
     }
-    // Add more validation for display name if needed (e.g., length, characters)
-
     if (empty($newEmail)) {
-        $errors[] = "Email cannot be empty.";
+        $validationErrors[] = "Email cannot be empty.";
     } elseif (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
+        $validationErrors[] = "Invalid email format.";
     }
 
-    if (empty($errors)) {
+    if (empty($validationErrors)) {
         try {
-            // Check if email already exists for another user (optional but good practice)
+            // Check if email already exists for another user
             $stmtCheckEmail = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
             $stmtCheckEmail->execute([$newEmail, $_SESSION['user_id']]);
             if ($stmtCheckEmail->fetch()) {
                 $_SESSION['error_message'] = "This email address is already in use by another account.";
             } else {
                 // Proceed with update
-                // Assuming 'username' column for display name. Adjust if column is 'display_name'
                 $updateStmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
                 if ($updateStmt->execute([$newDisplayName, $newEmail, $_SESSION['user_id']])) {
                     $_SESSION['success_message'] = "Account information updated successfully.";
-                    // Optionally, update the session variable for username if it's used in the navbar directly
-                    if (isset($_SESSION['username'])) {
+                    // Update the $user array for the navbar if it shows display name/username
+                    if (isset($_SESSION['username'])) { // If navbar uses $_SESSION['username']
                         $_SESSION['username'] = $newDisplayName;
                     }
+                    // Also update the local $user variable for the current page load if needed,
+                    // though redirect makes this less critical for the form itself.
+                    $user['username'] = $newDisplayName; 
+                    $user['email'] = $newEmail;
+                    $currentDisplayName = $newDisplayName; // Ensure current vars reflect change before potential re-render
+                    $currentEmail = $newEmail;
+
                 } else {
                     $_SESSION['error_message'] = "Failed to update account information. Please try again.";
                 }
             }
         } catch (PDOException $e) {
-            error_log("Error updating user settings: " . $e->getMessage()); // Log the actual error
+            error_log("Error updating user settings: " . $e->getMessage());
             $_SESSION['error_message'] = "A database error occurred. Could not update account information.";
         }
     } else {
-        $_SESSION['error_message'] = implode("<br>", $errors);
+        $_SESSION['error_message'] = implode("<br>", $validationErrors);
     }
     
-    // Redirect back to settings.php to show messages and prevent form resubmission
+    // Redirect back to settings.php to show messages and get a fresh CSRF token for the form.
     header('Location: settings.php');
     exit;
 }
 
-// These variables will be available in the included templates
-require_once __DIR__ . '/../../templates/header.php'; 
-require_once __DIR__ . '/../../templates/settings.php'; 
-require_once __DIR__ . '/../../templates/footer.php'; 
+// The template will be included after this controller logic.
+// Variables available to templates/settings.php:
+// $pageTitle, $csrf_token_settings, $currentDisplayName, $currentEmail, 
+// $user (for navbar.php if it uses it directly from the scope of the including page)
+// Session messages like $_SESSION['success_message'] or $_SESSION['error_message'] will be picked up by the template.
+require_once __DIR__ . '/../../templates/settings.php';
+
 ?>
