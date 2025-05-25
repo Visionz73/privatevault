@@ -120,397 +120,162 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid rgba(255,255,255,0.3);
-    position: relative;
-  }
-  .profile-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-weight: 700;
+    font-size: 1rem;
   }
 
-  /* Profile dropdown */
-  .profile-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    background: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    min-width: 200px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-  }
-  .profile-dropdown.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  .profile-dropdown a {
-    display: block;
-    padding: 0.75rem 1rem;
-    color: #374151;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border-radius: 0.5rem;
-    margin: 0.25rem;
-  }
-  .profile-dropdown a:hover {
-    background: #f3f4f6;
-    color: #667eea;
-  }
-  .profile-dropdown a:first-child {
-    margin-top: 0.5rem;
-  }
-  .profile-dropdown a:last-child {
-    margin-bottom: 0.5rem;
-    color: #dc2626;
+  /* Smooth transitions for all interactive elements */
+  nav#sidebar a,
+  nav#sidebar button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Modern navigation links */
-  .nav-link-modern {
-    color: rgba(255,255,255,0.9) !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 0.75rem !important;
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(10px);
-    margin-bottom: 0.25rem;
-  }
-  .nav-link-modern:hover {
-    background: rgba(255,255,255,0.2) !important;
-    color: white !important;
-    transform: translateX(5px);
-  }
-  .nav-link-modern.active {
-    background: rgba(255,255,255,0.25) !important;
-    color: white !important;
-    font-weight: 600;
+  /* Modern glassmorphism effect */
+  nav#sidebar {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
-  /* Fix for HaveToPay pages */
-  .haveToPay-layout {
-    padding-top: 0 !important;
-  }
-  
-  @media (min-width: 769px) {
-    body.haveToPay-layout main, 
-    body.haveToPay-layout .content-container {
-      margin-left: 16rem !important;
-      width: calc(100% - 16rem) !important;
-    }
-  }
-
-  /* Profile Modal Styling */
-  .profile-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-  }
-  .profile-modal.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  .profile-modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    transition: all 0.3s ease;
-  }
-  .profile-modal.active .profile-modal-content {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  .profile-modal-header {
-    padding: 1.5rem 1.5rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .profile-modal-body {
-    padding: 1.5rem;
-  }
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #6b7280;
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  .close-modal:hover {
-    color: #374151;
-  }
-  .modal-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: #374151;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-  }
-  .modal-menu-item:hover {
-    background: #f3f4f6;
-    color: #667eea;
-    border-color: #e5e7eb;
-  }
-  .modal-menu-item svg {
-    margin-right: 0.75rem;
-    width: 1.25rem;
-    height: 1.25rem;
+  /* Enhanced focus states for accessibility */
+  nav#sidebar a:focus,
+  nav#sidebar button:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
   }
 </style>
 
-<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
-<script>
-  if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
-    document.body.classList.add('haveToPay-layout');
-  }
-</script>
-
-<nav id="sidebar">
-  <!-- Mobile top bar -->
+<!-- Navigation Sidebar -->
+<nav id="sidebar" class="sidebar">
+  <!-- Mobile Header -->
   <div class="mobile-menu">
-    <button id="mobileToggleBtn" class="menu-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-    <a href="/dashboard.php" class="logo-container">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto mr-2" />
+    <a href="index.php" class="logo-container">
+      <i class="fas fa-vault me-2"></i>
       PrivateVault
     </a>
-    <!-- Mobile Profile Avatar -->
-    <?php if ($user): ?>
-    <div class="relative">
-      <div class="profile-avatar" onclick="openProfileModal()">
-        <?= getUserInitials($user) ?>
-      </div>
-    </div>
-    <?php endif; ?>
+    <button class="menu-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 
-  <!-- Desktop: sidebar content -->
-  <div class="sidebar-content flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto mt-2">
-      <button id="toggleBtn" class="menu-btn ml-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      
-      <!-- Centered logo -->
-      <div class="flex justify-center mb-6 mt-4">
-        <a href="/dashboard.php" class="logo-container flex-col">
-          <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto mb-2" />
-          <span class="text-sm font-semibold">PrivateVault</span>
-        </a>
-      </div>
+  <!-- Sidebar Content -->
+  <div class="sidebar-content">
+    <!-- Logo Section -->
+    <div class="p-4 border-b border-white/20">
+      <a href="index.php" class="logo-container">
+        <i class="fas fa-vault me-2 text-2xl"></i>
+        <span class="text-xl">PrivateVault</span>
+      </a>
+    </div>
 
-      <!-- Desktop Profile Section -->
-      <?php if ($user): ?>
-      <div class="flex flex-col items-center mb-6 px-4">
-        <div class="profile-avatar mb-3" onclick="openProfileModal()">
-          <?= getUserInitials($user) ?>
-        </div>
-        <div class="text-center relative">
-          <p class="text-white font-medium"><?= htmlspecialchars($user['username']) ?></p>
-        </div>
-      </div>
-      <?php endif; ?>
-
-      <ul class="flex flex-col space-y-2 px-2">
-        <?php
-        $links = [
-          ['href'=>'dashboard.php',   'icon'=>'<path d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8" />', 'label'=>'Dashboard'],
-          ['href'=>'upload.php',      'icon'=>'<path d="M12 4v16m8-8H4" />', 'label'=>'Upload'],
-          ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />', 'label'=>'MyTask'],
-          ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />', 'label'=>'Create Task'],
-          ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />', 'label'=>'Kanban'],
-          ['href'=>'havetopay.php',   'icon'=>'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', 'label'=>'HaveToPay'],
-        ];
-        foreach ($links as $l): 
-          $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
-        ?>
-          <li>
-            <a href="/<?= $l['href'] ?>" class="nav-link-modern flex items-center w-full <?= $isActive ? 'active' : '' ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <?= $l['icon'] ?>
-              </svg>
-              <span class="ml-3"><?= $l['label'] ?></span>
-            </a>
-          </li>
-        <?php endforeach; ?>
-        <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
-          <li>
-            <a href="/admin.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span class="ml-3">Admin Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/groups.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span class="ml-3">Manage Groups</span>
-            </a>
-          </li>
+    <!-- Navigation Menu -->
+    <div class="p-4">
+      <ul class="space-y-2">
+        <li>
+          <a href="index.php" class="flex items-center p-3 rounded-xl text-white/90 hover:bg-white/20 hover:text-white transition-all duration-300 group">
+            <i class="fas fa-home text-lg me-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="taskboard.php" class="flex items-center p-3 rounded-xl text-white/90 hover:bg-white/20 hover:text-white transition-all duration-300 group">
+            <i class="fas fa-tasks text-lg me-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Taskboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="havetopay.php" class="flex items-center p-3 rounded-xl text-white/90 hover:bg-white/20 hover:text-white transition-all duration-300 group">
+            <i class="fas fa-money-bill-wave text-lg me-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">HaveToPay</span>
+          </a>
+        </li>
+        <li>
+          <a href="calendar.php" class="flex items-center p-3 rounded-xl text-white/90 hover:bg-white/20 hover:text-white transition-all duration-300 group">
+            <i class="fas fa-calendar-alt text-lg me-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Kalender</span>
+          </a>
+        </li>
+        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+        <li>
+          <a href="admin/groups.php" class="flex items-center p-3 rounded-xl text-white/90 hover:bg-white/20 hover:text-white transition-all duration-300 group">
+            <i class="fas fa-shield-alt text-lg me-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Admin</span>
+          </a>
+        </li>
         <?php endif; ?>
       </ul>
     </div>
+
+    <!-- User Profile Section -->
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <div class="mt-auto p-4 border-t border-white/20">
+      <div class="flex items-center p-3 rounded-xl bg-white/10 backdrop-blur-sm">
+        <div class="profile-avatar me-3">
+          <?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?>
+        </div>
+        <div class="flex-1">
+          <div class="text-white font-medium text-sm">
+            <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
+          </div>
+          <div class="text-white/70 text-xs">Online</div>
+        </div>
+        <div class="relative">
+          <button class="text-white/70 hover:text-white p-2" onclick="toggleUserMenu()" id="userMenuBtn">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+          <div id="userMenu" class="hidden absolute right-0 bottom-full mb-2 bg-white rounded-lg shadow-xl py-2 w-48 z-50">
+            <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+              <i class="fas fa-user me-2"></i>Profile
+            </a>
+            <a href="settings.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+              <i class="fas fa-cog me-2"></i>Settings
+            </a>
+            <hr class="my-1">
+            <a href="logout.php" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php else: ?>
+    <div class="mt-auto p-4 border-t border-white/20">
+      <a href="login.php" class="flex items-center justify-center p-3 rounded-xl bg-white/20 text-white font-medium hover:bg-white/30 transition-all duration-300">
+        <i class="fas fa-sign-in-alt me-2"></i>
+        Login
+      </a>
+    </div>
+    <?php endif; ?>
   </div>
 </nav>
 
-<!-- Profile Modal -->
-<?php if ($user): ?>
-<div id="profileModal" class="profile-modal">
-  <div class="profile-modal-content">
-    <div class="profile-modal-header">
-      <div class="flex items-center">
-        <div class="profile-avatar mr-3" style="width: 3rem; height: 3rem;">
-          <?= getUserInitials($user) ?>
-        </div>
-        <div>
-          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
-          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
-        </div>
-      </div>
-      <button class="close-modal" onclick="closeProfileModal()">&times;</button>
-    </div>
-    <div class="profile-modal-body">
-      <nav class="space-y-1">
-        <a href="/profile.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          Profil bearbeiten
-        </a>
-        <a href="/settings.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37 2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Einstellungen
-        </a>
-        <a href="/profile.php?tab=notifications" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
-          </svg>
-          Benachrichtigungen
-        </a>
-        <a href="/profile.php?tab=security" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-          </svg>
-          Sicherheit
-        </a>
-        <hr class="my-3">
-        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-          Abmelden
-        </a>
-      </nav>
-    </div>
-  </div>
-</div>
-<?php endif; ?>
-
-<!-- Enhanced navigation scripts -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggleBtn = document.getElementById('mobileToggleBtn');
-    const sidebar = document.querySelector('.sidebar-content');
-    
-    if (mobileToggleBtn && sidebar) {
-      mobileToggleBtn.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-      });
-    }
-  });
+function toggleSidebar() {
+  const sidebarContent = document.querySelector('.sidebar-content');
+  sidebarContent.classList.toggle('active');
+}
 
-  function toggleProfileDropdown() {
-    const dropdown = document.getElementById('profileDropdown') || document.getElementById('profileDropdownDesktop');
-    if (dropdown) {
-      dropdown.classList.toggle('active');
-    }
+function toggleUserMenu() {
+  const userMenu = document.getElementById('userMenu');
+  userMenu.classList.toggle('hidden');
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', function(e) {
+  const userMenu = document.getElementById('userMenu');
+  const userMenuBtn = document.getElementById('userMenuBtn');
+  
+  if (!userMenuBtn.contains(e.target) && !userMenu.contains(e.target)) {
+    userMenu.classList.add('hidden');
   }
+});
 
-  function openProfileModal() {
-    const modal = document.getElementById('profileModal');
-    if (modal) {
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(e) {
+  const sidebar = document.getElementById('sidebar');
+  const sidebarContent = document.querySelector('.sidebar-content');
+  
+  if (window.innerWidth <= 768 && !sidebar.contains(e.target)) {
+    sidebarContent.classList.remove('active');
   }
-
-  function closeProfileModal() {
-    const modal = document.getElementById('profileModal');
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Close dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    const profileAvatar = document.querySelector('.profile-avatar');
-    const dropdown = document.querySelector('.profile-dropdown.active');
-    
-    if (dropdown && !profileAvatar.contains(event.target) && !dropdown.contains(event.target)) {
-      dropdown.classList.remove('active');
-    }
-  });
-
-  // Close modal when clicking outside
-  document.addEventListener('click', function(event) {
-    const modal = document.getElementById('profileModal');
-    if (modal && event.target === modal) {
-      closeProfileModal();
-    }
-  });
-
-  // Close modal with Escape key
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeProfileModal();
-    }
-  });
+});
 </script>
