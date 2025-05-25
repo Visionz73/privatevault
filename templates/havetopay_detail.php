@@ -8,114 +8,116 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+            --danger-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.1);
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
             min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
+            color: #1f2937;
+            padding: 2rem;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
         
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         
         .gradient-primary {
             background: var(--primary-gradient);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .gradient-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
+            color: white;
         }
         
         .btn-modern {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 10px 20px;
             font-weight: 600;
             font-size: 13px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
+            color: #374151;
+            transition: all 0.3s ease;
         }
         
         .btn-modern:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
         }
         
         .user-avatar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #4f46e5, #3730a3);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: white;
         }
         
         .status-badge {
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 12px;
-            padding: 6px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .table-glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 16px;
         }
         
         .table-row {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
         
         .table-row:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.02);
         }
         
-        .container-centered {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+        .info-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .text-primary {
+            color: #1f2937;
+        }
+        
+        .text-secondary {
+            color: #6b7280;
+        }
+        
+        .text-muted {
+            color: #9ca3af;
         }
         
         /* Mobile adjustments */
         @media (max-width: 768px) {
             body {
-                padding-top: 4rem !important;
-                font-size: 13px;
+                padding: 1rem;
+                padding-top: 5rem !important;
             }
-            .container-centered {
-                padding: 0 1rem;
+            
+            .main-container {
+                max-width: 100%;
             }
         }
         
@@ -129,29 +131,29 @@
     </style>
 </head>
 <body>
-    <div class="main-content py-8">
-        <div class="container-centered">
+    <div class="main-container">
+        <div class="main-content">
             <!-- Back Link -->
             <div class="mb-6">
-                <a href="havetopay.php" class="btn-modern text-white hover:text-white flex items-center w-fit">
+                <a href="havetopay.php" class="btn-modern flex items-center w-fit">
                     <i class="fas fa-arrow-left mr-2"></i>Back to HaveToPay
                 </a>
             </div>
             
             <!-- Success/Error Messages -->
             <?php if (!empty($success)): ?>
-            <div class="glass-card mb-6 p-4 text-white">
+            <div class="glass-card mb-6 p-4 text-primary">
                 <div class="flex items-center text-sm">
-                    <i class="fas fa-check-circle mr-3 text-green-300"></i>
+                    <i class="fas fa-check-circle mr-3 text-green-600"></i>
                     <?php echo htmlspecialchars($success); ?>
                 </div>
             </div>
             <?php endif; ?>
 
             <?php if (!empty($errors)): ?>
-            <div class="glass-card mb-6 p-4 text-white">
+            <div class="glass-card mb-6 p-4 text-primary">
                 <div class="flex items-center text-sm">
-                    <i class="fas fa-exclamation-circle mr-3 text-red-300"></i>
+                    <i class="fas fa-exclamation-circle mr-3 text-red-600"></i>
                     <div>
                         <?php foreach ($errors as $error): ?>
                             <div><?php echo htmlspecialchars($error); ?></div>
@@ -167,30 +169,30 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2">
                             <div class="flex justify-between items-start mb-6">
-                                <h1 class="text-2xl font-bold text-white"><?php echo htmlspecialchars($expense['title']); ?></h1>
+                                <h1 class="text-2xl font-bold text-primary"><?php echo htmlspecialchars($expense['title']); ?></h1>
                                 <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
                                     <button type="button" 
                                             onclick="confirmDeleteExpense()"
-                                            class="btn-modern text-red-300 hover:text-red-200">
+                                            class="btn-modern btn-danger">
                                         <i class="fas fa-trash mr-2"></i>Delete
                                     </button>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="flex items-center mb-6">
-                                <div class="user-avatar w-12 h-12 rounded-full flex items-center justify-center font-semibold mr-4 text-white text-sm">
+                                <div class="user-avatar w-12 h-12 rounded-full flex items-center justify-center font-semibold mr-4 text-sm">
                                     <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                                 </div>
                                 <div>
-                                    <div class="font-semibold text-white text-sm">
+                                    <div class="font-semibold text-primary text-sm">
                                         <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
                                         <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
                                     </div>
-                                    <div class="text-xs text-white/60">@<?php echo htmlspecialchars($expense['payer_name']); ?></div>
+                                    <div class="text-xs text-secondary">@<?php echo htmlspecialchars($expense['payer_name']); ?></div>
                                 </div>
                             </div>
                             
-                            <div class="flex flex-wrap gap-4 text-xs text-white/70 mb-6">
+                            <div class="flex flex-wrap gap-4 text-xs text-secondary mb-6">
                                 <div class="flex items-center">
                                     <i class="fas fa-calendar-alt mr-2"></i>
                                     <?php echo date('d M Y', strtotime($expense['expense_date'])); ?>
@@ -208,16 +210,16 @@
                             </div>
                             
                             <?php if (!empty($expense['description'])): ?>
-                            <div class="bg-white/10 backdrop-filter backdrop-blur-lg border border-white/20 rounded-lg p-4">
-                                <h6 class="font-semibold text-white mb-2 text-sm">Description</h6>
-                                <p class="text-white/80 text-sm leading-relaxed"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
+                            <div class="info-card">
+                                <h6 class="font-semibold text-primary mb-2 text-sm">Description</h6>
+                                <p class="text-secondary text-sm leading-relaxed"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
                             </div>
                             <?php endif; ?>
                         </div>
                         
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-yellow-300 mb-2"><?php echo number_format($expense['amount'], 2); ?> €</div>
-                            <div class="text-white/60 text-sm">Total amount</div>
+                            <div class="text-3xl font-bold text-indigo-600 mb-2"><?php echo number_format($expense['amount'], 2); ?> €</div>
+                            <div class="text-secondary text-sm">Total amount</div>
                         </div>
                     </div>
                 </div>
@@ -233,18 +235,18 @@
                 <div class="p-6">
                     <?php if (empty($participants)): ?>
                         <div class="text-center py-12">
-                            <i class="fas fa-users text-6xl text-white/30 mb-6"></i>
-                            <p class="text-white/70 text-sm">No participants found</p>
+                            <i class="fas fa-users text-6xl text-gray-300 mb-6"></i>
+                            <p class="text-secondary text-sm">No participants found</p>
                         </div>
                     <?php else: ?>
                         <div class="table-glass rounded-2xl overflow-hidden">
                             <table class="w-full">
-                                <thead class="bg-white/10">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="text-left py-4 px-6 font-semibold text-white text-sm">Participant</th>
-                                        <th class="text-left py-4 px-6 font-semibold text-white text-sm">Share</th>
-                                        <th class="text-left py-4 px-6 font-semibold text-white text-sm">Status</th>
-                                        <th class="text-left py-4 px-6 font-semibold text-white text-sm">Actions</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-primary text-sm">Participant</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-primary text-sm">Share</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-primary text-sm">Status</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-primary text-sm">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -252,29 +254,29 @@
                                     <tr class="table-row">
                                         <td class="py-4 px-6">
                                             <div class="flex items-center">
-                                                <div class="user-avatar w-8 h-8 rounded-full flex items-center justify-center font-semibold mr-3 text-white text-xs">
+                                                <div class="user-avatar w-8 h-8 rounded-full flex items-center justify-center font-semibold mr-3 text-xs">
                                                     <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
                                                 </div>
                                                 <div>
-                                                    <div class="font-medium text-white text-sm">
+                                                    <div class="font-medium text-primary text-sm">
                                                         <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
                                                         <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
                                                     </div>
-                                                    <div class="text-xs text-white/60">@<?php echo htmlspecialchars($participant['username']); ?></div>
+                                                    <div class="text-xs text-secondary">@<?php echo htmlspecialchars($participant['username']); ?></div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-4 px-6 font-bold text-yellow-300 text-sm">
+                                        <td class="py-4 px-6 font-bold text-indigo-600 text-sm">
                                             <?php echo number_format($participant['share_amount'], 2); ?> €
                                         </td>
                                         <td class="py-4 px-6">
                                             <?php if ($participant['is_settled']): ?>
-                                                <span class="status-badge bg-green-300/20 text-green-300 rounded-full font-medium">
+                                                <span class="status-badge bg-green-100 text-green-700 rounded-full font-medium px-3 py-1 text-xs">
                                                     <i class="fas fa-check-circle mr-1"></i>
                                                     Settled
                                                 </span>
                                             <?php else: ?>
-                                                <span class="status-badge bg-yellow-300/20 text-yellow-300 rounded-full font-medium">
+                                                <span class="status-badge bg-yellow-100 text-yellow-700 rounded-full font-medium px-3 py-1 text-xs">
                                                     <i class="fas fa-clock mr-1"></i>
                                                     Pending
                                                 </span>
@@ -286,7 +288,7 @@
                                                     <form method="post" class="inline">
                                                         <input type="hidden" name="action" value="settle">
                                                         <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                        <button type="submit" class="text-green-300 hover:text-green-200 font-medium text-xs transition-colors">
+                                                        <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-xs transition-colors">
                                                             <i class="fas fa-check-circle mr-1"></i>
                                                             Settle
                                                         </button>
@@ -296,7 +298,7 @@
                                                 <?php if ($expense['payer_id'] == $userId || $participant['user_id'] == $userId): ?>
                                                     <button type="button" 
                                                             onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
-                                                            class="text-red-300 hover:text-red-200 font-medium text-xs transition-colors">
+                                                            class="text-red-600 hover:text-red-800 font-medium text-xs transition-colors">
                                                         <i class="fas fa-user-minus mr-1"></i>
                                                         Remove
                                                     </button>
@@ -318,19 +320,19 @@
     <div id="deleteExpenseModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
         <div class="glass-card max-w-md mx-4 p-6">
             <div class="flex items-center mb-6">
-                <i class="fas fa-exclamation-triangle text-red-300 text-2xl mr-4"></i>
-                <h3 class="text-lg font-bold text-white">Delete Expense</h3>
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl mr-4"></i>
+                <h3 class="text-lg font-bold text-primary">Delete Expense</h3>
             </div>
-            <p class="text-white/80 mb-6 text-sm leading-relaxed">
+            <p class="text-secondary mb-6 text-sm leading-relaxed">
                 Are you sure you want to delete this entire expense? This will remove the expense and all associated participant records. This action cannot be undone.
             </p>
             <div class="flex justify-end gap-4">
-                <button type="button" onclick="closeDeleteExpenseModal()" class="btn-modern text-white">
+                <button type="button" onclick="closeDeleteExpenseModal()" class="btn-modern">
                     Cancel
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="delete_expense">
-                    <button type="submit" class="btn-modern bg-red-500/80 hover:bg-red-500 text-white border-red-400/50">
+                    <button type="submit" class="btn-modern btn-danger">
                         <i class="fas fa-trash mr-2"></i>Delete
                     </button>
                 </form>
@@ -342,21 +344,21 @@
     <div id="removeParticipantModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
         <div class="glass-card max-w-md mx-4 p-6">
             <div class="flex items-center mb-6">
-                <i class="fas fa-user-minus text-orange-300 text-2xl mr-4"></i>
-                <h3 class="text-lg font-bold text-white">Remove Participant</h3>
+                <i class="fas fa-user-minus text-orange-500 text-2xl mr-4"></i>
+                <h3 class="text-lg font-bold text-primary">Remove Participant</h3>
             </div>
-            <p class="text-white/80 mb-6 text-sm leading-relaxed">
-                Are you sure you want to remove "<span id="participantName" class="font-medium text-yellow-300"></span>" from this expense? 
+            <p class="text-secondary mb-6 text-sm leading-relaxed">
+                Are you sure you want to remove "<span id="participantName" class="font-medium text-primary"></span>" from this expense? 
                 The remaining participants' shares will be recalculated automatically.
             </p>
             <div class="flex justify-end gap-4">
-                <button type="button" onclick="closeRemoveParticipantModal()" class="btn-modern text-white">
+                <button type="button" onclick="closeRemoveParticipantModal()" class="btn-modern">
                     Cancel
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="remove_participant">
                     <input type="hidden" name="participant_id" id="removeParticipantId" value="">
-                    <button type="submit" class="btn-modern bg-orange-500/80 hover:bg-orange-500 text-white border-orange-400/50">
+                    <button type="submit" class="btn-modern bg-orange-500 hover:bg-orange-600 text-white border-orange-500">
                         <i class="fas fa-user-minus mr-2"></i>Remove
                     </button>
                 </form>
