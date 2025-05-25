@@ -63,14 +63,14 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-id-card me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="/settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </li>
                 <?php else: ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo isCurrentPage('login.php') ? 'active' : ''; ?>" href="/login.php">
+                    <a class="nav-link <?php echo isCurrentPage('login.php') ? 'active' : ''; ?>" href="login.php">
                         <i class="fas fa-sign-in-alt me-1"></i> Login
                     </a>
                 </li>
