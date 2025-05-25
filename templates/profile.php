@@ -1,7 +1,22 @@
-<!-- templates/profile.php (sidebar categories per application) -->
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// templates/profile.php (sidebar categories per application)
 require_once __DIR__ . '/../src/lib/auth.php';
+
+// Check if user is logged in
+if (!isLoggedIn()) {
+    header('Location: /privatevault/login.php');
+    exit;
+}
+
 $user = getUser();
+if (!$user) {
+    die('Error: Could not load user data');
+}
+
 $activeTab = $_GET['tab'] ?? 'personal_info';
 
 // Generate user initials
@@ -38,7 +53,14 @@ $initials = getUserInitials($user);
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
-<?php require_once __DIR__.'/navbar.php'; ?>
+<?php 
+$navbarPath = __DIR__ . '/navbar.php';
+if (file_exists($navbarPath)) {
+    require_once $navbarPath;
+} else {
+    echo '<!-- Navbar not found at: ' . $navbarPath . ' -->';
+}
+?>
 
 <!-- Main Content -->
 <div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
@@ -47,7 +69,7 @@ $initials = getUserInitials($user);
     <div class="max-w-6xl mx-auto px-8 py-6">
       <!-- Breadcrumb -->
       <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-        <a href="/dashboard.php" class="hover:text-[#4A90E2]">Dashboard</a>
+        <a href="/privatevault/dashboard.php" class="hover:text-[#4A90E2]">Dashboard</a>
         <span>&rsaquo;</span>
         <span class="text-gray-900 font-medium">Profil Einstellungen</span>
       </nav>
@@ -60,7 +82,7 @@ $initials = getUserInitials($user);
         <div class="flex-1">
           <div class="flex flex-wrap items-center gap-3">
             <h1 class="text-2xl font-bold text-gray-900"><?= htmlspecialchars($user['username']) ?></h1>
-            <span class="px-3 py-1 rounded-full bg-[#4A90E2]/10 text-[#4A90E2] text-sm font-medium"><?= ucfirst($user['role']) ?></span>
+            <span class="px-3 py-1 rounded-full bg-[#4A90E2]/10 text-[#4A90E2] text-sm font-medium"><?= ucfirst($user['role'] ?? 'user') ?></span>
           </div>
           <p class="mt-2 text-gray-600 text-sm">
             Verwalten Sie Ihre Profil-Informationen und Einstellungen
@@ -159,10 +181,20 @@ $initials = getUserInitials($user);
             ];
             break;
           case 'security':
-            include __DIR__ . '/profile_tabs/security.php';
+            $securityTabPath = __DIR__ . '/profile_tabs/security.php';
+            if (file_exists($securityTabPath)) {
+                include $securityTabPath;
+            } else {
+                echo '<div class="text-center py-12"><p class="text-gray-500">Security settings will be available soon.</p></div>';
+            }
             break;
           case 'notifications':
-            include __DIR__ . '/profile_tabs/notifications.php';
+            $notificationsTabPath = __DIR__ . '/profile_tabs/notifications.php';
+            if (file_exists($notificationsTabPath)) {
+                include $notificationsTabPath;
+            } else {
+                echo '<div class="text-center py-12"><p class="text-gray-500">Notification settings will be available soon.</p></div>';
+            }
             break;
           default: // personal_info
             $sidebarCats = [
@@ -191,10 +223,13 @@ $initials = getUserInitials($user);
           <!-- Subtab Content -->
           <?php
           $filePath = __DIR__ . "/profile_tabs/{$activeTab}/{$sub}.php";
-          if (!file_exists($filePath)) {
-            echo '<div class="text-center py-12"><p class="text-gray-500">Kein Inhalt verfügbar für diese Kategorie.</p></div>';
+          if (file_exists($filePath)) {
+              include $filePath;
           } else {
-            include $filePath;
+              echo '<div class="text-center py-12">';
+              echo '<p class="text-gray-500">Kein Inhalt verfügbar für diese Kategorie.</p>';
+              echo '<p class="text-xs text-gray-400 mt-2">Looking for: ' . htmlspecialchars($filePath) . '</p>';
+              echo '</div>';
           }
           ?>
         <?php endif; ?>

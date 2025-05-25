@@ -1,6 +1,9 @@
 <?php
 // src/lib/auth.php
 
+// Include database connection
+require_once __DIR__ . '/db.php';
+
 // Session-Status prüfen (falls nicht schon geschehen)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,7 +15,7 @@ function isLoggedIn(): bool {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        header('Location: login.php');
+        header('Location: /privatevault/login.php');
         exit;
     }
 }
@@ -22,9 +25,15 @@ function getUser(): ?array {
     if (!isLoggedIn()) {
         return null;
     }
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch();
+    
+    try {
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        return $stmt->fetch();
+    } catch (PDOException $e) {
+        error_log("Error fetching user: " . $e->getMessage());
+        return null;
+    }
 }
 
 /**
