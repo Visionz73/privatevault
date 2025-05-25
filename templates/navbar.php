@@ -27,9 +27,16 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       border-right: 1px solid rgba(255,255,255,0.2);
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
       z-index: 50;
+      display: flex;
+      flex-direction: column;
     }
     .mobile-menu { display: none; }
-    .sidebar-content { display: block; }
+    .sidebar-content { 
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
   }
 
   /* Mobile modern gradient styling */
@@ -66,13 +73,15 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       overflow-y: auto;
     }
     .sidebar-content.active {
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
     .sidebar-content ul li {
       margin-bottom: 0.75rem;
     }
     .sidebar-content ul li a {
-      display: block;
+      display: flex;
+      align-items: center;
       padding: 0.75rem 1rem;
       border-radius: 0.75rem;
       transition: all 0.3s ease;
@@ -100,20 +109,63 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     transform: scale(1.05);
   }
 
-  /* Modern logo styling */
+  /* Enhanced Logo area styling */
   .logo-container {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
-    text-decoration: none;
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 0.75rem;
+    margin: 1rem;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
   }
-
-  /* Profile avatar styling */
-  .profile-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
+  
+  .logo-container .logo-text {
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #fff, #e2e8f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .logo-container .app-name {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* New banner-style user profile */
+  .user-profile-banner {
+    margin-top: auto;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .user-profile-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  
+  .user-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
     background: linear-gradient(135deg, #ff6b6b, #feca57);
     border-radius: 50%;
     display: flex;
@@ -121,396 +173,223 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     justify-content: center;
     color: white;
     font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid rgba(255,255,255,0.3);
-    position: relative;
-  }
-  .profile-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-
-  /* Profile dropdown */
-  .profile-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    background: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    min-width: 200px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-  }
-  .profile-dropdown.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  .profile-dropdown a {
-    display: block;
-    padding: 0.75rem 1rem;
-    color: #374151;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border-radius: 0.5rem;
-    margin: 0.25rem;
-  }
-  .profile-dropdown a:hover {
-    background: #f3f4f6;
-    color: #667eea;
-  }
-  .profile-dropdown a:first-child {
-    margin-top: 0.5rem;
-  }
-  .profile-dropdown a:last-child {
+    font-size: 1.25rem;
     margin-bottom: 0.5rem;
-    color: #dc2626;
-  }
-
-  /* Modern navigation links */
-  .nav-link-modern {
-    color: rgba(255,255,255,0.9) !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 0.75rem !important;
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(10px);
-    margin-bottom: 0.25rem;
-  }
-  .nav-link-modern:hover {
-    background: rgba(255,255,255,0.2) !important;
-    color: white !important;
-    transform: translateX(5px);
-  }
-  .nav-link-modern.active {
-    background: rgba(255,255,255,0.25) !important;
-    color: white !important;
-    font-weight: 600;
-  }
-
-  /* Fix for HaveToPay pages */
-  .haveToPay-layout {
-    padding-top: 0 !important;
+    border: 2px solid rgba(255,255,255,0.5);
   }
   
-  @media (min-width: 769px) {
-    body.haveToPay-layout main, 
-    body.haveToPay-layout .content-container {
-      margin-left: 16rem !important;
-      width: calc(100% - 16rem) !important;
-    }
+  .user-display-name {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  
+  .user-username {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    text-align: center;
   }
 
-  /* Profile Modal Styling */
-  .profile-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+  /* Navigation menu items styling */
+  .nav-menu {
+    padding: 0 0.5rem;
+    list-style-type: none;
   }
-  .profile-modal.active {
-    opacity: 1;
-    visibility: visible;
+  
+  .nav-item {
+    margin-bottom: 0.5rem;
   }
-  .profile-modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    transition: all 0.3s ease;
-  }
-  .profile-modal.active .profile-modal-content {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  .profile-modal-header {
-    padding: 1.5rem 1.5rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .profile-modal-body {
-    padding: 1.5rem;
-  }
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #6b7280;
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  .close-modal:hover {
-    color: #374151;
-  }
-  .modal-menu-item {
+  
+  .nav-link {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: #374151;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    color: rgba(255,255,255,0.9);
+    transition: all 0.3s ease;
+    font-weight: 500;
   }
-  .modal-menu-item:hover {
-    background: #f3f4f6;
-    color: #667eea;
-    border-color: #e5e7eb;
+  
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transform: translateX(5px);
   }
-  .modal-menu-item svg {
+  
+  .nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
     margin-right: 0.75rem;
-    width: 1.25rem;
-    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 
-<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
-<script>
-  if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
-    document.body.classList.add('haveToPay-layout');
-  }
-</script>
-
+<!-- Main Navigation Sidebar -->
 <nav id="sidebar">
-  <!-- Mobile top bar -->
+  <!-- Mobile Menu -->
   <div class="mobile-menu">
-    <button id="mobileToggleBtn" class="menu-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-    <a href="/dashboard.php" class="logo-container">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto mr-2" />
-      PrivateVault
-    </a>
-    <!-- Mobile Profile Avatar -->
-    <?php if ($user): ?>
-    <div class="relative">
-      <div class="profile-avatar" onclick="openProfileModal()">
-        <?= getUserInitials($user) ?>
-      </div>
+    <div class="flex items-center">
+      <button class="menu-btn mr-2" id="mobileMenuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <span class="text-white font-semibold text-lg">PrivateVault</span>
     </div>
+    
+    <?php if ($user): ?>
+      <div class="flex items-center">
+        <div class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white font-medium">
+          <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 1)); ?>
+        </div>
+      </div>
     <?php endif; ?>
   </div>
 
-  <!-- Desktop: sidebar content -->
-  <div class="sidebar-content flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto mt-2">
-      <button id="toggleBtn" class="menu-btn ml-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+  <!-- Sidebar Content -->
+  <div class="sidebar-content">
+    <!-- Logo Area -->
+    <div class="logo-container">
+      <div class="logo-text">OMNI</div>
+      <div class="app-name">PrivateVault</div>
       
-      <!-- Centered logo -->
-      <div class="flex justify-center mb-6 mt-4">
-        <a href="/dashboard.php" class="logo-container flex-col">
-          <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto mb-2" />
-          <span class="text-sm font-semibold">PrivateVault</span>
-        </a>
-      </div>
-
-      <!-- Desktop Profile Section -->
       <?php if ($user): ?>
-      <div class="flex flex-col items-center mb-6 px-4">
-        <div class="profile-avatar mb-3" onclick="openProfileModal()">
-          <?= getUserInitials($user) ?>
+        <div class="user-avatar">
+          <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 2)); ?>
         </div>
-        <div class="text-center relative">
-          <p class="text-white font-medium"><?= htmlspecialchars($user['username']) ?></p>
-        </div>
-      </div>
+        <div class="user-username"><?php echo htmlspecialchars($user['username']); ?></div>
       <?php endif; ?>
-
-      <ul class="flex flex-col space-y-2 px-2">
-        <?php
-        $links = [
-          ['href'=>'dashboard.php',   'icon'=>'<path d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8" />', 'label'=>'Dashboard'],
-          ['href'=>'upload.php',      'icon'=>'<path d="M12 4v16m8-8H4" />', 'label'=>'Upload'],
-          ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />', 'label'=>'MyTask'],
-          ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />', 'label'=>'Create Task'],
-          ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />', 'label'=>'Kanban'],
-          ['href'=>'havetopay.php',   'icon'=>'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', 'label'=>'HaveToPay'],
-        ];
-        foreach ($links as $l): 
-          $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
-        ?>
-          <li>
-            <a href="/<?= $l['href'] ?>" class="nav-link-modern flex items-center w-full <?= $isActive ? 'active' : '' ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <?= $l['icon'] ?>
-              </svg>
-              <span class="ml-3"><?= $l['label'] ?></span>
-            </a>
-          </li>
-        <?php endforeach; ?>
-        <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
-          <li>
-            <a href="/admin.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span class="ml-3">Admin Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/groups.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span class="ml-3">Manage Groups</span>
-            </a>
-          </li>
-        <?php endif; ?>
-      </ul>
     </div>
+
+    <!-- Main Navigation -->
+    <ul class="nav-menu flex-grow">
+      <li class="nav-item">
+        <a href="/index.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'index.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/upload.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'upload.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <span>Upload</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/taskboard.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'taskboard.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+          </div>
+          <span>MyTask</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/create_task.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'create_task.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <span>Create Task</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/inbox.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'inbox.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+          </div>
+          <span>Kanban</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/havetopay.php" class="nav-link <?php echo $isHaveToPayPage ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <span>HaveToPay</span>
+        </a>
+      </li>
+      
+      <?php if (isset($user['is_admin']) && $user['is_admin']): ?>
+      <li class="nav-item">
+        <a href="/admin.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'admin.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </div>
+          <span>Admin Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/groups.php" class="nav-link <?php echo $isAdminPage && basename($_SERVER['SCRIPT_NAME']) == 'groups.php' ? 'active' : ''; ?>">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <span>Manage Groups</span>
+        </a>
+      </li>
+      <?php endif; ?>
+    </ul>
+
+    <!-- User Profile Banner (Bottom) -->
+    <?php if ($user): ?>
+    <a href="/profile.php" class="user-profile-banner">
+      <div class="user-avatar">
+        <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 2)); ?>
+      </div>
+      <div class="user-display-name">
+        <?php echo htmlspecialchars($user['first_name'] ? $user['first_name'] . ' ' . $user['last_name'] : $user['username']); ?>
+      </div>
+      <div class="user-username">@<?php echo htmlspecialchars($user['username']); ?></div>
+    </a>
+    <?php endif; ?>
   </div>
 </nav>
 
-<!-- Profile Modal -->
-<?php if ($user): ?>
-<div id="profileModal" class="profile-modal">
-  <div class="profile-modal-content">
-    <div class="profile-modal-header">
-      <div class="flex items-center">
-        <div class="profile-avatar mr-3" style="width: 3rem; height: 3rem;">
-          <?= getUserInitials($user) ?>
-        </div>
-        <div>
-          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
-          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
-        </div>
-      </div>
-      <button class="close-modal" onclick="closeProfileModal()">&times;</button>
-    </div>
-    <div class="profile-modal-body">
-      <nav class="space-y-1">
-        <a href="/profile.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          Profil bearbeiten
-        </a>
-        <a href="/settings.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37 2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Einstellungen
-        </a>
-        <a href="/profile.php?tab=notifications" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
-          </svg>
-          Benachrichtigungen
-        </a>
-        <a href="/profile.php?tab=security" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-          </svg>
-          Sicherheit
-        </a>
-        <hr class="my-3">
-        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-          Abmelden
-        </a>
-      </nav>
-    </div>
-  </div>
-</div>
-<?php endif; ?>
-
-<!-- Enhanced navigation scripts -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggleBtn = document.getElementById('mobileToggleBtn');
-    const sidebar = document.querySelector('.sidebar-content');
-    
-    if (mobileToggleBtn && sidebar) {
-      mobileToggleBtn.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-      });
-    }
+  // Mobile menu toggle
+  document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+    const sidebarContent = document.querySelector('.sidebar-content');
+    sidebarContent.classList.toggle('active');
   });
-
-  function toggleProfileDropdown() {
-    const dropdown = document.getElementById('profileDropdown') || document.getElementById('profileDropdownDesktop');
-    if (dropdown) {
-      dropdown.classList.toggle('active');
-    }
-  }
-
-  function openProfileModal() {
-    const modal = document.getElementById('profileModal');
-    if (modal) {
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  function closeProfileModal() {
-    const modal = document.getElementById('profileModal');
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Close dropdown when clicking outside
+  
+  // Close mobile menu when clicking outside
   document.addEventListener('click', function(event) {
-    const profileAvatar = document.querySelector('.profile-avatar');
-    const dropdown = document.querySelector('.profile-dropdown.active');
+    const sidebar = document.getElementById('sidebar');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     
-    if (dropdown && !profileAvatar.contains(event.target) && !dropdown.contains(event.target)) {
-      dropdown.classList.remove('active');
-    }
-  });
-
-  // Close modal when clicking outside
-  document.addEventListener('click', function(event) {
-    const modal = document.getElementById('profileModal');
-    if (modal && event.target === modal) {
-      closeProfileModal();
-    }
-  });
-
-  // Close modal with Escape key
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeProfileModal();
+    if (window.innerWidth <= 768 && 
+        !sidebar.contains(event.target) || 
+        (event.target !== mobileMenuToggle && !mobileMenuToggle.contains(event.target))) {
+      const sidebarContent = document.querySelector('.sidebar-content');
+      if (sidebarContent.classList.contains('active')) {
+        sidebarContent.classList.remove('active');
+      }
     }
   });
 </script>
