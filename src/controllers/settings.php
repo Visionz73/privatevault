@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveAccountChanges'])
     }
     
     // Redirect back to settings.php to show messages and get a fresh CSRF token for the form.
-    header('Location: settings.php');
+    header('Location: /settings.php');
     exit;
 }
 

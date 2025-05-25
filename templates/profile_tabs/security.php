@@ -21,7 +21,7 @@
   <!-- Change Password -->
   <div class="bg-white border border-gray-200 rounded-lg p-6">
     <h3 class="text-lg font-medium text-gray-900 mb-4">Passwort ändern</h3>
-    <form method="POST" action="/privatevault/src/controllers/profile_security.php" class="space-y-4">
+    <form method="POST" action="/src/controllers/profile_security.php" class="space-y-4">
       <input type="hidden" name="action" value="change_password">
       
       <div>

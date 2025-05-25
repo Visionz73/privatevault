@@ -15,7 +15,7 @@ if (!$user) {
     // but as a fallback, redirect to login if user data somehow isn't available.
     // Setting an error message might be good if login page can display it.
     // For now, direct redirect.
-    header('Location: login.php'); // Or a more generic error page/logout
+    header('Location: /login.php'); // Or a more generic error page/logout
     exit;
 }
 

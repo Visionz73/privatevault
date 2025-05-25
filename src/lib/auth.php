@@ -15,7 +15,7 @@ function isLoggedIn(): bool {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        header('Location: /privatevault/login.php');
+        header('Location: /login.php');
         exit;
     }
 }
