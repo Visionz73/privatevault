@@ -18,8 +18,8 @@
     </div>
   <?php endif; ?>
 
-  <form method="post" action="/privatevault/src/controllers/profile_save.php" class="space-y-8">
-    <input type="hidden" name="subtab" value="personal_data">
+  <form method="post" action="" class="space-y-8">
+    <input type="hidden" name="form_marker" value="personal_data_update">
 
     <!-- Grund­daten ----------------------------------------------------- -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -36,12 +36,22 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Geburtsdatum</label>
-        <input type="date" name="dob" value="<?= htmlspecialchars($user['dob'] ?? '') ?>"
+        <input type="date" name="birthdate" value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>"
                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]">
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Nationalität</label>
         <input name="nationality" value="<?= htmlspecialchars($user['nationality'] ?? '') ?>"
+               class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]">
+      </div>
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+        <input name="job_title" value="<?= htmlspecialchars($user['job_title'] ?? '') ?>"
+               class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+        <input name="location" value="<?= htmlspecialchars($user['location'] ?? '') ?>"
                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]">
       </div>
     </div>

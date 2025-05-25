@@ -19,9 +19,11 @@ $subTab = $_GET['subtab'] ?? '';
 // 3) POST-Handling für Personal Info
 $success = '';
 $errors  = [];
+// Updated condition to check for the specific form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST'
     && $activeTab === 'personal_info'
-    && $subTab === ''
+    && isset($_POST['form_marker']) 
+    && $_POST['form_marker'] === 'personal_data_update'
 ) {
     $first = trim($_POST['first_name'] ?? '');
     $last  = trim($_POST['last_name']  ?? '');
@@ -119,17 +121,35 @@ $balance = $totalIncome - $totalExpense;
 
 // 7) Dokumente laden & löschen
 $docs = [];
+$documentCategories = [];
 if ($activeTab === 'documents') {
+    // Kategorien laden
+    $stmt = $pdo->query('SELECT * FROM document_categories ORDER BY name');
+    $documentCategories = $stmt->fetchAll();
+
     if (!empty($_GET['delete']) && is_numeric($_GET['delete'])) {
         $stmt = $pdo->prepare('UPDATE documents SET is_deleted = 1 WHERE id = ? AND user_id = ?');
         $stmt->execute([$_GET['delete'], $_SESSION['user_id']]);
     }
-    $stmt = $pdo->prepare("
-        SELECT * FROM documents
-        WHERE user_id = ? AND is_deleted = 0
-        ORDER BY upload_date DESC
-    ");
-    $stmt->execute([$_SESSION['user_id']]);
+
+    $categoryFilter = $_GET['category_filter'] ?? null;
+    $params = [$_SESSION['user_id']];
+    $sql = "
+        SELECT d.*, dc.name as category_name 
+        FROM documents d
+        LEFT JOIN document_categories dc ON d.category_id = dc.id
+        WHERE d.user_id = ? AND d.is_deleted = 0
+    ";
+
+    if ($categoryFilter && is_numeric($categoryFilter)) {
+        $sql .= " AND d.category_id = ?";
+        $params[] = $categoryFilter;
+    }
+
+    $sql .= " ORDER BY d.upload_date DESC";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $docs = $stmt->fetchAll();
 }
 
