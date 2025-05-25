@@ -8,9 +8,7 @@ $pageTitle = 'Einstellungen';
 // Simulate fetching settings or use actual logic
 $settings = ['theme' => 'dark', 'language' => 'de'];
 
-require_once __DIR__ . '/templates/header.php'; // Assuming you want the main header
-// If you want the specific navbar from templates/navbar.php, ensure it's included correctly
-// require_once __DIR__ . '/templates/navbar.php'; // This might be redundant if header.php includes it or causes issues
+require_once __DIR__ . '/templates/navbar.php'; 
 ?>
 
 <div class="container mx-auto p-4">
