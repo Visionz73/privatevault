@@ -34,6 +34,8 @@
     <?php endif; ?>
 
     <form action="register.php" method="post" class="space-y-6">
+      <input type="hidden" name="csrf_token_register" value="<?php echo htmlspecialchars($csrf_token_register ?? ''); ?>">
+      
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Benutzername</label>
         <input type="text" id="username" name="username" required 

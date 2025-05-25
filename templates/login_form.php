@@ -25,13 +25,15 @@
 
     
 
-    <?php if (!empty($error)): ?>
+    <?php if (!empty($error)): /* $error is used by src/controllers/login.php for feedback */ ?>
       <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm">
         <?= htmlspecialchars($error) ?>
       </div>
     <?php endif; ?>
 
     <form action="login.php" method="post" class="space-y-6">
+      <input type="hidden" name="csrf_token_login" value="<?php echo htmlspecialchars($csrf_token_login ?? ''); ?>">
+      
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Benutzername</label>
         <input type="text" id="username" name="username" required 
