@@ -4,6 +4,7 @@
 // Database connection
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../lib/auth.php';
+require_once __DIR__ . '/../lib/utils.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -83,58 +84,6 @@ try {
 function formatDate($date) {
     if (empty($date)) return '';
     return date('d.m.Y', strtotime($date));
-}
-
-function getUserName($userId) {
-    global $pdo;
-    if (empty($userId)) return '';
-    
-    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
-    $stmt->execute([$userId]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result ? $result['username'] : '';
-}
-
-function getUserInitials($userId) {
-    $name = getUserName($userId);
-    if (empty($name)) return '';
-    
-    $parts = explode(' ', $name);
-    $initials = '';
-    
-    foreach ($parts as $part) {
-        if (!empty($part)) {
-            $initials .= strtoupper(substr($part, 0, 1));
-        }
-    }
-    
-    return $initials;
-}
-
-function getGroupName($groupId) {
-    global $pdo;
-    if (empty($groupId)) return '';
-    
-    $stmt = $pdo->prepare("SELECT name FROM user_groups WHERE id = ?");
-    $stmt->execute([$groupId]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result ? $result['name'] : '';
-}
-
-function getGroupInitials($groupId) {
-    $name = getGroupName($groupId);
-    if (empty($name)) return '';
-    
-    $parts = explode(' ', $name);
-    $initials = '';
-    
-    foreach ($parts as $part) {
-        if (!empty($part)) {
-            $initials .= strtoupper(substr($part, 0, 1));
-        }
-    }
-    
-    return $initials;
 }
 
 function getPriorityClass($task) {

@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 
 // templates/profile.php (sidebar categories per application)
 require_once __DIR__ . '/../src/lib/auth.php';
+require_once __DIR__ . '/../src/lib/utils.php';
 
 // Check if user is logged in
 if (!isLoggedIn()) {
@@ -19,15 +20,6 @@ if (!$user) {
 
 $activeTab = $_GET['tab'] ?? 'personal_info';
 
-// Generate user initials
-function getUserInitials($user) {
-    if (!$user || !isset($user['username'])) return 'U';
-    $names = explode(' ', trim($user['username']));
-    if (count($names) >= 2) {
-        return strtoupper(substr($names[0], 0, 1) . substr($names[1], 0, 1));
-    }
-    return strtoupper(substr($user['username'], 0, 2));
-}
 $initials = getUserInitials($user);
 ?>
 <!DOCTYPE html>

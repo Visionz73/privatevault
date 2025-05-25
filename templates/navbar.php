@@ -1,6 +1,7 @@
 <?php
 // Adjusted Navbar with proper paths for all files
 require_once __DIR__ . '/../src/lib/auth.php';
+require_once __DIR__ . '/../src/lib/utils.php';
 $user = getUser();
 
 // Only groups.php is in the admin directory
@@ -10,17 +11,8 @@ $isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
 $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' || 
                    basename($_SERVER['PHP_SELF']) === 'havetopay_add.php' ||
                    basename($_SERVER['PHP_SELF']) === 'havetopay_detail.php';
-
-// Generate user initials
-function getUserInitials($user) {
-    if (!$user || !isset($user['username'])) return 'U';
-    $names = explode(' ', trim($user['username']));
-    if (count($names) >= 2) {
-        return strtoupper(substr($names[0], 0, 1) . substr($names[1], 0, 1));
-    }
-    return strtoupper(substr($user['username'], 0, 2));
-}
 ?>
+
 <style>
   /* Modern gradient navbar styling */
   @media (min-width: 769px) {
