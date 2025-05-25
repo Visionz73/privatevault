@@ -4,10 +4,24 @@
     <p class="text-gray-600">Verwalten Sie Ihr Passwort und Sicherheitsoptionen.</p>
   </div>
 
+  <!-- Session Messages -->
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-300" role="alert">
+      <?= htmlspecialchars($_SESSION['success']) ?>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+  <?php endif; ?>
+  <?php if (isset($_SESSION['error'])): ?>
+    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-300" role="alert">
+      <?= htmlspecialchars($_SESSION['error']) ?>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+  <?php endif; ?>
+
   <!-- Change Password -->
   <div class="bg-white border border-gray-200 rounded-lg p-6">
     <h3 class="text-lg font-medium text-gray-900 mb-4">Passwort ändern</h3>
-    <form method="POST" action="/src/controllers/profile_security.php" class="space-y-4">
+    <form method="POST" action="/privatevault/src/controllers/profile_security.php" class="space-y-4">
       <input type="hidden" name="action" value="change_password">
       
       <div>
@@ -42,29 +56,30 @@
     
     <div class="flex items-center justify-between">
       <span class="text-sm font-medium text-gray-700">2FA Status:</span>
-      <span class="px-3 py-1 rounded-full text-sm bg-red-100 text-red-800">Deaktiviert</span>
+      <span class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">Nicht implementiert</span>
     </div>
     
-    <button class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-      2FA aktivieren
+    <button class="mt-4 px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed" disabled>
+      2FA konfigurieren (Nicht verfügbar)
     </button>
   </div>
 
   <!-- Active Sessions -->
   <div class="bg-white border border-gray-200 rounded-lg p-6">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Aktive Sessions</h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Aktive Sessions (Beispiel)</h3>
+    <p class="text-gray-600 mb-4 text-sm">Diese Funktion ist derzeit nicht vollständig implementiert.</p>
     <div class="space-y-3">
       <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
         <div>
-          <p class="font-medium text-gray-900">Aktuelle Session</p>
-          <p class="text-sm text-gray-600">Chrome auf Windows • <?= date('d.m.Y H:i') ?></p>
+          <p class="font-medium text-gray-900">Beispiel Session</p>
+          <p class="text-sm text-gray-600">Beispiel Browser auf Beispiel OS • <?= date('d.m.Y H:i') ?></p>
         </div>
-        <span class="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">Aktiv</span>
+        <span class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">Platzhalter</span>
       </div>
     </div>
     
-    <button class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-      Alle anderen Sessions beenden
+    <button class="mt-4 px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed" disabled>
+      Andere Sessions beenden (Nicht verfügbar)
     </button>
   </div>
 </div>
