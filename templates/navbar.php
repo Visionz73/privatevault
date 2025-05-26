@@ -100,23 +100,47 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     transform: scale(1.05);
   }
 
-  /* Modern logo styling - Enhanced */
+  /* Modern logo styling - Updated for image */
   .logo-container {
     display: flex;
     align-items: center;
-    color: white;
-    font-weight: 700;
-    font-size: 2.5rem; /* Increased size for OMNI */
-    text-decoration: none;
     justify-content: center;
-    margin-bottom: 2rem; /* More space below logo */
+    margin-bottom: 2rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
   }
 
   .logo-container.desktop {
     flex-direction: column;
-    font-size: 3rem; /* Even larger for desktop */
-    letter-spacing: 0.2rem; /* Better spacing for large text */
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Add depth */
+    margin-bottom: 3rem;
+  }
+
+  .logo-image {
+    height: 3rem;
+    width: auto;
+    max-width: 12rem;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* Makes logo white on dark background */
+    transition: all 0.3s ease;
+  }
+
+  .logo-container.desktop .logo-image {
+    height: 4rem;
+    max-width: 14rem;
+  }
+
+  .logo-container:hover .logo-image {
+    transform: scale(1.05);
+    filter: brightness(0) invert(1) drop-shadow(0 4px 8px rgba(255,255,255,0.3));
+  }
+
+  /* Mobile logo styling */
+  .mobile-logo {
+    height: 2rem;
+    width: auto;
+    max-width: 8rem;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
   }
 
   /* Profile avatar styling - Bottom positioned */
@@ -331,7 +355,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       </svg>
     </button>
     <a href="/dashboard.php" class="logo-container">
-      OMNI
+      <img src="/public/assets/logo.png" alt="PrivateVault Logo" class="mobile-logo" />
     </a>
     <!-- Mobile Profile Avatar -->
     <?php if ($user): ?>
@@ -354,10 +378,10 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </svg>
       </button>
       
-      <!-- Centered logo - Enhanced -->
+      <!-- Centered logo - Updated for image -->
       <div class="flex justify-center mb-8 mt-6">
         <a href="/dashboard.php" class="logo-container desktop">
-          OMNI
+          <img src="/public/assets/logo.png" alt="PrivateVault Logo" class="logo-image" />
         </a>
       </div>
 
