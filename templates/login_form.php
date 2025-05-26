@@ -10,6 +10,19 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
+    .logo-fallback {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto;
+    }
   </style>
 </head>
 
@@ -18,12 +31,10 @@
     <!-- Logo -->
     <div class="flex justify-center mb-8">
       <a href="/index.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-26 w-auto" />
-        
+        <img src="assets/logo.png" alt="Logo" class="h-26 w-auto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display: none;">PV</div>
       </a>
     </div>
-
-    
 
     <?php if (!empty($error)): /* $error is used by src/controllers/login.php for feedback */ ?>
       <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm">

@@ -14,7 +14,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 ?>
 
 <style>
-  /* Modern gradient navbar styling */
+  /* Basic navbar styling without gradients */
   @media (min-width: 769px) {
     nav#sidebar {
       position: fixed;
@@ -22,10 +22,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       top: 0;
       bottom: 0;
       width: 16rem; /* w-64 */
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      backdrop-filter: blur(15px);
-      border-right: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      background: #4F46E5;
+      border-right: 1px solid #3730A3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       z-index: 50;
       display: flex;
       flex-direction: column;
@@ -39,17 +38,17 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     }
   }
 
-  /* Mobile modern gradient styling */
+  /* Mobile styling */
   @media (max-width: 768px) {
     nav#sidebar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 4rem; /* slightly taller for modern look */
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 4px 15px rgba(31, 38, 135, 0.37);
+      height: 3.5rem;
+      background: #4F46E5;
+      border-bottom: 1px solid #3730A3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       z-index: 50;
     }
     .mobile-menu { 
@@ -63,11 +62,11 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     .sidebar-content { 
       display: none;
       position: fixed;
-      top: 4rem;
+      top: 3.5rem;
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #4F46E5;
       z-index: 49;
       padding: 1rem;
       overflow-y: auto;
@@ -83,90 +82,75 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       display: flex;
       align-items: center;
       padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-      color: rgba(255,255,255,0.9);
-      backdrop-filter: blur(10px);
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      color: white;
     }
     .sidebar-content ul li a:hover {
-      background-color: rgba(255,255,255,0.2);
-      color: white;
-      transform: translateX(5px);
+      background-color: rgba(255,255,255,0.1);
     }
   }
 
-  /* Modern menu button styling */
+  /* Menu button styling */
   .menu-btn {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     padding: 0.5rem;
     color: white;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
   .menu-btn:hover {
-    background: rgba(255,255,255,0.3);
-    transform: scale(1.05);
+    background: rgba(255,255,255,0.2);
   }
 
-  /* Enhanced Logo area styling */
+  /* Logo area styling */
   .logo-container {
     text-align: center;
-    padding: 1.5rem 1rem 1rem;
+    padding: 1.5rem 1rem;
     margin-bottom: 1rem;
-    position: relative;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 0.75rem;
-    margin: 1rem;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
   }
   
   .logo-container .logo-text {
     color: white;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 600;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
-    background: linear-gradient(to right, #fff, #e2e8f0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
   
   .logo-container .app-name {
     color: white;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
   }
   
-  /* New banner-style user profile */
+  /* User profile banner - ensure it stays at bottom */
   .user-profile-banner {
     margin-top: auto;
     margin-bottom: 1rem;
     margin-left: 1rem;
     margin-right: 1rem;
-    border-radius: 0.75rem;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    border-radius: 0.5rem;
+    background: #3730A3;
     padding: 0.75rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    min-height: auto;
   }
   
   .user-profile-banner:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    background: #4338CA;
   }
   
   .user-avatar {
-    width: 3.5rem;
-    height: 3.5rem;
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    width: 3rem;
+    height: 3rem;
+    background: #4F46E5;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -175,7 +159,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     font-weight: 600;
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
-    border: 2px solid rgba(255,255,255,0.5);
+    border: 2px solid rgba(255,255,255,0.3);
   }
   
   .user-display-name {
@@ -187,19 +171,21 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    line-height: 1.2;
   }
   
   .user-username {
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.8);
     font-size: 0.75rem;
     text-align: center;
+    margin-top: 0.25rem;
   }
 
   /* Navigation menu items styling */
   .nav-menu {
     padding: 0 0.5rem;
     list-style-type: none;
+    flex-grow: 1;
   }
   
   .nav-item {
@@ -210,16 +196,15 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    color: rgba(255,255,255,0.9);
-    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+    color: white;
+    transition: all 0.2s ease;
     font-weight: 500;
+    text-decoration: none;
   }
   
   .nav-link:hover, .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    transform: translateX(5px);
+    background: rgba(255,255,255,0.1);
   }
   
   .nav-icon {
@@ -247,7 +232,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     
     <?php if ($user): ?>
       <div class="flex items-center">
-        <div class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white font-medium">
+        <div class="h-8 w-8 rounded-full bg-indigo-700 flex items-center justify-center text-white font-medium">
           <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 1)); ?>
         </div>
       </div>
@@ -260,17 +245,10 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     <div class="logo-container">
       <div class="logo-text">OMNI</div>
       <div class="app-name">PrivateVault</div>
-      
-      <?php if ($user): ?>
-        <div class="user-avatar">
-          <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 2)); ?>
-        </div>
-        <div class="user-username"><?php echo htmlspecialchars($user['username']); ?></div>
-      <?php endif; ?>
     </div>
 
     <!-- Main Navigation -->
-    <ul class="nav-menu flex-grow">
+    <ul class="nav-menu">
       <li class="nav-item">
         <a href="/index.php" class="nav-link <?php echo basename($_SERVER['SCRIPT_NAME']) == 'index.php' ? 'active' : ''; ?>">
           <div class="nav-icon">
@@ -354,11 +332,23 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </a>
       </li>
       <?php endif; ?>
+      
+      <!-- Logout Link in Navigation -->
+      <li class="nav-item">
+        <a href="/logout.php" class="nav-link">
+          <div class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <span>Logout</span>
+        </a>
+      </li>
     </ul>
 
     <!-- User Profile Banner (Bottom) -->
     <?php if ($user): ?>
-    <a href="/profile.php" class="user-profile-banner">
+    <div class="user-profile-banner">
       <div class="user-avatar">
         <?php echo strtoupper(substr($user['username'] ?? 'U', 0, 2)); ?>
       </div>
@@ -366,7 +356,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         <?php echo htmlspecialchars($user['first_name'] ? $user['first_name'] . ' ' . $user['last_name'] : $user['username']); ?>
       </div>
       <div class="user-username">@<?php echo htmlspecialchars($user['username']); ?></div>
-    </a>
+    </div>
     <?php endif; ?>
   </div>
 </nav>
