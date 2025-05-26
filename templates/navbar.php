@@ -331,7 +331,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <div class="flex justify-center mb-6 mt-4">
         <a href="/dashboard.php" class="logo-container flex-col">
           <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto mb-2" />
-          <span class="text-sm font-semibold">PrivateVault</span>
         </a>
       </div>
 
