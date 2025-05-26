@@ -120,7 +120,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     width: auto;
     max-width: 12rem;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* Makes logo white on dark background */
     transition: all 0.3s ease;
   }
 
@@ -131,7 +130,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
   .logo-container:hover .logo-image {
     transform: scale(1.05);
-    filter: brightness(0) invert(1) drop-shadow(0 4px 8px rgba(255,255,255,0.3));
   }
 
   /* Mobile logo styling */
@@ -140,7 +138,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     width: auto;
     max-width: 8rem;
     object-fit: contain;
-    filter: brightness(0) invert(1);
   }
 
   /* Profile avatar styling - Bottom positioned */

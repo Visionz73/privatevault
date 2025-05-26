@@ -17,7 +17,7 @@
     <!-- Logo -->
     <div class="flex justify-center mb-8">
       <a href="/index.php" class="flex items-center">
-        <img src="/assets/logo.png" alt="Logo" class="h-26 w-auto" />
+        <img src="/public/assets/logo.png" alt="PrivateVault Logo" class="h-16 w-auto" />
       </a>
     </div>
 
