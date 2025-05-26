@@ -100,17 +100,26 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     transform: scale(1.05);
   }
 
-  /* Modern logo styling */
+  /* Modern logo styling - Enhanced */
   .logo-container {
     display: flex;
     align-items: center;
     color: white;
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 2.5rem; /* Increased size for OMNI */
     text-decoration: none;
+    justify-content: center;
+    margin-bottom: 2rem; /* More space below logo */
   }
 
-  /* Profile avatar styling */
+  .logo-container.desktop {
+    flex-direction: column;
+    font-size: 3rem; /* Even larger for desktop */
+    letter-spacing: 0.2rem; /* Better spacing for large text */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Add depth */
+  }
+
+  /* Profile avatar styling - Bottom positioned */
   .profile-avatar {
     width: 2.5rem;
     height: 2.5rem;
@@ -126,10 +135,28 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     transition: all 0.3s ease;
     border: 2px solid rgba(255,255,255,0.3);
     position: relative;
+    margin: 0 auto; /* Center the avatar */
   }
   .profile-avatar:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  /* Bottom profile section for desktop */
+  .bottom-profile {
+    margin-top: auto;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bottom-profile .profile-avatar {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   /* Profile dropdown */
@@ -304,8 +331,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       </svg>
     </button>
     <a href="/dashboard.php" class="logo-container">
-      <img src="/assets/logo.png" alt="Logo" class="h-8 w-auto mr-2" />
-      PrivateVault
+      OMNI
     </a>
     <!-- Mobile Profile Avatar -->
     <?php if ($user): ?>
@@ -328,25 +354,12 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </svg>
       </button>
       
-      <!-- Centered logo -->
-      <div class="flex justify-center mb-6 mt-4">
-        <a href="/dashboard.php" class="logo-container flex-col">
-          <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto mb-2" />
-          <span class="text-sm font-semibold">PrivateVault</span>
+      <!-- Centered logo - Enhanced -->
+      <div class="flex justify-center mb-8 mt-6">
+        <a href="/dashboard.php" class="logo-container desktop">
+          OMNI
         </a>
       </div>
-
-      <!-- Desktop Profile Section -->
-      <?php if ($user): ?>
-      <div class="flex flex-col items-center mb-6 px-4">
-        <div class="profile-avatar mb-3" onclick="openProfileModal()">
-          <?= getUserInitials($user) ?>
-        </div>
-        <div class="text-center relative">
-          <p class="text-white font-medium"><?= htmlspecialchars($user['username']) ?></p>
-        </div>
-      </div>
-      <?php endif; ?>
 
       <ul class="flex flex-col space-y-2 px-2">
         <?php
@@ -395,6 +408,18 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         <?php endif; ?>
       </ul>
     </div>
+
+    <!-- Bottom Profile Section - NEW -->
+    <?php if ($user): ?>
+    <div class="bottom-profile">
+      <div class="profile-avatar" onclick="openProfileModal()">
+        <?= getUserInitials($user) ?>
+      </div>
+      <div class="text-center">
+        <p class="text-white font-medium text-sm"><?= htmlspecialchars($user['username']) ?></p>
+      </div>
+    </div>
+    <?php endif; ?>
   </div>
 </nav>
 
