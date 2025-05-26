@@ -5,7 +5,7 @@ requireLogin();
 
 $doc_id = $_GET['id'] ?? null;
 if (!$doc_id) {
-    header('Location: /privatevault/profile.php?tab=documents');
+    header('Location: /profile.php?tab=documents');
     exit;
 }
 
@@ -15,7 +15,7 @@ $stmt->execute([$doc_id, $_SESSION['user_id']]);
 $doc = $stmt->fetch();
 
 if (!$doc) {
-    header('Location: /privatevault/profile.php?tab=documents');
+    header('Location: /profile.php?tab=documents');
     exit;
 }
 
