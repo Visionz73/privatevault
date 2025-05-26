@@ -1,4 +1,4 @@
 <?php
-// public/login.php - Updated for root domain setup
+// public/login.php
 require __DIR__ . '/../config.php';
 require __DIR__ . '/../src/controllers/login.php';

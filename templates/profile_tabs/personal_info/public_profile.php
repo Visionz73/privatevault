@@ -11,7 +11,7 @@
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="/src/controllers/profile_save.php" class="space-y-6">
+  <form method="POST" action="/privatevault/src/controllers/profile_save.php" class="space-y-6">
     <input type="hidden" name="subtab" value="public_profile">
     
     <!-- Bio -->

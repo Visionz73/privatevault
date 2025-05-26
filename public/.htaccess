@@ -1,6 +1,6 @@
-# public/.htaccess - Updated for root domain setup
+# public/.htaccess
 RewriteEngine On
-RewriteBase /
+RewriteBase /privatevault/
 # Wenn Datei/Ordner nicht existiert, leite an index.php weiter
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

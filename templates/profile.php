@@ -9,7 +9,7 @@ require_once __DIR__ . '/../src/lib/utils.php';
 
 // Check if user is logged in
 if (!isLoggedIn()) {
-    header('Location: /login.php');
+    header('Location: /privatevault/login.php');
     exit;
 }
 
