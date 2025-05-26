@@ -304,8 +304,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       </svg>
     </button>
     <a href="/dashboard.php" class="logo-container">
-      <img src="/assets/logo.png" alt="Logo" class="h-16 w-auto mr-2" />
-      PrivateVault
+      <img src="/assets/logo.png" alt="Logo" class="h-12 w-auto mr-2" />
     </a>
     <!-- Mobile Profile Avatar -->
     <?php if ($user): ?>
