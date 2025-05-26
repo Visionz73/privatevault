@@ -4,8 +4,8 @@ require __DIR__ . '/../config.php';
 require __DIR__ . '/../routes.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$base = '/privatevault';
-$route = substr($path, strlen($base)) ?: '/';
+// Remove the base path handling for /privatevault
+$route = $path ?: '/';
 
 if (isset($routes[$route])) {
     require __DIR__ . '/../' . $routes[$route];

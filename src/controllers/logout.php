@@ -9,6 +9,6 @@ if (session_status() === PHP_SESSION_NONE) {
 $_SESSION = [];
 session_destroy();
 
-// Zur Login-Seite weiterleiten
+// Zur Login-Seite weiterleiten (ohne /privatevault prefix)
 header('Location: login.php');
 exit;
