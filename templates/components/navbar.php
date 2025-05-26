@@ -27,7 +27,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
 <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="/public/assets/logo.png" alt="PrivateVault Logo" height="32" class="me-2" />
+            <i class="fas fa-vault me-2 text-primary"></i>
             <span class="fw-bold">PrivateVault</span>
         </a>
         
