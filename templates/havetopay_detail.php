@@ -6,77 +6,56 @@
     <title><?= htmlspecialchars($expense['title']) ?> | HaveToPay</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            body {
-                padding-top: 4rem !important;
-            }
-        }
-        
-        /* Desktop adjustments */
-        @media (min-width: 769px) {
-            .main-content {
-                margin-left: 16rem;
-                width: calc(100% - 16rem);
-            }
-        }
-        
-        .modern-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-    </style>
 </head>
-<body class="bg-gray-50">
-    <div class="main-content p-6">
+<body class="bg-gray-50 min-h-screen">
+    <?php include_once __DIR__ . '/navbar.php'; ?>
+    
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <!-- Back Link -->
-        <div class="mb-6">
-            <a href="havetopay.php" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
-                <i class="fas fa-arrow-left mr-2"></i>Back to HaveToPay
+        <div class="mb-8">
+            <a href="havetopay.php" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium group">
+                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>Back to HaveToPay
             </a>
         </div>
         
         <!-- Success/Error Messages -->
         <?php if (!empty($success)): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center">
-            <i class="fas fa-check-circle mr-3"></i>
-            <?php echo htmlspecialchars($success); ?>
+        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8 flex items-center shadow-sm">
+            <i class="fas fa-check-circle text-xl mr-3"></i>
+            <p><?php echo htmlspecialchars($success); ?></p>
         </div>
         <?php endif; ?>
         
         <?php if (!empty($errors)): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-            <i class="fas fa-exclamation-circle mr-3"></i>
-            <?php foreach ($errors as $error): ?>
-                <div><?php echo htmlspecialchars($error); ?></div>
-            <?php endforeach; ?>
+        <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-8">
+            <div class="flex">
+                <i class="fas fa-exclamation-circle text-xl mr-3 mt-0.5"></i>
+                <div>
+                    <?php foreach ($errors as $error): ?>
+                        <p><?php echo htmlspecialchars($error); ?></p>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
         <?php endif; ?>
         
-        <!-- Expense Details -->
-        <div class="modern-card mb-6">
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2">
-                        <div class="flex justify-between items-start mb-4">
-                            <h1 class="text-3xl font-bold text-gray-800"><?php echo htmlspecialchars($expense['title']); ?></h1>
-                            <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
-                                <button type="button" 
-                                        onclick="confirmDeleteExpense()"
-                                        class="text-red-600 hover:text-red-800 font-medium bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors">
-                                    <i class="fas fa-trash mr-2"></i>Delete Expense
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
+        <!-- Expense Details Card -->
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-10">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6 text-white">
+                <h1 class="text-2xl md:text-3xl font-bold"><?php echo htmlspecialchars($expense['title']); ?></h1>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="md:col-span-2 space-y-8">
+                        <!-- Payer Information -->
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-full flex items-center justify-center text-xl font-semibold mr-5">
                                 <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                             </div>
                             <div>
-                                <div class="font-semibold">
+                                <div class="text-gray-400 text-sm mb-1">Paid by</div>
+                                <div class="font-semibold text-lg text-gray-800">
                                     <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
                                     <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
                                 </div>
@@ -84,123 +63,157 @@
                             </div>
                         </div>
                         
-                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-calendar-alt mr-2"></i>
-                                <?php echo date('d M Y', strtotime($expense['expense_date'])); ?>
+                        <!-- Expense Metadata -->
+                        <div class="flex flex-wrap gap-6 text-sm text-gray-600">
+                            <div class="bg-gray-100 px-4 py-3 rounded-xl flex items-center">
+                                <i class="fas fa-calendar-alt text-indigo-500 mr-3"></i>
+                                <div>
+                                    <div class="text-xs text-gray-500 mb-0.5">Date</div>
+                                    <div class="font-medium"><?php echo date('d M Y', strtotime($expense['expense_date'])); ?></div>
+                                </div>
                             </div>
+                            
                             <?php if(!empty($expense['expense_category'])): ?>
-                            <div class="flex items-center">
-                                <i class="fas fa-tag mr-2"></i>
-                                <?php echo htmlspecialchars($expense['expense_category']); ?>
+                            <div class="bg-gray-100 px-4 py-3 rounded-xl flex items-center">
+                                <i class="fas fa-tag text-indigo-500 mr-3"></i>
+                                <div>
+                                    <div class="text-xs text-gray-500 mb-0.5">Category</div>
+                                    <div class="font-medium"><?php echo htmlspecialchars($expense['expense_category']); ?></div>
+                                </div>
                             </div>
                             <?php endif; ?>
-                            <div class="flex items-center">
-                                <i class="fas fa-users mr-2"></i>
-                                <?php echo count($participants); ?> participants
+                            
+                            <div class="bg-gray-100 px-4 py-3 rounded-xl flex items-center">
+                                <i class="fas fa-users text-indigo-500 mr-3"></i>
+                                <div>
+                                    <div class="text-xs text-gray-500 mb-0.5">Participants</div>
+                                    <div class="font-medium"><?php echo count($participants); ?> people</div>
+                                </div>
                             </div>
+                            
+                            <?php if ($expense['payer_id'] == $userId || ($_SESSION['is_admin'] ?? false)): ?>
+                                <div class="ml-auto">
+                                    <button type="button" 
+                                            onclick="confirmDeleteExpense()"
+                                            class="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-4 py-3 rounded-xl transition-colors flex items-center">
+                                        <i class="fas fa-trash-alt mr-2"></i>Delete Expense
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         
                         <?php if (!empty($expense['description'])): ?>
-                        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                            <h6 class="font-semibold text-indigo-900 mb-2">Description</h6>
-                            <p class="text-indigo-800"><?php echo nl2br(htmlspecialchars($expense['description'])); ?></p>
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6">
+                            <h6 class="font-semibold text-indigo-900 mb-3">Description</h6>
+                            <p class="text-indigo-800 whitespace-pre-line"><?php echo htmlspecialchars($expense['description']); ?></p>
                         </div>
                         <?php endif; ?>
                     </div>
                     
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-indigo-600">€<?php echo number_format($expense['amount'], 2); ?></div>
-                        <div class="text-gray-500">Total amount</div>
+                    <!-- Amount Card -->
+                    <div>
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 text-center">
+                            <div class="text-gray-500 mb-2">Total amount</div>
+                            <div class="text-4xl font-bold text-indigo-600 mb-4">€<?php echo number_format($expense['amount'], 2); ?></div>
+                            
+                            <?php 
+                            // Calculate how many people have settled
+                            $settledCount = 0;
+                            foreach ($participants as $p) {
+                                if ($p['is_settled']) $settledCount++;
+                            }
+                            
+                            // Calculate percentage
+                            $totalParticipants = count($participants);
+                            $percentage = $totalParticipants > 0 ? ($settledCount / $totalParticipants) * 100 : 0;
+                            ?>
+                            
+                            <div class="text-xs text-gray-500 mb-2">Settlement progress</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                <div class="bg-green-600 h-2.5 rounded-full" style="width: <?php echo $percentage; ?>%"></div>
+                            </div>
+                            <div class="text-sm font-medium">
+                                <?php echo $settledCount; ?> of <?php echo $totalParticipants; ?> settled
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Participants List -->
-        <div class="modern-card">
-            <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 rounded-t-2xl">
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6 text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-users mr-3"></i>Participants
                 </h3>
             </div>
-            <div class="p-6">
+            <div class="p-8">
                 <?php if (empty($participants)): ?>
-                    <div class="text-center py-8">
-                        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+                    <div class="text-center py-16">
+                        <i class="fas fa-users text-6xl text-gray-200 mb-4"></i>
                         <p class="text-gray-500">No participants found</p>
                     </div>
                 <?php else: ?>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-200">
-                                <tr>
-                                    <th class="text-left py-3 font-medium text-gray-600">Participant</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Share Amount</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Status</th>
-                                    <th class="text-left py-3 font-medium text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                <?php foreach ($participants as $participant): ?>
-                                <tr class="<?php echo $participant['is_settled'] ? 'bg-green-50' : ''; ?>">
-                                    <td class="py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-<?php echo $participant['is_settled'] ? 'green' : 'indigo'; ?>-600 text-white rounded-full flex items-center justify-center font-semibold mr-3">
-                                                <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
-                                            </div>
-                                            <div>
-                                                <div class="font-medium">
-                                                    <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
-                                                    <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
-                                                </div>
-                                                <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($participant['username']); ?></div>
-                                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <?php foreach ($participants as $participant): ?>
+                            <div class="bg-gray-50 rounded-xl p-5 <?php echo $participant['is_settled'] ? 'border-2 border-green-200' : ''; ?>">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-gradient-to-br <?php echo $participant['is_settled'] ? 'from-green-500 to-green-600' : 'from-indigo-500 to-purple-600'; ?> text-white rounded-full flex items-center justify-center font-semibold mr-4">
+                                            <?php echo strtoupper(substr($participant['username'], 0, 1)); ?>
                                         </div>
-                                    </td>
-                                    <td class="py-4 font-semibold">
+                                        <div>
+                                            <div class="font-medium text-gray-800">
+                                                <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
+                                                <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
+                                            </div>
+                                            <div class="text-sm text-gray-500">@<?php echo htmlspecialchars($participant['username']); ?></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <span class="font-semibold text-lg text-gray-800">
                                         <?php echo number_format($participant['share_amount'], 2); ?> €
-                                    </td>
-                                    <td class="py-4">
-                                        <?php if ($participant['is_settled']): ?>
-                                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
-                                                <i class="fas fa-clock mr-1"></i>
-                                                Pending
-                                            </span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="flex gap-2">
-                                            <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
-                                                <form method="post" class="inline">
-                                                    <input type="hidden" name="action" value="settle">
-                                                    <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                    <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-sm">
-                                                        <i class="fas fa-check-circle mr-1"></i>
-                                                        Mark as Settled
-                                                    </button>
-                                                </form>
-                                            <?php endif; ?>
-                                            
-                                            <?php if ($expense['payer_id'] == $userId || $participant['user_id'] == $userId): ?>
-                                                <button type="button" 
-                                                        onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
-                                                        class="text-red-600 hover:text-red-800 font-medium text-sm">
-                                                    <i class="fas fa-user-minus mr-1"></i>
-                                                    Remove
+                                    </span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <?php if ($participant['is_settled']): ?>
+                                        <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center">
+                                            <i class="fas fa-check-circle mr-1.5"></i>
+                                            Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center">
+                                            <i class="fas fa-clock mr-1.5"></i>
+                                            Pending
+                                        </span>
+                                    <?php endif; ?>
+                                    
+                                    <div class="flex gap-2">
+                                        <?php if (!$participant['is_settled'] && ($expense['payer_id'] == $userId || $participant['user_id'] == $userId)): ?>
+                                            <form method="post" class="inline">
+                                                <input type="hidden" name="action" value="settle">
+                                                <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
+                                                <button type="submit" class="text-green-600 hover:text-green-800 font-medium text-sm bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors">
+                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                    Mark as Settled
                                                 </button>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                            </form>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($expense['payer_id'] == $userId || $participant['user_id'] == $userId): ?>
+                                            <button type="button" 
+                                                    onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
+                                                    class="text-red-600 hover:text-red-800 font-medium text-sm bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors">
+                                                <i class="fas fa-user-minus mr-1"></i>
+                                                Remove
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -208,22 +221,24 @@
     </div>
     
     <!-- Delete Expense Confirmation Modal -->
-    <div id="deleteExpenseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
-            <div class="flex items-center mb-4">
-                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
-                <h3 class="text-lg font-semibold">Delete Expense</h3>
+    <div id="deleteExpenseModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-xl">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800">Delete Expense</h3>
             </div>
-            <p class="text-gray-600 mb-6">
+            <p class="text-gray-600 mb-8">
                 Are you sure you want to delete this entire expense? This will remove the expense and all associated participant records. This action cannot be undone.
             </p>
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeDeleteExpenseModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
+            <div class="flex justify-end gap-4">
+                <button type="button" onclick="closeDeleteExpenseModal()" class="px-5 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium transition-colors">
                     Cancel
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="delete_expense">
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    <button type="submit" class="px-5 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium transition-colors">
                         <i class="fas fa-trash mr-2"></i>Delete Expense
                     </button>
                 </form>
@@ -232,24 +247,26 @@
     </div>
     
     <!-- Remove Participant Confirmation Modal -->
-    <div id="removeParticipantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
-            <div class="flex items-center mb-4">
-                <i class="fas fa-user-minus text-orange-500 text-2xl mr-3"></i>
-                <h3 class="text-lg font-semibold">Remove Participant</h3>
+    <div id="removeParticipantModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-xl">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-user-minus text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800">Remove Participant</h3>
             </div>
-            <p class="text-gray-600 mb-6">
+            <p class="text-gray-600 mb-8">
                 Are you sure you want to remove "<span id="participantName" class="font-medium"></span>" from this expense? 
                 The remaining participants' shares will be recalculated automatically.
             </p>
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeRemoveParticipantModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">
+            <div class="flex justify-end gap-4">
+                <button type="button" onclick="closeRemoveParticipantModal()" class="px-5 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium transition-colors">
                     Cancel
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="remove_participant">
                     <input type="hidden" name="participant_id" id="removeParticipantId" value="">
-                    <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                    <button type="submit" class="px-5 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 font-medium transition-colors">
                         <i class="fas fa-user-minus mr-2"></i>Remove
                     </button>
                 </form>
