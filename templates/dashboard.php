@@ -255,6 +255,9 @@
         });
       </script>
 
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+
       <!-- Dokumente Widget -->
       <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
         <a href="profile.php?tab=documents" class="group inline-flex items-center mb-4">
