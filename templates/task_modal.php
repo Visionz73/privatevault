@@ -115,115 +115,75 @@ if ($task) {
     
     <!-- Assignment Section -->
     <div class="border-t border-gray-200 pt-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Zuweisung</label>
-        
-        <div class="flex space-x-4 mb-3">
-            <label class="inline-flex items-center">
-                <input type="radio" name="assignment_type" value="user" class="h-4 w-4 text-blue-600"
-                       <?= $assignmentType === 'user' ? 'checked' : '' ?>
-                       onclick="toggleAssignmentType('user')">
-                <span class="ml-2 text-sm text-gray-700">Benutzer</span>
-            </label>
-            <label class="inline-flex items-center">
-                <input type="radio" name="assignment_type" value="group" class="h-4 w-4 text-blue-600"
-                       <?= $assignmentType === 'group' ? 'checked' : '' ?>
-                       onclick="toggleAssignmentType('group')">
-                <span class="ml-2 text-sm text-gray-700">Gruppe</span>
-            </label>
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Zuweisung</h4>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="assignment_type" value="user" checked 
+                           onclick="toggleAssignmentType('user')"
+                           class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                    <span class="ml-2">Einzelner Benutzer</span>
+                </label>
+            </div>
+            <div>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="assignment_type" value="group"
+                           onclick="toggleAssignmentType('group')"
+                           class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                    <span class="ml-2">Benutzergruppe</span>
+                </label>
+            </div>
         </div>
         
-        <div id="user_assignment" class="<?= $assignmentType === 'group' ? 'hidden' : '' ?>">
+        <!-- User Assignment -->
+        <div id="user_assignment" class="mb-4">
+            <label for="assigned_to" class="block text-sm font-medium text-gray-700 mb-1">Benutzer auswählen</label>
             <select id="assigned_to" name="assigned_to" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">-- Benutzer auswählen --</option>
-                <?php foreach ($allUsers as $user): ?>
-                <option value="<?= $user['id'] ?>" 
-                        <?= ($task && $task['assigned_to'] == $user['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($user['username']) ?>
-                </option>
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Bitte auswählen...</option>
+                <?php foreach ($allUsers ?? [] as $user): ?>
+                    <option value="<?= $user['id'] ?>" <?= isset($task) && $task['assigned_to'] == $user['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($user['username']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
         
-        <div id="group_assignment" class="<?= $assignmentType === 'user' ? 'hidden' : '' ?>">
-            <select id="assigned_group" name="assigned_group" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">-- Gruppe auswählen --</option>
-                <?php foreach ($allGroups as $group): ?>
-                <option value="<?= $group['id'] ?>" 
-                        <?= ($task && $task['assigned_group_id'] == $group['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($group['name']) ?> (<?= $group['member_count'] ?> Mitglieder)
-                </option>
+        <!-- Group Assignment -->
+        <div id="group_assignment" class="mb-4 hidden">
+            <label for="assigned_group_id" class="block text-sm font-medium text-gray-700 mb-1">Gruppe auswählen</label>
+            <select id="assigned_group_id" name="assigned_group_id"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Bitte auswählen...</option>
+                <?php foreach ($allGroups ?? [] as $group): ?>
+                    <option value="<?= $group['id'] ?>" <?= isset($task) && $task['assigned_group_id'] == $group['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($group['name']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
-    </div>
-    
-    <!-- Recurrence Options -->
-    <div class="border-t border-gray-200 pt-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Wiederholung</label>
-        <select id="recurrence_type" name="recurrence_type" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onchange="toggleRecurrenceOptions()">
-            <option value="none" <?= (!$task || $task['recurrence_type'] === 'none') ? 'selected' : '' ?>>Keine</option>
-            <option value="daily" <?= ($task && $task['recurrence_type'] === 'daily') ? 'selected' : '' ?>>Täglich</option>
-            <option value="weekly" <?= ($task && $task['recurrence_type'] === 'weekly') ? 'selected' : '' ?>>Wöchentlich</option>
-            <option value="monthly" <?= ($task && $task['recurrence_type'] === 'monthly') ? 'selected' : '' ?>>Monatlich</option>
-        </select>
         
-        <div id="recurrence_options" class="mt-3 space-y-3 <?= (!$task || $task['recurrence_type'] === 'none') ? 'hidden' : '' ?>">
-            <div>
-                <label for="recurrence_interval" class="block text-sm font-medium text-gray-700 mb-1">Intervall</label>
-                <input type="number" id="recurrence_interval" name="recurrence_interval" min="1" max="365"
-                       value="<?= $task && isset($task['recurrence_interval']) ? $task['recurrence_interval'] : '1' ?>"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
-            <div>
-                <label for="recurrence_end_date" class="block text-sm font-medium text-gray-700 mb-1">Enddatum (optional)</label>
-                <input type="date" id="recurrence_end_date" name="recurrence_end_date"
-                       value="<?= $task && isset($task['recurrence_end_date']) ? date('Y-m-d', strtotime($task['recurrence_end_date'])) : '' ?>"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" data-action="close-modal" 
+                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                Abbrechen
+            </button>
+            <button type="submit" 
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Speichern
+            </button>
         </div>
-    </div>
-    
-    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-        <button type="button" onclick="closeModal()" 
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none">
-            Abbrechen
-        </button>
-        <button type="submit" 
-                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none">
-            <?= $isNew ? 'Erstellen' : 'Speichern' ?>
-        </button>
     </div>
 </form>
 
 <script>
     function toggleAssignmentType(type) {
-        if (type === 'user') {
-            document.getElementById('user_assignment').classList.remove('hidden');
-            document.getElementById('group_assignment').classList.add('hidden');
-        } else {
-            document.getElementById('user_assignment').classList.add('hidden');
-            document.getElementById('group_assignment').classList.remove('hidden');
-        }
-    }
-    
-    function toggleRecurrenceOptions() {
-        const recurrenceType = document.getElementById('recurrence_type').value;
-        const recurrenceOptions = document.getElementById('recurrence_options');
+        document.getElementById('user_assignment').classList.toggle('hidden', type !== 'user');
+        document.getElementById('group_assignment').classList.toggle('hidden', type !== 'group');
         
-        if (recurrenceType === 'none') {
-            recurrenceOptions.classList.add('hidden');
-        } else {
-            recurrenceOptions.classList.remove('hidden');
-        }
-    }
-    
-    function closeModal() {
-        document.getElementById('taskModal').classList.add('hidden');
-        document.getElementById('taskModal').classList.remove('flex');
+        // Update required attributes
+        document.getElementById('assigned_to').required = (type === 'user');
+        document.getElementById('assigned_group_id').required = (type === 'group');
     }
 </script>

@@ -75,149 +75,90 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Zugewiesen an Gruppe</label>
                                     <input type="text" value="<?= htmlspecialchars($task['group_name']) ?>" 
                                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg" readonly>
-                                    <input type="hidden" name="assignment_type" value="group">
-                                    <input type="hidden" name="assigned_group" value="<?= $task['assigned_group_id'] ?>">
-                                </div>
-                            <?php else: ?>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Zugewiesen an</label>
-                                    <select name="assigned_to" class="w-full px-4 py-2 border border-gray-200 rounded-lg">
-                                        <?php foreach ($users as $user): ?>
-                                            <option value="<?= $user['id'] ?>" 
-                                                    <?= $user['id'] == $task['assigned_to'] ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($user['username']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <input type="hidden" name="assignment_type" value="user">
                                 </div>
                             <?php endif; ?>
                         </div>
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Fällig am</label>
-                            <input type="date" name="due_date" 
-                                   value="<?= $task['due_date'] ? date('Y-m-d', strtotime($task['due_date'])) : '' ?>" 
-                                   class="w-full px-4 py-2 border border-gray-200 rounded-lg">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fällig am</label>
+                                <input type="date" name="due_date" value="<?= $task['due_date'] ? date('Y-m-d', strtotime($task['due_date'])) : '' ?>" 
+                                       class="w-full px-4 py-2 border border-gray-200 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select name="status" class="w-full px-4 py-2 border border-gray-200 rounded-lg">
+                                    <option value="todo" <?= $task['status'] === 'todo' ? 'selected' : '' ?>>To Do</option>
+                                    <option value="doing" <?= $task['status'] === 'doing' ? 'selected' : '' ?>>In Bearbeitung</option>
+                                    <option value="done" <?= $task['status'] === 'done' ? 'selected' : '' ?>>Erledigt</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="flex justify-between">
-                            <input type="hidden" name="update_task" value="1">
-                            <button type="submit" class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90 transition">Speichern</button>
-                            <button type="submit" name="mark_done" value="1" 
-                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">Als erledigt markieren</button>
+                        
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="window.location.href='inbox.php'" 
+                                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Abbrechen
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                Änderungen speichern
+                            </button>
                         </div>
                     </form>
                 <?php else: ?>
-                    <!-- Nur-Lese-Modus -->
+                    <!-- View Mode -->
                     <div class="p-6 md:p-8">
-                        <h1 class="text-2xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($task['title']) ?></h1>
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-1"><?= htmlspecialchars($task['title']) ?></h2>
+                            <?php if ($task['description']): ?>
+                                <p class="text-gray-600 whitespace-pre-line"><?= htmlspecialchars($task['description']) ?></p>
+                            <?php else: ?>
+                                <p class="text-gray-500 italic">Keine Beschreibung vorhanden</p>
+                            <?php endif; ?>
+                        </div>
                         
-                        <?php if (!empty($task['description'])): ?>
-                            <p class="mb-6 text-gray-700 leading-relaxed"><?= nl2br(htmlspecialchars($task['description'])) ?></p>
-                        <?php endif; ?>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <span class="text-sm text-gray-500 block">Ersteller</span>
-                                <span class="font-medium"><?= htmlspecialchars($task['creator_name']) ?></span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Erstellt von</h3>
+                                <p class="font-medium"><?= htmlspecialchars($task['creator_name']) ?></p>
                             </div>
                             
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <span class="text-sm text-gray-500 block">Zugewiesen an</span>
-                                <?php if ($task['assigned_group_id']): ?>
-                                    <span class="inline-flex items-center">
-                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg text-sm font-medium">
-                                            Gruppe: <?= htmlspecialchars($task['group_name']) ?>
-                                        </span>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="font-medium"><?= htmlspecialchars($task['assignee_name']) ?></span>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <?php if ($task['due_date']): ?>
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <span class="text-sm text-gray-500 block">Fällig am</span>
-                                    <?php 
-                                    $dueDate = strtotime($task['due_date']);
-                                    $isOverdue = $dueDate < time();
-                                    $dueDateFormatted = date('d.m.Y', $dueDate);
-                                    ?>
-                                    <span class="font-medium <?= $isOverdue ? 'text-red-600' : '' ?>">
-                                        <?= $dueDateFormatted ?>
-                                        <?= $isOverdue ? ' (überfällig)' : '' ?>
-                                    </span>
+                            <?php if ($task['assigned_to']): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500 mb-1">Zugewiesen an</h3>
+                                    <p class="font-medium"><?= htmlspecialchars($task['assignee_name']) ?></p>
+                                </div>
+                            <?php elseif ($task['assigned_group_id']): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500 mb-1">Zugewiesen an Gruppe</h3>
+                                    <p class="font-medium"><?= htmlspecialchars($task['group_name']) ?></p>
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <span class="text-sm text-gray-500 block">Erstellt am</span>
-                                <span class="font-medium"><?= date('d.m.Y', strtotime($task['created_at'])) ?></span>
+                            <?php if ($task['due_date']): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500 mb-1">Fällig am</h3>
+                                    <p class="font-medium"><?= date('d.m.Y', strtotime($task['due_date'])) ?></p>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Status</h3>
+                                <span class="inline-block <?= $statusColor ?> rounded-full px-3 py-1 text-sm font-semibold">
+                                    <?= $statusLabel ?>
+                                </span>
                             </div>
                         </div>
                         
-                        <form method="post">
-                            <button type="submit" name="mark_done" value="1" 
-                                    class="w-full md:w-auto px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
-                                Als erledigt markieren
-                            </button>
-                        </form>
+                        <?php if ($canEdit): ?>
+                            <div class="flex justify-end">
+                                <a href="?id=<?= $task['id'] ?>&edit=1" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                    Bearbeiten
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
-            </div>
-            
-            <!-- Unteraufgaben -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm p-6 md:p-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Unteraufgaben</h2>
-                
-                <!-- Fortschrittsanzeige -->
-                <div class="mb-6">
-                    <div class="flex justify-between mb-1">
-                        <span class="text-sm font-medium text-[#4A90E2]">Fortschritt</span>
-                        <span class="text-sm font-medium text-[#4A90E2]"><?= $progress ?>%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="bg-[#4A90E2] h-2.5 rounded-full transition-all duration-300" style="width: <?= $progress ?>%"></div>
-                    </div>
-                </div>
-                
-                <!-- Liste der Unteraufgaben -->
-                <?php if (!empty($subtasks)): ?>
-                    <ul class="space-y-2 mb-6">
-                        <?php foreach ($subtasks as $subtask): ?>
-                            <li class="flex items-center p-3 bg-white rounded-lg hover:bg-gray-50 transition">
-                                <form method="post" class="flex items-center w-full">
-                                    <input type="hidden" name="subtask_id" value="<?= $subtask['id'] ?>">
-                                    <input type="hidden" name="status" value="<?= $subtask['status'] ?>">
-                                    <input type="hidden" name="toggle_subtask" value="1">
-                                    <button type="submit" class="mr-3 flex-shrink-0">
-                                        <?php if ($subtask['status'] === 'closed'): ?>
-                                            <div class="w-5 h-5 border-2 border-[#4A90E2] rounded flex items-center justify-center bg-[#4A90E2] transition">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        <?php else: ?>
-                                            <div class="w-5 h-5 border-2 border-gray-300 rounded transition hover:border-[#4A90E2]"></div>
-                                        <?php endif; ?>
-                                    </button>
-                                    <span class="<?= $subtask['status'] === 'closed' ? 'line-through text-gray-500' : 'text-gray-900' ?>">
-                                        <?= htmlspecialchars($subtask['title']) ?>
-                                    </span>
-                                </form>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p class="text-gray-500 mb-6 bg-white p-4 rounded-lg text-center">Keine Unteraufgaben vorhanden.</p>
-                <?php endif; ?>
-                
-                <!-- Neue Unteraufgabe hinzufügen -->
-                <form method="post" class="flex space-x-2">
-                    <input type="text" name="subtask_title" placeholder="Neue Unteraufgabe hinzufügen" 
-                           class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]" required>
-                    <input type="hidden" name="add_subtask" value="1">
-                    <button type="submit" class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90 transition">Hinzufügen</button>
-                </form>
             </div>
         </div>
     </main>

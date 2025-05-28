@@ -74,86 +74,71 @@
       </div>
     <?php endif; ?>
     
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div class="p-6">
-        <form method="post" enctype="multipart/form-data" class="space-y-5">
-          <div>
-            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
-            <input type="text" id="title" name="title" required
-                   placeholder="Geben Sie einen Titel für das Dokument ein"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2] transition-colors">
-          </div>
-          
-          <div>
-            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Kategorie *</label>
-            <select id="category_id" name="category_id" required
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2] transition-colors">
-              <option value="">Bitte wählen Sie eine Kategorie</option>
-              <?php foreach ($cats as $cat): ?>
-                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Dokument *</label>
-            <div class="file-drop-area rounded-lg bg-gray-50">
-              <span class="file-msg text-gray-500">Datei hierher ziehen oder klicken zum Auswählen</span>
-              <input type="file" id="docfile" name="docfile" required accept=".pdf,.png,.jpeg,.jpg,.docx" class="file-input">
-            </div>
-            <p class="mt-2 text-xs text-gray-500">Erlaubte Dateitypen: PDF, PNG, JPEG, JPG, DOCX</p>
-          </div>
-          
-          <div class="pt-4">
-            <button type="submit" class="w-full md:w-auto px-6 py-3 bg-[#4A90E2] text-white font-medium rounded-lg shadow hover:bg-[#4A90E2]/90 transition-colors">
-              <span class="flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                </svg>
-                Dokument hochladen
-              </span>
-            </button>
-          </div>
-        </form>
+    <!-- Upload Form -->
+    <form action="upload.php" method="post" enctype="multipart/form-data" class="bg-white/60 backdrop-blur-sm rounded-xl shadow-sm p-6">
+      <div class="mb-6">
+        <label for="document_title" class="block text-sm font-medium text-gray-700 mb-2">Dokumenttitel</label>
+        <input type="text" id="document_title" name="document_title" required
+               class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
       </div>
-    </div>
+      
+      <div class="mb-6">
+        <label for="document_category" class="block text-sm font-medium text-gray-700 mb-2">Kategorie</label>
+        <select id="document_category" name="document_category"
+                class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+          <option value="">-- Bitte wählen --</option>
+          <?php foreach ($categories ?? [] as $category): ?>
+            <option value="<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Dokument</label>
+        <div class="file-drop-area">
+          <span class="file-msg">Datei hierher ziehen oder klicken zum Auswählen</span>
+          <input type="file" name="document_file" class="file-input" required>
+        </div>
+      </div>
+      
+      <div class="flex justify-end">
+        <button type="submit" class="px-6 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90 transition-colors">
+          Hochladen
+        </button>
+      </div>
+    </form>
   </main>
-  
+
   <script>
-    // File drop area functionality
+    // File upload interactive functionality
     const fileDropArea = document.querySelector('.file-drop-area');
-    const fileInput = document.querySelector('.file-input');
-    const fileMsg = document.querySelector('.file-msg');
+    const fileInput = fileDropArea.querySelector('.file-input');
+    const fileMsg = fileDropArea.querySelector('.file-msg');
     
-    // Highlight drop area when dragging file over it
-    ['dragover', 'dragenter'].forEach(eventName => {
-      fileDropArea.addEventListener(eventName, function(e) {
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        fileMsg.textContent = this.files[0].name;
+      }
+    });
+    
+    ['dragover', 'dragenter'].forEach(event => {
+      fileDropArea.addEventListener(event, function(e) {
         e.preventDefault();
         this.classList.add('is-active');
       });
     });
     
-    ['dragleave', 'dragend'].forEach(eventName => {
-      fileDropArea.addEventListener(eventName, function() {
+    ['dragleave', 'dragend', 'drop'].forEach(event => {
+      fileDropArea.addEventListener(event, function(e) {
+        e.preventDefault();
         this.classList.remove('is-active');
       });
     });
     
-    // Handle file selection and display filename
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files.length) {
-        fileMsg.textContent = this.files[0].name;
-      }
-    });
-    
-    // Handle file drop
     fileDropArea.addEventListener('drop', function(e) {
-      e.preventDefault();
-      this.classList.remove('is-active');
-      
-      if (e.dataTransfer.files && e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        fileMsg.textContent = e.dataTransfer.files[0].name;
+      fileInput.files = e.dataTransfer.files;
+      if (fileInput.files && fileInput.files[0]) {
+        fileMsg.textContent = fileInput.files[0].name;
       }
     });
   </script>
