@@ -51,7 +51,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       justify-content: space-between;
       width: 100%;
       height: 100%;
-      padding: 0 1rem;
+      padding: 0 1.5rem;
     }
     .sidebar-content { 
       display: none;
@@ -73,8 +73,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     }
     .sidebar-content ul li a {
       display: block;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
       transition: all 0.3s ease;
       color: rgba(255,255,255,0.9);
       backdrop-filter: blur(10px);
@@ -82,7 +82,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     .sidebar-content ul li a:hover {
       background-color: rgba(255,255,255,0.2);
       color: white;
-      transform: translateX(5px);
+      transform: translateX(8px);
     }
   }
 
@@ -90,8 +90,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   .menu-btn {
     background: rgba(255,255,255,0.2);
     border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
     color: white;
     transition: all 0.3s ease;
   }
@@ -177,11 +177,11 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   /* Modern navigation links */
   .nav-link-modern {
     color: rgba(255,255,255,0.9) !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 0.75rem !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 1rem !important;
     transition: all 0.3s ease !important;
     backdrop-filter: blur(10px);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
   }
   .nav-link-modern:hover {
     background: rgba(255,255,255,0.2) !important;
@@ -349,45 +349,45 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <ul class="flex flex-col space-y-2 px-2">
         <?php
         $links = [
-          ['href'=>'dashboard.php',   'icon'=>'<path d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8" />', 'label'=>'Dashboard'],
-          ['href'=>'upload.php',      'icon'=>'<path d="M12 4v16m8-8H4" />', 'label'=>'Upload'],
-          ['href'=>'inbox.php',       'icon'=>'<path d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />', 'label'=>'MyTask'],
-          ['href'=>'create_task.php', 'icon'=>'<path d="M4 4l16 16M4 20L20 4" />', 'label'=>'Create Task'],
-          ['href'=>'taskboard.php',   'icon'=>'<path d="M4 6h16M4 12h16M4 18h16" />', 'label'=>'Kanban'],
-          ['href'=>'havetopay.php',   'icon'=>'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', 'label'=>'HaveToPay'],
+          ['href'=>'dashboard.php',   'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8" />', 'label'=>'Dashboard'],
+          ['href'=>'upload.php',      'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m10-6l-4-4m0 0l-4 4m4-4v8" />', 'label'=>'Upload'],
+          ['href'=>'inbox.php',       'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-4 0V3m0 2h4M5 11h6m-6 4h6" />', 'label'=>'MyTask'],
+          ['href'=>'create_task.php', 'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /><circle cx="12" cy="12" r="10" stroke="none" />', 'label'=>'Create Task'],
+          ['href'=>'taskboard.php',   'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z" />', 'label'=>'Kanban'],
+          ['href'=>'havetopay.php',   'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16v4H4V4zm0 8h16v8H4v-8z" />', 'label'=>'HaveToPay'],
         ];
         foreach ($links as $l): 
           $isActive = basename($_SERVER['PHP_SELF']) === $l['href'];
         ?>
           <li>
             <a href="/<?= $l['href'] ?>" class="nav-link-modern flex items-center w-full <?= $isActive ? 'active' : '' ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <?= $l['icon'] ?>
               </svg>
-              <span class="ml-3"><?= $l['label'] ?></span>
+                <span class="ml-4 text-lg font-medium"><?= $l['label'] ?></span>
             </a>
           </li>
         <?php endforeach; ?>
         <?php if ($user && isset($user['role']) && $user['role'] === 'admin'): ?>
           <li>
             <a href="/admin.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span class="ml-3">Admin Dashboard</span>
+              <span class="ml-4 text-lg font-medium">Admin Dashboard</span>
             </a>
           </li>
           <li>
             <a href="/admin/groups.php" class="nav-link-modern flex items-center w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" 
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span class="ml-3">Manage Groups</span>
+              <span class="ml-4 text-lg font-medium">Manage Groups</span>
             </a>
           </li>
         <?php endif; ?>
