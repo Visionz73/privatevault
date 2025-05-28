@@ -99,6 +99,9 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// Load HaveToPay widget data
+require_once __DIR__.'/widgets/havetopay_widget.php';
+
 // 8) Template rendern
 require_once __DIR__.'/../../templates/dashboard.php';
 ?>
