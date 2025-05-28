@@ -12,7 +12,7 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
         </a>
-        <a href="havetopay_add.php" title="Add Expense" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg shadow-sm flex items-center text-sm">
+        <a href="havetopay_add.php" title="Add Expense" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-1.5 rounded-lg shadow-sm flex items-center text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
@@ -42,6 +42,4 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
         </p>
     </div>
 
-    <!-- The "+" button is placed at the top-right for better visibility and consistency with potential other widgets -->
-    <!-- If a different placement is preferred, it can be moved. -->
 </article>
