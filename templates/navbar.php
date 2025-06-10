@@ -217,42 +217,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   }
 
   /* Profile Modal dark theme adjustments */
-  .profile-modal-content {
-    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .profile-modal-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .modal-menu-item {
-    color: rgba(255, 255, 255, 0.9);
-  }
-  .modal-menu-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  .close-modal {
-    color: rgba(255, 255, 255, 0.7);
-  }
-  .close-modal:hover {
-    color: white;
-  }
-
-  /* Fix for HaveToPay pages */
-  .haveToPay-layout {
-    padding-top: 0 !important;
-  }
-  
-  @media (min-width: 769px) {
-    body.haveToPay-layout main, 
-    body.haveToPay-layout .content-container {
-      margin-left: 16rem !important;
-      width: calc(100% - 16rem) !important;
-    }
-  }
-
-  /* Profile Modal Styling */
   .profile-modal {
     position: fixed;
     top: 0;
@@ -261,7 +225,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 9999 !important;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -275,7 +239,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.9);
-    background: white;
+    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     max-width: 400px;
@@ -283,6 +249,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     max-height: 80vh;
     overflow-y: auto;
     transition: all 0.3s ease;
+    z-index: 10000;
   }
   .profile-modal.active .profile-modal-content {
     transform: translate(-50%, -50%) scale(1);

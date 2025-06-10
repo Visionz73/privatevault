@@ -218,7 +218,7 @@ $filterMode = $_GET['filter'] ?? 'all';
     </main>
 
     <!-- Task Modal -->
-    <div id="taskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div id="taskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9998]">
         <div id="modalContent" class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 m-4 max-h-[90vh] overflow-y-auto"></div>
     </div>
 

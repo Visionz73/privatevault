@@ -133,6 +133,7 @@ if ($activeTab === 'documents') {
     }
 
     $categoryFilter = $_GET['category_filter'] ?? null;
+    $titleFilter = $_GET['title_filter'] ?? null;
     $params = [$_SESSION['user_id']];
     $sql = "
         SELECT d.*, dc.name as category_name 
@@ -144,6 +145,11 @@ if ($activeTab === 'documents') {
     if ($categoryFilter && is_numeric($categoryFilter)) {
         $sql .= " AND d.category_id = ?";
         $params[] = $categoryFilter;
+    }
+
+    if ($titleFilter && trim($titleFilter) !== '') {
+        $sql .= " AND d.title LIKE ?";
+        $params[] = '%' . trim($titleFilter) . '%';
     }
 
     $sql .= " ORDER BY d.upload_date DESC";

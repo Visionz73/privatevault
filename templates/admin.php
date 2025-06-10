@@ -165,7 +165,7 @@
   </main>
 
   <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
     <div class="bg-white rounded-xl p-6 m-4 max-w-lg w-full">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Benutzer löschen</h3>
       <p class="text-sm text-gray-500 mb-6">Möchten Sie den Benutzer <strong id="deleteUserName"></strong> wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden. Alle Aufgaben und Dokumente dieses Benutzers werden ebenfalls gelöscht.</p>

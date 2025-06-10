@@ -152,7 +152,7 @@
   </main>
 
   <!-- Create Group Modal -->
-  <div id="groupModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div id="groupModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
         <h2 id="modalTitle" class="text-xl font-semibold">Neue Gruppe erstellen</h2>
@@ -196,7 +196,7 @@
   </div>
 
   <!-- Create Tag Modal -->
-  <div id="tagModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div id="tagModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
         <h2 id="tagModalTitle" class="text-xl font-semibold">Neuen Tag erstellen</h2>
@@ -233,7 +233,7 @@
   </div>
 
   <!-- Assign Tags Modal -->
-  <div id="assignTagsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div id="assignTagsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
         <h2 id="assignTagsTitle" class="text-xl font-semibold">Tags zuweisen</h2>
@@ -276,7 +276,7 @@
   </div>
 
   <!-- Delete Group Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
         <h2 class="text-xl font-semibold">Gruppe löschen</h2>

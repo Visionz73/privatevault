@@ -2,33 +2,50 @@
 <div class="bg-card-bg rounded-xl shadow-card-lg p-6 space-y-4">
   <h2 class="text-xl font-semibold text-text">Dokumente</h2>
 
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-4">
     <a href="upload.php"
        class="inline-block px-6 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary-dark transition">
       Neues Dokument
     </a>
 
-    <?php if (isset($documentCategories) && !empty($documentCategories)): ?>
-    <form method="GET" id="categoryFilterForm" class="flex items-center space-x-2">
-        <input type="hidden" name="tab" value="documents">
-        <?php
-        // Preserve subtab. Default to 'documents' which is this file's effective context.
-        $currentSubtabForFilter = $_GET['subtab'] ?? 'documents'; 
-        ?>
-        <input type="hidden" name="subtab" value="<?= htmlspecialchars($currentSubtabForFilter) ?>">
-        <label for="category_filter" class="text-sm font-medium text-text-secondary">Filter nach Kategorie:</label>
-        <select name="category_filter" id="category_filter" 
-                class="rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 text-sm py-2 px-3"
-                onchange="document.getElementById('categoryFilterForm').submit();">
-            <option value="">Alle Kategorien</option>
-            <?php foreach ($documentCategories as $category): ?>
-                <option value="<?= $category['id'] ?>" <?= (isset($_GET['category_filter']) && $_GET['category_filter'] == $category['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($category['name']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </form>
-    <?php endif; ?>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <!-- Title Filter -->
+      <div class="flex items-center space-x-2">
+        <label for="title_filter" class="text-sm font-medium text-text-secondary">Nach Titel:</label>
+        <input type="text" 
+               id="title_filter" 
+               placeholder="Titel durchsuchen..." 
+               value="<?= htmlspecialchars($_GET['title_filter'] ?? '') ?>"
+               class="rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 text-sm py-2 px-3 min-w-[200px]">
+      </div>
+
+      <!-- Category Filter -->
+      <?php if (isset($documentCategories) && !empty($documentCategories)): ?>
+      <form method="GET" id="categoryFilterForm" class="flex items-center space-x-2">
+          <input type="hidden" name="tab" value="documents">
+          <?php
+          // Preserve subtab and title filter
+          $currentSubtabForFilter = $_GET['subtab'] ?? 'documents'; 
+          ?>
+          <input type="hidden" name="subtab" value="<?= htmlspecialchars($currentSubtabForFilter) ?>">
+          <?php if (!empty($_GET['title_filter'])): ?>
+          <input type="hidden" name="title_filter" value="<?= htmlspecialchars($_GET['title_filter']) ?>">
+          <?php endif; ?>
+          
+          <label for="category_filter" class="text-sm font-medium text-text-secondary">Kategorie:</label>
+          <select name="category_filter" id="category_filter" 
+                  class="rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 text-sm py-2 px-3"
+                  onchange="document.getElementById('categoryFilterForm').submit();">
+              <option value="">Alle Kategorien</option>
+              <?php foreach ($documentCategories as $category): ?>
+                  <option value="<?= $category['id'] ?>" <?= (isset($_GET['category_filter']) && $_GET['category_filter'] == $category['id']) ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($category['name']) ?>
+                  </option>
+              <?php endforeach; ?>
+          </select>
+      </form>
+      <?php endif; ?>
+    </div>
   </div>
 
   <div class="mt-6 overflow-x-auto">
@@ -73,3 +90,20 @@
     </table>
   </div>
 </div>
+
+<script>
+// Title filter functionality with debounce
+let titleFilterTimeout;
+document.getElementById('title_filter').addEventListener('input', function(e) {
+    clearTimeout(titleFilterTimeout);
+    titleFilterTimeout = setTimeout(() => {
+        const currentUrl = new URL(window.location.href);
+        if (e.target.value.trim()) {
+            currentUrl.searchParams.set('title_filter', e.target.value.trim());
+        } else {
+            currentUrl.searchParams.delete('title_filter');
+        }
+        window.location.href = currentUrl.toString();
+    }, 500); // 500ms debounce
+});
+</script>
