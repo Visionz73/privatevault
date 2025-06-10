@@ -454,6 +454,32 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
             <span>Kalender</span>
           </a>
         </li>
+        <li>
+          <a href="/taskboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span>Taskboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="/havetopay.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
+            </svg>
+            <span>HaveToPay</span>
+          </a>
+        </li>
+        <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
+        <li>
+          <a href="/admin.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" />
+            </svg>
+            <span>Admin</span>
+          </a>
+        </li>
+        <?php endif; ?>
         <!-- More menu items can be added here -->
       </ul>
     </div>
