@@ -9,10 +9,10 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
     <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 text-white">
         <div class="flex justify-between items-center">
             <a href="havetopay.php" class="group inline-flex items-center">
-                <h2 class="text-lg font-semibold mr-1">HaveToPay Overview</h2>
-                <svg class="w-4 h-4 fill-current opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
                 </svg>
+                <span class="text-xl font-semibold">HaveToPay</span>
             </a>
             <a href="havetopay_add.php" title="Add Expense" class="bg-white/20 hover:bg-white/30 text-white font-medium px-3 py-1.5 rounded-lg flex items-center text-sm backdrop-blur-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">

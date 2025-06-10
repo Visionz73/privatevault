@@ -14,7 +14,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 ?>
 
 <style>
-  /* Modern gradient navbar styling */
+  /* Modern frosted glass sidebar styling */
   @media (min-width: 769px) {
     nav#sidebar {
       position: fixed;
@@ -23,10 +23,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       bottom: 0;
       width: 16rem; /* w-64 */
       background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
-      backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(150%) blur(20px);
       border-right: 1px solid rgba(255,255,255,0.3);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       z-index: 50;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
     }
     .mobile-menu { display: none; }
     .sidebar-content { display: block; }
@@ -39,8 +42,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       top: 0;
       left: 0;
       right: 0;
-      height: 4rem; /* slightly taller for modern look */
+      height: 4rem;
       background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+      backdrop-filter: saturate(150%) blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.3);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       z-index: 50;
@@ -61,7 +65,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       right: 0;
       bottom: 0;
       background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
-      backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(150%) blur(20px);
       z-index: 49;
       padding: 1rem;
       overflow-y: auto;
@@ -69,130 +73,126 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     .sidebar-content.active {
       display: block;
     }
-    .sidebar-content ul li {
-      margin-bottom: 0.75rem;
-    }
-    .sidebar-content ul li a {
-      display: block;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-      color: #1f2937;
-      backdrop-filter: blur(10px);
-    }
-    .sidebar-content ul li a:hover {
-      background-color: rgba(255,255,255,0.6);
-      color: #111;
-      transform: translateX(5px);
-    }
   }
 
-  /* Modern menu button styling */
-  .menu-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    color: white;
-    transition: all 0.3s ease;
-  }
-  .menu-btn:hover {
-    background: rgba(255,255,255,0.3);
-    transform: scale(1.05);
-  }
-
-  /* Modern logo styling */
+  /* Logo styling */
   .logo-container {
     display: flex;
     align-items: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
-    text-decoration: none;
+    margin-bottom: 2rem;
   }
-
-  /* Profile avatar styling */
-  .profile-avatar {
+  
+  .logo-icon {
     width: 2.5rem;
     height: 2.5rem;
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
-    border-radius: 50%;
+    border-radius: 9999px;
+    background: rgba(124, 58, 237, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid rgba(255,255,255,0.3);
-    position: relative;
+    margin-right: 0.75rem;
   }
-  .profile-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  
+  .logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
   }
 
-  /* Profile dropdown */
-  .profile-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    background: white;
+  /* Navigation links */
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    min-width: 200px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-  }
-  .profile-dropdown.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  .profile-dropdown a {
-    display: block;
-    padding: 0.75rem 1rem;
     color: #374151;
-    text-decoration: none;
+    font-weight: 500;
     transition: all 0.2s ease;
-    border-radius: 0.5rem;
-    margin: 0.25rem;
   }
-  .profile-dropdown a:hover {
-    background: #f3f4f6;
-    color: #667eea;
+  
+  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
   }
-  .profile-dropdown a:first-child {
-    margin-top: 0.5rem;
+  
+  .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #111827;
+    font-weight: 600;
   }
-  .profile-dropdown a:last-child {
-    margin-bottom: 0.5rem;
-    color: #dc2626;
+  
+  .nav-link svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #4b5563;
   }
 
-  /* Modern navigation links */
-  .nav-link-modern {
-    color: #1f2937 !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 0.75rem !important;
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(10px);
-    margin-bottom: 0.25rem;
+  /* User banner in sidebar */
+  .user-banner {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(229, 231, 235, 0.5);
   }
-  .nav-link-modern:hover {
-    background: rgba(255,255,255,0.6) !important;
-    color: #111 !important;
-    transform: translateX(5px);
+  
+  .user-button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-  .nav-link-modern.active {
-    background: rgba(255,255,255,0.7) !important;
-    color: #111 !important;
+  
+  .user-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .user-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: rgba(74, 144, 226, 0.1);
+    color: #4A90E2;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+  }
+  
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .user-name {
+    font-weight: 500;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  
+  .user-role {
+    font-size: 0.75rem;
+    color: #6b7280;
   }
 
   /* Fix for HaveToPay pages */
@@ -286,126 +286,39 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     height: 1.25rem;
   }
 
-  /* User Banner Styles */
-  .user-banner {
-    @apply border-t border-gray-200 p-4;
-  }
-  .user-banner button {
-    @apply w-full flex items-center p-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 transition-all duration-200;
-  }
-  .user-banner .user-info {
-    @apply flex-1 text-left;
-  }
-  .user-banner .user-info .user-name {
-    @apply font-medium text-gray-900;
-  }
-  .user-banner .user-info .user-role {
-    @apply text-xs text-gray-500 capitalize;
-  }
-  .user-banner svg {
-    @apply h-4 w-4 text-gray-400;
-  }
-
-  /* Sidebar styles */
-  #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 16rem;
-    height: 100vh;
-    background: white;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    z-index: 40;
-    transition: transform 0.3s ease;
-  }
-  
+  /* Mobile view specific styles */
   @media (max-width: 768px) {
-    #sidebar {
-      transform: translateX(-100%);
+    .mobile-menu-btn {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    #sidebar.active {
-      transform: translateX(0);
+    .mobile-menu-btn svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #4b5563;
     }
-  }
-  
-  /* Profile modal styles */
-  .profile-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    z-index: 50;
-  }
-  
-  .profile-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .profile-modal-content {
-    background: white;
-    border-radius: 0.75rem;
-    width: 100%;
-    max-width: 20rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    margin: 1rem;
-  }
-  
-  .profile-modal-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .profile-modal-body {
-    padding: 1rem 1.5rem;
-  }
-  
-  .profile-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(74, 144, 226, 0.1);
-    color: #4A90E2;
-    font-weight: 600;
-    border-radius: 9999px;
-  }
-  
-  .modal-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    color: #4b5563;
-    transition: all 0.2s;
-  }
-  
-  .modal-menu-item:hover {
-    background-color: #f3f4f6;
-  }
-  
-  .modal-menu-item svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.75rem;
-  }
-  
-  .close-modal {
-    font-size: 1.5rem;
-    line-height: 1;
-    color: #9ca3af;
-    cursor: pointer;
-  }
-  
-  .close-modal:hover {
-    color: #6b7280;
+    
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .mobile-logo .logo-icon {
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.5rem;
+    }
+    
+    .mobile-logo .logo-text {
+      font-size: 1.125rem;
+    }
   }
 </style>
 
@@ -419,89 +332,78 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 <nav id="sidebar">
   <div class="sidebar-content flex flex-col h-full">
     <!-- Logo/Header -->
-    <div class="p-4 border-b border-gray-200">
-      <a href="/" class="flex items-center space-x-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#4A90E2]" viewBox="0 0 20 20" fill="currentColor">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
         </svg>
-        <span class="text-xl font-semibold text-gray-900">Private Vault</span>
-      </a>
+      </div>
+      <span class="logo-text">Private Vault</span>
     </div>
 
     <!-- Navigation Links -->
-    <div class="py-4 flex-1 overflow-y-auto">
-      <ul class="space-y-1 px-3">
-        <li>
-          <a href="/dashboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span>Dashboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="/inbox.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-            <span>Inbox</span>
-          </a>
-        </li>
-        <li>
-          <a href="/calendar.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Kalender</span>
-          </a>
-        </li>
-        <li>
-          <a href="/taskboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <span>Taskboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="/havetopay.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
-            </svg>
-            <span>HaveToPay</span>
-          </a>
-        </li>
-        <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
-        <li>
-          <a href="/admin.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" />
-            </svg>
-            <span>Admin</span>
-          </a>
-        </li>
-        <li>
-          <a href="/admin/groups.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m7-4a4 4 0 10-8 0 4 4 0 008 0z" />
-            </svg>
-            <span>Gruppen</span>
-          </a>
-        </li>
-        <?php endif; ?>
-        <!-- More menu items can be added here -->
-      </ul>
+    <div class="nav-links">
+      <a href="/dashboard.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/inbox.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'inbox.php' ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <span>Inbox</span>
+      </a>
+      
+      <a href="/calendar.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'calendar.php' ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span>Kalender</span>
+      </a>
+      
+      <a href="/taskboard.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'taskboard.php' ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <span>Taskboard</span>
+      </a>
+      
+      <a href="/havetopay.php" class="nav-link <?= $isHaveToPayPage ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
+        </svg>
+        <span>HaveToPay</span>
+      </a>
+      
+      <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
+      <a href="/admin.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'admin.php' ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01" />
+        </svg>
+        <span>Admin</span>
+      </a>
+      
+      <a href="/admin/groups.php" class="nav-link <?= $isAdminPage ? 'active' : '' ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m7-4a4 4 0 10-8 0 4 4 0 008 0z" />
+        </svg>
+        <span>Gruppen</span>
+      </a>
+      <?php endif; ?>
     </div>
 
     <!-- User Banner at Bottom -->
-    <div class="user-banner border-t border-gray-200 p-4">
-      <button onclick="openProfileModal()" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
-        <div class="h-8 w-8 rounded-full bg-[#4A90E2]/10 flex items-center justify-center text-[#4A90E2] font-semibold">
+    <div class="user-banner">
+      <button onclick="openProfileModal()" class="user-button">
+        <div class="user-avatar">
           <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
         </div>
-        <div class="flex-1 truncate">
-          <div class="font-medium text-gray-900 truncate"><?= isset($user) ? htmlspecialchars($user['username']) : 'Gast' ?></div>
-          <div class="text-xs text-gray-500"><?= isset($user) ? ucfirst($user['role'] ?? 'user') : 'Nicht angemeldet' ?></div>
+        <div class="user-info">
+          <div class="user-name"><?= isset($user) ? htmlspecialchars($user['username']) : 'Gast' ?></div>
+          <div class="user-role"><?= isset($user) ? ucfirst($user['role'] ?? 'user') : 'Nicht angemeldet' ?></div>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -512,19 +414,23 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 </nav>
 
 <!-- Mobile header -->
-<div class="md:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-30 px-4 py-2 flex items-center justify-between">
-  <button id="mobileToggleBtn" class="p-2 rounded-lg text-gray-800 hover:bg-white/60">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<div class="md:hidden fixed top-0 left-0 right-0 mobile-menu z-30">
+  <button id="mobileToggleBtn" class="mobile-menu-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   </button>
-  <a href="/" class="flex items-center space-x-2">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#4A90E2]" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-    </svg>
-    <span class="font-semibold text-gray-900">Private Vault</span>
-  </a>
-  <button onclick="openProfileModal()" class="p-2 rounded-lg text-gray-800 hover:bg-white/60">
+  
+  <div class="mobile-logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <span class="logo-text">Private Vault</span>
+  </div>
+  
+  <button onclick="openProfileModal()" class="mobile-menu-btn">
     <div class="h-6 w-6 rounded-full bg-[#4A90E2]/10 flex items-center justify-center text-[#4A90E2] text-xs font-semibold">
       <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
     </div>
