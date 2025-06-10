@@ -7,15 +7,15 @@
   <title>Dashboard | Private Vault</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/assets/css/apple-ui.css">
   <style>
+    body { font-family: 'Inter', sans-serif; }
     /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
       main { margin-top: 3.5rem; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
@@ -46,8 +46,8 @@
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
       <!-- Inbox Widget -->
-      <article class="glass-card flex flex-col overflow-hidden">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200/30">
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
           <a href="inbox.php" class="group inline-flex items-center">
             <h2 class="text-lg font-semibold mr-1">Inbox</h2>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@
           
           <!-- Group Filter Dropdown -->
           <div class="relative">
-            <button id="groupFilterBtn" class="text-sm text-gray-600 flex items-center glass-button">
+            <button id="groupFilterBtn" class="text-sm text-gray-600 flex items-center">
               <?php if ($filterType === 'mine'): ?>
                 Meine Aufgaben
               <?php else: ?>
@@ -76,15 +76,15 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
-            <div id="groupFilterMenu" class="absolute right-0 mt-2 w-56 glass-card hidden z-20">
-              <a href="?filter=mine" class="block px-4 py-2 hover:bg-gray-100/70 <?= $filterType==='mine' ? 'bg-gray-100/70' : '' ?>">
+            <div id="groupFilterMenu" class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-20">
+              <a href="?filter=mine" class="block px-4 py-2 hover:bg-gray-100 <?= $filterType==='mine' ? 'bg-gray-100' : '' ?>">
                 Meine Aufgaben
               </a>
               <?php if (!empty($userGroups)): ?>
-                <div class="border-t border-gray-200/30 my-1"></div>
+                <div class="border-t border-gray-200 my-1"></div>
                 <?php foreach($userGroups as $g): ?>
                   <a href="?filter=group&group_id=<?= $g['id'] ?>" 
-                     class="block px-4 py-2 hover:bg-gray-100/70 <?= ($filterType==='group' && $filterGroupId==$g['id']) ? 'bg-gray-100/70' : '' ?>">
+                     class="block px-4 py-2 hover:bg-gray-100 <?= ($filterType==='group' && $filterGroupId==$g['id']) ? 'bg-gray-100' : '' ?>">
                     <?= htmlspecialchars($g['name']) ?>
                   </a>
                 <?php endforeach; ?>
@@ -93,12 +93,12 @@
           </div>
         </div>
         
-        <p class="text-sm text-gray-500 px-6 pt-4"><?= $openTaskCount ?> abschließende Elemente</p>
+        <p class="text-sm text-gray-500 mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
-        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100/20 px-6 py-4">
+        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
           <?php if (!empty($tasks)): ?>
             <?php foreach($tasks as $idx => $t): ?>
-              <li class="px-2 py-3 <?= $idx %2 ? 'bg-gray-50/40' : 'bg-white/40' ?> rounded-lg my-1 flex flex-col gap-2 hover:bg-gray-100/50 cursor-pointer transition-all duration-200"
+              <li class="px-2 py-3 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?> flex flex-col gap-2 hover:bg-gray-100 cursor-pointer"
                   onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
                 <!-- Title and Due Date -->
                 <div class="flex justify-between items-center">
@@ -125,7 +125,7 @@
                     <span class="font-medium">Für:</span> 
                     <?php if ($t['assigned_group_id']): ?>
                       <span class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded-full">
-                        Gruppe
+                        Gruppe: <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
                       </span>
                     <?php else: ?>
                       <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
@@ -140,125 +140,367 @@
         </ul>
       </article>
 
-      <!-- HaveToPay Widget -->
-      <?php 
-        // Include HaveToPay widget
-        require_once __DIR__ . '/widgets/havetopay_widget.php';
-      ?>
+      <!-- Task Detail Modal -->
+      <div id="taskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-lg w-full">
+          <div class="flex justify-between items-start mb-4">
+            <h3 id="modalTitle" class="text-lg font-semibold"></h3>
+            <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+          </div>
+          <div id="modalContent" class="space-y-4">
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">Ersteller:</span> <span id="modalCreator"></span>
+            </p>
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">Zugewiesen an:</span> <span id="modalAssignee"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Task Modal -->
+      <div id="editTaskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-lg w-full">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold">Aufgabe bearbeiten</h3>
+            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+          </div>
+          <form id="editTaskForm" class="space-y-4">
+            <input type="hidden" id="editTaskId" name="task_id">
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Ersteller</label>
+              <select name="creator_id" id="editCreatorId" class="w-full px-3 py-2 border rounded-lg">
+                <?php
+                $users = $pdo->query("SELECT id, username FROM users ORDER BY username")->fetchAll();
+                foreach($users as $user): ?>
+                  <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Zugewiesen an</label>
+              <select name="assignee_id" id="editAssigneeId" class="w-full px-3 py-2 border rounded-lg">
+                <?php foreach($users as $user): ?>
+                  <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button type="button" onclick="closeEditModal()" 
+                      class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                Abbrechen
+              </button>
+              <button type="submit" 
+                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Speichern
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <script>
+        document.querySelectorAll('.task-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const modal = document.getElementById('taskModal');
+            document.getElementById('modalTitle').textContent = item.dataset.title;
+            document.getElementById('modalCreator').textContent = item.dataset.creator;
+            document.getElementById('modalAssignee').textContent = item.dataset.assignee;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+          });
+        });
+
+        function closeTaskModal() {
+          const modal = document.getElementById('taskModal');
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+
+        // Close on background click
+        document.getElementById('taskModal').addEventListener('click', (e) => {
+          if (e.target === e.currentTarget) closeTaskModal();
+        });
+
+        function openEditModal(taskId, title) {
+          document.getElementById('editTaskId').value = taskId;
+          document.getElementById('editTaskModal').classList.remove('hidden');
+          document.getElementById('editTaskModal').classList.add('flex');
+        }
+
+        function closeEditModal() {
+          document.getElementById('editTaskModal').classList.add('hidden');
+          document.getElementById('editTaskModal').classList.remove('flex');
+        }
+
+        document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          
+          fetch('/src/controllers/update_task.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              location.reload();
+            } else {
+              alert('Fehler beim Aktualisieren der Aufgabe');
+            }
+          });
+        });
+      </script>
 
       <!-- Dokumente Widget -->
-      <article class="glass-card flex flex-col overflow-hidden">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200/30">
-          <a href="profile.php?tab=documents" class="group inline-flex items-center">
-            <h2 class="text-lg font-semibold mr-1">Dokumente</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-          <a href="upload.php" class="glass-button flex items-center text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
-            Upload
-          </a>
-        </div>
-        
-        <div class="p-6">
-          <p class="text-sm text-gray-600 mb-4">Kürzlich hochgeladene Dokumente</p>
-          
-          <div class="space-y-3">
-            <?php for($i=0; $i<3; $i++): ?>
-              <div class="flex items-center p-3 rounded-lg bg-white/40 hover:bg-white/60 transition-all">
-                <div class="p-2 bg-blue-100 text-blue-600 rounded">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div class="ml-4 flex-1 truncate">
-                  <h3 class="text-sm font-medium">Beispieldokument <?= $i+1 ?>.pdf</h3>
-                  <p class="text-xs text-gray-500">Hochgeladen am <?= date('d.m.Y', time()-rand(0, 30)*86400) ?></p>
-                </div>
-                <a href="#" class="ml-2 text-gray-400 hover:text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                  </svg>
-                </a>
-              </div>
-            <?php endfor; ?>
-          </div>
-          
-          <a href="profile.php?tab=documents" class="mt-4 text-sm text-blue-600 hover:text-blue-800 hover:underline block text-center">
-            Alle Dokumente anzeigen
-          </a>
-        </div>
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
+        <a href="profile.php?tab=documents" class="group inline-flex items-center mb-4">
+          <h2 class="text-lg font-semibold mr-1">Dokumente</h2>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <p class="text-sm text-gray-500 mb-4"><?= $docCount ?> Dateien</p>
+
+        <ul class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
+          <?php if(!empty($docs)): ?>
+            <?php foreach($docs as $idx=>$d): ?>
+              <li class="px-2 py-2 <?= $idx %2 ? 'bg-gray-50' : 'bg-white' ?>">
+                <span class="truncate block"><?= htmlspecialchars($d['title'] ?? '') ?></span>
+              </li>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <li class="px-2 py-2 text-gray-500">Keine Dokumente vorhanden.</li>
+          <?php endif; ?>
+        </ul>
       </article>
+
+      <!-- Meine Termine Widget – Updated for consistent formatting -->
+      <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+          <a href="calendar.php" class="inline-flex items-center text-lg font-semibold text-gray-900">
+            Meine Termine
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-primary transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <button id="showInlineEventForm" class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg shadow-sm">
+            +
+          </button>
+        </div>
+        <p class="text-sm text-gray-500 mb-4"><?= count($events) ?> Termine</p>
+        <!-- Inline event creation form (initially hidden) -->
+        <div id="inlineEventFormContainer" class="mb-4 hidden">
+          <form id="inlineEventForm" class="space-y-2">
+            <input type="text" name="title" placeholder="Event Titel" class="w-full border border-gray-300 rounded p-2" required>
+            <input type="date" name="date" class="w-full border border-gray-300 rounded p-2" required>
+            <button type="submit" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200">
+              Termin erstellen
+            </button>
+          </form>
+        </div>
+        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm divide-y divide-gray-100">
+          <?php if(!empty($events)): ?>
+            <?php foreach($events as $evt): ?>
+              <li class="px-2 py-2 flex justify-between items-center">
+                <a href="calendar.php" class="truncate pr-2 flex-1"><?= htmlspecialchars($evt['title']) ?></a>
+                <span class="text-gray-400 text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
+              </li>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <li class="px-2 py-2 text-gray-500">Keine Termine gefunden.</li>
+          <?php endif; ?>
+        </ul>
+      </article>
+
+      <!-- Placeholder Cards --------------------------------------------->
+      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
+        <article class="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 flex items-center justify-center text-gray-400 text-sm">
+          <?= $name ?>-Widget
+        </article>
+      <?php endforeach; ?>
+
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
     </div><!-- /grid -->
   </main>
-
-  <!-- Task Detail Modal -->
-  <div id="taskModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
-    <div class="glass-card p-6 m-4 max-w-lg w-full">
-      <div class="flex justify-between items-start mb-4">
-        <h3 id="modalTitle" class="text-lg font-semibold"></h3>
-        <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
-      </div>
-      <div id="modalContent" class="space-y-4">
-        <p class="text-sm text-gray-600">
-          <span class="font-medium">Ersteller:</span> <span id="modalCreator"></span>
-        </p>
-        <p class="text-sm text-gray-600">
-          <span class="font-medium">Zugewiesen an:</span> <span id="modalAssignee"></span>
-        </p>
-      </div>
-    </div>
-  </div>
-
+  
   <script>
-    // Group Filter dropdown functionality
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Group filter dropdown
       const groupFilterBtn = document.getElementById('groupFilterBtn');
       const groupFilterMenu = document.getElementById('groupFilterMenu');
       
       if (groupFilterBtn && groupFilterMenu) {
-        groupFilterBtn.addEventListener('click', () => {
+        groupFilterBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
           groupFilterMenu.classList.toggle('hidden');
         });
         
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('#groupFilterBtn') && !e.target.closest('#groupFilterMenu')) {
-            groupFilterMenu.classList.add('hidden');
-          }
+        document.addEventListener('click', () => {
+          groupFilterMenu.classList.add('hidden');
         });
       }
-      
-      // Task modal functionality 
-      document.querySelectorAll('[onclick*="task_detail.php"]').forEach(item => {
-        const title = item.querySelector('.font-medium').textContent;
-        const creator = item.querySelector('.font-medium + span').textContent.trim() || 'Unknown';
-        const assignee = item.querySelector('.font-medium:nth-of-type(2) + span').textContent.trim() || 'Unassigned';
-        
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          document.getElementById('modalTitle').textContent = title;
-          document.getElementById('modalCreator').textContent = creator;
-          document.getElementById('modalAssignee').textContent = assignee;
-          document.getElementById('taskModal').classList.remove('hidden');
-          document.getElementById('taskModal').classList.add('flex');
-        });
+    });
+    
+    // Toggle inline event creation form
+    document.getElementById('showInlineEventForm').addEventListener('click', function() {
+      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+    });
+
+    // Handle inline event form submission via AJAX
+    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = this.title.value.trim();
+      const date = this.date.value;
+      if(title && date){
+        fetch('/create_event.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ title: title, date: date })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            // Create new list element for the event
+            const newEvent = data.event;
+            const li = document.createElement('li');
+            li.className = "px-2 py-2 flex justify-between items-center";
+            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
+                             <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+            const eventList = document.getElementById('dashboardEventList');
+            
+            // If "Keine Termine gefunden." is present, remove it.
+            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+              eventList.innerHTML = '';
+            }
+            eventList.appendChild(li);
+            // Update count (force a reload or recalc count)
+            // For simplicity, not auto-updating count here.
+            this.reset();
+            document.getElementById('inlineEventFormContainer').classList.add('hidden');
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Erstellen des Termins.'));
+      }
+    });
+
+    // Attach click events to task list items for mobile tap
+    document.querySelectorAll('.task-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const title = item.getAttribute('data-title');
+        const due = item.getAttribute('data-due');
+        document.getElementById('modalTaskTitle').textContent = title;
+        document.getElementById('modalTaskDue').textContent = due ? 'Fällig: ' + due : '';
+        document.getElementById('taskModal').classList.remove('hidden');
       });
     });
 
-    function closeTaskModal() {
-      const modal = document.getElementById('taskModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
+    // Close modal when clicking the close button
+    document.getElementById('closeTaskModal').addEventListener('click', () => {
+      document.getElementById('taskModal').classList.add('hidden');
+    });
 
-    // Close on background click
+    // Optional: close modal when clicking on the background
     document.getElementById('taskModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeTaskModal();
+      if(e.target === document.getElementById('taskModal')){
+        document.getElementById('taskModal').classList.add('hidden');
+      }
+    });
+
+    // Subtask functionality
+    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const taskId = this.getAttribute('data-task-id');
+        document.getElementById('modalTaskId').value = taskId;
+        document.getElementById('subtaskModal').classList.remove('hidden');
+
+        // Optional: Load existing subtasks via AJAX
+        fetch('/get_subtasks.php?task_id=' + taskId)
+          .then(response => response.json())
+          .then(data => {
+            const subtasksList = document.getElementById('subtasksList');
+            subtasksList.innerHTML = ''; // Clear existing list
+            data.subtasks.forEach(subtask => {
+              const div = document.createElement('div');
+              div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+              div.innerHTML = `<span class="text-sm">${subtask.title}</span>
+                               <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${subtask.id}">&times;</button>`;
+              subtasksList.appendChild(div);
+            });
+          });
+      });
+    });
+
+    document.querySelectorAll('.add-subtask-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const taskId = btn.getAttribute('data-task-id');
+        document.getElementById('modalTaskId').value = taskId;
+        const taskTitle = btn.closest('li').querySelector('.task-item span').textContent;
+        document.getElementById('modalTaskTitle').textContent = 'Unteraufgaben für: ' + taskTitle;
+        document.getElementById('subtaskModal').classList.remove('hidden');
+      });
+    });
+
+    // Close subtask modal
+    document.getElementById('closeSubtaskModal').addEventListener('click', () => {
+      document.getElementById('subtaskModal').classList.add('hidden');
+    });
+
+    // Handle subtask form submission
+    document.getElementById('subtaskForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const taskId = this.task_id.value;
+      const subtaskTitle = this.subtask_title.value.trim();
+      if(subtaskTitle){
+        fetch('/add_subtask.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ task_id: taskId, subtask_title: subtaskTitle })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            // Add new subtask to the list
+            const newSubtask = data.subtask;
+            const div = document.createElement('div');
+            div.className = "flex justify-between items-center p-2 bg-gray-50 rounded-lg";
+            div.innerHTML = `<span class="text-sm">${newSubtask.title}</span>
+                             <button class="text-red-500 text-xs remove-subtask-btn" data-subtask-id="${newSubtask.id}">&times;</button>`;
+            document.getElementById('subtasksList').appendChild(div);
+            this.reset();
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Hinzufügen der Unteraufgabe.'));
+      }
+    });
+
+    // Remove subtask
+    document.getElementById('subtasksList').addEventListener('click', function(e) {
+      if(e.target.classList.contains('remove-subtask-btn')){
+        const subtaskId = e.target.getAttribute('data-subtask-id');
+        fetch('/remove_subtask.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ subtask_id: subtaskId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            e.target.closest('div').remove();
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Entfernen der Unteraufgabe.'));
+      }
     });
   </script>
 </body>
