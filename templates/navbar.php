@@ -130,43 +130,69 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     width: 100%;
     display: flex;
     align-items: center;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.08);
+    padding: 1rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
   }
   .user-banner button:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .user-banner .user-info {
+    flex: 1;
+    text-align: left;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
   }
   .user-banner .user-info .user-name {
     color: white;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.125rem;
   }
   .user-banner .user-info .user-role {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   .user-banner svg {
     color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+  }
+  .user-banner button:hover svg {
+    color: rgba(255, 255, 255, 0.9);
+    transform: rotate(180deg);
   }
 
   /* Profile avatar styling for dark theme */
   .profile-avatar {
-    width: 2rem;
-    height: 2rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border: 2px solid rgba(255,255,255,0.2);
+    font-weight: 700;
+    font-size: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  .user-banner button:hover .profile-avatar {
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   }
 
   /* Mobile header styling */
