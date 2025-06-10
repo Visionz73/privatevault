@@ -95,6 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrf_token_register = $_SESSION['csrf_token_register'] ?? bin2hex(random_bytes(32)); 
 }
 
+// Make errors available to template
+if (!isset($errors)) {
+    $errors = [];
+}
+
 require_once __DIR__ . '/../../templates/register_form.php';
 
 ?>
