@@ -178,6 +178,14 @@
       border-radius: 1rem;
       color: rgba(255, 255, 255, 0.6);
     }
+    
+    /* Detail modal higher z-index */
+    #detailModal {
+      z-index: 60 !important;
+    }
+    .modal-content {
+      z-index: 61 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex">
@@ -387,23 +395,26 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Search functionality
+      // Enhanced search functionality
       const searchInput = document.getElementById('taskSearch');
       const taskItems = document.querySelectorAll('.task-item');
       
       searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+        const searchTerm = e.target.value.toLowerCase().trim();
         
         taskItems.forEach(item => {
-          const title = item.dataset.title.toLowerCase();
-          const description = item.dataset.description.toLowerCase();
-          const creator = item.dataset.creator.toLowerCase();
-          const assignee = item.dataset.assignee.toLowerCase();
+          const title = (item.dataset.title || '').toLowerCase();
+          const description = (item.dataset.description || '').toLowerCase();
+          const creator = (item.dataset.creator || '').toLowerCase();
+          const assignee = (item.dataset.assignee || '').toLowerCase();
           
-          const matches = title.includes(searchTerm) || 
-                         description.includes(searchTerm) || 
-                         creator.includes(searchTerm) || 
-                         assignee.includes(searchTerm);
+          // Primary search by title, secondary by other fields
+          const titleMatch = title.includes(searchTerm);
+          const otherMatch = description.includes(searchTerm) || 
+                           creator.includes(searchTerm) || 
+                           assignee.includes(searchTerm);
+          
+          const matches = titleMatch || (searchTerm.length > 2 && otherMatch);
           
           item.style.display = matches ? 'block' : 'none';
         });
@@ -432,13 +443,15 @@
         groupMenu.classList.remove('show');
       });
 
-      // Modal functionality
+      // Modal functionality with higher z-index
       window.openDetailModal = async (id) => {
         try {
           const res = await fetch('/task_detail_modal.php?id=' + id);
           const html = await res.text();
           document.getElementById('detailContent').innerHTML = html;
-          document.getElementById('detailModal').classList.remove('hidden');
+          const modal = document.getElementById('detailModal');
+          modal.style.zIndex = '60';
+          modal.classList.remove('hidden');
           
           const closeBtn = document.querySelector('[data-action="close-modal"]');
           if (closeBtn) {

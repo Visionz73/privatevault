@@ -7,145 +7,361 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      min-height: 100vh;
+    }
     @media (max-width: 768px) {
       main { margin-top: 3.5rem; }
     }
-    .calendar-day { min-height: 100px; }
-    .calendar-day.today { background-color: rgba(74, 144, 226, 0.05); }
-    .calendar-day.other-month { opacity: 0.5; }
-    .event-dot { width: 10px; height: 10px; border-radius: 50%; }
+    
+    /* Calendar container styling */
+    .calendar-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Header controls */
+    .control-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .control-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    .control-button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+    .control-button.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-weight: 600;
+    }
+    
+    /* Calendar styling */
+    .calendar-day { 
+      min-height: 100px; 
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .calendar-day:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .calendar-day.today { 
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+    }
+    .calendar-day.other-month { 
+      opacity: 0.4; 
+    }
+    
+    /* Calendar headers */
+    .calendar-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      font-weight: 600;
+    }
+    
+    /* Event styling */
     .event-item { 
       cursor: pointer;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 0.5rem;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .event-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+    
+    /* Day numbers */
+    .day-number {
+      color: white;
+      font-weight: 500;
+    }
+    .day-number.today {
+      color: #c084fc;
+      font-weight: 700;
+    }
+    .day-number.other-month {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Add event buttons */
+    .add-event-btn {
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    .add-event-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    /* Week view styling */
+    .week-header {
+      background: rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+    .week-hour {
+      background: rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Day view styling */
+    .day-view-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .day-view-event {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.75rem;
+      color: white;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .day-view-event:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    /* Modal styling */
+    .modal-content {
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .modal-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.5rem;
+    }
+    .modal-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+    .modal-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Button styling */
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Success/Error messages */
+    .success-message {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      border-radius: 0.75rem;
+    }
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      border-radius: 0.75rem;
+    }
+    
+    /* Header text */
+    .header-text {
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Navigation text */
+    .nav-text {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Detail placeholder */
+    .detail-placeholder {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      color: rgba(255, 255, 255, 0.6);
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<body class="min-h-screen flex">
   <?php require_once __DIR__.'/navbar.php'; ?>
   
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <header class="mb-6">
       <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 class="text-3xl font-bold text-gray-900">Kalender</h1>
+        <h1 class="text-3xl font-bold header-text">Kalender</h1>
         
         <!-- Calendar Controls -->
         <div class="flex flex-wrap gap-3">
           <!-- View Switcher -->
-          <div class="inline-flex bg-white rounded-lg shadow-sm">
-            <a href="?view=month&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
-               class="px-4 py-2 rounded-l-lg <?= $view === 'month' ? 'bg-[#4A90E2] text-white' : 'text-gray-700' ?>">
-              Monat
-            </a>
-            <a href="?view=week&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
-               class="px-4 py-2 <?= $view === 'week' ? 'bg-[#4A90E2] text-white' : 'text-gray-700' ?>">
-              Woche
-            </a>
-            <a href="?view=day&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
-               class="px-4 py-2 rounded-r-lg <?= $view === 'day' ? 'bg-[#4A90E2] text-white' : 'text-gray-700' ?>">
-              Tag
-            </a>
+          <div class="control-container p-1">
+            <div class="inline-flex">
+              <a href="?view=month&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
+                 class="control-button px-4 py-2 rounded-l-lg <?= $view === 'month' ? 'active' : '' ?>">
+                Monat
+              </a>
+              <a href="?view=week&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
+                 class="control-button px-4 py-2 <?= $view === 'week' ? 'active' : '' ?>">
+                Woche
+              </a>
+              <a href="?view=day&year=<?= $year ?>&month=<?= $month ?>&day=<?= $day ?>" 
+                 class="control-button px-4 py-2 rounded-r-lg <?= $view === 'day' ? 'active' : '' ?>">
+                Tag
+              </a>
+            </div>
           </div>
           
           <!-- Date Navigation -->
-          <div class="inline-flex bg-white rounded-lg shadow-sm">
-            <?php if ($view === 'month'): ?>
-              <?php 
-                $prevMonth = $month - 1;
-                $prevYear = $year;
-                if ($prevMonth < 1) {
-                  $prevMonth = 12;
-                  $prevYear--;
-                }
-                
-                $nextMonth = $month + 1;
-                $nextYear = $year;
-                if ($nextMonth > 12) {
-                  $nextMonth = 1;
-                  $nextYear++;
-                }
-              ?>
-              <a href="?view=month&year=<?= $prevYear ?>&month=<?= $prevMonth ?>" class="px-3 py-2 rounded-l-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </a>
-              <span class="px-4 py-2 text-gray-700">
-                <?= date('F Y', strtotime("$year-$month-01")) ?>
-              </span>
-              <a href="?view=month&year=<?= $nextYear ?>&month=<?= $nextMonth ?>" class="px-3 py-2 rounded-r-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            <?php elseif ($view === 'week'): ?>
-              <?php
-                $prevWeek = clone $currentDate;
-                $prevWeek->modify('-7 days');
-                
-                $nextWeek = clone $currentDate;
-                $nextWeek->modify('+7 days');
-              ?>
-              <a href="?view=week&year=<?= $prevWeek->format('Y') ?>&month=<?= $prevWeek->format('m') ?>&day=<?= $prevWeek->format('d') ?>" 
-                 class="px-3 py-2 rounded-l-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </a>
-              <span class="px-4 py-2 text-gray-700">
-                KW <?= $dateInfo['currentWeek'] ?>: 
-                <?= date('d.m.', strtotime($dateInfo['startDate'])) ?> - 
-                <?= date('d.m.Y', strtotime($dateInfo['endDate'])) ?>
-              </span>
-              <a href="?view=week&year=<?= $nextWeek->format('Y') ?>&month=<?= $nextWeek->format('m') ?>&day=<?= $nextWeek->format('d') ?>" 
-                 class="px-3 py-2 rounded-r-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            <?php else: ?>
-              <?php
-                $prevDay = clone $currentDate;
-                $prevDay->modify('-1 day');
-                
-                $nextDay = clone $currentDate;
-                $nextDay->modify('+1 day');
-              ?>
-              <a href="?view=day&year=<?= $prevDay->format('Y') ?>&month=<?= $prevDay->format('m') ?>&day=<?= $prevDay->format('d') ?>" 
-                 class="px-3 py-2 rounded-l-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </a>
-              <span class="px-4 py-2 text-gray-700">
-                <?= date('d. F Y', strtotime($dateInfo['currentDate'])) ?>
-              </span>
-              <a href="?view=day&year=<?= $nextDay->format('Y') ?>&month=<?= $nextDay->format('m') ?>&day=<?= $nextDay->format('d') ?>" 
-                 class="px-3 py-2 rounded-r-lg hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            <?php endif; ?>
+          <div class="control-container p-1">
+            <div class="inline-flex">
+              <?php if ($view === 'month'): ?>
+                <?php 
+                  $prevMonth = $month - 1;
+                  $prevYear = $year;
+                  if ($prevMonth < 1) {
+                    $prevMonth = 12;
+                    $prevYear--;
+                  }
+                  
+                  $nextMonth = $month + 1;
+                  $nextYear = $year;
+                  if ($nextMonth > 12) {
+                    $nextMonth = 1;
+                    $nextYear++;
+                  }
+                ?>
+                <a href="?view=month&year=<?= $prevYear ?>&month=<?= $prevMonth ?>" class="control-button px-3 py-2 rounded-l-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </a>
+                <span class="px-4 py-2 nav-text">
+                  <?= date('F Y', strtotime("$year-$month-01")) ?>
+                </span>
+                <a href="?view=month&year=<?= $nextYear ?>&month=<?= $nextMonth ?>" class="control-button px-3 py-2 rounded-r-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              <?php elseif ($view === 'week'): ?>
+                <?php
+                  $prevWeek = clone $currentDate;
+                  $prevWeek->modify('-7 days');
+                  
+                  $nextWeek = clone $currentDate;
+                  $nextWeek->modify('+7 days');
+                ?>
+                <a href="?view=week&year=<?= $prevWeek->format('Y') ?>&month=<?= $prevWeek->format('m') ?>&day=<?= $prevWeek->format('d') ?>" 
+                   class="control-button px-3 py-2 rounded-l-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </a>
+                <span class="px-4 py-2 nav-text">
+                  KW <?= $dateInfo['currentWeek'] ?>: 
+                  <?= date('d.m.', strtotime($dateInfo['startDate'])) ?> - 
+                  <?= date('d.m.Y', strtotime($dateInfo['endDate'])) ?>
+                </span>
+                <a href="?view=week&year=<?= $nextWeek->format('Y') ?>&month=<?= $nextWeek->format('m') ?>&day=<?= $nextWeek->format('d') ?>" 
+                   class="control-button px-3 py-2 rounded-r-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              <?php else: ?>
+                <?php
+                  $prevDay = clone $currentDate;
+                  $prevDay->modify('-1 day');
+                  
+                  $nextDay = clone $currentDate;
+                  $nextDay->modify('+1 day');
+                ?>
+                <a href="?view=day&year=<?= $prevDay->format('Y') ?>&month=<?= $prevDay->format('m') ?>&day=<?= $prevDay->format('d') ?>" 
+                   class="control-button px-3 py-2 rounded-l-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </a>
+                <span class="px-4 py-2 nav-text">
+                  <?= date('d. F Y', strtotime($dateInfo['currentDate'])) ?>
+                </span>
+                <a href="?view=day&year=<?= $nextDay->format('Y') ?>&month=<?= $nextDay->format('m') ?>&day=<?= $nextDay->format('d') ?>" 
+                   class="control-button px-3 py-2 rounded-r-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              <?php endif; ?>
+            </div>
           </div>
           
           <!-- New Event Button -->
-          <button id="newEventBtn" class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg shadow hover:bg-[#4A90E2]/90 transition-colors">
+          <button id="newEventBtn" class="btn-primary px-4 py-2">
             + Neuer Termin
           </button>
         </div>
       </div>
       
       <?php if (!empty($success)): ?>
-        <div class="mt-4 bg-green-100 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+        <div class="mt-4 success-message px-4 py-3">
           <?= htmlspecialchars($success) ?>
         </div>
       <?php endif; ?>
       
       <?php if (!empty($errors)): ?>
-        <div class="mt-4 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div class="mt-4 error-message px-4 py-3">
           <ul class="list-disc list-inside">
             <?php foreach ($errors as $error): ?>
               <li><?= htmlspecialchars($error) ?></li>
@@ -156,10 +372,10 @@
     </header>
     
     <!-- Calendar View -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="calendar-container overflow-hidden mb-8">
       <?php if ($view === 'month'): ?>
         <!-- Month View -->
-        <div class="grid grid-cols-7 text-center font-semibold bg-gray-50 border-b">
+        <div class="grid grid-cols-7 text-center calendar-header">
           <div class="px-2 py-3">Mo</div>
           <div class="px-2 py-3">Di</div>
           <div class="px-2 py-3">Mi</div>
@@ -169,7 +385,7 @@
           <div class="px-2 py-3">So</div>
         </div>
         
-        <div class="grid grid-cols-7 border-l">
+        <div class="grid grid-cols-7">
           <?php
             $currentDay = new DateTime($dateInfo['startDate']);
             $today = new DateTime();
@@ -181,20 +397,19 @@
               $dateStr = $currentDay->format('Y-m-d');
               $dayEvents = $eventsByDate[$dateStr] ?? [];
           ?>
-            <div class="calendar-day border-b border-r p-1 <?= $isToday ? 'today' : '' ?> <?= $isOtherMonth ? 'other-month' : '' ?>">
+            <div class="calendar-day p-1 <?= $isToday ? 'today' : '' ?> <?= $isOtherMonth ? 'other-month' : '' ?>">
               <div class="flex justify-between items-center mb-1">
-                <span class="text-sm font-medium <?= $isToday ? 'text-[#4A90E2]' : '' ?>">
+                <span class="text-sm day-number <?= $isToday ? 'today' : '' ?> <?= $isOtherMonth ? 'other-month' : '' ?>">
                   <?= $currentDay->format('j') ?>
                 </span>
-                <button class="add-event-btn text-xs text-gray-500 hover:text-[#4A90E2]" 
-                        data-date="<?= $dateStr ?>">+</button>
+                <button class="add-event-btn text-xs p-1" data-date="<?= $dateStr ?>">+</button>
               </div>
               
               <!-- Events for this day -->
               <div class="space-y-1">
                 <?php foreach ($dayEvents as $event): ?>
-                  <div class="event-item text-xs p-1 rounded"
-                       style="background-color: <?= htmlspecialchars($event['color']) ?>25; border-left: 3px solid <?= htmlspecialchars($event['color']) ?>;"
+                  <div class="event-item text-xs p-1"
+                       style="border-left: 3px solid <?= htmlspecialchars($event['color']) ?>;"
                        data-event-id="<?= $event['id'] ?>"
                        onclick="showEventDetails(<?= htmlspecialchars(json_encode($event)) ?>)">
                     <?php if (!$event['all_day'] && $event['start_time']): ?>
@@ -215,10 +430,10 @@
         <!-- Week View -->
         <div class="grid grid-cols-8">
           <!-- Time column -->
-          <div class="border-r">
-            <div class="h-12 border-b"></div>
+          <div class="week-hour">
+            <div class="h-12 border-b border-white/10"></div>
             <?php for ($hour = 0; $hour < 24; $hour++): ?>
-              <div class="h-12 border-b text-xs text-right pr-2 pt-0">
+              <div class="h-12 border-b border-white/10 text-xs text-right pr-2 pt-0">
                 <?= sprintf('%02d:00', $hour) ?>
               </div>
             <?php endfor; ?>
@@ -234,23 +449,24 @@
               $dateStr = $weekDay->format('Y-m-d');
               $dayEvents = $eventsByDate[$dateStr] ?? [];
           ?>
-            <div class="border-r">
+            <div class="border-r border-white/10">
               <!-- Day header -->
-              <div class="h-12 border-b p-1 text-center <?= $isToday ? 'bg-blue-50' : 'bg-gray-50' ?>">
+              <div class="h-12 border-b border-white/10 p-1 text-center week-header <?= $isToday ? 'today' : '' ?>">
                 <div class="text-xs font-semibold"><?= $weekDay->format('D') ?></div>
-                <div class="text-sm <?= $isToday ? 'text-[#4A90E2] font-bold' : '' ?>"><?= $weekDay->format('j.n.') ?></div>
+                <div class="text-sm day-number <?= $isToday ? 'today' : '' ?>"><?= $weekDay->format('j.n.') ?></div>
               </div>
               
-              <!-- Hours grid - simplified to just show all-day events -->
+              <!-- Hours grid -->
               <div class="relative">
                 <?php for ($hour = 0; $hour < 24; $hour++): ?>
-                  <div class="h-12 border-b"></div>
+                  <div class="h-12 border-b border-white/10"></div>
                 <?php endfor; ?>
                 
-                <!-- Events - just show markers in this simplified view -->
+                <!-- Events -->
                 <?php foreach ($dayEvents as $event): ?>
                   <?php if ($event['all_day']): ?>
-                    <div class="absolute top-0 left-0 right-0 px-1 py-0.5 bg-[<?= $event['color'] ?>] text-white text-xs truncate">
+                    <div class="absolute top-0 left-0 right-0 px-1 py-0.5 text-white text-xs truncate"
+                         style="background-color: <?= $event['color'] ?>; border-radius: 0.25rem;">
                       <?= htmlspecialchars($event['title']) ?>
                     </div>
                   <?php elseif ($event['start_time']): ?>
@@ -270,8 +486,8 @@
                         $height = max(4, $endTop - $top); // Ensure minimum height
                       }
                     ?>
-                    <div class="absolute px-1 py-0.5 text-xs truncate cursor-pointer"
-                         style="top: <?= $top ?>px; height: <?= $height ?>px; left: 0; right: 0; background-color: <?= $event['color'] ?>75;"
+                    <div class="absolute px-1 py-0.5 text-xs truncate cursor-pointer event-item"
+                         style="top: <?= $top ?>px; height: <?= $height ?>px; left: 0; right: 0; border-left: 3px solid <?= $event['color'] ?>;"
                          onclick="showEventDetails(<?= htmlspecialchars(json_encode($event)) ?>)">
                       <?= date('H:i', strtotime($event['start_time'])) ?> <?= htmlspecialchars($event['title']) ?>
                     </div>
@@ -288,8 +504,8 @@
       <?php else: ?>
         <!-- Day View -->
         <div class="grid grid-cols-1 md:grid-cols-2">
-          <div class="p-4 border-r">
-            <h3 class="text-lg font-semibold mb-4"><?= date('l, d. F Y', strtotime($dateInfo['currentDate'])) ?></h3>
+          <div class="day-view-container p-4">
+            <h3 class="text-lg font-semibold mb-4 header-text"><?= date('l, d. F Y', strtotime($dateInfo['currentDate'])) ?></h3>
             
             <?php 
               $dateStr = $dateInfo['currentDate'];
@@ -303,19 +519,19 @@
             ?>
             
             <?php if (empty($dayEvents)): ?>
-              <p class="text-gray-500">Keine Termine für diesen Tag.</p>
+              <p class="nav-text">Keine Termine für diesen Tag.</p>
             <?php else: ?>
               <div class="space-y-3">
                 <?php foreach ($dayEvents as $event): ?>
-                  <div class="p-3 rounded-lg border-l-4" 
-                       style="border-color: <?= htmlspecialchars($event['color']) ?>; background-color: <?= htmlspecialchars($event['color']) ?>10;"
+                  <div class="day-view-event p-3" 
+                       style="border-left: 4px solid <?= htmlspecialchars($event['color']) ?>;"
                        onclick="showEventDetails(<?= htmlspecialchars(json_encode($event)) ?>)">
-                    <div class="font-semibold"><?= htmlspecialchars($event['title']) ?></div>
+                    <div class="font-semibold text-white"><?= htmlspecialchars($event['title']) ?></div>
                     
                     <?php if ($event['all_day']): ?>
-                      <div class="text-sm text-gray-500">Ganztägig</div>
+                      <div class="text-sm nav-text">Ganztägig</div>
                     <?php elseif ($event['start_time']): ?>
-                      <div class="text-sm text-gray-500">
+                      <div class="text-sm nav-text">
                         <?= date('H:i', strtotime($event['start_time'])) ?>
                         <?php if ($event['end_time']): ?>
                           - <?= date('H:i', strtotime($event['end_time'])) ?>
@@ -324,7 +540,7 @@
                     <?php endif; ?>
                     
                     <?php if ($event['location']): ?>
-                      <div class="text-sm text-gray-500"><?= htmlspecialchars($event['location']) ?></div>
+                      <div class="text-sm nav-text"><?= htmlspecialchars($event['location']) ?></div>
                     <?php endif; ?>
                     
                     <?php if ($event['assigned_to']): ?>
@@ -359,7 +575,7 @@
               </div>
             </div>
             
-            <div id="dayViewPlaceholder" class="text-center text-gray-500 py-12">
+            <div id="dayViewPlaceholder" class="detail-placeholder text-center py-12">
               Wählen Sie einen Termin aus, um Details anzuzeigen.
             </div>
           </div>
@@ -369,11 +585,11 @@
   </main>
   
   <!-- New Event Modal -->
-  <div id="eventModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-4 max-h-[90vh] overflow-y-auto">
+  <div id="eventModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+    <div class="modal-content rounded-xl shadow-xl w-full max-w-lg p-6 mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-start mb-4">
-        <h2 id="modalTitle" class="text-xl font-semibold">Neuer Termin</h2>
-        <button id="closeModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+        <h2 id="modalTitle" class="text-xl font-semibold text-white">Neuer Termin</h2>
+        <button id="closeModal" class="text-gray-400 hover:text-white">&times;</button>
       </div>
       
       <form id="eventForm" method="post" action="/calendar.php" class="space-y-4">
@@ -386,25 +602,25 @@
         <div>
           <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
           <input type="text" id="title" name="title" required 
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 modal-input" placeholder="Titel eingeben...">
         </div>
         
         <div>
           <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
           <textarea id="description" name="description" rows="3" 
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]"></textarea>
+                    class="w-full px-4 py-2 modal-input" placeholder="Beschreibung eingeben..."></textarea>
         </div>
         
         <div>
           <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ort</label>
           <input type="text" id="location" name="location" 
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 modal-input" placeholder="Ort eingeben...">
         </div>
         
         <div>
           <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
           <input type="date" id="event_date" name="event_date" required 
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 modal-input">
         </div>
         
         <div class="flex items-center mb-4">
@@ -418,13 +634,13 @@
           <div>
             <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Startzeit</label>
             <input type="time" id="start_time" name="start_time" value="00:00"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                   class="w-full px-4 py-2 modal-input">
           </div>
           
           <div>
             <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">Endzeit</label>
             <input type="time" id="end_time" name="end_time" value="23:59"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                   class="w-full px-4 py-2 modal-input">
           </div>
         </div>
         
@@ -461,7 +677,7 @@
           <div id="user_assignment" class="hidden">
             <label for="assigned_to" class="block text-sm font-medium text-gray-700 mb-1">Benutzer auswählen</label>
             <select id="assigned_to" name="assigned_to" 
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                    class="w-full px-4 py-2 modal-input">
               <option value="" disabled selected>Bitte auswählen...</option>
               <?php foreach ($allUsers as $user): ?>
                 <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
@@ -473,7 +689,7 @@
           <div id="group_assignment" class="hidden">
             <label for="assigned_group_id" class="block text-sm font-medium text-gray-700 mb-1">Gruppe auswählen</label>
             <select id="assigned_group_id" name="assigned_group_id"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                    class="w-full px-4 py-2 modal-input">
               <option value="" disabled selected>Bitte auswählen...</option>
               <?php foreach ($userGroups as $group): ?>
                 <option value="<?= $group['id'] ?>"><?= htmlspecialchars($group['name']) ?></option>
@@ -493,12 +709,10 @@
         </div>
         
         <div class="pt-4 flex justify-end space-x-3">
-          <button type="button" id="cancelBtn" 
-                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button type="button" id="cancelBtn" class="btn-secondary px-4 py-2">
             Abbrechen
           </button>
-          <button type="submit" 
-                  class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90">
+          <button type="submit" class="btn-primary px-4 py-2">
             Speichern
           </button>
         </div>
