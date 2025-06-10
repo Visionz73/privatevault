@@ -190,7 +190,7 @@
   <?php require_once __DIR__ . '/navbar.php'; ?>
 
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
 
       <!-- Header mit Suche und Filter -->
       <div class="flex flex-col gap-6">
@@ -200,184 +200,118 @@
         <div class="search-container p-6">
           <!-- Search Bar -->
           <div class="relative mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input type="text" id="searchInput" placeholder="Aufgaben durchsuchen..." 
-                   class="w-full search-input">
+                   class="search-input w-full">
           </div>
 
           <!-- Filter Buttons -->
           <div class="flex flex-wrap gap-3">
-            <!-- Benutzer-Filter -->
-            <div class="relative z-20">
-              <button id="userFilterBtn" class="filter-container flex items-center px-4 py-2 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                <span class="mr-2">
-                  <?php if ($filterAssignedTo === 'all'): ?>
-                    Alle Benutzer
-                  <?php else: ?>
-                    <?= htmlspecialchars($usersMap[$filterAssignedTo] ?? 'Unbekannt') ?>
-                  <?php endif; ?>
-                </span>
+            <!-- User Filter -->
+            <div class="relative">
+              <button id="userFilterBtn" class="filter-container text-sm flex items-center px-4 py-2">
+                <span class="mr-2">Benutzer: Alle</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
               </button>
-              <div id="userFilterMenu" class="absolute right-0 mt-2 w-60 filter-dropdown hidden z-20 max-h-80 overflow-y-auto p-2">
-                <a href="/inbox.php?assigned_to=all&group_id=<?= $filterGroupId ?>"
-                   class="filter-item block px-4 py-2 rounded-md <?= $filterAssignedTo==='all'?'active':'' ?>">
-                  Alle Benutzer
-                </a>
-                <div class="border-t border-white/10 my-2"></div>
-                <?php foreach($users as $u): ?>
-                  <a href="/inbox.php?assigned_to=<?= $u['id'] ?>&group_id=<?= $filterGroupId ?>"
-                     class="filter-item block px-4 py-2 rounded-md <?= ((string)$filterAssignedTo)===(string)$u['id']?'active':'' ?>">
-                    <?= htmlspecialchars($u['username']) ?>
-                  </a>
-                <?php endforeach; ?>
-              </div>
-            </div>
-            
-            <!-- Gruppen-Filter -->
-            <div class="relative z-20">
-              <button id="groupFilterBtn" class="filter-container flex items-center px-4 py-2 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                <span class="mr-2">
-                  <?php if ($filterGroupId === 'all'): ?>
-                    Alle Gruppen
-                  <?php else: ?>
-                    <?php 
-                    $groupName = "Unbekannt";
-                    foreach ($userGroups as $g) {
-                      if ($g['id'] == $filterGroupId) {
-                        $groupName = $g['name'];
-                        break;
-                      }
-                    }
-                    ?>
-                    <?= htmlspecialchars($groupName) ?>
-                  <?php endif; ?>
-                </span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-              <div id="groupFilterMenu" class="absolute right-0 mt-2 w-60 filter-dropdown hidden z-20 max-h-80 overflow-y-auto p-2">
-                <a href="/inbox.php?assigned_to=<?= $filterAssignedTo ?>&group_id=all"
-                   class="filter-item block px-4 py-2 rounded-md <?= $filterGroupId==='all'?'active':'' ?>">
-                  Alle Gruppen
-                </a>
-                <div class="border-t border-white/10 my-2"></div>
-                <?php if (empty($userGroups)): ?>
-                  <span class="block px-4 py-2 text-white/50">Keine Gruppen gefunden</span>
-                <?php else: ?>
-                  <?php foreach($userGroups as $g): ?>
-                    <a href="/inbox.php?assigned_to=<?= $filterAssignedTo ?>&group_id=<?= $g['id'] ?>"
-                       class="filter-item block px-4 py-2 rounded-md <?= ((string)$filterGroupId)===(string)$g['id']?'active':'' ?>">
-                      <?= htmlspecialchars($g['name']) ?>
-                    </a>
-                  <?php endforeach; ?>
-                <?php endif; ?>
+              <div id="userFilterMenu" class="absolute top-full left-0 mt-2 w-56 filter-dropdown hidden z-20">
+                <a href="?assigned_to=all" class="block filter-item px-4 py-2">Alle Benutzer</a>
+                <!-- Add more filter options -->
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Aufgabenliste -->
-      <div id="tasksContainer">
-        <?php if(empty($tasks)): ?>
-          <div class="no-results">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            <h3 class="text-lg font-medium mb-2">Keine Aufgaben gefunden</h3>
-            <p>Versuchen Sie andere Filter oder erstellen Sie eine neue Aufgabe.</p>
-          </div>
-        <?php else: ?>
-          <ul class="space-y-4" id="tasksList">
-            <?php foreach($tasks as $t): ?>
-              <li class="task-card p-6 task-item" 
-                  data-title="<?= htmlspecialchars($t['title'] ?? '') ?>"
-                  data-description="<?= htmlspecialchars($t['description'] ?? '') ?>"
-                  data-creator="<?= htmlspecialchars($t['creator_name'] ?? '') ?>"
-                  data-assignee="<?= htmlspecialchars($t['assignee_name'] ?? '') ?>"
-                  onclick="openDetailModal(<?= $t['id'] ?>)">
-                <div class="flex items-start gap-4">
-                  <div class="task-avatar">
-                    <?= htmlspecialchars(substr($t['creator_name'] ?? '', 0, 2)) ?>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-start mb-3">
-                      <h2 class="task-title"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
-                      <?php if(isset($t['due_date']) && strtotime($t['due_date']) < time()): ?>
-                        <span class="status-overdue px-2 py-1 rounded-full text-xs font-medium">Überfällig</span>
-                      <?php endif; ?>
-                    </div>
-                    
-                    <?php if(!empty($t['description'])): ?>
-                      <p class="task-description mb-3 line-clamp-2"><?= htmlspecialchars($t['description']) ?></p>
-                    <?php endif; ?>
-                    
-                    <div class="flex flex-wrap gap-4 task-meta">
-                      <span>
-                        <span class="font-medium">Von:</span> 
-                        <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
-                      </span>
-                      <span>
-                        <span class="font-medium">Für:</span> 
-                        <?php if ($t['assigned_group_id']): ?>
-                          <span class="group-badge px-2 py-1 rounded-full text-xs ml-1">
-                            <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
-                          </span>
-                        <?php else: ?>
-                          <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
-                        <?php endif; ?>
-                      </span>
-                      <?php if(!empty($t['due_date'])): ?>
-                        <span>
-                          <span class="font-medium">Fällig:</span>
-                          <?= date('d.m.Y', strtotime($t['due_date'])) ?>
+      <!-- Split Screen Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-20rem)]">
+        
+        <!-- Left Side: Task List -->
+        <div class="widget-card p-6 overflow-hidden flex flex-col">
+          <h2 class="widget-header mb-4">Aufgaben</h2>
+          
+          <div id="tasksContainer" class="flex-1 overflow-y-auto">
+            <?php if(empty($tasks)): ?>
+              <div class="no-results">
+                <p>Keine Aufgaben gefunden.</p>
+              </div>
+            <?php else: ?>
+              <ul class="space-y-3" id="tasksList">
+                <?php foreach($tasks as $task): ?>
+                  <li class="task-item widget-list-item cursor-pointer" 
+                      data-task-id="<?= $task['id'] ?>"
+                      onclick="loadTaskDetail(<?= $task['id'] ?>)">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="task-title text-base font-medium"><?= htmlspecialchars($task['title']) ?></h3>
+                      <?php if($task['due_date']): ?>
+                        <?php $isOverdue = strtotime($task['due_date']) < time(); ?>
+                        <span class="<?= $isOverdue ? 'status-overdue' : 'status-due' ?> px-2 py-1 rounded-full text-xs whitespace-nowrap">
+                          <?= $isOverdue ? 'Überfällig' : date('d.m.', strtotime($task['due_date'])) ?>
                         </span>
                       <?php endif; ?>
                     </div>
-                  </div>
-                  
-                  <!-- Done button -->
-                  <form method="get" class="flex-shrink-0" onclick="event.stopPropagation();">
-                    <input type="hidden" name="done" value="<?= $t['id'] ?>">
-                    <input type="hidden" name="assigned_to" value="<?= htmlspecialchars($filterAssignedTo) ?>">
-                    <input type="hidden" name="group_id" value="<?= htmlspecialchars($filterGroupId) ?>">
-                    <button type="submit" class="action-button">
-                      Erledigt
-                    </button>
-                  </form>
-                </div>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        <?php endif; ?>
+                    
+                    <?php if($task['description']): ?>
+                      <p class="task-description mb-2 line-clamp-2"><?= htmlspecialchars($task['description']) ?></p>
+                    <?php endif; ?>
+                    
+                    <div class="flex justify-between items-center task-meta">
+                      <span>
+                        <span class="font-medium">Von:</span> 
+                        <?= htmlspecialchars($task['creator_name'] ?? 'Unbekannt') ?>
+                      </span>
+                      
+                      <?php if($task['assigned_group_id']): ?>
+                        <span class="group-badge px-2 py-1 rounded-full text-xs">
+                          <?= htmlspecialchars($task['group_name'] ?? 'Gruppe') ?>
+                        </span>
+                      <?php else: ?>
+                        <span class="text-xs">
+                          <?= htmlspecialchars($task['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                        </span>
+                      <?php endif; ?>
+                    </div>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <!-- Right Side: Task Detail/Edit Form -->
+        <div class="widget-card p-6 overflow-hidden flex flex-col">
+          <div id="taskDetailContainer" class="flex-1 overflow-y-auto">
+            <!-- Placeholder when no task is selected -->
+            <div id="noTaskSelected" class="flex items-center justify-center h-full text-center">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p class="text-white/60">Wählen Sie eine Aufgabe aus, um Details anzuzeigen</p>
+              </div>
+            </div>
+            
+            <!-- Task detail content will be loaded here -->
+            <div id="taskDetailContent" class="hidden">
+              <!-- Content loaded via AJAX -->
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
   </main>
 
-  <!-- Detail-Modal -->
-  <div id="detailModal" class="fixed inset-0 hidden bg-black/50 flex items-center justify-center z-50">
-    <div id="detailContent" class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative"></div>
-  </div>
-
   <script>
+    let currentTaskId = null;
+
     document.addEventListener('DOMContentLoaded', () => {
       // Search functionality
       const searchInput = document.getElementById('searchInput');
       const tasksList = document.getElementById('tasksList');
-      const tasksContainer = document.getElementById('tasksContainer');
       
       if (searchInput && tasksList) {
         searchInput.addEventListener('input', function() {
@@ -386,18 +320,11 @@
           let visibleCount = 0;
           
           taskItems.forEach(item => {
-            const title = item.dataset.title.toLowerCase();
-            const description = item.dataset.description.toLowerCase();
-            const creator = item.dataset.creator.toLowerCase();
-            const assignee = item.dataset.assignee.toLowerCase();
+            const title = item.querySelector('.task-title').textContent.toLowerCase();
+            const description = item.querySelector('.task-description')?.textContent.toLowerCase() || '';
             
-            const matches = title.includes(searchTerm) || 
-                          description.includes(searchTerm) || 
-                          creator.includes(searchTerm) || 
-                          assignee.includes(searchTerm);
-            
-            if (matches || searchTerm === '') {
-              item.style.display = '';
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+              item.style.display = 'block';
               visibleCount++;
             } else {
               item.style.display = 'none';
@@ -406,26 +333,7 @@
           
           // Show no results message if nothing found
           if (visibleCount === 0 && searchTerm !== '') {
-            if (!document.getElementById('noSearchResults')) {
-              const noResults = document.createElement('div');
-              noResults.id = 'noSearchResults';
-              noResults.className = 'no-results';
-              noResults.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <h3 class="text-lg font-medium mb-2">Keine Ergebnisse gefunden</h3>
-                <p>Keine Aufgaben entsprechen Ihrer Suche nach "<strong>${searchTerm}</strong>".</p>
-              `;
-              tasksContainer.appendChild(noResults);
-            }
-            tasksList.style.display = 'none';
-          } else {
-            const noResults = document.getElementById('noSearchResults');
-            if (noResults) {
-              noResults.remove();
-            }
-            tasksList.style.display = '';
+            // Handle no results display
           }
         });
       }
@@ -433,56 +341,113 @@
       // Filter dropdown functionality
       const userBtn = document.getElementById('userFilterBtn');
       const userMenu = document.getElementById('userFilterMenu');
-      const groupBtn = document.getElementById('groupFilterBtn');
-      const groupMenu = document.getElementById('groupFilterMenu');
       
       if (userBtn && userMenu) {
         userBtn.addEventListener('click', e => {
           e.stopPropagation();
           userMenu.classList.toggle('hidden');
-          if (groupMenu) groupMenu.classList.add('hidden');
-        });
-      }
-      
-      if (groupBtn && groupMenu) {
-        groupBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          groupMenu.classList.toggle('hidden');
-          if (userMenu) userMenu.classList.add('hidden');
         });
       }
       
       document.addEventListener('click', () => {
         if (userMenu) userMenu.classList.add('hidden');
-        if (groupMenu) groupMenu.classList.add('hidden');
-      });
-
-      // Modal functionality
-      window.openDetailModal = async (id) => {
-        try {
-          const res = await fetch('/task_detail_modal.php?id=' + id);
-          const html = await res.text();
-          document.getElementById('detailContent').innerHTML = html;
-          document.getElementById('detailModal').classList.remove('hidden');
-          
-          const closeBtn = document.querySelector('[data-action="close-modal"]');
-          if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-              document.getElementById('detailModal').classList.add('hidden');
-            });
-          }
-        } catch (error) {
-          console.error('Error loading task details:', error);
-        }
-      };
-      
-      // Close modal on background click
-      document.getElementById('detailModal').addEventListener('click', e => {
-        if (e.target.id === 'detailModal') {
-          e.target.classList.add('hidden');
-        }
       });
     });
+
+    // Load task detail function
+    async function loadTaskDetail(taskId) {
+      if (currentTaskId === taskId) return; // Already loaded
+      
+      currentTaskId = taskId;
+      
+      // Highlight selected task
+      document.querySelectorAll('.task-item').forEach(item => {
+        item.classList.remove('bg-white/20', 'border-white/30');
+      });
+      
+      const selectedTask = document.querySelector(`[data-task-id="${taskId}"]`);
+      if (selectedTask) {
+        selectedTask.classList.add('bg-white/20', 'border-white/30');
+      }
+      
+      // Show loading state
+      const noTaskSelected = document.getElementById('noTaskSelected');
+      const taskDetailContent = document.getElementById('taskDetailContent');
+      
+      noTaskSelected.classList.add('hidden');
+      taskDetailContent.classList.remove('hidden');
+      taskDetailContent.innerHTML = `
+        <div class="flex items-center justify-center h-full">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+            <p class="text-white/60">Lade Aufgabendetails...</p>
+          </div>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`/templates/task_modal.php?id=${taskId}`);
+        const html = await response.text();
+        
+        taskDetailContent.innerHTML = html;
+        
+        // Initialize form event listeners
+        const taskForm = document.getElementById('taskForm');
+        if (taskForm) {
+          taskForm.addEventListener('submit', handleTaskFormSubmit);
+        }
+        
+        // Add close button handler
+        const closeButtons = taskDetailContent.querySelectorAll('[data-action="close-modal"]');
+        closeButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            currentTaskId = null;
+            taskDetailContent.classList.add('hidden');
+            noTaskSelected.classList.remove('hidden');
+            
+            // Remove selection highlight
+            document.querySelectorAll('.task-item').forEach(item => {
+              item.classList.remove('bg-white/20', 'border-white/30');
+            });
+          });
+        });
+        
+      } catch (error) {
+        console.error('Error loading task details:', error);
+        taskDetailContent.innerHTML = `
+          <div class="text-center text-red-400">
+            <p>Fehler beim Laden der Aufgabendetails</p>
+            <button onclick="loadTaskDetail(${taskId})" class="mt-2 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20">
+              Erneut versuchen
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    async function handleTaskFormSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      
+      try {
+        const response = await fetch('/src/api/task_save.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Reload the page to show updated task list
+          location.reload();
+        } else {
+          alert(result.error || 'Fehler beim Speichern der Aufgabe.');
+        }
+      } catch (error) {
+        console.error('Error saving task:', error);
+        alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+      }
+    }
   </script>
 </body>
 </html>
