@@ -22,6 +22,14 @@
                 margin-top: 4rem; /* Adjust for dark gradient navbar height */
             }
         }
+        @media (min-width: 769px) {
+            main.content-area { 
+                margin-left: 17rem !important;
+                margin-top: 1rem;
+                margin-right: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-100 via-gray-100 to-stone-100 flex flex-col antialiased">
@@ -29,7 +37,7 @@
     <?php require_once __DIR__ . '/navbar.php'; // The dark gradient sidebar navbar ?>
 
     <!-- Main content area, adjusted for dark sidebar -->
-    <main class="content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
+    <main class="content-area main-content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
         <div class="max-w-3xl mx-auto">
             <header class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-800">

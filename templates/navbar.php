@@ -14,18 +14,19 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 ?>
 
 <style>
-  /* Modern frosted glass sidebar styling with dark gradient */
+  /* Modern card-style sidebar styling with dark gradient */
   @media (min-width: 769px) {
     nav#sidebar {
       position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 16rem; /* w-64 */
+      left: 1rem;
+      top: 1rem;
+      bottom: 1rem;
+      width: 15rem; /* Slightly narrower for card effect */
       background: linear-gradient(135deg, #2d1b69 0%, #8b1538 50%, #1a0d0d 100%);
       backdrop-filter: saturate(150%) blur(20px);
-      border-right: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1.5rem; /* Rounded corners like in image */
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
       z-index: 50;
       padding: 1.5rem;
       display: flex;
@@ -33,9 +34,17 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     }
     .mobile-menu { display: none; }
     .sidebar-content { display: block; }
+    
+    /* Adjust main content margin for card layout */
+    body .main-content-area {
+      margin-left: 17rem !important; /* Account for sidebar width + margin */
+      margin-top: 1rem;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
+    }
   }
 
-  /* Mobile modern gradient styling */
+  /* Mobile styling remains the same but with rounded corners */
   @media (max-width: 768px) {
     nav#sidebar {
       position: fixed;
@@ -46,6 +55,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       background: linear-gradient(135deg, #2d1b69 0%, #8b1538 50%, #1a0d0d 100%);
       backdrop-filter: saturate(150%) blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       z-index: 50;
     }
@@ -61,11 +72,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       display: none;
       position: fixed;
       top: 4rem;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
       background: linear-gradient(135deg, #2d1b69 0%, #8b1538 50%, #1a0d0d 100%);
       backdrop-filter: saturate(150%) blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1rem;
       z-index: 49;
       padding: 1rem;
       overflow-y: auto;
@@ -75,17 +88,21 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     }
   }
 
-  /* Logo styling - updated for dark theme */
+  /* Logo styling - add card-like container */
   .logo-container {
     display: flex;
     align-items: center;
     margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .logo-icon {
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 9999px;
+    border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
     display: flex;
@@ -102,12 +119,17 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     color: white;
   }
 
-  /* Navigation links - rounded transparent blur sections */
+  /* Navigation links - card-style sections */
   .nav-links {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 1rem;
   }
   
   .nav-link {
@@ -115,7 +137,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
     transition: all 0.3s ease;
@@ -128,9 +150,10 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   .nav-link:hover {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.25);
     color: white;
     transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
   }
   
   .nav-link.active {
@@ -139,7 +162,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     border-color: rgba(255, 255, 255, 0.3);
     color: white;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
   }
   
   .nav-link svg {
@@ -152,18 +175,19 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     color: white;
   }
 
-  /* User banner in sidebar - updated for dark theme */
+  /* User banner - card style at bottom */
   .user-banner {
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .user-button {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -175,7 +199,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   .user-button:hover {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
   }
   
   .user-avatar {

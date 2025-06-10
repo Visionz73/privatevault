@@ -35,6 +35,14 @@ $initials = getUserInitials($user);
     @media (max-width: 768px) {
       main { margin-top: 4rem; /* Adjusted for dark gradient navbar */ }
     }
+    @media (min-width: 769px) {
+      .main-profile-content { 
+        margin-left: 17rem !important;
+        margin-top: 1rem;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
     .settings-sidebar {
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
       border-right: 1px solid #e2e8f0;
@@ -55,7 +63,7 @@ if (file_exists($navbarPath)) {
 ?>
 
 <!-- Main Content -->
-<div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
+<div class="main-profile-content ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
   <!-- Header with user info and breadcrumb -->
   <header class="bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl mb-8">
     <div class="max-w-6xl mx-auto px-8 py-6">
