@@ -22,10 +22,10 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       top: 0;
       bottom: 0;
       width: 16rem; /* w-64 */
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      backdrop-filter: blur(15px);
-      border-right: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+      backdrop-filter: saturate(180%) blur(20px);
+      border-right: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       z-index: 50;
     }
     .mobile-menu { display: none; }
@@ -40,9 +40,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       left: 0;
       right: 0;
       height: 4rem; /* slightly taller for modern look */
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 4px 15px rgba(31, 38, 135, 0.37);
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       z-index: 50;
     }
     .mobile-menu { 
@@ -53,14 +53,15 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       height: 100%;
       padding: 0 1rem;
     }
-    .sidebar-content { 
+    .sidebar-content {
       display: none;
       position: fixed;
       top: 4rem;
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+      backdrop-filter: saturate(180%) blur(20px);
       z-index: 49;
       padding: 1rem;
       overflow-y: auto;
@@ -76,12 +77,12 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       padding: 0.75rem 1rem;
       border-radius: 0.75rem;
       transition: all 0.3s ease;
-      color: rgba(255,255,255,0.9);
+      color: #1f2937;
       backdrop-filter: blur(10px);
     }
     .sidebar-content ul li a:hover {
-      background-color: rgba(255,255,255,0.2);
-      color: white;
+      background-color: rgba(255,255,255,0.6);
+      color: #111;
       transform: translateX(5px);
     }
   }
@@ -176,7 +177,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
   /* Modern navigation links */
   .nav-link-modern {
-    color: rgba(255,255,255,0.9) !important;
+    color: #1f2937 !important;
     padding: 0.75rem 1rem !important;
     border-radius: 0.75rem !important;
     transition: all 0.3s ease !important;
@@ -184,13 +185,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     margin-bottom: 0.25rem;
   }
   .nav-link-modern:hover {
-    background: rgba(255,255,255,0.2) !important;
-    color: white !important;
+    background: rgba(255,255,255,0.6) !important;
+    color: #111 !important;
     transform: translateX(5px);
   }
   .nav-link-modern.active {
-    background: rgba(255,255,255,0.25) !important;
-    color: white !important;
+    background: rgba(255,255,255,0.7) !important;
+    color: #111 !important;
     font-weight: 600;
   }
 
@@ -431,7 +432,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     <div class="py-4 flex-1 overflow-y-auto">
       <ul class="space-y-1 px-3">
         <li>
-          <a href="/dashboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/dashboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
@@ -439,7 +440,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </a>
         </li>
         <li>
-          <a href="/inbox.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/inbox.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
@@ -447,7 +448,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </a>
         </li>
         <li>
-          <a href="/calendar.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/calendar.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -455,7 +456,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </a>
         </li>
         <li>
-          <a href="/taskboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/taskboard.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -463,7 +464,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </a>
         </li>
         <li>
-          <a href="/havetopay.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/havetopay.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
             </svg>
@@ -472,11 +473,19 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </li>
         <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
         <li>
-          <a href="/admin.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+          <a href="/admin.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" />
             </svg>
             <span>Admin</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/groups.php" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m7-4a4 4 0 10-8 0 4 4 0 008 0z" />
+            </svg>
+            <span>Gruppen</span>
           </a>
         </li>
         <?php endif; ?>
@@ -486,7 +495,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
     <!-- User Banner at Bottom -->
     <div class="user-banner border-t border-gray-200 p-4">
-      <button onclick="openProfileModal()" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
+      <button onclick="openProfileModal()" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-800 hover:bg-white/60">
         <div class="h-8 w-8 rounded-full bg-[#4A90E2]/10 flex items-center justify-center text-[#4A90E2] font-semibold">
           <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
         </div>
@@ -504,7 +513,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
 <!-- Mobile header -->
 <div class="md:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-30 px-4 py-2 flex items-center justify-between">
-  <button id="mobileToggleBtn" class="p-2 rounded-lg hover:bg-gray-100">
+  <button id="mobileToggleBtn" class="p-2 rounded-lg text-gray-800 hover:bg-white/60">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
@@ -515,7 +524,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     </svg>
     <span class="font-semibold text-gray-900">Private Vault</span>
   </a>
-  <button onclick="openProfileModal()" class="p-2 rounded-lg hover:bg-gray-100">
+  <button onclick="openProfileModal()" class="p-2 rounded-lg text-gray-800 hover:bg-white/60">
     <div class="h-6 w-6 rounded-full bg-[#4A90E2]/10 flex items-center justify-center text-[#4A90E2] text-xs font-semibold">
       <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
     </div>
