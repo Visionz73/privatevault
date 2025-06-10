@@ -13,14 +13,6 @@
     @media (max-width: 768px) {
       main { margin-top: 3.5rem; }
     }
-    @media (min-width: 769px) {
-      main.main-content-area { 
-        margin-left: 17rem !important;
-        margin-top: 1rem;
-        margin-right: 1rem;
-        margin-bottom: 1rem;
-      }
-    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
@@ -29,7 +21,7 @@
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
-  <main class="main-content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php

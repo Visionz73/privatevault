@@ -43,19 +43,11 @@ foreach ($all as $t) {
       .columns-container { flex-direction: column; }
       .task-column { min-height: auto; margin-bottom: 1rem; width: 100% !important; }
     }
-    @media (min-width: 769px) {
-      main.main-content-area { 
-        margin-left: 17rem !important;
-        margin-top: 1rem;
-        margin-right: 1rem;
-        margin-bottom: 1rem;
-      }
-    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2]">
   <?php require_once __DIR__ . '/navbar.php'; ?>
-  <main class="main-content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-6">
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-6">
     
     <!-- Header with filter options -->
     <div class="flex flex-wrap justify-between items-center mb-6">
