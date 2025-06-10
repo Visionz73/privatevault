@@ -9,7 +9,7 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     @media (max-width: 768px) {
-      main { margin-top: 3.5rem; }
+      main { margin-top: 4rem; /* Adjusted for dark gradient navbar */ }
     }
     .calendar-day { min-height: 100px; }
     .calendar-day.today { background-color: rgba(74, 144, 226, 0.05); }

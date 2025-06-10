@@ -33,7 +33,7 @@ $initials = getUserInitials($user);
   <style>
     body { font-family: 'Inter', sans-serif; }
     @media (max-width: 768px) {
-      main { margin-top: 4rem; }
+      main { margin-top: 4rem; /* Adjusted for dark gradient navbar */ }
     }
     .settings-sidebar {
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -50,7 +50,7 @@ $navbarPath = __DIR__ . '/navbar.php';
 if (file_exists($navbarPath)) {
     require_once $navbarPath;
 } else {
-    echo '<!-- Navbar not found at: ' . $navbarPath . ' -->';
+    echo '<!-- Dark gradient navbar not found at: ' . $navbarPath . ' -->';
 }
 ?>
 

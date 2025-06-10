@@ -19,16 +19,16 @@
         /* Adjust main content margin for mobile when top navbar is present */
         @media (max-width: 768px) { /* md breakpoint in Tailwind is 768px */
             main.content-area { 
-                margin-top: 4rem; /* Approx h-16, adjust if navbar.php mobile height changes from h-14 (3.5rem) */
+                margin-top: 4rem; /* Adjust for dark gradient navbar height */
             }
         }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-100 via-gray-100 to-stone-100 flex flex-col antialiased">
 
-    <?php require_once __DIR__ . '/navbar.php'; // The Tailwind sidebar navbar ?>
+    <?php require_once __DIR__ . '/navbar.php'; // The dark gradient sidebar navbar ?>
 
-    <!-- Main content area, adjusted for sidebar -->
+    <!-- Main content area, adjusted for dark sidebar -->
     <main class="content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
         <div class="max-w-3xl mx-auto">
             <header class="mb-8">
