@@ -7,9 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex">
     <?php include_once __DIR__ . '/navbar.php'; ?>
-    
+
+    <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <!-- Back Link -->
         <div class="mb-8">
@@ -156,5 +157,6 @@
             </div>
         </div>
     </div>
+    </main>
 </body>
 </html>
