@@ -249,7 +249,68 @@ function getCategoryColor($category) {
     </div>
   </main>
 
+  <!-- Task Modal -->
+  <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-900" id="taskModalTitle">Neue Aufgabe erstellen</h2>
+          <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="taskModalContent">
+          <p class="text-gray-600">Lade...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Task Modal Functions
+    function openNewTaskModal(status = 'todo') {
+      const modal = document.getElementById('taskModal');
+      const modalContent = document.getElementById('taskModalContent');
+      const modalTitle = document.getElementById('taskModalTitle');
+      
+      modalTitle.textContent = 'Neue Aufgabe erstellen';
+      modalContent.innerHTML = '<p class="text-gray-600">Lade Formular...</p>';
+      modal.classList.remove('hidden');
+      
+      // Load the task modal content
+      fetch(`/templates/task_modal.php?status=${status}`)
+        .then(response => response.text())
+        .then(html => {
+          modalContent.innerHTML = html;
+        })
+        .catch(error => {
+          console.error('Error loading task modal:', error);
+          modalContent.innerHTML = '<p class="text-red-600">Fehler beim Laden des Formulars.</p>';
+        });
+    }
+    
+    function closeTaskModal() {
+      const modal = document.getElementById('taskModal');
+      modal.classList.add('hidden');
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('taskModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeTaskModal();
+      }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !document.getElementById('taskModal').classList.contains('hidden')) {
+        closeTaskModal();
+      }
+    });
+
     // Drag and Drop Functionality
     let draggedTaskId = null;
     let sourceStatus = null;

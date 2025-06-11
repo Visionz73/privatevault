@@ -269,7 +269,7 @@ if (!$isNew) {
         
         <!-- Action Buttons -->
         <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
-            <button type="button" data-action="close-modal" 
+            <button type="button" onclick="closeTaskModal()" 
                     class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                 Abbrechen
             </button>
@@ -336,6 +336,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkedAssignmentType = document.querySelector('input[name="assignment_type"]:checked');
     if (checkedAssignmentType) {
         toggleAssignmentType(checkedAssignmentType.value);
+    }
+});
+
+// Handle form submission
+document.getElementById('taskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const url = <?= $isNew ? '"/src/api/task_create.php"' : '"/src/api/task_update.php"' ?>;
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeTaskModal();
+            // Reload the page to show the new/updated task
+            window.location.reload();
+        } else {
+            alert(data.error || 'Es ist ein Fehler aufgetreten');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Es ist ein Fehler aufgetreten');
+    });
+});
+
+// Handle close modal buttons
+document.addEventListener('click', function(e) {
+    if (e.target.hasAttribute('data-action') && e.target.getAttribute('data-action') === 'close-modal') {
+        closeTaskModal();
     }
 });
 </script>
