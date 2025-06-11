@@ -321,7 +321,7 @@
                 </div>
                 
                 <!-- Task Content -->
-                <div class="flex-1 cursor-pointer" onclick="openDetailModal(<?= $t['id'] ?>)">
+                <div class="flex-1 cursor-pointer" onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
                   <h2 class="task-title text-lg font-medium mb-2"><?= htmlspecialchars($t['title'] ?? '') ?></h2>
                   
                   <?php if(!empty($t['description'])): ?>
@@ -445,23 +445,8 @@
 
       // Modal functionality with higher z-index
       window.openDetailModal = async (id) => {
-        try {
-          const res = await fetch('/task_detail_modal.php?id=' + id);
-          const html = await res.text();
-          document.getElementById('detailContent').innerHTML = html;
-          const modal = document.getElementById('detailModal');
-          modal.style.zIndex = '60';
-          modal.classList.remove('hidden');
-          
-          const closeBtn = document.querySelector('[data-action="close-modal"]');
-          if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-              document.getElementById('detailModal').classList.add('hidden');
-            });
-          }
-        } catch (error) {
-          console.error('Error loading task details:', error);
-        }
+        // Navigate to task detail page instead of opening modal
+        window.location.href = 'task_detail.php?id=' + id;
       };
       
       // Close modal on background click

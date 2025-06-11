@@ -73,7 +73,7 @@ $filterMode = $_GET['filter'] ?? 'all';
                          class="bg-white rounded-md shadow-sm p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-150"
                          draggable="true" 
                          ondragstart="dragStart(event, <?= $task['id'] ?>, 'todo')"
-                         onclick="openTaskModal(<?= $task['id'] ?>)">
+                         onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
                         <div class="task-priority-indicator w-full h-1 rounded-sm mb-2 <?= getPriorityClass($task) ?>"></div>
                         <h3 class="font-medium text-gray-900"><?= htmlspecialchars($task['title']) ?></h3>
                         <?php if (!empty($task['description'])): ?>
@@ -124,7 +124,7 @@ $filterMode = $_GET['filter'] ?? 'all';
                          class="bg-white rounded-md shadow-sm p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-150"
                          draggable="true" 
                          ondragstart="dragStart(event, <?= $task['id'] ?>, 'doing')"
-                         onclick="openTaskModal(<?= $task['id'] ?>)">
+                         onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
                         <div class="task-priority-indicator w-full h-1 rounded-sm mb-2 <?= getPriorityClass($task) ?>"></div>
                         <h3 class="font-medium text-gray-900"><?= htmlspecialchars($task['title']) ?></h3>
                         <?php if (!empty($task['description'])): ?>
@@ -175,7 +175,7 @@ $filterMode = $_GET['filter'] ?? 'all';
                          class="bg-white rounded-md shadow-sm p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-150"
                          draggable="true" 
                          ondragstart="dragStart(event, <?= $task['id'] ?>, 'done')"
-                         onclick="openTaskModal(<?= $task['id'] ?>)">
+                         onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
                         <div class="task-priority-indicator w-full h-1 rounded-sm mb-2 <?= getPriorityClass($task) ?>"></div>
                         <h3 class="font-medium text-gray-900"><?= htmlspecialchars($task['title']) ?></h3>
                         <?php if (!empty($task['description'])): ?>

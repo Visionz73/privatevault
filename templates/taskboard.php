@@ -83,7 +83,7 @@ foreach ($all as $t) {
                    class="bg-white rounded-md shadow-sm p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-150"
                    draggable="true" 
                    ondragstart="dragStart(event, <?= $task['id'] ?>, '<?= $key ?>')"
-                   onclick="openTaskModal(<?= $task['id'] ?>)">
+                   onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
                 <h3 class="font-medium text-gray-900"><?= htmlspecialchars($task['title']) ?></h3>
                 <?php if (!empty($task['description'])): ?>
                   <p class="text-sm text-gray-600 mt-1 truncate"><?= htmlspecialchars($task['description']) ?></p>
