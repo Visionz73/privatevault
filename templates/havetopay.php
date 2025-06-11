@@ -178,7 +178,7 @@
                                 </button>
                                 
                                 <!-- Filter Dropdown Content -->
-                                <div id="filterDropdown" class="absolute right-0 top-12 bg-gray-800 border border-gray-600 rounded-xl shadow-xl z-50 min-w-80 hidden">
+                                <div id="filterDropdown" class="absolute right-0 top-12 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-50 min-w-80 hidden">
                                     <div class="p-4">
                                         <h4 class="text-white font-medium mb-3 flex items-center">
                                             <i class="fas fa-filter mr-2"></i>Filter Expenses
@@ -186,8 +186,8 @@
                                         <form method="GET" class="space-y-3">
                                             <!-- Status Filter -->
                                             <div>
-                                                <label class="block text-xs text-gray-300 mb-1">Status</label>
-                                                <select name="status" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                <label class="block text-xs text-white/70 mb-1">Status</label>
+                                                <select name="status" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
                                                     <option value="">All Expenses</option>
                                                     <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Pending Payment</option>
                                                     <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Fully Settled</option>
@@ -197,8 +197,8 @@
 
                                             <!-- User Filter -->
                                             <div>
-                                                <label class="block text-xs text-gray-300 mb-1">User</label>
-                                                <select name="user" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                <label class="block text-xs text-white/70 mb-1">User</label>
+                                                <select name="user" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
                                                     <option value="">All Users</option>
                                                     <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>My Expenses</option>
                                                     <?php foreach ($allUsers as $user): ?>
@@ -211,8 +211,8 @@
 
                                             <!-- Group Filter -->
                                             <div>
-                                                <label class="block text-xs text-gray-300 mb-1">Group</label>
-                                                <select name="group" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                <label class="block text-xs text-white/70 mb-1">Group</label>
+                                                <select name="group" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
                                                     <option value="">All Groups</option>
                                                     <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>No Group</option>
                                                     <?php foreach ($allGroups as $group): ?>
@@ -224,11 +224,11 @@
                                             </div>
 
                                             <!-- Action Buttons -->
-                                            <div class="flex gap-2 pt-3 border-t border-gray-700">
-                                                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                                            <div class="flex gap-2 pt-3 border-t border-white/10">
+                                                <button type="submit" class="flex-1 bg-purple-600/80 hover:bg-purple-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-medium transition-all border border-purple-500/50">
                                                     <i class="fas fa-search mr-1"></i>Apply
                                                 </button>
-                                                <a href="havetopay.php" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all text-center">
+                                                <a href="havetopay.php" class="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-medium transition-all text-center border border-white/20">
                                                     <i class="fas fa-times mr-1"></i>Clear
                                                 </a>
                                             </div>
@@ -346,6 +346,40 @@
         </div>
         
         <script>
+            let isFilterOpen = false;
+            
+            function toggleFilter() {
+                const dropdown = document.getElementById('filterDropdown');
+                const button = document.getElementById('filterButton');
+                
+                if (isFilterOpen) {
+                    dropdown.classList.add('hidden');
+                    button.classList.remove('bg-white/20');
+                    isFilterOpen = false;
+                } else {
+                    dropdown.classList.remove('hidden');
+                    button.classList.add('bg-white/20');
+                    isFilterOpen = true;
+                }
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('filterDropdown');
+                const button = document.getElementById('filterButton');
+                
+                if (!dropdown.contains(e.target) && !button.contains(e.target) && isFilterOpen) {
+                    dropdown.classList.add('hidden');
+                    button.classList.remove('bg-white/20');
+                    isFilterOpen = false;
+                }
+            });
+            
+            // Prevent dropdown from closing when clicking inside it
+            document.getElementById('filterDropdown').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
             function confirmDelete(expenseId, expenseTitle) {
                 document.getElementById('deleteExpenseId').value = expenseId;
                 document.getElementById('expenseTitle').textContent = expenseTitle;
@@ -362,31 +396,6 @@
             document.getElementById('deleteModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeDeleteModal();
-                }
-            });
-            
-            // Filter dropdown functionality
-            function toggleFilter() {
-                const dropdown = document.getElementById('filterDropdown');
-                const button = document.getElementById('filterButton');
-                
-                if (dropdown.classList.contains('hidden')) {
-                    dropdown.classList.remove('hidden');
-                    button.classList.add('bg-white/20');
-                } else {
-                    dropdown.classList.add('hidden');
-                    button.classList.remove('bg-white/20');
-                }
-            }
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                const dropdown = document.getElementById('filterDropdown');
-                const button = document.getElementById('filterButton');
-                
-                if (!dropdown.contains(e.target) && !button.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    button.classList.remove('bg-white/20');
                 }
             });
         </script>
