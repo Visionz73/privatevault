@@ -15,8 +15,10 @@ $totalOwed = 0;
 $totalOwing = 0;
 $netBalance = 0;
 $recentExpenses = [];
+$filteredExpenses = [];
 $currentUser = [];
 $allUsers = [];
+$expenseFilter = $_GET['filter_user'] ?? 'own'; // Default to own expenses
 
 try {
     // First, check users table structure
@@ -114,24 +116,83 @@ try {
         $balances['user_owes'][] = $balance;
     }
     
-    // Get recent expenses involving the current user
+    // Get recent expenses based on filter
     $userNameFields = $hasFirstName && $hasLastName ? 
         "u.first_name as payer_first_name, u.last_name as payer_last_name," : 
         "";
-        
-    $stmt = $pdo->prepare("
-        SELECT e.*,
-               u.username as payer_name,
-               $userNameFields
-               (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
-        FROM expenses e
-        JOIN users u ON e.payer_id = u.id
-        WHERE e.payer_id = ? 
-        OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
-        ORDER BY e.created_at DESC
-        LIMIT 10
-    ");
-    $stmt->execute([$userId, $userId]);
+    
+    // Build query based on filter
+    switch ($expenseFilter) {
+        case 'all':
+            // All expenses involving the user
+            $expenseQuery = "
+                SELECT e.*,
+                       u.username as payer_name,
+                       $userNameFields
+                       (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+                FROM expenses e
+                JOIN users u ON e.payer_id = u.id
+                WHERE e.payer_id = ? 
+                OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
+                ORDER BY e.created_at DESC
+                LIMIT 20
+            ";
+            $expenseParams = [$userId, $userId];
+            break;
+            
+        case 'participating':
+            // Only expenses where user is participant (not payer)
+            $expenseQuery = "
+                SELECT e.*,
+                       u.username as payer_name,
+                       $userNameFields
+                       (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+                FROM expenses e
+                JOIN users u ON e.payer_id = u.id
+                WHERE e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
+                AND e.payer_id != ?
+                ORDER BY e.created_at DESC
+                LIMIT 20
+            ";
+            $expenseParams = [$userId, $userId];
+            break;
+            
+        case 'own':
+        default:
+            // Only expenses paid by the user
+            $expenseQuery = "
+                SELECT e.*,
+                       u.username as payer_name,
+                       $userNameFields
+                       (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+                FROM expenses e
+                JOIN users u ON e.payer_id = u.id
+                WHERE e.payer_id = ?
+                ORDER BY e.created_at DESC
+                LIMIT 20
+            ";
+            $expenseParams = [$userId];
+            break;
+    }
+    
+    // If filter is a specific user ID
+    if (is_numeric($expenseFilter)) {
+        $expenseQuery = "
+            SELECT e.*,
+                   u.username as payer_name,
+                   $userNameFields
+                   (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+            FROM expenses e
+            JOIN users u ON e.payer_id = u.id
+            WHERE e.payer_id = ?
+            ORDER BY e.created_at DESC
+            LIMIT 20
+        ";
+        $expenseParams = [(int)$expenseFilter];
+    }
+    
+    $stmt = $pdo->prepare($expenseQuery);
+    $stmt->execute($expenseParams);
     $expenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add display names to expenses
@@ -140,7 +201,7 @@ try {
             !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
             $expense['payer_first_name'] . ' ' . $expense['payer_last_name'] : 
             $expense['payer_name'];
-        $recentExpenses[] = $expense;
+        $filteredExpenses[] = $expense;
     }
     
     // Calculate total balances
@@ -155,7 +216,7 @@ try {
     $netBalance = $totalOwed - $totalOwing;
     
 } catch (Exception $e) {
-    $errorMessage = "An error occurred: " . $e->getMessage();
+    $errorMessage = "Ein Fehler ist aufgetreten: " . $e->getMessage();
     error_log("HaveToPay error: " . $e->getMessage());
 }
 
@@ -163,13 +224,13 @@ try {
 if (isset($_GET['success'])) {
     switch ($_GET['success']) {
         case 'added':
-            $successMessage = 'Expense added successfully';
+            $successMessage = 'Ausgabe erfolgreich hinzugefügt';
             break;
         case 'settled':
-            $successMessage = 'Payment marked as settled';
+            $successMessage = 'Zahlung als beglichen markiert';
             break;
         case 'deleted':
-            $successMessage = 'Expense deleted successfully';
+            $successMessage = 'Ausgabe erfolgreich gelöscht';
             break;
     }
 }
@@ -197,19 +258,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $deleteExpenseStmt->execute([$expenseId]);
                 
                 $pdo->commit();
-                $successMessage = 'Expense deleted successfully';
+                $successMessage = 'Ausgabe erfolgreich gelöscht';
                 
                 // Redirect to avoid resubmission
                 header('Location: havetopay.php?success=deleted');
                 exit;
             } else {
-                $errorMessage = 'You do not have permission to delete this expense';
+                $errorMessage = 'Du hast keine Berechtigung, diese Ausgabe zu löschen';
             }
         } catch (Exception $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            $errorMessage = 'Error deleting expense: ' . $e->getMessage();
+            $errorMessage = 'Fehler beim Löschen der Ausgabe: ' . $e->getMessage();
             error_log('HaveToPay delete error: ' . $e->getMessage());
         }
     }

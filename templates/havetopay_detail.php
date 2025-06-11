@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($expense['title']) ?> | HaveToPay</title>
+    <title><?= htmlspecialchars($expense['title']) ?> | Schuldenverwaltung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -76,7 +76,7 @@
         <!-- Back Link -->
         <div class="mb-8">
             <a href="havetopay.php" class="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium group transition-colors">
-                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>Back to HaveToPay
+                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>Zurück zur Schuldenverwaltung
             </a>
         </div>
         
@@ -116,10 +116,10 @@
                                 <?php echo strtoupper(substr($expense['payer_name'], 0, 1)); ?>
                             </div>
                             <div>
-                                <div class="text-white/60 text-sm mb-1">Paid by</div>
+                                <div class="text-white/60 text-sm mb-1">Bezahlt von</div>
                                 <div class="font-semibold text-lg text-white">
                                     <?php echo htmlspecialchars($expense['payer_full_name'] ?: $expense['payer_name']); ?>
-                                    <?php if ($expense['payer_id'] == $userId): ?> (You)<?php endif; ?>
+                                    <?php if ($expense['payer_id'] == $userId): ?> (Du)<?php endif; ?>
                                 </div>
                                 <div class="text-sm text-white/60">@<?php echo htmlspecialchars($expense['payer_name']); ?></div>
                             </div>
@@ -130,8 +130,8 @@
                             <div class="glass-item px-4 py-3 flex items-center">
                                 <i class="fas fa-calendar-alt text-blue-400 mr-3"></i>
                                 <div>
-                                    <div class="text-xs text-white/50 mb-0.5">Date</div>
-                                    <div class="font-medium text-white"><?php echo date('d M Y', strtotime($expense['expense_date'])); ?></div>
+                                    <div class="text-xs text-white/50 mb-0.5">Datum</div>
+                                    <div class="font-medium text-white"><?php echo date('d.m.Y', strtotime($expense['expense_date'])); ?></div>
                                 </div>
                             </div>
                             
@@ -139,7 +139,7 @@
                             <div class="glass-item px-4 py-3 flex items-center">
                                 <i class="fas fa-tag text-blue-400 mr-3"></i>
                                 <div>
-                                    <div class="text-xs text-white/50 mb-0.5">Category</div>
+                                    <div class="text-xs text-white/50 mb-0.5">Kategorie</div>
                                     <div class="font-medium text-white"><?php echo htmlspecialchars($expense['expense_category']); ?></div>
                                 </div>
                             </div>
@@ -148,8 +148,8 @@
                             <div class="glass-item px-4 py-3 flex items-center">
                                 <i class="fas fa-users text-blue-400 mr-3"></i>
                                 <div>
-                                    <div class="text-xs text-white/50 mb-0.5">Participants</div>
-                                    <div class="font-medium text-white"><?php echo count($participants); ?> people</div>
+                                    <div class="text-xs text-white/50 mb-0.5">Teilnehmer</div>
+                                    <div class="font-medium text-white"><?php echo count($participants); ?> Personen</div>
                                 </div>
                             </div>
                             
@@ -158,7 +158,7 @@
                                     <button type="button" 
                                             onclick="confirmDeleteExpense()"
                                             class="bg-red-500/20 border border-red-500/30 text-red-300 font-medium px-4 py-3 rounded-xl transition-colors flex items-center hover:bg-red-500/30">
-                                        <i class="fas fa-trash-alt mr-2"></i>Delete Expense
+                                        <i class="fas fa-trash-alt mr-2"></i>Ausgabe löschen
                                     </button>
                                 </div>
                             <?php endif; ?>
@@ -166,7 +166,7 @@
                         
                         <?php if (!empty($expense['description'])): ?>
                         <div class="glass-item p-6 border-blue-500/30">
-                            <h6 class="font-semibold text-white mb-3">Description</h6>
+                            <h6 class="font-semibold text-white mb-3">Beschreibung</h6>
                             <p class="text-white/80 whitespace-pre-line"><?php echo htmlspecialchars($expense['description']); ?></p>
                         </div>
                         <?php endif; ?>
@@ -175,7 +175,7 @@
                     <!-- Amount Card -->
                     <div>
                         <div class="glass-item p-6 text-center">
-                            <div class="text-white/60 mb-2">Total amount</div>
+                            <div class="text-white/60 mb-2">Gesamtbetrag</div>
                             <div class="text-4xl font-bold text-blue-400 mb-4">€<?php echo number_format($expense['amount'], 2); ?></div>
                             
                             <?php 
@@ -190,12 +190,12 @@
                             $percentage = $totalParticipants > 0 ? ($settledCount / $totalParticipants) * 100 : 0;
                             ?>
                             
-                            <div class="text-xs text-white/50 mb-2">Settlement progress</div>
+                            <div class="text-xs text-white/50 mb-2">Begleichungsfortschritt</div>
                             <div class="w-full bg-white/10 rounded-full h-2.5 mb-2">
                                 <div class="bg-green-500 h-2.5 rounded-full transition-all duration-500" style="width: <?php echo $percentage; ?>%"></div>
                             </div>
                             <div class="text-sm font-medium text-white">
-                                <?php echo $settledCount; ?> of <?php echo $totalParticipants; ?> settled
+                                <?php echo $settledCount; ?> von <?php echo $totalParticipants; ?> beglichen
                             </div>
                         </div>
                     </div>
@@ -207,14 +207,14 @@
         <div class="glass-container overflow-hidden">
             <div class="glass-header px-8 py-6 text-white">
                 <h3 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-users mr-3"></i>Participants
+                    <i class="fas fa-users mr-3"></i>Teilnehmer
                 </h3>
             </div>
             <div class="p-8">
                 <?php if (empty($participants)): ?>
                     <div class="text-center py-16">
                         <i class="fas fa-users text-6xl text-white/20 mb-4"></i>
-                        <p class="text-white/60">No participants found</p>
+                        <p class="text-white/60">Keine Teilnehmer gefunden</p>
                     </div>
                 <?php else: ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -228,7 +228,7 @@
                                         <div>
                                             <div class="font-medium text-white">
                                                 <?php echo htmlspecialchars($participant['full_name'] ?: $participant['username']); ?>
-                                                <?php if ($participant['user_id'] == $userId): ?> (You)<?php endif; ?>
+                                                <?php if ($participant['user_id'] == $userId): ?> (Du)<?php endif; ?>
                                             </div>
                                             <div class="text-sm text-white/60">@<?php echo htmlspecialchars($participant['username']); ?></div>
                                         </div>
@@ -243,12 +243,12 @@
                                     <?php if ($participant['is_settled']): ?>
                                         <span class="bg-green-500/20 text-green-300 px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center border border-green-500/30">
                                             <i class="fas fa-check-circle mr-1.5"></i>
-                                            Settled on <?php echo date('d M Y', strtotime($participant['settled_date'])); ?>
+                                            Beglichen am <?php echo date('d.m.Y', strtotime($participant['settled_date'])); ?>
                                         </span>
                                     <?php else: ?>
                                         <span class="bg-yellow-500/20 text-yellow-300 px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center border border-yellow-500/30">
                                             <i class="fas fa-clock mr-1.5"></i>
-                                            Pending
+                                            Ausstehend
                                         </span>
                                     <?php endif; ?>
                                     
@@ -259,7 +259,7 @@
                                                 <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
                                                 <button type="submit" class="text-green-400 hover:text-green-300 font-medium text-sm bg-green-500/20 hover:bg-green-500/30 px-3 py-1.5 rounded-lg transition-colors border border-green-500/30">
                                                     <i class="fas fa-check-circle mr-1"></i>
-                                                    Mark as Settled
+                                                    Als beglichen markieren
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -269,7 +269,7 @@
                                                     onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
                                                     class="text-red-400 hover:text-red-300 font-medium text-sm bg-red-500/20 hover:bg-red-500/30 px-3 py-1.5 rounded-lg transition-colors border border-red-500/30">
                                                 <i class="fas fa-user-minus mr-1"></i>
-                                                Remove
+                                                Entfernen
                                             </button>
                                         <?php endif; ?>
                                     </div>
@@ -289,19 +289,19 @@
                 <div class="w-12 h-12 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mr-4 border border-red-500/30">
                     <i class="fas fa-exclamation-triangle text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-white">Delete Expense</h3>
+                <h3 class="text-xl font-semibold text-white">Ausgabe löschen</h3>
             </div>
             <p class="text-white/70 mb-8">
-                Are you sure you want to delete this entire expense? This will remove the expense and all associated participant records. This action cannot be undone.
+                Bist du sicher, dass du diese gesamte Ausgabe löschen möchtest? Dies entfernt die Ausgabe und alle zugehörigen Teilnehmerdatensätze. Diese Aktion kann nicht rückgängig gemacht werden.
             </p>
             <div class="flex justify-end gap-4">
                 <button type="button" onclick="closeDeleteExpenseModal()" class="glass-btn px-5 py-3 rounded-xl font-medium transition-colors">
-                    Cancel
+                    Abbrechen
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="delete_expense">
                     <button type="submit" class="bg-red-500/20 border border-red-500/30 text-red-300 px-5 py-3 rounded-xl font-medium hover:bg-red-500/30 transition-colors">
-                        <i class="fas fa-trash mr-2"></i>Delete Expense
+                        <i class="fas fa-trash mr-2"></i>Ausgabe löschen
                     </button>
                 </form>
             </div>
@@ -315,21 +315,21 @@
                 <div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center mr-4 border border-orange-500/30">
                     <i class="fas fa-user-minus text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-white">Remove Participant</h3>
+                <h3 class="text-xl font-semibold text-white">Teilnehmer entfernen</h3>
             </div>
             <p class="text-white/70 mb-8">
-                Are you sure you want to remove "<span id="participantName" class="font-medium text-white"></span>" from this expense? 
-                The remaining participants' shares will be recalculated automatically.
+                Bist du sicher, dass du "<span id="participantName" class="font-medium text-white"></span>" von dieser Ausgabe entfernen möchtest? 
+                Die Anteile der verbleibenden Teilnehmer werden automatisch neu berechnet.
             </p>
             <div class="flex justify-end gap-4">
                 <button type="button" onclick="closeRemoveParticipantModal()" class="glass-btn px-5 py-3 rounded-xl font-medium transition-colors">
-                    Cancel
+                    Abbrechen
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="remove_participant">
                     <input type="hidden" name="participant_id" id="removeParticipantId" value="">
                     <button type="submit" class="bg-orange-500/20 border border-orange-500/30 text-orange-300 px-5 py-3 rounded-xl font-medium hover:bg-orange-500/30 transition-colors">
-                        <i class="fas fa-user-minus mr-2"></i>Remove
+                        <i class="fas fa-user-minus mr-2"></i>Entfernen
                     </button>
                 </form>
             </div>

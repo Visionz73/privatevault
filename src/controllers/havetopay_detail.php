@@ -134,11 +134,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if ($pdo->inTransaction()) {
                     $pdo->rollBack();
                 }
-                $errors[] = 'Error deleting expense: ' . $e->getMessage();
+                $errors[] = 'Fehler beim Löschen der Ausgabe: ' . $e->getMessage();
                 error_log('HaveToPay delete error: ' . $e->getMessage());
             }
         } else {
-            $errors[] = 'You do not have permission to delete this expense';
+            $errors[] = 'Du hast keine Berechtigung, diese Ausgabe zu löschen';
         }
     } elseif ($_POST['action'] === 'remove_participant' && isset($_POST['participant_id'])) {
         $participantId = (int)$_POST['participant_id'];
@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
                 
                 $pdo->commit();
-                $success = 'Participant removed successfully';
+                $success = 'Teilnehmer erfolgreich entfernt';
                 
                 // Refresh participant data
                 $participantsStmt->execute([$expenseId]);
@@ -183,10 +183,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if ($pdo->inTransaction()) {
                     $pdo->rollBack();
                 }
-                $errors[] = 'Error removing participant: ' . $e->getMessage();
+                $errors[] = 'Fehler beim Entfernen des Teilnehmers: ' . $e->getMessage();
             }
         } else {
-            $errors[] = 'No permission to remove this participant';
+            $errors[] = 'Keine Berechtigung, diesen Teilnehmer zu entfernen';
         }
     }
 }

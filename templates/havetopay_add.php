@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Expense | HaveToPay</title>
+    <title>Ausgabe hinzufügen | Schuldenverwaltung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -119,7 +119,7 @@
         <!-- Back Link -->
         <div class="mb-8">
             <a href="havetopay.php" class="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium group transition-colors">
-                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>Back to HaveToPay
+                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>Zurück zur Schuldenverwaltung
             </a>
         </div>
         
@@ -127,9 +127,9 @@
         <div class="glass-container mb-10 overflow-hidden">
             <div class="glass-header px-8 py-6 text-white">
                 <h1 class="text-3xl font-bold flex items-center">
-                    <i class="fas fa-plus-circle mr-4 opacity-80"></i>Add New Expense
+                    <i class="fas fa-plus-circle mr-4 opacity-80"></i>Neue Ausgabe hinzufügen
                 </h1>
-                <p class="mt-2 text-white/70">Split expenses with your friends and track who owes what</p>
+                <p class="mt-2 text-white/70">Teile Ausgaben mit deinen Freunden und verfolge, wer was schuldet</p>
             </div>
         </div>
         
@@ -139,7 +139,7 @@
                 <div class="flex">
                     <i class="fas fa-exclamation-circle text-xl mr-3 mt-0.5"></i>
                     <div>
-                        <strong>Please fix the following errors:</strong>
+                        <strong>Bitte behebe die folgenden Fehler:</strong>
                         <ul class="list-disc list-inside mt-2 space-y-1">
                             <?php foreach ($errors as $error): ?>
                                 <li><?php echo htmlspecialchars($error); ?></li>
@@ -161,7 +161,7 @@
         <div class="glass-container overflow-hidden">
             <div class="glass-header px-8 py-6 text-white">
                 <h2 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-receipt mr-3"></i>Expense Details
+                    <i class="fas fa-receipt mr-3"></i>Ausgabendetails
                 </h2>
             </div>
             <div class="p-8">
@@ -170,28 +170,28 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Title -->
                         <div class="space-y-3">
-                            <label for="title" class="block text-sm font-medium text-white">Title *</label>
+                            <label for="title" class="block text-sm font-medium text-white">Titel *</label>
                             <input type="text" id="title" name="title" required
                                    class="glass-input w-full px-4 py-3 transition-all"
-                                   placeholder="What is this expense for?"
+                                   placeholder="Wofür ist diese Ausgabe?"
                                    value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
                         </div>
                         
                         <!-- Amount -->
                         <div class="space-y-3">
-                            <label for="amount" class="block text-sm font-medium text-white">Amount *</label>
+                            <label for="amount" class="block text-sm font-medium text-white">Betrag *</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-white/60">€</span>
                                 <input type="number" id="amount" name="amount" step="0.01" min="0.01" required
                                        class="glass-input w-full pl-8 pr-4 py-3 transition-all"
-                                       placeholder="0.00"
+                                       placeholder="0,00"
                                        value="<?php echo htmlspecialchars($_POST['amount'] ?? ''); ?>">
                             </div>
                         </div>
                         
                         <!-- Date -->
                         <div class="space-y-3">
-                            <label for="expense_date" class="block text-sm font-medium text-white">Date</label>
+                            <label for="expense_date" class="block text-sm font-medium text-white">Datum</label>
                             <input type="date" id="expense_date" name="expense_date"
                                    class="glass-input w-full px-4 py-3 transition-all"
                                    value="<?php echo htmlspecialchars($_POST['expense_date'] ?? date('Y-m-d')); ?>">
@@ -199,7 +199,7 @@
                         
                         <!-- Category -->
                         <div class="space-y-3">
-                            <label for="category" class="block text-sm font-medium text-white">Category</label>
+                            <label for="category" class="block text-sm font-medium text-white">Kategorie</label>
                             <select id="category" name="category" class="glass-select w-full px-4 py-3 transition-all">
                                 <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo htmlspecialchars($category['name']); ?>"
@@ -215,9 +215,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Group -->
                         <div class="space-y-3">
-                            <label for="group_id" class="block text-sm font-medium text-white">Group (Optional)</label>
+                            <label for="group_id" class="block text-sm font-medium text-white">Gruppe (Optional)</label>
                             <select id="group_id" name="group_id" class="glass-select w-full px-4 py-3 transition-all">
-                                <option value="">-- No Group --</option>
+                                <option value="">-- Keine Gruppe --</option>
                                 <?php foreach ($allGroups as $group): ?>
                                 <option value="<?php echo $group['id']; ?>"
                                         <?php echo ($_POST['group_id'] ?? '') == $group['id'] ? 'selected' : ''; ?>>
@@ -229,7 +229,7 @@
                         
                         <!-- Participants -->
                         <div class="space-y-3">
-                            <label for="participants" class="block text-sm font-medium text-white">Split With *</label>
+                            <label for="participants" class="block text-sm font-medium text-white">Teilen mit *</label>
                             <select id="participants" name="participants[]" multiple required
                                     class="glass-select w-full px-4 py-3 transition-all"
                                     style="min-height: 120px;">
@@ -240,23 +240,23 @@
                                 </option>
                                 <?php endforeach; ?>
                             </select>
-                            <p class="text-sm text-white/60 mt-2">Hold Ctrl/Cmd to select multiple participants</p>
+                            <p class="text-sm text-white/60 mt-2">Halte Strg/Cmd gedrückt, um mehrere Teilnehmer auszuwählen</p>
                         </div>
                     </div>
                     
                     <!-- Description -->
                     <div class="space-y-3">
-                        <label for="description" class="block text-sm font-medium text-white">Description</label>
+                        <label for="description" class="block text-sm font-medium text-white">Beschreibung</label>
                         <textarea id="description" name="description" rows="4"
                                   class="glass-input w-full px-4 py-3 transition-all resize-none"
-                                  placeholder="Add any details about this expense..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                                  placeholder="Füge Details zu dieser Ausgabe hinzu..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                     </div>
                     
                     <!-- Submit Button -->
                     <div class="flex justify-center pt-6">
                         <button type="submit"
                                 class="glass-btn-primary px-8 py-4 rounded-xl font-semibold shadow-lg">
-                            <i class="fas fa-plus-circle mr-2"></i>Add Expense
+                            <i class="fas fa-plus-circle mr-2"></i>Ausgabe hinzufügen
                         </button>
                     </div>
                 </form>

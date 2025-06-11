@@ -95,15 +95,15 @@ try {
         
         // Form validation
         if (empty($title)) {
-            $errors[] = 'Title is required';
+            $errors[] = 'Titel ist erforderlich';
         }
         
         if ($amount <= 0) {
-            $errors[] = 'Amount must be greater than zero';
+            $errors[] = 'Betrag muss größer als null sein';
         }
         
         if (empty($participants)) {
-            $errors[] = 'Select at least one participant';
+            $errors[] = 'Wähle mindestens einen Teilnehmer aus';
         }
         
         // Process if no errors
@@ -172,7 +172,7 @@ try {
                 }
                 
                 $pdo->commit();
-                $success = 'Expense added successfully';
+                $success = 'Ausgabe erfolgreich hinzugefügt';
                 
                 // Redirect to the main HaveToPay page
                 header('Location: havetopay.php?success=added');
@@ -180,13 +180,13 @@ try {
                 
             } catch (PDOException $e) {
                 $pdo->rollBack();
-                $errors[] = 'Database error: ' . $e->getMessage();
+                $errors[] = 'Datenbankfehler: ' . $e->getMessage();
                 error_log('HaveToPay add expense error: ' . $e->getMessage());
             }
         }
     }
 } catch (Exception $e) {
-    $errors[] = 'An error occurred: ' . $e->getMessage();
+    $errors[] = 'Ein Fehler ist aufgetreten: ' . $e->getMessage();
     error_log('HaveToPay add page error: ' . $e->getMessage());
     
     // If data can't be loaded, provide empty arrays

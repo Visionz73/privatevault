@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HaveToPay | PrivateVault</title>
+    <title>Schuldenverwaltung | PrivateVault</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -72,9 +72,9 @@
         <div class="max-w-6xl mx-auto">
             <!-- Compact Header -->
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-white">HaveToPay</h1>
+                <h1 class="text-2xl font-bold text-white">Schuldenverwaltung</h1>
                 <a href="havetopay_add.php" class="glass-btn px-4 py-2 rounded-lg text-sm flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Add Expense
+                    <i class="fas fa-plus mr-2"></i>Ausgabe hinzufügen
                 </a>
             </div>
 
@@ -96,19 +96,19 @@
             <!-- Balance Summary -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="glass-container p-4 text-center">
-                    <div class="text-white/60 text-xs mb-1">You are owed</div>
+                    <div class="text-white/60 text-xs mb-1">Du bekommst</div>
                     <div class="text-xl font-bold text-green-400"><?php echo number_format($totalOwed, 2); ?> €</div>
                 </div>
                 
                 <div class="glass-container p-4 text-center">
-                    <div class="text-white/60 text-xs mb-1">Net balance</div>
+                    <div class="text-white/60 text-xs mb-1">Netto-Saldo</div>
                     <div class="text-xl font-bold <?php echo $netBalance >= 0 ? 'text-green-400' : 'text-red-400'; ?>">
                         <?php echo number_format($netBalance, 2); ?> €
                     </div>
                 </div>
                 
                 <div class="glass-container p-4 text-center">
-                    <div class="text-white/60 text-xs mb-1">You owe</div>
+                    <div class="text-white/60 text-xs mb-1">Du schuldest</div>
                     <div class="text-xl font-bold text-red-400"><?php echo number_format($totalOwing, 2); ?> €</div>
                 </div>
             </div>
@@ -118,13 +118,13 @@
                 <!-- People who owe you -->
                 <div class="glass-container">
                     <div class="glass-header px-4 py-3 text-white">
-                        <h3 class="text-sm font-semibold">People Who Owe You (<?php echo count($balances['others_owe']); ?>)</h3>
+                        <h3 class="text-sm font-semibold">Personen die dir Geld schulden (<?php echo count($balances['others_owe']); ?>)</h3>
                     </div>
                     <div class="p-4">
                         <?php if (empty($balances['others_owe'])): ?>
                             <div class="text-center py-6">
                                 <i class="fas fa-check-circle text-3xl text-white/20 mb-2"></i>
-                                <p class="text-white/60 text-sm">No one owes you money</p>
+                                <p class="text-white/60 text-sm">Niemand schuldet dir Geld</p>
                             </div>
                         <?php else: ?>
                             <div class="space-y-2">
@@ -152,13 +152,13 @@
                 <!-- People you owe -->
                 <div class="glass-container">
                     <div class="glass-header px-4 py-3 text-white">
-                        <h3 class="text-sm font-semibold">People You Owe (<?php echo count($balances['user_owes']); ?>)</h3>
+                        <h3 class="text-sm font-semibold">Personen denen du Geld schuldest (<?php echo count($balances['user_owes']); ?>)</h3>
                     </div>
                     <div class="p-4">
                         <?php if (empty($balances['user_owes'])): ?>
                             <div class="text-center py-6">
                                 <i class="fas fa-smile text-3xl text-white/20 mb-2"></i>
-                                <p class="text-white/60 text-sm">You don't owe anyone</p>
+                                <p class="text-white/60 text-sm">Du schuldest niemandem Geld</p>
                             </div>
                         <?php else: ?>
                             <div class="space-y-2">
@@ -184,23 +184,48 @@
                 </div>
             </div>
 
-            <!-- Recent Expenses -->
+            <!-- Recent Expenses with Filter -->
             <div class="glass-container">
                 <div class="glass-header px-4 py-3 text-white">
-                    <h3 class="text-sm font-semibold">Recent Expenses (<?php echo count($recentExpenses); ?>)</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-semibold">Aktuelle Ausgaben (<?php echo count($filteredExpenses); ?>)</h3>
+                        <div class="flex items-center gap-2">
+                            <form method="GET" class="flex items-center gap-2">
+                                <label for="filter_user" class="text-xs text-white/70">Filter:</label>
+                                <select name="filter_user" id="filter_user" onchange="this.form.submit()" 
+                                        class="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white">
+                                    <option value="own" <?php echo ($expenseFilter === 'own') ? 'selected' : ''; ?>>
+                                        Meine Ausgaben
+                                    </option>
+                                    <option value="all" <?php echo ($expenseFilter === 'all') ? 'selected' : ''; ?>>
+                                        Alle Ausgaben
+                                    </option>
+                                    <option value="participating" <?php echo ($expenseFilter === 'participating') ? 'selected' : ''; ?>>
+                                        Beteiligte Ausgaben
+                                    </option>
+                                    <?php foreach ($allUsers as $user): ?>
+                                        <option value="<?php echo $user['id']; ?>" 
+                                                <?php echo ($expenseFilter === (string)$user['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($user['display_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div class="p-4">
-                    <?php if (empty($recentExpenses)): ?>
+                    <?php if (empty($filteredExpenses)): ?>
                         <div class="text-center py-8">
                             <i class="fas fa-receipt text-4xl text-white/20 mb-3"></i>
-                            <p class="text-white/60 mb-4">No expenses recorded yet</p>
+                            <p class="text-white/60 mb-4">Keine Ausgaben gefunden</p>
                             <a href="havetopay_add.php" class="glass-btn py-2 px-4 rounded-lg text-sm">
-                                <i class="fas fa-plus mr-2"></i>Add Your First Expense
+                                <i class="fas fa-plus mr-2"></i>Erste Ausgabe hinzufügen
                             </a>
                         </div>
                     <?php else: ?>
                         <div class="space-y-2">
-                            <?php foreach ($recentExpenses as $expense): ?>
+                            <?php foreach ($filteredExpenses as $expense): ?>
                             <div class="glass-item p-3">
                                 <div class="flex justify-between items-start">
                                     <div class="flex-1">
@@ -208,9 +233,9 @@
                                             <div>
                                                 <div class="text-white font-medium text-sm"><?php echo htmlspecialchars($expense['title']); ?></div>
                                                 <div class="text-white/60 text-xs">
-                                                    By <?php echo htmlspecialchars($expense['payer_display_name']); ?> • 
-                                                    <?php echo date('d M Y', strtotime($expense['expense_date'])); ?> • 
-                                                    <?php echo $expense['participant_count']; ?> people
+                                                    Von <?php echo htmlspecialchars($expense['payer_display_name']); ?> • 
+                                                    <?php echo date('d.m.Y', strtotime($expense['expense_date'])); ?> • 
+                                                    <?php echo $expense['participant_count']; ?> Personen
                                                 </div>
                                             </div>
                                             <div class="text-white font-semibold text-sm"><?php echo number_format($expense['amount'], 2); ?> €</div>
@@ -224,7 +249,7 @@
                                                 <button type="button" 
                                                         class="text-red-400 hover:text-red-300 text-xs"
                                                         onclick="confirmDelete(<?php echo $expense['id']; ?>, '<?php echo htmlspecialchars($expense['title'], ENT_QUOTES); ?>')">
-                                                    <i class="fas fa-trash mr-1"></i>Delete
+                                                    <i class="fas fa-trash mr-1"></i>Löschen
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -245,18 +270,18 @@
                 <div class="w-10 h-10 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mr-3">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-white">Confirm Delete</h3>
+                <h3 class="text-lg font-semibold text-white">Löschen bestätigen</h3>
             </div>
-            <p class="text-white/70 mb-6">Are you sure you want to delete "<span id="expenseTitle" class="font-medium text-white"></span>"?</p>
+            <p class="text-white/70 mb-6">Bist du sicher, dass du "<span id="expenseTitle" class="font-medium text-white"></span>" löschen möchtest?</p>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeDeleteModal()" class="glass-btn px-4 py-2 rounded-lg text-sm">
-                    Cancel
+                    Abbrechen
                 </button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="delete_expense">
                     <input type="hidden" name="expense_id" id="deleteExpenseId" value="">
                     <button type="submit" class="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-2 rounded-lg text-sm hover:bg-red-500/30">
-                        <i class="fas fa-trash mr-2"></i>Delete
+                        <i class="fas fa-trash mr-2"></i>Löschen
                     </button>
                 </form>
             </div>
