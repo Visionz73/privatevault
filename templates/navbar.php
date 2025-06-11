@@ -1156,7 +1156,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   
   function updateShortcutSlot(slotElement, shortcut) {
     slotElement.classList.remove('empty');
-    slotElement.onclick = () => window.open(shortcut.url, '_blank');
+    slotElement.onclick = null; // Remove the old onclick handler
+    
+    // Create new click handler that opens shortcut in new tab
+    slotElement.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open(shortcut.url, '_blank');
+    });
     
     const iconElement = slotElement.querySelector('.shortcut-icon');
     const labelElement = slotElement.querySelector('.shortcut-label');
@@ -1165,10 +1171,17 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     labelElement.textContent = shortcut.name;
     
     // Add edit functionality on right click
-    slotElement.oncontextmenu = (e) => {
+    slotElement.addEventListener('contextmenu', function(e) {
       e.preventDefault();
       openCustomShortcutModal(slotElement, shortcut);
-    };
+    });
+    
+    // Add double-click for editing (more user-friendly)
+    slotElement.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCustomShortcutModal(slotElement, shortcut);
+    });
   }
   
   function getIconHtml(iconType) {
@@ -1190,6 +1203,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     const modal = document.getElementById('customShortcutModal');
     const form = document.getElementById('customShortcutForm');
     const deleteBtn = document.getElementById('deleteShortcutBtn');
+    const modalTitle = document.querySelector('.shortcuts-modal-title');
     
     currentSlot = slotElement.dataset.slot;
     
@@ -1198,12 +1212,19 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       document.getElementById('shortcutUrl').value = existingShortcut.url;
       document.getElementById('shortcutIcon').value = existingShortcut.icon;
       deleteBtn.style.display = 'block';
+      modalTitle.textContent = 'Shortcut bearbeiten';
     } else {
       form.reset();
       deleteBtn.style.display = 'none';
+      modalTitle.textContent = 'Custom Shortcut erstellen';
     }
     
     modal.classList.add('active');
+    
+    // Focus on first input
+    setTimeout(() => {
+      document.getElementById('shortcutName').focus();
+    }, 100);
   }
   
   function closeCustomShortcutModal() {
@@ -1214,23 +1235,34 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   
   function deleteCustomShortcut() {
     if (currentSlot !== null && customShortcuts[currentSlot]) {
-      delete customShortcuts[currentSlot];
-      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
-      
-      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
-      resetShortcutSlot(slotElement);
-      
-      closeCustomShortcutModal();
+      if (confirm('Sind Sie sicher, dass Sie diesen Shortcut löschen möchten?')) {
+        delete customShortcuts[currentSlot];
+        localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+        
+        const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+        resetShortcutSlot(slotElement);
+        
+        closeCustomShortcutModal();
+      }
     }
   }
   
   function resetShortcutSlot(slotElement) {
     slotElement.classList.add('empty');
-    slotElement.onclick = () => openCustomShortcutModal(slotElement);
-    slotElement.oncontextmenu = null;
     
-    const iconElement = slotElement.querySelector('.shortcut-icon');
-    const labelElement = slotElement.querySelector('.shortcut-label');
+    // Remove all event listeners
+    slotElement.replaceWith(slotElement.cloneNode(true));
+    
+    // Get the new element reference
+    const newSlotElement = document.querySelector(`[data-slot="${slotElement.dataset.slot}"]`);
+    
+    // Reset onclick handler for empty slot
+    newSlotElement.onclick = function() {
+      openCustomShortcutModal(newSlotElement);
+    };
+    
+    const iconElement = newSlotElement.querySelector('.shortcut-icon');
+    const labelElement = newSlotElement.querySelector('.shortcut-label');
     
     iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
     labelElement.textContent = 'Add Shortcut';
@@ -1245,7 +1277,13 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     const icon = document.getElementById('shortcutIcon').value;
     
     if (name && url && currentSlot !== null) {
-      const shortcut = { name, url, icon };
+      // Validate URL format
+      let validUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+        validUrl = 'https://' + url;
+      }
+      
+      const shortcut = { name, url: validUrl, icon };
       customShortcuts[currentSlot] = shortcut;
       localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
       
@@ -1253,12 +1291,55 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       updateShortcutSlot(slotElement, shortcut);
       
       closeCustomShortcutModal();
+      
+      // Show success message
+      showNotification('Shortcut erfolgreich gespeichert!', 'success');
     }
   });
+  
+  // Utility function to show notifications
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transform translate-x-full transition-transform duration-300`;
+    
+    switch(type) {
+      case 'success':
+        notification.classList.add('bg-green-500');
+        break;
+      case 'error':
+        notification.classList.add('bg-red-500');
+        break;
+      default:
+        notification.classList.add('bg-blue-500');
+    }
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+      notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('translate-x-full');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
   
   // Close modal on background click
   document.getElementById('customShortcutModal').addEventListener('click', function(e) {
     if (e.target === this) {
+      closeCustomShortcutModal();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('customShortcutModal').classList.contains('active')) {
       closeCustomShortcutModal();
     }
   });
