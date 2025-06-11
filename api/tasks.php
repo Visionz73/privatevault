@@ -109,6 +109,9 @@ try {
                 throw new Exception('No fields to update');
             }
 
+            // Add updated_at timestamp
+            $updates[] = "updated_at = NOW()";
+            
             $values[] = $user_id;
             $values[] = $task_id;
 
