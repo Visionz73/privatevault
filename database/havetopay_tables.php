@@ -31,6 +31,9 @@ function columnExists($pdo, $table, $column) {
 }
 
 try {
+    // Begin transaction
+    $pdo->beginTransaction();
+    
     // Track created tables and modifications
     $tablesCreated = [];
     $tablesModified = [];
@@ -42,18 +45,6 @@ try {
     if (!tableExists($pdo, 'user_groups') && tableExists($pdo, 'groups')) {
         $groupsTable = 'groups';
         $groupMembersTable = 'group_members';
-    }
-    
-    // Only start transaction if we need to make changes
-    $needsTransaction = false;
-    
-    // Check what needs to be created/modified first
-    if (!tableExists($pdo, $groupsTable) || !tableExists($pdo, 'expenses') || !tableExists($pdo, 'expense_participants') || !tableExists($pdo, 'expense_categories')) {
-        $needsTransaction = true;
-    }
-    
-    if ($needsTransaction) {
-        $pdo->beginTransaction();
     }
     
     // Create the groups table if it doesn't exist at all
@@ -91,7 +82,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
             description TEXT NULL,
-            amount DECIMAL(15, 2) NOT NULL,
+            amount DECIMAL(15, 2) NOT NULL,  -- Changed from DECIMAL(10, 2) to allow larger amounts
             payer_id INT NOT NULL,
             group_id INT NULL,
             expense_date DATE NOT NULL,
@@ -103,6 +94,40 @@ try {
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expenses';
+    } else {
+        // Check and add title column if missing
+        if (!columnExists($pdo, 'expenses', 'title')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN title VARCHAR(255) NOT NULL DEFAULT 'Unnamed Expense' AFTER id";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added title column)';
+        }
+        
+        // Check and add group_id column if missing
+        if (!columnExists($pdo, 'expenses', 'group_id')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN group_id INT NULL AFTER payer_id";
+            $pdo->exec($sql);
+            
+            // Add foreign key constraint
+            $sql = "ALTER TABLE expenses ADD CONSTRAINT fk_expense_group FOREIGN KEY (group_id) REFERENCES $groupsTable(id) ON DELETE SET NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added group_id column)';
+        }
+        
+        // Check and add expense_category column if missing
+        if (!columnExists($pdo, 'expenses', 'expense_category')) {
+            $sql = "ALTER TABLE expenses ADD COLUMN expense_category VARCHAR(50) DEFAULT 'Other' AFTER expense_date";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (added expense_category column)';
+        }
+        
+        // Fix amount column size if it exists
+        try {
+            $sql = "ALTER TABLE expenses MODIFY amount DECIMAL(15, 2) NOT NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expenses (increased amount column size)';
+        } catch (Exception $e) {
+            error_log("Failed to alter expenses.amount: " . $e->getMessage());
+        }
     }
     
     // 2. Create expense_participants table if not exists
@@ -111,7 +136,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             expense_id INT NOT NULL,
             user_id INT NOT NULL,
-            share_amount DECIMAL(15, 2) NOT NULL,
+            share_amount DECIMAL(15, 2) NOT NULL,  -- Changed from DECIMAL(10, 2) to allow larger amounts
             is_settled TINYINT(1) DEFAULT 0,
             settled_date TIMESTAMP NULL DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -122,6 +147,22 @@ try {
         )";
         $pdo->exec($sql);
         $tablesCreated[] = 'expense_participants';
+    } else {
+        // Check and add settled_date column if missing
+        if (!columnExists($pdo, 'expense_participants', 'settled_date')) {
+            $sql = "ALTER TABLE expense_participants ADD COLUMN settled_date TIMESTAMP NULL DEFAULT NULL AFTER is_settled";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expense_participants (added settled_date column)';
+        }
+        
+        // Fix share_amount column size
+        try {
+            $sql = "ALTER TABLE expense_participants MODIFY share_amount DECIMAL(15, 2) NOT NULL";
+            $pdo->exec($sql);
+            $tablesModified[] = 'expense_participants (increased share_amount column size)';
+        } catch (Exception $e) {
+            error_log("Failed to alter expense_participants.share_amount: " . $e->getMessage());
+        }
     }
     
     // 3. Create expense_categories table if not exists
@@ -162,10 +203,8 @@ try {
         }
     }
 
-    // Commit the transaction only if we started one
-    if ($needsTransaction && $pdo->inTransaction()) {
-        $pdo->commit();
-    }
+    // Commit the transaction
+    $pdo->commit();
     
     // Show success message
     $messages = [];
@@ -183,8 +222,8 @@ try {
     }
     
 } catch (PDOException $e) {
-    // Roll back the transaction on error only if we started one
-    if (isset($needsTransaction) && $needsTransaction && $pdo->inTransaction()) {
+    // Roll back the transaction on error
+    if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
     

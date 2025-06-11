@@ -12,24 +12,10 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
-      /* Removed scaling - navbar will now be normal size */
     }
-    
-    /* Scale up main content by 10% */
-    main {
-      transform: scale(1.1);
-      transform-origin: top left;
-      width: 90.9%; /* Compensate for scaling (100/1.1) */
-      min-height: 90.9vh;
-    }
-    
     /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
-      main { 
-        margin-top: 4rem;
-        transform: scale(1.1);
-        width: 90.9%;
-      }
+      main { margin-top: 3.5rem; }
     }
 
     /* Dark theme widget styling */
@@ -144,18 +130,6 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* HaveToPay widget specific styling */
-    .glass-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    .glass-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
     /* Dropdown menus */
     .dropdown-menu {
       background: rgba(255, 255, 255, 0.08);
@@ -232,7 +206,7 @@
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
-  <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php
@@ -254,7 +228,7 @@
     </h1>
 
     <!-- Grid ------------------------------------------------------------->
-    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
+    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
       <!-- Enhanced Inbox Widget -->
       <article class="widget-card p-6 flex flex-col">
@@ -457,15 +431,15 @@
         </ul>
       </article>
 
-      <!-- HaveToPay Widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
-
       <!-- Placeholder Cards --------------------------------------------->
       <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="placeholder-widget">
           <?= $name ?>-Widget
         </article>
       <?php endforeach; ?>
+
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
     </div><!-- /grid -->
   </main>
   
