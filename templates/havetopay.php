@@ -73,63 +73,6 @@
                 </div>
             </div>
 
-            <!-- Filter Bar -->
-            <div class="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 mb-4 overflow-hidden">
-                <div class="p-3">
-                    <form method="GET" class="flex flex-wrap items-center gap-3">
-                        <!-- Status Filter -->
-                        <div class="flex items-center gap-2">
-                            <label class="text-xs text-white/60 whitespace-nowrap">Status:</label>
-                            <select name="status" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
-                                <option value="">Alle</option>
-                                <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Ausstehend</option>
-                                <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Beglichen</option>
-                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Teilweise</option>
-                            </select>
-                        </div>
-
-                        <!-- User Filter -->
-                        <div class="flex items-center gap-2">
-                            <label class="text-xs text-white/60 whitespace-nowrap">User:</label>
-                            <select name="user" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
-                                <option value="">Alle</option>
-                                <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>Meine Ausgaben</option>
-                                <option value="involved" <?= ($_GET['user'] ?? '') === 'involved' ? 'selected' : '' ?>>Beteiligt</option>
-                                <?php foreach ($allUsers as $user): ?>
-                                    <option value="<?= $user['id'] ?>" <?= ($_GET['user'] ?? '') == $user['id'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($user['display_name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <!-- Group Filter -->
-                        <div class="flex items-center gap-2">
-                            <label class="text-xs text-white/60 whitespace-nowrap">Gruppe:</label>
-                            <select name="group" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
-                                <option value="">Alle</option>
-                                <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>Keine Gruppe</option>
-                                <?php foreach ($allGroups as $group): ?>
-                                    <option value="<?= $group['id'] ?>" <?= ($_GET['group'] ?? '') == $group['id'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($group['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex items-center gap-2 ml-auto">
-                            <button type="submit" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/20 hover:border-white/30">
-                                <i class="fas fa-search mr-1"></i>Filter
-                            </button>
-                            <a href="havetopay.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/60 hover:text-white/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/10 hover:border-white/20">
-                                <i class="fas fa-times mr-1"></i>Reset
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <!-- Main Content Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 <!-- People who owe me -->
@@ -208,6 +151,63 @@
                             </div>
                         <?php endif; ?>
                     </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 mb-4 overflow-hidden">
+                <div class="p-3">
+                    <form method="GET" class="flex flex-wrap items-center gap-3">
+                        <!-- Status Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">Status:</label>
+                            <select name="status" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Ausstehend</option>
+                                <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Beglichen</option>
+                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Teilweise</option>
+                            </select>
+                        </div>
+
+                        <!-- User Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">User:</label>
+                            <select name="user" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>Meine Ausgaben</option>
+                                <option value="involved" <?= ($_GET['user'] ?? '') === 'involved' ? 'selected' : '' ?>>Beteiligt</option>
+                                <?php foreach ($allUsers as $user): ?>
+                                    <option value="<?= $user['id'] ?>" <?= ($_GET['user'] ?? '') == $user['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($user['display_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">Gruppe:</label>
+                            <select name="group" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>Keine Gruppe</option>
+                                <?php foreach ($allGroups as $group): ?>
+                                    <option value="<?= $group['id'] ?>" <?= ($_GET['group'] ?? '') == $group['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($group['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-2 ml-auto">
+                            <button type="submit" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/20 hover:border-white/30">
+                                <i class="fas fa-search mr-1"></i>Filter
+                            </button>
+                            <a href="havetopay.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/60 hover:text-white/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/10 hover:border-white/20">
+                                <i class="fas fa-times mr-1"></i>Reset
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
 
