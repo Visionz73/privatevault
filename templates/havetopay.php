@@ -178,7 +178,7 @@
                                 </button>
                                 
                                 <!-- Filter Dropdown Content -->
-                                <div id="filterDropdown" class="absolute right-0 top-12 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-50 min-w-80 hidden">
+                                <div id="filterDropdown" class="absolute right-0 top-12 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-[9999] min-w-80 hidden">
                                     <div class="p-4">
                                         <h4 class="text-white font-medium mb-3 flex items-center">
                                             <i class="fas fa-filter mr-2"></i>Filter Expenses
