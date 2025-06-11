@@ -73,6 +73,63 @@
                 </div>
             </div>
 
+            <!-- Filter Bar -->
+            <div class="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 mb-4 overflow-hidden">
+                <div class="p-3">
+                    <form method="GET" class="flex flex-wrap items-center gap-3">
+                        <!-- Status Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">Status:</label>
+                            <select name="status" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Ausstehend</option>
+                                <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Beglichen</option>
+                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Teilweise</option>
+                            </select>
+                        </div>
+
+                        <!-- User Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">User:</label>
+                            <select name="user" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>Meine Ausgaben</option>
+                                <option value="involved" <?= ($_GET['user'] ?? '') === 'involved' ? 'selected' : '' ?>>Beteiligt</option>
+                                <?php foreach ($allUsers as $user): ?>
+                                    <option value="<?= $user['id'] ?>" <?= ($_GET['user'] ?? '') == $user['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($user['display_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-white/60 whitespace-nowrap">Gruppe:</label>
+                            <select name="group" class="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
+                                <option value="">Alle</option>
+                                <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>Keine Gruppe</option>
+                                <?php foreach ($allGroups as $group): ?>
+                                    <option value="<?= $group['id'] ?>" <?= ($_GET['group'] ?? '') == $group['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($group['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-2 ml-auto">
+                            <button type="submit" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/20 hover:border-white/30">
+                                <i class="fas fa-search mr-1"></i>Filter
+                            </button>
+                            <a href="havetopay.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/60 hover:text-white/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-white/10 hover:border-white/20">
+                                <i class="fas fa-times mr-1"></i>Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Main Content Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 <!-- People who owe me -->
@@ -160,92 +217,23 @@
                     <div class="flex justify-between items-center">
                         <h3 class="text-sm font-semibold text-white/90">
                             <?php if (!empty($_GET['status']) || !empty($_GET['user']) || !empty($_GET['group'])): ?>
-                                Filtered Expenses
+                                Gefilterte Ausgaben
                             <?php else: ?>
-                                Recent Expenses
+                                Aktuelle Ausgaben
                             <?php endif; ?>
                         </h3>
-                        <div class="flex items-center gap-3">
-                            <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                                <?php echo count($filteredExpenses); ?>
-                            </span>
-                            
-                            <!-- Filter Dropdown -->
-                            <div class="relative">
-                                <button type="button" onclick="toggleFilter()" id="filterButton" 
-                                        class="bg-white/10 hover:bg-white/20 border border-white/20 text-white/80 p-2 rounded-xl transition-all backdrop-blur-sm">
-                                    <i class="fas fa-filter text-sm"></i>
-                                </button>
-                                
-                                <!-- Filter Dropdown Content -->
-                                <div id="filterDropdown" class="absolute right-0 top-12 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-[9999] min-w-80 hidden">
-                                    <div class="p-4">
-                                        <h4 class="text-white font-medium mb-3 flex items-center">
-                                            <i class="fas fa-filter mr-2"></i>Filter Expenses
-                                        </h4>
-                                        <form method="GET" class="space-y-3">
-                                            <!-- Status Filter -->
-                                            <div>
-                                                <label class="block text-xs text-white/70 mb-1">Status</label>
-                                                <select name="status" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                                                    <option value="">All Expenses</option>
-                                                    <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Pending Payment</option>
-                                                    <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Fully Settled</option>
-                                                    <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Partially Settled</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- User Filter -->
-                                            <div>
-                                                <label class="block text-xs text-white/70 mb-1">User</label>
-                                                <select name="user" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                                                    <option value="">All Users</option>
-                                                    <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>My Expenses</option>
-                                                    <?php foreach ($allUsers as $user): ?>
-                                                        <option value="<?= $user['id'] ?>" <?= ($_GET['user'] ?? '') == $user['id'] ? 'selected' : '' ?>>
-                                                            <?= htmlspecialchars($user['display_name']) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-
-                                            <!-- Group Filter -->
-                                            <div>
-                                                <label class="block text-xs text-white/70 mb-1">Group</label>
-                                                <select name="group" class="w-full px-3 py-2 bg-gray-800/80 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                                                    <option value="">All Groups</option>
-                                                    <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>No Group</option>
-                                                    <?php foreach ($allGroups as $group): ?>
-                                                        <option value="<?= $group['id'] ?>" <?= ($_GET['group'] ?? '') == $group['id'] ? 'selected' : '' ?>>
-                                                            <?= htmlspecialchars($group['name']) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-
-                                            <!-- Action Buttons -->
-                                            <div class="flex gap-2 pt-3 border-t border-white/10">
-                                                <button type="submit" class="flex-1 bg-purple-600/80 hover:bg-purple-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-medium transition-all border border-purple-500/50">
-                                                    <i class="fas fa-search mr-1"></i>Apply
-                                                </button>
-                                                <a href="havetopay.php" class="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-medium transition-all text-center border border-white/20">
-                                                    <i class="fas fa-times mr-1"></i>Clear
-                                                </a>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            <?php echo count($filteredExpenses); ?>
+                        </span>
                     </div>
                 </div>
                 <div class="p-4 max-h-80 overflow-y-auto">
                     <?php if (empty($filteredExpenses)): ?>
                         <div class="text-center py-12">
                             <i class="fas fa-receipt text-4xl text-white/20 mb-3"></i>
-                            <p class="text-white/50 mb-4 text-sm">No expenses found matching the selected filters.</p>
+                            <p class="text-white/50 mb-4 text-sm">Keine Ausgaben für die gewählten Filter gefunden.</p>
                             <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white font-semibold py-2 px-4 rounded-xl inline-flex items-center transition-all text-sm">
-                                <i class="fas fa-plus mr-2"></i>Add Your First Expense
+                                <i class="fas fa-plus mr-2"></i>Erste Ausgabe hinzufügen
                             </a>
                         </div>
                     <?php else: ?>
@@ -346,40 +334,6 @@
         </div>
         
         <script>
-            let isFilterOpen = false;
-            
-            function toggleFilter() {
-                const dropdown = document.getElementById('filterDropdown');
-                const button = document.getElementById('filterButton');
-                
-                if (isFilterOpen) {
-                    dropdown.classList.add('hidden');
-                    button.classList.remove('bg-white/20');
-                    isFilterOpen = false;
-                } else {
-                    dropdown.classList.remove('hidden');
-                    button.classList.add('bg-white/20');
-                    isFilterOpen = true;
-                }
-            }
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                const dropdown = document.getElementById('filterDropdown');
-                const button = document.getElementById('filterButton');
-                
-                if (!dropdown.contains(e.target) && !button.contains(e.target) && isFilterOpen) {
-                    dropdown.classList.add('hidden');
-                    button.classList.remove('bg-white/20');
-                    isFilterOpen = false;
-                }
-            });
-            
-            // Prevent dropdown from closing when clicking inside it
-            document.getElementById('filterDropdown').addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-            
             function confirmDelete(expenseId, expenseTitle) {
                 document.getElementById('deleteExpenseId').value = expenseId;
                 document.getElementById('expenseTitle').textContent = expenseTitle;

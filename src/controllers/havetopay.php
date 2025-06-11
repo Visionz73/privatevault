@@ -167,7 +167,13 @@ try {
         if ($userFilter === 'me') {
             $whereConditions[] = "e.payer_id = ?";
             $params[] = $userId;
+        } elseif ($userFilter === 'involved') {
+            // Show expenses where user is either payer or participant
+            $whereConditions[] = "(e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))";
+            $params[] = $userId;
+            $params[] = $userId;
         } else {
+            // Specific user filter
             $whereConditions[] = "(e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))";
             $params[] = $userFilter;
             $params[] = $userFilter;
@@ -184,6 +190,9 @@ try {
     }
     
     $whereClause = !empty($whereConditions) ? 'AND ' . implode(' AND ', $whereConditions) : '';
+    
+    // Base query condition (user must be involved in the expense)
+    $baseCondition = "(e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))";
     
     // Get expenses with settlement statistics
     $userNameFields = $hasFirstName && $hasLastName ? 
@@ -214,7 +223,7 @@ try {
             FROM expense_participants ep
             GROUP BY ep.expense_id
         ) settlement_stats ON e.id = settlement_stats.expense_id
-        WHERE (e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))
+        WHERE $baseCondition
         $whereClause
         ORDER BY e.created_at DESC
         LIMIT 50
@@ -231,8 +240,9 @@ try {
         $filteredExpenses[] = $expense;
     }
     
-    // If no filters applied, use recent expenses (excluding fully settled)
+    // If no filters applied, show only non-fully-settled expenses by default
     if (empty($statusFilter) && empty($userFilter) && empty($groupFilter)) {
+        $filteredExpenses = []; // Reset the array
         $stmt = $pdo->prepare("
             SELECT e.*,
                    u.username as payer_name,
@@ -257,7 +267,7 @@ try {
                 FROM expense_participants ep
                 GROUP BY ep.expense_id
             ) settlement_stats ON e.id = settlement_stats.expense_id
-            WHERE (e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))
+            WHERE $baseCondition
             AND settlement_stats.settlement_status != 'fully_settled'
             ORDER BY e.created_at DESC
             LIMIT 15
@@ -266,7 +276,6 @@ try {
         $recentExpenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Add display names to recent expenses
-        $filteredExpenses = [];
         foreach ($recentExpenses as $expense) {
             $expense['payer_display_name'] = $hasFirstName && $hasLastName && 
                 !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
