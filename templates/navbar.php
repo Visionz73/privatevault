@@ -924,6 +924,26 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </div>
           <span class="shortcut-label">Abmelden</span>
         </a>
+
+        <!-- Custom Shortcut Slot 1 -->
+        <div class="shortcut-item empty" data-slot="custom1" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+
+        <!-- Custom Shortcut Slot 2 -->
+        <div class="shortcut-item empty" data-slot="custom2" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
       </div>
     </div>
   </div>
