@@ -289,47 +289,47 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  /* Profile Modal dark theme adjustments - Fixed */
+  /* Profile Modal dark theme adjustments */
   .profile-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     z-index: 9999 !important;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
   }
   .profile-modal.active {
     opacity: 1;
     visibility: visible;
   }
   .profile-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
     background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     max-width: 400px;
-    width: 100%;
+    width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    transform: scale(0.9);
     transition: all 0.3s ease;
+    z-index: 10000;
   }
   .profile-modal.active .profile-modal-content {
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
   .profile-modal-header {
     padding: 1.5rem 1.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #e5e7eb;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -341,19 +341,12 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: #6b7280;
     cursor: pointer;
     transition: color 0.2s ease;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
   }
   .close-modal:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
+    color: #374151;
   }
   .modal-menu-item {
     display: flex;
@@ -362,15 +355,14 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.9);
+    color: #374151;
     transition: all 0.2s ease;
     border: 1px solid transparent;
   }
   .modal-menu-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.2);
-    text-decoration: none;
+    background: #f3f4f6;
+    color: #667eea;
+    border-color: #e5e7eb;
   }
   .modal-menu-item svg {
     margin-right: 0.75rem;
@@ -989,8 +981,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           <?= getUserInitials($user) ?>
         </div>
         <div>
-          <h3 class="font-semibold text-white"><?= htmlspecialchars($user['username']) ?></h3>
-          <p class="text-sm text-white/70"><?= ucfirst($user['role']) ?></p>
+          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
+          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
         </div>
       </div>
       <button class="close-modal" onclick="closeProfileModal()">&times;</button>
@@ -1009,14 +1001,20 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </svg>
           Einstellungen
         </a>
+        <a href="/profile.php?tab=notifications" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
+          </svg>
+          Benachrichtigungen
+        </a>
         <a href="/profile.php?tab=security" class="modal-menu-item">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
           Sicherheit
         </a>
-        <hr class="my-3 border-white/20">
-        <a href="/logout.php" class="modal-menu-item text-red-400 hover:text-red-300 hover:bg-red-500/10">
+        <hr class="my-3">
+        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
           </svg>
@@ -1114,49 +1112,25 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     });
   });
 
-  // Profile Modal Functions - Fixed
   function openProfileModal() {
-    console.log('Opening profile modal'); // Debug log
     const modal = document.getElementById('profileModal');
     if (modal) {
       modal.classList.add('active');
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
-    } else {
-      console.error('Profile modal not found');
     }
   }
 
   function closeProfileModal() {
-    console.log('Closing profile modal'); // Debug log
     const modal = document.getElementById('profileModal');
     if (modal) {
       modal.classList.remove('active');
-      // Restore body scroll
-      document.body.style.overflow = '';
     }
   }
 
-  // Close modal when clicking outside - Fixed
+  // Close modal when clicking outside
   document.addEventListener('click', function(e) {
     const modal = document.getElementById('profileModal');
-    const profileButton = e.target.closest('[onclick="openProfileModal()"]');
-    
-    // If modal is active and click is outside modal and not on profile button
-    if (modal && modal.classList.contains('active') && 
-        !modal.querySelector('.profile-modal-content').contains(e.target) && 
-        !profileButton) {
+    if (modal && modal.classList.contains('active') && !modal.contains(e.target) && !e.target.closest('button[onclick="openProfileModal()"]')) {
       closeProfileModal();
-    }
-  });
-
-  // Escape key to close modal
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      const modal = document.getElementById('profileModal');
-      if (modal && modal.classList.contains('active')) {
-        closeProfileModal();
-      }
     }
   });
 
@@ -1167,27 +1141,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   document.addEventListener('DOMContentLoaded', function() {
     loadCustomShortcuts();
     
-    // Debug function - remove after fixing
-    function debugProfileModal() {
-      console.log('Debug: Profile modal elements');
-      console.log('Modal element:', document.getElementById('profileModal'));
-      console.log('User banner buttons:', document.querySelectorAll('[onclick="openProfileModal()"]'));
-      
-      // Alternative way to add event listeners if onclick fails
-      const userBannerButtons = document.querySelectorAll('.user-banner button, .mobile-toggle-btn[onclick*="openProfileModal"]');
-      userBannerButtons.forEach((btn, index) => {
-        console.log(`Button ${index}:`, btn);
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Button clicked via event listener');
-          openProfileModal();
-        });
-      });
-    }
-    
-    // Run debug function
-    setTimeout(debugProfileModal, 1000);
+    // ...existing code...
   });
   
   function loadCustomShortcuts() {
@@ -1376,6 +1330,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     }, 3000);
   }
   
+  // Close modal on background click
   document.getElementById('customShortcutModal').addEventListener('click', function(e) {
     if (e.target === this) {
       closeCustomShortcutModal();
