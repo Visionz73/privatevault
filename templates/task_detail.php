@@ -219,6 +219,7 @@
                             <?php endif; ?>
                         </div>
                         
+                        <!-- Enhanced Details Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <h3 class="text-sm font-medium text-muted mb-1">Erstellt von</h3>
@@ -250,10 +251,100 @@
                                     <?= $statusLabel ?>
                                 </span>
                             </div>
+                            
+                            <?php if (!empty($task['priority'])): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-muted mb-1">Priorität</h3>
+                                    <span class="px-2 py-1 rounded text-xs font-medium
+                                        <?php
+                                        switch($task['priority']) {
+                                            case 'urgent': echo 'bg-red-100 text-red-800'; break;
+                                            case 'high': echo 'bg-orange-100 text-orange-800'; break;
+                                            case 'medium': echo 'bg-yellow-100 text-yellow-800'; break;
+                                            case 'low': echo 'bg-green-100 text-green-800'; break;
+                                            default: echo 'bg-gray-100 text-gray-800';
+                                        }
+                                        ?>">
+                                        <?= htmlspecialchars(ucfirst($task['priority'])) ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($task['category'])): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-muted mb-1">Kategorie</h3>
+                                    <span class="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                        <?= htmlspecialchars(ucfirst($task['category'])) ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($task['estimated_hours'])): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-muted mb-1">Geschätzte Stunden</h3>
+                                    <p class="font-medium text-secondary"><?= $task['estimated_hours'] ?>h</p>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($task['estimated_budget'])): ?>
+                                <div>
+                                    <h3 class="text-sm font-medium text-muted mb-1">Geschätztes Budget</h3>
+                                    <p class="font-medium text-secondary">€<?= number_format($task['estimated_budget'], 2) ?></p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Tags if available -->
+                        <?php if (!empty($task['tags'])): ?>
+                            <div class="mb-6">
+                                <h3 class="text-sm font-medium text-muted mb-2">Tags</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <?php foreach (explode(',', $task['tags']) as $tag): ?>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                            #<?= htmlspecialchars(trim($tag)) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <!-- Quick Actions -->
+                        <div class="border-t border-white/10 pt-6">
+                            <h3 class="text-sm font-medium text-muted mb-3">Schnellaktionen</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <?php if ($task['status'] !== 'done'): ?>
+                                    <form method="post" class="inline">
+                                        <input type="hidden" name="status" value="done">
+                                        <button type="submit" class="btn-primary px-4 py-2 text-sm">
+                                            Als erledigt markieren
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                <?php if ($task['status'] === 'todo'): ?>
+                                    <form method="post" class="inline">
+                                        <input type="hidden" name="status" value="doing">
+                                        <button type="submit" class="btn-secondary px-4 py-2 text-sm">
+                                            In Bearbeitung
+                                        </button>
+                                    </form>
+                                <?php elseif ($task['status'] === 'doing'): ?>
+                                    <form method="post" class="inline">
+                                        <input type="hidden" name="status" value="todo">
+                                        <button type="submit" class="btn-secondary px-4 py-2 text-sm">
+                                            Zurück zu To-Do
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                <a href="taskboard.php" class="btn-secondary px-4 py-2 text-sm inline-block">
+                                    Zum Kanban Board
+                                </a>
+                            </div>
                         </div>
                         
                         <?php if ($canEdit): ?>
-                            <div class="flex justify-end">
+                            <div class="flex justify-end mt-6 pt-4 border-t border-white/10">
                                 <a href="?id=<?= $task['id'] ?>&edit=1" class="btn-primary px-4 py-2 inline-block">
                                     Bearbeiten
                                 </a>

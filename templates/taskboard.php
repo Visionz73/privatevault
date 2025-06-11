@@ -231,11 +231,6 @@ function getCategoryColor($category) {
     </div>
   </main>
 
-  <!-- Task Modal (reuse existing) -->
-  <div id="taskModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    <div id="modalContent" class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 m-4 max-h-[90vh] overflow-y-auto"></div>
-  </div>
-
   <script>
     // Drag and Drop Functionality
     let draggedTaskId = null;
@@ -293,64 +288,6 @@ function getCategoryColor($category) {
             countElement.textContent = tasksContainer.children.length;
         }
     }
-
-    // Enhanced task modal functions
-    function openNewTaskModal(defaultStatus = 'todo') {
-        fetch('/templates/task_modal.php?status=' + defaultStatus)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                document.getElementById('taskModal').classList.remove('hidden');
-                document.getElementById('taskModal').classList.add('flex');
-                
-                const taskForm = document.getElementById('taskForm');
-                if(taskForm) {
-                    taskForm.addEventListener('submit', handleTaskFormSubmit);
-                }
-            });
-    }
-    
-    function openTaskModal(taskId) {
-        fetch('/templates/task_modal.php?id=' + taskId)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                document.getElementById('taskModal').classList.remove('hidden');
-                document.getElementById('taskModal').classList.add('flex');
-                
-                const taskForm = document.getElementById('taskForm');
-                if(taskForm) {
-                    taskForm.addEventListener('submit', handleTaskFormSubmit);
-                }
-            });
-    }
-
-    function handleTaskFormSubmit(event) {
-        event.preventDefault();
-        const fd = new FormData(event.target);
-
-        fetch('/src/api/task_save.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    location.reload();
-                } else {
-                    alert(res.error || 'Fehler beim Speichern des Tasks.');
-                }
-            })
-            .catch(error => {
-                console.error('Error saving task:', error);
-                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
-            });
-    }
-
-    // Close Modal
-    document.getElementById('taskModal').addEventListener('click', function(event) {
-        if (event.target === this) {
-            this.classList.add('hidden');
-            this.classList.remove('flex');
-        }
-    });
 
     // Initialisiere Spaltenzähler beim Laden der Seite
     document.addEventListener('DOMContentLoaded', () => {
