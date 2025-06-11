@@ -24,7 +24,7 @@ $filterMode = $_GET['filter'] ?? 'all';
         .task-column { min-height: 70vh; }
         .dragging { opacity: 0.5; }
         @media (max-width: 768px) {
-            main { margin-top: 3.5rem; }
+            main { margin-top: 4rem; }
             .columns-container { flex-direction: column; }
             .task-column { min-height: auto; margin-bottom: 1rem; width: 100% !important; }
         }
@@ -33,7 +33,7 @@ $filterMode = $_GET['filter'] ?? 'all';
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2]">
     <?php require_once __DIR__ . '/../templates/navbar.php'; ?>
     
-    <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-6">
+    <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-4 md:p-6">
         <!-- Header with filter options -->
         <div class="flex flex-wrap justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Kanban Board</h1>

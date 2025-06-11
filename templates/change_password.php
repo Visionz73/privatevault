@@ -27,7 +27,7 @@
     <?php require_once __DIR__ . '/navbar.php'; // The Tailwind sidebar navbar ?>
 
     <!-- Main content area, adjusted for sidebar -->
-    <main class="content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8">
+    <main class="content-area ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-6 md:p-8">
         <div class="max-w-xl mx-auto"> <?php // Adjusted max-width for a typical content page ?>
             <header class="mb-6"> <?php // Reduced bottom margin slightly ?>
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800">

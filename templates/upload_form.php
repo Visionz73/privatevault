@@ -113,7 +113,7 @@
 <body class="min-h-screen flex">
   <?php require_once __DIR__.'/navbar.php'; ?>
   
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
+  <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <div class="max-w-2xl mx-auto">
       <header class="mb-8">
         <h1 class="text-3xl font-bold header-text">Dokument hochladen</h1>

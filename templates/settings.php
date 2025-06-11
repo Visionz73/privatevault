@@ -68,7 +68,7 @@
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
     <!-- Main content area, adjusted for sidebar -->
-    <main class="content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
+    <main class="content-area ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
         <div class="max-w-3xl mx-auto">
             <header class="mb-8">
                 <h1 class="text-3xl font-bold text-white">
