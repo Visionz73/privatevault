@@ -98,9 +98,20 @@ function getCategoryColor($category) {
       background: #10b981;
       transition: width 0.3s ease;
     }
+    
+    /* Budget badge styling */
+    .budget-badge {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2]">
+<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[##f9fdf2]">
   <?php require_once __DIR__ . '/navbar.php'; ?>
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-6">
     
@@ -147,11 +158,18 @@ function getCategoryColor($category) {
                   <!-- Header with title and budget -->
                   <div class="flex justify-between items-start mb-2">
                     <h3 class="font-medium text-gray-900 flex-1"><?= htmlspecialchars($task['title']) ?></h3>
-                    <?php if (!empty($task['estimated_budget'])): ?>
-                      <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded ml-2">
-                        €<?= number_format($task['estimated_budget'], 0) ?>
-                      </span>
-                    <?php endif; ?>
+                    <div class="flex flex-col gap-1 ml-2">
+                      <?php if (!empty($task['estimated_budget'])): ?>
+                        <span class="budget-badge">
+                          €<?= number_format($task['estimated_budget'], 0) ?>
+                        </span>
+                      <?php endif; ?>
+                      <?php if (!empty($task['estimated_hours'])): ?>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          <?= $task['estimated_hours'] ?>h
+                        </span>
+                      <?php endif; ?>
+                    </div>
                   </div>
                   
                   <!-- Category badge -->

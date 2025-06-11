@@ -44,6 +44,19 @@
             color: rgba(255, 255, 255, 0.5);
         }
         
+        /* Subtask progress bar */
+        .subtask-progress {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .subtask-progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: width 0.3s ease;
+        }
+        
         /* Status badges */
         .status-badge {
             border-radius: 1rem;
@@ -113,13 +126,28 @@
             color: white;
             text-decoration: none;
         }
+        
+        /* Subtask items */
+        .subtask-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .subtask-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .subtask-completed {
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
     <?php require_once __DIR__.'/navbar.php'; ?>
     
     <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <!-- Zurück-Button -->
             <div class="mb-6">
                 <a href="inbox.php" class="back-link flex items-center hover:underline">
@@ -156,32 +184,22 @@
                 <?php if ($editMode): ?>
                     <!-- Bearbeitungsmodus -->
                     <form method="post" class="p-6 md:p-8">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-primary mb-1">Titel</label>
-                            <input type="text" name="title" value="<?= htmlspecialchars($task['title']) ?>" 
-                                   class="task-input w-full px-4 py-2" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-primary mb-1">Beschreibung</label>
-                            <textarea name="description" rows="4" 
-                                      class="task-input w-full px-4 py-2"><?= htmlspecialchars($task['description'] ?? '') ?></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Basic Task Info -->
+                        <div class="grid grid-cols-1 gap-6 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-primary mb-1">Ersteller</label>
-                                <input type="text" value="<?= htmlspecialchars($task['creator_name']) ?>" 
-                                       class="task-input w-full px-4 py-2 opacity-50" readonly>
+                                <label class="block text-sm font-medium text-primary mb-1">Titel</label>
+                                <input type="text" name="title" value="<?= htmlspecialchars($task['title']) ?>" 
+                                       class="task-input w-full px-4 py-2" required>
                             </div>
-                            <?php if ($task['assigned_group_id']): ?>
-                                <div>
-                                    <label class="block text-sm font-medium text-primary mb-1">Zugewiesen an Gruppe</label>
-                                    <input type="text" value="<?= htmlspecialchars($task['group_name']) ?>" 
-                                           class="task-input w-full px-4 py-2 opacity-50" readonly>
-                                </div>
-                            <?php endif; ?>
+                            <div>
+                                <label class="block text-sm font-medium text-primary mb-1">Beschreibung</label>
+                                <textarea name="description" rows="4" 
+                                          class="task-input w-full px-4 py-2"><?= htmlspecialchars($task['description'] ?? '') ?></textarea>
+                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Grid for task properties -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div>
                                 <label class="block text-sm font-medium text-primary mb-1">Fällig am</label>
                                 <input type="date" name="due_date" value="<?= $task['due_date'] ? date('Y-m-d', strtotime($task['due_date'])) : '' ?>" 
@@ -195,6 +213,55 @@
                                     <option value="done" <?= $task['status'] === 'done' ? 'selected' : '' ?>>Erledigt</option>
                                 </select>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-primary mb-1">Priorität</label>
+                                <select name="priority" class="task-input w-full px-4 py-2">
+                                    <option value="low" <?= ($task['priority'] ?? '') === 'low' ? 'selected' : '' ?>>Niedrig</option>
+                                    <option value="medium" <?= ($task['priority'] ?? 'medium') === 'medium' ? 'selected' : '' ?>>Mittel</option>
+                                    <option value="high" <?= ($task['priority'] ?? '') === 'high' ? 'selected' : '' ?>>Hoch</option>
+                                    <option value="urgent" <?= ($task['priority'] ?? '') === 'urgent' ? 'selected' : '' ?>>Dringend</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-primary mb-1">Kategorie</label>
+                                <select name="category" class="task-input w-full px-4 py-2">
+                                    <option value="">Keine Kategorie</option>
+                                    <option value="development" <?= ($task['category'] ?? '') === 'development' ? 'selected' : '' ?>>Entwicklung</option>
+                                    <option value="design" <?= ($task['category'] ?? '') === 'design' ? 'selected' : '' ?>>Design</option>
+                                    <option value="marketing" <?= ($task['category'] ?? '') === 'marketing' ? 'selected' : '' ?>>Marketing</option>
+                                    <option value="administration" <?= ($task['category'] ?? '') === 'administration' ? 'selected' : '' ?>>Administration</option>
+                                    <option value="meeting" <?= ($task['category'] ?? '') === 'meeting' ? 'selected' : '' ?>>Meeting</option>
+                                    <option value="research" <?= ($task['category'] ?? '') === 'research' ? 'selected' : '' ?>>Recherche</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Budget Section -->
+                        <div class="border-t border-white/10 pt-6 mb-6">
+                            <h3 class="text-lg font-medium text-primary mb-4">Budget & Aufwand</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-primary mb-1">Geschätztes Budget (€)</label>
+                                    <input type="number" name="estimated_budget" step="0.01" min="0"
+                                           value="<?= htmlspecialchars($task['estimated_budget'] ?? '') ?>" 
+                                           class="task-input w-full px-4 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-primary mb-1">Geschätzte Stunden</label>
+                                    <input type="number" name="estimated_hours" step="0.5" min="0"
+                                           value="<?= htmlspecialchars($task['estimated_hours'] ?? '') ?>" 
+                                           class="task-input w-full px-4 py-2">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tags -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-primary mb-1">Tags</label>
+                            <input type="text" name="tags" 
+                                   value="<?= htmlspecialchars($task['tags'] ?? '') ?>"
+                                   placeholder="Tags durch Komma getrennt..."
+                                   class="task-input w-full px-4 py-2">
                         </div>
                         
                         <div class="flex justify-end space-x-3">
@@ -278,21 +345,29 @@
                                     </span>
                                 </div>
                             <?php endif; ?>
-                            
-                            <?php if (!empty($task['estimated_hours'])): ?>
-                                <div>
-                                    <h3 class="text-sm font-medium text-muted mb-1">Geschätzte Stunden</h3>
-                                    <p class="font-medium text-secondary"><?= $task['estimated_hours'] ?>h</p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($task['estimated_budget'])): ?>
-                                <div>
-                                    <h3 class="text-sm font-medium text-muted mb-1">Geschätztes Budget</h3>
-                                    <p class="font-medium text-secondary">€<?= number_format($task['estimated_budget'], 2) ?></p>
-                                </div>
-                            <?php endif; ?>
                         </div>
+                        
+                        <!-- Budget & Time Information -->
+                        <?php if (!empty($task['estimated_budget']) || !empty($task['estimated_hours'])): ?>
+                            <div class="border-t border-white/10 pt-6 mb-6">
+                                <h3 class="text-lg font-medium text-primary mb-4">Budget & Aufwand</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <?php if (!empty($task['estimated_budget'])): ?>
+                                        <div>
+                                            <h3 class="text-sm font-medium text-muted mb-1">Geschätztes Budget</h3>
+                                            <p class="text-2xl font-bold text-green-400">€<?= number_format($task['estimated_budget'], 2) ?></p>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (!empty($task['estimated_hours'])): ?>
+                                        <div>
+                                            <h3 class="text-sm font-medium text-muted mb-1">Geschätzte Stunden</h3>
+                                            <p class="text-2xl font-bold text-blue-400"><?= $task['estimated_hours'] ?>h</p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         
                         <!-- Tags if available -->
                         <?php if (!empty($task['tags'])): ?>
@@ -352,6 +427,93 @@
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
+            </div>
+            
+            <!-- Subtasks / To-Do List Section -->
+            <div class="task-detail-card">
+                <div class="p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-primary">To-Do Liste</h3>
+                        <?php if ($totalSubtasks > 0): ?>
+                            <span class="text-sm text-muted">
+                                <?= $completedSubtasks ?>/<?= $totalSubtasks ?> erledigt (<?= $subtaskProgress ?>%)
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <?php if ($totalSubtasks > 0): ?>
+                        <div class="mb-6">
+                            <div class="subtask-progress">
+                                <div class="subtask-progress-bar" style="width: <?= $subtaskProgress ?>%"></div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Subtask List -->
+                    <div class="space-y-3 mb-6">
+                        <?php if (empty($subtasks)): ?>
+                            <p class="text-muted text-center py-8">Noch keine Unteraufgaben vorhanden.</p>
+                        <?php else: ?>
+                            <?php foreach ($subtasks as $subtask): ?>
+                                <div class="subtask-item p-4 flex items-center gap-4 <?= $subtask['is_completed'] ? 'subtask-completed' : '' ?>">
+                                    <?php if ($canEdit): ?>
+                                        <form method="post" class="inline">
+                                            <input type="hidden" name="action" value="toggle_subtask">
+                                            <input type="hidden" name="subtask_id" value="<?= $subtask['id'] ?>">
+                                            <input type="hidden" name="is_completed" value="<?= $subtask['is_completed'] ? '0' : '1' ?>">
+                                            <button type="submit" class="w-5 h-5 rounded border-2 border-white/30 flex items-center justify-center hover:border-white/50 transition-colors">
+                                                <?php if ($subtask['is_completed']): ?>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                <?php endif; ?>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <div class="w-5 h-5 rounded border-2 border-white/30 flex items-center justify-center">
+                                            <?php if ($subtask['is_completed']): ?>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <span class="flex-1 <?= $subtask['is_completed'] ? 'line-through text-muted' : 'text-secondary' ?>">
+                                        <?= htmlspecialchars($subtask['title']) ?>
+                                    </span>
+                                    
+                                    <?php if ($canEdit): ?>
+                                        <form method="post" class="inline">
+                                            <input type="hidden" name="action" value="delete_subtask">
+                                            <input type="hidden" name="subtask_id" value="<?= $subtask['id'] ?>">
+                                            <button type="submit" class="text-red-400 hover:text-red-300 transition-colors" 
+                                                    onclick="return confirm('Unteraufgabe löschen?')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Add New Subtask -->
+                    <?php if ($canEdit): ?>
+                        <form method="post" class="flex gap-3">
+                            <input type="hidden" name="action" value="add_subtask">
+                            <input type="text" name="subtask_title" required 
+                                   placeholder="Neue Unteraufgabe hinzufügen..."
+                                   class="task-input flex-1 px-4 py-2">
+                            <button type="submit" class="btn-primary px-4 py-2 whitespace-nowrap">
+                                Hinzufügen
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>
