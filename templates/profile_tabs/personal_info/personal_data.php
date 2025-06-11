@@ -3,85 +3,206 @@
 <div class="glassmorphism-container p-6 space-y-8">
   <h2 class="text-xl font-semibold text-primary">Persönliche Daten</h2>
 
-  <?php if (!empty($success)): ?>
-    <div class="p-4 bg-green-500/20 border border-green-500/30 text-green-300 rounded-lg backdrop-blur">
-      <?= htmlspecialchars($success) ?>
+  <div class="space-y-8">
+    <!-- Success/Error Messages -->
+    <?php if (!empty($success)): ?>
+      <div class="glass-alert-success p-4">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span><?= htmlspecialchars($success) ?></span>
+        </div>
+      </div>
+    <?php endif; ?>
+    
+    <?php if (!empty($errors)): ?>
+      <div class="glass-alert-error p-4">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <?php foreach ($errors as $error): ?>
+              <p class="text-sm"><?= htmlspecialchars($error) ?></p>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <!-- Personal Data Form -->
+    <div class="glass-card p-8">
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold text-primary mb-2">Grunddaten</h3>
+        <p class="text-muted text-sm">Ihre persönlichen Informationen</p>
+      </div>
+      
+      <form method="post" action="" class="space-y-6">
+        <input type="hidden" name="form_marker" value="personal_data_update">
+        
+        <!-- Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-3">Vorname *</label>
+            <input 
+              type="text" 
+              name="first_name" 
+              value="<?= htmlspecialchars($user['first_name'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              required
+            >
+          </div>
+          <div>
+            <label class="block mb-3">Nachname *</label>
+            <input 
+              type="text" 
+              name="last_name" 
+              value="<?= htmlspecialchars($user['last_name'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              required
+            >
+          </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-3">Geburtsdatum</label>
+            <input 
+              type="date" 
+              name="birthdate" 
+              value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+            >
+          </div>
+          <div>
+            <label class="block mb-3">Nationalität</label>
+            <input 
+              type="text" 
+              name="nationality" 
+              value="<?= htmlspecialchars($user['nationality'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="z.B. Deutsch"
+            >
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-3">Beruf</label>
+            <input 
+              type="text" 
+              name="job_title" 
+              value="<?= htmlspecialchars($user['job_title'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="Ihr Beruf"
+            >
+          </div>
+          <div>
+            <label class="block mb-3">Standort</label>
+            <input 
+              type="text" 
+              name="location" 
+              value="<?= htmlspecialchars($user['location'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="Stadt, Land"
+            >
+          </div>
+        </div>
+        
+        <div class="pt-6">
+          <button type="submit" class="glass-btn-primary px-8 py-3 font-medium">
+            Änderungen speichern
+          </button>
+        </div>
+      </form>
     </div>
-  <?php endif; ?>
-  <?php if (!empty($errors)): ?>
-    <div class="p-4 bg-red-500/20 border border-red-500/30 text-red-300 rounded-lg backdrop-blur">
-      <ul class="list-disc list-inside space-y-1 text-sm">
-        <?php foreach ($errors as $e): ?>
-          <li><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-      </ul>
+    
+    <!-- Address Section -->
+    <div class="glass-card p-8">
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold text-primary mb-2">Adresse</h3>
+        <p class="text-muted text-sm">Ihre Kontaktdaten</p>
+      </div>
+      
+      <form method="post" action="" class="space-y-6">
+        <input type="hidden" name="form_marker" value="personal_data_update">
+        
+        <div>
+          <label class="block mb-3">Straße & Hausnummer</label>
+          <input 
+            type="text" 
+            name="street" 
+            value="<?= htmlspecialchars($user['street'] ?? '') ?>"
+            class="glass-input w-full px-4 py-3"
+            placeholder="Musterstraße 123"
+          >
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block mb-3">PLZ</label>
+            <input 
+              type="text" 
+              name="zip" 
+              value="<?= htmlspecialchars($user['zip'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="12345"
+            >
+          </div>
+          <div class="md:col-span-2">
+            <label class="block mb-3">Stadt</label>
+            <input 
+              type="text" 
+              name="city" 
+              value="<?= htmlspecialchars($user['city'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="Musterstadt"
+            >
+          </div>
+        </div>
+        
+        <div>
+          <label class="block mb-3">Land</label>
+          <input 
+            type="text" 
+            name="country" 
+            value="<?= htmlspecialchars($user['country'] ?? '') ?>"
+            class="glass-input w-full px-4 py-3"
+            placeholder="Deutschland"
+          >
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-3">Telefon</label>
+            <input 
+              type="tel" 
+              name="phone" 
+              value="<?= htmlspecialchars($user['phone'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="+49 123 456789"
+            >
+          </div>
+          <div>
+            <label class="block mb-3">Private E-Mail</label>
+            <input 
+              type="email" 
+              name="private_email" 
+              value="<?= htmlspecialchars($user['private_email'] ?? '') ?>"
+              class="glass-input w-full px-4 py-3"
+              placeholder="ihre@email.de"
+            >
+          </div>
+        </div>
+        
+        <div class="pt-6">
+          <button type="submit" class="glass-btn-primary px-8 py-3 font-medium">
+            Adresse speichern
+          </button>
+        </div>
+      </form>
     </div>
-  <?php endif; ?>
-
-  <form method="post" action="" class="space-y-8">
-    <input type="hidden" name="form_marker" value="personal_data_update">
-
-    <!-- Grund­daten ----------------------------------------------------- -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Vorname</label>
-        <input name="first_name" value="<?= htmlspecialchars($user['first_name'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Nachname</label>
-        <input name="last_name" value="<?= htmlspecialchars($user['last_name'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Geburtsdatum</label>
-        <input type="date" name="birthdate" value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Nationalität</label>
-        <input name="nationality" value="<?= htmlspecialchars($user['nationality'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-       <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Job Title</label>
-        <input name="job_title" value="<?= htmlspecialchars($user['job_title'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-1">Location</label>
-        <input name="location" value="<?= htmlspecialchars($user['location'] ?? '') ?>"
-               class="form-input w-full px-4 py-2">
-      </div>
-    </div>
-
-    <!-- Adresse -------------------------------------------------------- -->
-    <fieldset class="space-y-4">
-      <legend class="text-sm font-medium text-secondary">Adresse</legend>
-      <input name="street" placeholder="Straße + Hausnr." value="<?= htmlspecialchars($user['street'] ?? '') ?>"
-             class="form-input w-full px-4 py-2">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input name="zip" placeholder="PLZ" value="<?= htmlspecialchars($user['zip'] ?? '') ?>"
-               class="form-input px-4 py-2">
-        <input name="city" placeholder="Ort" value="<?= htmlspecialchars($user['city'] ?? '') ?>"
-               class="form-input col-span-2 px-4 py-2">
-      </div>
-      <input name="country" placeholder="Land" value="<?= htmlspecialchars($user['country'] ?? '') ?>"
-             class="form-input w-full px-4 py-2">
-    </fieldset>
-
-    <!-- Kontakt -------------------------------------------------------- -->
-    <fieldset class="space-y-4">
-      <legend class="text-sm font-medium text-secondary">Kontakt</legend>
-      <input type="tel" name="phone" placeholder="Telefon" value="<?= htmlspecialchars($user['phone'] ?? '') ?>"
-             class="form-input w-full px-4 py-2">
-      <input type="email" name="private_email" placeholder="Private E‑Mail" value="<?= htmlspecialchars($user['private_email'] ?? '') ?>"
-             class="form-input w-full px-4 py-2">
-    </fieldset>
-
-    <button type="submit" class="btn-primary px-6 py-2">
-      Speichern
-    </button>
-  </form>
+  </div>
 </div>

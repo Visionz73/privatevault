@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// templates/profile.php (sidebar categories per application)
+// templates/profile.php - Modern redesign with liquid glass effect
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/utils.php';
 
@@ -19,7 +19,6 @@ if (!$user) {
 }
 
 $activeTab = $_GET['tab'] ?? 'personal_info';
-
 $initials = getUserInitials($user);
 ?>
 <!DOCTYPE html>
@@ -27,8 +26,8 @@ $initials = getUserInitials($user);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profil Einstellungen | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Profil | Private Vault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { 
@@ -37,312 +36,233 @@ $initials = getUserInitials($user);
       min-height: 100vh;
     }
     
-    /* Main glassmorphism containers */
-    .glassmorphism-container {
+    /* Enhanced Glassmorphism Effects */
+    .glass-card {
       background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Header styling */
-    .profile-header {
-      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Sidebar styling */
-    .settings-sidebar {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      height: fit-content;
-    }
-    
-    /* Content area styling */
-    .settings-content {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      min-height: calc(100vh - 12rem);
-    }
-    
-    /* Form inputs */
-    .form-input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      border-radius: 0.75rem;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
     }
     
-    .form-input:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.4);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-    }
-    
-    .form-input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-    
-    /* Select elements */
-    .form-select {
+    .glass-card:hover {
       background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .glass-content {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2rem;
+      box-shadow: 
+        0 16px 48px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Navigation Items */
+    .nav-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .nav-item:hover::before {
+      left: 100%;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(8px) scale(1.02);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.4) 0%, rgba(79, 70, 229, 0.4) 100%);
+      border-color: rgba(147, 51, 234, 0.5);
+      box-shadow: 
+        0 8px 32px rgba(147, 51, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Form Elements */
+    .glass-input {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
-      border-radius: 0.75rem;
+      border-radius: 0.875rem;
+      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
-    .form-select:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.4);
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(147, 51, 234, 0.5);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+      box-shadow: 
+        0 0 0 3px rgba(147, 51, 234, 0.2),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
-    .form-select option {
+    .glass-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .glass-select {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      border-radius: 0.875rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .glass-select option {
       background: #2d1b69;
       color: white;
     }
     
-    /* Navigation items */
-    .nav-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.75rem;
+    /* Buttons */
+    .glass-btn-primary {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.7) 0%, rgba(79, 70, 229, 0.7) 100%);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+      color: white;
+      border-radius: 0.875rem;
+      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
-      color: rgba(255, 255, 255, 0.9);
-      display: flex;
-      align-items: center;
-      padding: 1rem;
-      text-decoration: none;
-      margin-bottom: 0.5rem;
-    }
-    
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(3px);
-      color: white;
-      text-decoration: none;
-    }
-    
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.6) 0%, rgba(79, 70, 229, 0.6) 100%);
-      border-color: rgba(147, 51, 234, 0.4);
-      color: white;
-      font-weight: 600;
-    }
-    
-    .nav-item-icon {
-      width: 1.5rem;
-      height: 1.5rem;
-      margin-right: 1rem;
-      flex-shrink: 0;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    .nav-item-content {
-      flex: 1;
-    }
-    
-    .nav-item-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 0.25rem;
-      color: white;
-    }
-    
-    .nav-item-description {
-      font-size: 0.8rem;
-      opacity: 0.7;
-      line-height: 1.3;
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
-    /* Text colors for dark theme */
-    .text-primary {
-      color: #c084fc !important;
-    }
-    
-    .text-muted {
-      color: rgba(255, 255, 255, 0.6) !important;
-    }
-    
-    .text-secondary {
-      color: rgba(255, 255, 255, 0.8) !important;
-    }
-    
-    /* Labels and form text */
-    label {
-      color: white !important;
       font-weight: 500;
-      margin-bottom: 0.5rem;
+      box-shadow: 0 4px 16px rgba(147, 51, 234, 0.3);
     }
     
-    .form-text {
-      color: rgba(255, 255, 255, 0.6) !important;
+    .glass-btn-primary:hover {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(147, 51, 234, 0.4);
     }
     
-    /* Breadcrumb styling */
-    .breadcrumb-item a {
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-    }
-    
-    .breadcrumb-item a:hover {
+    .glass-btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
+      border-radius: 0.875rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
     }
     
-    .breadcrumb-item.active {
-      color: #c084fc;
+    .glass-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
     }
     
-    /* Profile avatar */
+    /* Profile Header */
+    .profile-header {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
     .profile-avatar {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      border: 3px solid rgba(255,255,255,0.3);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      border: 3px solid rgba(255,255,255,0.2);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
     }
     
-    /* Role badge */
-    .role-badge {
-      background: rgba(147, 51, 234, 0.2);
-      color: #c4b5fd;
-      border: 1px solid rgba(147, 51, 234, 0.3);
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
+    .profile-avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Text Colors */
+    .text-primary { color: #c084fc !important; }
+    .text-secondary { color: rgba(255, 255, 255, 0.8) !important; }
+    .text-muted { color: rgba(255, 255, 255, 0.5) !important; }
+    
+    /* Labels */
+    label {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
       font-size: 0.875rem;
     }
     
-    /* Buttons */
-    .btn-primary {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
-      border: 1px solid rgba(147, 51, 234, 0.3);
-      color: white;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
-      color: white;
-    }
-    
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      color: white;
-    }
-    
-    /* Subtab navigation */
-    .subtab-nav {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .subtab-link {
-      color: rgba(255, 255, 255, 0.7);
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      margin: 0.125rem;
-      display: inline-block;
-    }
-    
-    .subtab-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      text-decoration: none;
-    }
-    
-    .subtab-link.active {
-      background: rgba(147, 51, 234, 0.6);
-      color: white;
-      font-weight: 600;
-    }
-    
-    /* Cards and content areas */
-    .content-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Tables */
+    .glass-table {
+      background: rgba(255, 255, 255, 0.02);
       border-radius: 1rem;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      overflow: hidden;
     }
     
-    .content-card h3 {
-      color: white;
-      margin-bottom: 1rem;
-    }
-    
-    /* Table styling for dark theme */
-    .table {
-      color: white;
-    }
-    
-    .table th {
+    .glass-table th {
+      background: rgba(255, 255, 255, 0.1);
       color: rgba(255, 255, 255, 0.9);
-      border-color: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    .table td {
+    .glass-table td {
       color: rgba(255, 255, 255, 0.8);
-      border-color: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    .table-hover tbody tr:hover {
+    .glass-table tbody tr:hover {
       background: rgba(255, 255, 255, 0.05);
     }
     
-    /* Success/Error messages */
-    .alert {
-      border-radius: 0.75rem;
-      border: none;
-    }
-    
-    .alert-success {
-      background: rgba(34, 197, 94, 0.2);
-      color: #86efac;
+    /* Alerts */
+    .glass-alert-success {
+      background: rgba(34, 197, 94, 0.15);
       border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
     }
     
-    .alert-danger {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
+    .glass-alert-error {
+      background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
     }
     
-    /* Full-width layout adjustments */
+    /* Responsive Layout */
     .profile-layout {
       min-height: calc(100vh - 4rem);
     }
@@ -354,97 +274,114 @@ $initials = getUserInitials($user);
       }
     }
     
-    /* Mobile adjustments */
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
-      .profile-header { margin: 1rem; }
-      
-      .grid-cols-1.xl\\:grid-cols-5 {
+      .grid-cols-1.lg\\:grid-cols-4 {
         grid-template-columns: 1fr;
       }
-      
-      .xl\\:col-span-1,
-      .xl\\:col-span-4 {
-        grid-column: span 1;
-      }
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
   </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen">
 <?php 
 $navbarPath = __DIR__ . '/navbar.php';
 if (file_exists($navbarPath)) {
     require_once $navbarPath;
-} else {
-    echo '<!-- Navbar not found at: ' . $navbarPath . ' -->';
 }
 ?>
 
-<!-- Main Content - Full Width -->
-<div class="profile-layout flex-1 p-4 md:p-6 mt-14 md:mt-0">
-  <!-- Header with user info and breadcrumb -->
-  <header class="profile-header mb-6">
-    <div class="max-w-full mx-auto px-6 py-6">
+<!-- Main Content -->
+<div class="profile-layout flex-1 p-4 lg:p-8 mt-14 md:mt-0">
+  <!-- Profile Header -->
+  <header class="profile-header mb-8">
+    <div class="p-8">
       <!-- Breadcrumb -->
-      <nav class="flex items-center space-x-2 text-sm text-secondary mb-4">
-        <a href="/dashboard.php" class="hover:text-white transition-colors">Dashboard</a>
-        <span>&rsaquo;</span>
-        <span class="text-primary font-medium">Profil Einstellungen</span>
+      <nav class="flex items-center space-x-2 text-sm mb-6">
+        <a href="/dashboard.php" class="text-secondary hover:text-white transition-colors">Dashboard</a>
+        <span class="text-muted">/</span>
+        <span class="text-primary font-medium">Profil</span>
       </nav>
       
-      <!-- User Header -->
-      <div class="flex items-center gap-6">
-        <div class="profile-avatar h-20 w-20 rounded-full flex items-center justify-center text-2xl font-bold text-white">
+      <!-- User Info -->
+      <div class="flex items-center gap-8">
+        <div class="profile-avatar h-24 w-24 flex items-center justify-center text-3xl font-bold text-white">
           <?= $initials ?>
         </div>
         <div class="flex-1">
-          <div class="flex flex-wrap items-center gap-3">
-            <h1 class="text-3xl font-bold text-primary"><?= htmlspecialchars($user['username']) ?></h1>
-            <span class="role-badge">
+          <h1 class="text-4xl font-bold text-primary mb-2"><?= htmlspecialchars($user['username']) ?></h1>
+          <div class="flex items-center gap-4 mb-3">
+            <span class="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-sm text-purple-200">
               <?= ucfirst($user['role'] ?? 'user') ?>
             </span>
+            <span class="text-muted text-sm">
+              Mitglied seit <?= date('M Y', strtotime($user['created_at'] ?? 'now')) ?>
+            </span>
           </div>
-          <p class="mt-2 text-muted text-sm">
-            Verwalten Sie Ihre Profil-Informationen und Einstellungen
+          <p class="text-secondary">
+            Verwalten Sie Ihre persönlichen Informationen und Einstellungen
           </p>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Settings Layout - Full Width Grid -->
-  <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 max-w-full mx-auto">
-    <!-- Settings Sidebar -->
-    <aside class="xl:col-span-1">
-      <div class="settings-sidebar p-6 sticky top-6">
-        <h3 class="font-semibold text-primary mb-4">Einstellungen</h3>
+  <!-- Main Grid Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <!-- Sidebar Navigation -->
+    <aside class="lg:col-span-1">
+      <div class="glass-nav p-6 sticky top-6">
+        <h3 class="text-lg font-semibold text-primary mb-6">Kategorien</h3>
         
-        <!-- Search/Filter -->
-        <input id="settingsFilter" type="text" 
-               placeholder="Suchen..." 
-               class="form-input w-full px-4 py-2 text-sm mb-4">
+        <!-- Quick Search -->
+        <div class="mb-6">
+          <input 
+            type="text" 
+            placeholder="Suchen..." 
+            class="glass-input w-full px-4 py-3 text-sm"
+            id="categorySearch"
+          >
+        </div>
         
-        <!-- Categories -->
-        <nav id="settingsList" class="space-y-1">
+        <!-- Navigation Items -->
+        <nav class="space-y-3" id="categoryNav">
           <?php
           $categories = [
             'personal_info' => [
-              'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
               'title' => 'Persönliche Daten',
-              'description' => 'Name, E-Mail, Telefon'
+              'description' => 'Name, Kontakt & Adresse'
             ],
             'finance' => [
-              'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4"/></svg>',
+              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4"/></svg>',
               'title' => 'Finanzen',
-              'description' => 'Ein- & Ausgaben verwalten'
+              'description' => 'Einnahmen & Ausgaben'
             ],
             'documents' => [
-              'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
               'title' => 'Dokumente',
-              'description' => 'Verträge, Rechnungen, etc.'
+              'description' => 'Dateien & Verträge'
             ],
             'security' => [
-              'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
+              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
               'title' => 'Sicherheit',
               'description' => 'Passwort & Privatsphäre'
             ]
@@ -454,11 +391,17 @@ if (file_exists($navbarPath)) {
             $isActive = $activeTab === $key;
             $href = "?tab=" . $key;
           ?>
-            <a href="<?= $href ?>" class="nav-item <?= $isActive ? 'active' : '' ?>" data-category="<?= $key ?>">
-              <?= $category['icon'] ?>
-              <div class="nav-item-content">
-                <div class="nav-item-title"><?= $category['title'] ?></div>
-                <div class="nav-item-description"><?= $category['description'] ?></div>
+            <a href="<?= $href ?>" 
+               class="nav-item <?= $isActive ? 'active' : '' ?> block p-4 text-decoration-none"
+               data-category="<?= strtolower($category['title']) ?>">
+              <div class="flex items-start gap-3">
+                <div class="text-purple-300 mt-0.5">
+                  <?= $category['icon'] ?>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="font-medium text-white text-sm mb-1"><?= $category['title'] ?></h4>
+                  <p class="text-xs text-muted leading-relaxed"><?= $category['description'] ?></p>
+                </div>
               </div>
             </a>
           <?php endforeach; ?>
@@ -466,111 +409,30 @@ if (file_exists($navbarPath)) {
       </div>
     </aside>
     
-    <!-- Content Area - Full Width -->
-    <main class="xl:col-span-4">
-      <div class="settings-content p-6">
+    <!-- Content Area -->
+    <main class="lg:col-span-3">
+      <div class="glass-content p-8">
         <?php
-        // Tab content rendering
+        // Include the appropriate tab content
         switch ($activeTab) {
           case 'personal_info':
-            // Subtab navigation for personal_info
-            $personalSubtabs = [
-              'personal_data' => 'Persönliche Daten',
-              'public_profile' => 'Öffentliches Profil',
-              'hr_information' => 'HR Informationen'
-            ];
-            $currentPersonalSubtab = $_GET['subtab'] ?? 'personal_data';
-            
-            echo '<div class="mb-6">';
-            echo '<div class="subtab-nav p-1">';
-            echo '<div class="flex flex-wrap gap-1">';
-            foreach ($personalSubtabs as $key => $label) {
-              $isActive = $currentPersonalSubtab === $key;
-              $href = "?tab=personal_info&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
-            }
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            
-            // Include the appropriate subtab template
-            $subtabFile = __DIR__ . "/profile_tabs/personal_info/{$currentPersonalSubtab}.php";
-            if (file_exists($subtabFile)) {
-              include $subtabFile;
-            } else {
-              echo '<div class="content-card text-center py-12 text-muted">Subtab-Inhalt nicht gefunden: ' . htmlspecialchars($currentPersonalSubtab) . '</div>';
-            }
+            include __DIR__ . '/profile_tabs/personal_info_section.php';
             break;
             
           case 'finance':
-            $financeSubtabs = [
-              'finance_overview' => 'Übersicht',
-              'income' => 'Einnahmen',
-              'expenses' => 'Ausgaben'
-            ];
-            $currentFinanceSubtab = $_GET['subtab'] ?? 'finance_overview';
-            
-            echo '<div class="mb-6">';
-            echo '<div class="subtab-nav p-1">';
-            echo '<div class="flex flex-wrap gap-1">';
-            foreach ($financeSubtabs as $key => $label) {
-              $isActive = $currentFinanceSubtab === $key;
-              $href = "?tab=finance&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
-            }
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            
-            // Include the appropriate finance subtab template
-            $subtabFile = __DIR__ . "/profile_tabs/finance/{$currentFinanceSubtab}.php";
-            if (file_exists($subtabFile)) {
-              include $subtabFile;
-            } else {
-              echo '<div class="content-card text-center py-12 text-muted">Finance-Subtab nicht gefunden: ' . htmlspecialchars($currentFinanceSubtab) . '</div>';
-            }
+            include __DIR__ . '/profile_tabs/finance_section.php';
             break;
             
           case 'documents':
-            $docSubtabs = [
-              'documents' => 'Alle Dokumente',
-              'contracts' => 'Verträge',
-              'invoices' => 'Rechnungen',
-              'insurance' => 'Versicherungen',
-              'other_docs' => 'Sonstige'
-            ];
-            $currentDocSubtab = $_GET['subtab'] ?? 'documents';
-            
-            echo '<div class="mb-6">';
-            echo '<div class="subtab-nav p-1">';
-            echo '<div class="flex flex-wrap gap-1">';
-            foreach ($docSubtabs as $key => $label) {
-              $isActive = $currentDocSubtab === $key;
-              $href = "?tab=documents&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
-            }
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            
-            // Include the appropriate documents subtab template
-            $subtabFile = __DIR__ . "/profile_tabs/documents/{$currentDocSubtab}.php";
-            if (file_exists($subtabFile)) {
-              include $subtabFile;
-            } else {
-              echo '<div class="content-card text-center py-12 text-muted">Dokument-Subtab nicht gefunden: ' . htmlspecialchars($currentDocSubtab) . '</div>';
-            }
+            include __DIR__ . '/profile_tabs/documents_section.php';
             break;
             
           case 'security':
-            echo '<div class="content-card">';
-            echo '<h2 class="text-xl font-semibold text-primary mb-4">Sicherheitseinstellungen</h2>';
-            echo '<div class="text-center py-12 text-muted">Sicherheitseinstellungen werden demnächst verfügbar sein.</div>';
-            echo '</div>';
+            include __DIR__ . '/profile_tabs/security_section.php';
             break;
             
           default:
-            echo '<div class="content-card text-center py-12 text-muted">Tab-Inhalt nicht gefunden: ' . htmlspecialchars($activeTab) . '</div>';
+            echo '<div class="glass-card p-8 text-center"><h2 class="text-xl text-primary mb-4">Tab nicht gefunden</h2><p class="text-muted">Der angeforderte Bereich existiert nicht.</p></div>';
         }
         ?>
       </div>
@@ -579,19 +441,43 @@ if (file_exists($navbarPath)) {
 </div>
 
 <script>
-// Enhanced search functionality
-document.getElementById('settingsFilter').addEventListener('input', function(e) {
+// Search functionality
+document.getElementById('categorySearch').addEventListener('input', function(e) {
   const searchTerm = e.target.value.toLowerCase();
-  const navItems = document.querySelectorAll('#settingsList .nav-item');
+  const navItems = document.querySelectorAll('#categoryNav .nav-item');
   
   navItems.forEach(item => {
-    const title = item.querySelector('.nav-item-title').textContent.toLowerCase();
-    const description = item.querySelector('.nav-item-description').textContent.toLowerCase();
-    const matches = title.includes(searchTerm) || description.includes(searchTerm);
+    const category = item.dataset.category || '';
+    const title = item.querySelector('h4').textContent.toLowerCase();
+    const description = item.querySelector('p').textContent.toLowerCase();
     
-    item.style.display = matches ? 'flex' : 'none';
+    const matches = category.includes(searchTerm) || 
+                   title.includes(searchTerm) || 
+                   description.includes(searchTerm);
+    
+    item.style.display = matches ? 'block' : 'none';
+  });
+});
+
+// Smooth transitions
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = document.querySelectorAll('.glass-card, .nav-item');
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 100}ms`;
+    card.classList.add('animate-fade-in');
   });
 });
 </script>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+</style>
 </body>
 </html>
