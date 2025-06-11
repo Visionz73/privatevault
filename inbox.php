@@ -87,10 +87,10 @@ function openTaskDetail(taskId) {
         });
 }
 
-function toggleTaskStatus(taskId, completed) {
+function toggleTaskStatus(taskId, completed) { // completed will be a string '0' or '1' from the HTML
     const taskData = {
         id: taskId,
-        completed: completed
+        completed: parseInt(completed) // Ensure it's an integer 0 or 1
     };
 
     fetch('api/tasks.php', {

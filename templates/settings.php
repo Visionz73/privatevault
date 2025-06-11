@@ -9,58 +9,13 @@
 <!DOCTYPE html>
 <html lang="de" class="h-full">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title><?php echo htmlspecialchars($pageTitle ?? 'User Settings'); ?> | Private Vault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($pageTitle) ?> | Private Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/privatevault/css/main.css">
     <style>
-        body { 
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
-            min-height: 100vh;
-        }
-        @media (max-width: 768px) {
-            main.content-area { 
-                margin-top: 4rem;
-            }
-        }
-        
-        .glassmorphism-container {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .form-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 0.75rem;
-        }
-        
-        .form-input:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
-        }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 <body class="min-h-screen flex">

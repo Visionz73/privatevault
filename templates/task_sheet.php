@@ -40,7 +40,7 @@ $progressPercent = $totalSub > 0 ? round(($completed / $totalSub) * 100) : 0;
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Aufgabenblatt | Private Vault</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/privatevault/css/main.css">
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
   <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">

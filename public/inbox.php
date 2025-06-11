@@ -16,7 +16,7 @@ echo "<!-- Debug inbox.php: count(\$tasks) = " . count($tasks) . " -->";
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Inbox | Private Vault</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/privatevault/css/main.css">
   <style>
     body { font-family: 'Inter', sans-serif; }
     @media (max-width: 768px) {

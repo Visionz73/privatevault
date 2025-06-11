@@ -8,7 +8,7 @@ $users = $pdo->query("SELECT id, username FROM users ORDER BY username")->fetchA
 <head>
   <meta charset="UTF-8"/>
   <title>Ereignis erstellen | Private Vault</title>
-  <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+  <link rel="stylesheet" href="/privatevault/css/main.css">
 </head>
 <body class="p-8">
   <h1 class="text-2xl mb-4">Neues Ereignis erstellen</h1>
