@@ -71,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
                 
                 $stmt->execute([$title, $description, $_SESSION['user_id'], $assignedTo, $dueDate, $_SESSION['user_id']]);
-                $success = 'Aufgabe wurde erstellt und dem Benutzer zugewiesen.';
                 
             } else {
                 // Group assignment
@@ -85,14 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       (?, ?, ?, NULL, ?, ?, 'todo', 0, ?)
                 ");
                 $stmt->execute([$title, $description, $_SESSION['user_id'], $groupId, $dueDate, $_SESSION['user_id']]);
-                
-                $success = 'Aufgabe wurde erstellt und der Gruppe zugewiesen.';
             }
             
-            if (!empty($success)) {
-                // Reset form after successful submission
-                $_POST = [];
-            }
+            // Redirect to inbox after successful creation
+            header('Location: /inbox.php');
+            exit;
             
         } catch (PDOException $e) {
             $errors[] = 'Datenbankfehler: ' . $e->getMessage();
