@@ -279,6 +279,80 @@ $initials = getUserInitials($user);
       .grid-cols-1.lg\\:grid-cols-4 {
         grid-template-columns: 1fr;
       }
+      
+      /* Mobile profile optimizations */
+      .profile-header {
+        margin-bottom: 1.5rem;
+      }
+      
+      .profile-header .p-8 {
+        padding: 1.5rem;
+      }
+      
+      .profile-avatar {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.5rem;
+      }
+      
+      .glass-nav {
+        position: static;
+        margin-bottom: 1.5rem;
+      }
+      
+      .glass-content {
+        border-radius: 1.5rem;
+      }
+      
+      /* Mobile navigation improvements */
+      .nav-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .nav-item h4 {
+        font-size: 0.9rem;
+      }
+      
+      .nav-item p {
+        font-size: 0.75rem;
+      }
+      
+      /* Mobile search box */
+      #categorySearch {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+      
+      /* Mobile breadcrumb */
+      .breadcrumb-mobile {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+      
+      /* Mobile user info section */
+      .mobile-user-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+      
+      .mobile-user-section .profile-avatar {
+        margin: 0 auto;
+      }
+      
+      /* Mobile grid adjustments */
+      .mobile-grid-fix {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      /* Mobile sticky navigation */
+      .mobile-nav-sticky {
+        position: sticky;
+        top: 4.5rem;
+        z-index: 10;
+      }
     }
     
     /* Custom Scrollbar */
@@ -310,33 +384,33 @@ if (file_exists($navbarPath)) {
 ?>
 
 <!-- Main Content -->
-<div class="profile-layout flex-1 p-4 lg:p-8 mt-16 md:mt-0">
+<div class="profile-layout flex-1 p-2 md:p-4 lg:p-8 mt-16 md:mt-0">
   <!-- Profile Header -->
-  <header class="profile-header mb-8">
-    <div class="p-8">
+  <header class="profile-header mb-6 md:mb-8">
+    <div class="p-4 md:p-8">
       <!-- Breadcrumb -->
-      <nav class="flex items-center space-x-2 text-sm mb-6">
+      <nav class="flex items-center space-x-2 text-xs md:text-sm mb-4 md:mb-6 breadcrumb-mobile">
         <a href="/dashboard.php" class="text-secondary hover:text-white transition-colors">Dashboard</a>
         <span class="text-muted">/</span>
         <span class="text-primary font-medium">Profil</span>
       </nav>
       
       <!-- User Info -->
-      <div class="flex items-center gap-8">
-        <div class="profile-avatar h-24 w-24 flex items-center justify-center text-3xl font-bold text-white">
+      <div class="flex items-center gap-4 md:gap-8 mobile-user-section">
+        <div class="profile-avatar h-16 w-16 md:h-24 md:w-24 flex items-center justify-center text-2xl md:text-3xl font-bold text-white">
           <?= $initials ?>
         </div>
-        <div class="flex-1">
-          <h1 class="text-4xl font-bold text-primary mb-2"><?= htmlspecialchars($user['username']) ?></h1>
-          <div class="flex items-center gap-4 mb-3">
-            <span class="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-sm text-purple-200">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl md:text-4xl font-bold text-primary mb-2 truncate"><?= htmlspecialchars($user['username']) ?></h1>
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-2 md:mb-3">
+            <span class="px-2 md:px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-xs md:text-sm text-purple-200">
               <?= ucfirst($user['role'] ?? 'user') ?>
             </span>
-            <span class="text-muted text-sm">
+            <span class="text-muted text-xs md:text-sm">
               Mitglied seit <?= date('M Y', strtotime($user['created_at'] ?? 'now')) ?>
             </span>
           </div>
-          <p class="text-secondary">
+          <p class="text-secondary text-sm md:text-base">
             Verwalten Sie Ihre persönlichen Informationen und Einstellungen
           </p>
         </div>
@@ -345,43 +419,43 @@ if (file_exists($navbarPath)) {
   </header>
 
   <!-- Main Grid Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8 mobile-grid-fix">
     <!-- Sidebar Navigation -->
     <aside class="lg:col-span-1">
-      <div class="glass-nav p-6 sticky top-6">
-        <h3 class="text-lg font-semibold text-primary mb-6">Kategorien</h3>
+      <div class="glass-nav p-4 md:p-6 mobile-nav-sticky">
+        <h3 class="text-base md:text-lg font-semibold text-primary mb-4 md:mb-6">Kategorien</h3>
         
         <!-- Quick Search -->
-        <div class="mb-6">
+        <div class="mb-4 md:mb-6">
           <input 
             type="text" 
             placeholder="Suchen..." 
-            class="glass-input w-full px-4 py-3 text-sm"
+            class="glass-input w-full px-3 md:px-4 py-2 md:py-3 text-sm"
             id="categorySearch"
           >
         </div>
         
         <!-- Navigation Items -->
-        <nav class="space-y-3" id="categoryNav">
+        <nav class="space-y-2 md:space-y-3" id="categoryNav">
           <?php
           $categories = [
             'personal_info' => [
-              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+              'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
               'title' => 'Persönliche Daten',
               'description' => 'Name, Kontakt & Adresse'
             ],
             'finance' => [
-              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4"/></svg>',
+              'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4"/></svg>',
               'title' => 'Finanzen',
               'description' => 'Einnahmen & Ausgaben'
             ],
             'documents' => [
-              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+              'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
               'title' => 'Dokumente',
               'description' => 'Dateien & Verträge'
             ],
             'security' => [
-              'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
+              'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
               'title' => 'Sicherheit',
               'description' => 'Passwort & Privatsphäre'
             ]
@@ -392,10 +466,10 @@ if (file_exists($navbarPath)) {
             $href = "?tab=" . $key;
           ?>
             <a href="<?= $href ?>" 
-               class="nav-item <?= $isActive ? 'active' : '' ?> block p-4 text-decoration-none"
+               class="nav-item <?= $isActive ? 'active' : '' ?> block p-3 md:p-4 text-decoration-none"
                data-category="<?= strtolower($category['title']) ?>">
-              <div class="flex items-start gap-3">
-                <div class="text-purple-300 mt-0.5">
+              <div class="flex items-start gap-2 md:gap-3">
+                <div class="text-purple-300 mt-0.5 flex-shrink-0">
                   <?= $category['icon'] ?>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -411,7 +485,7 @@ if (file_exists($navbarPath)) {
     
     <!-- Content Area -->
     <main class="lg:col-span-3">
-      <div class="glass-content p-8">
+      <div class="glass-content p-4 md:p-8">
         <?php
         // Include the appropriate tab content
         switch ($activeTab) {
@@ -432,7 +506,7 @@ if (file_exists($navbarPath)) {
             break;
             
           default:
-            echo '<div class="glass-card p-8 text-center"><h2 class="text-xl text-primary mb-4">Tab nicht gefunden</h2><p class="text-muted">Der angeforderte Bereich existiert nicht.</p></div>';
+            echo '<div class="glass-card p-6 md:p-8 text-center"><h2 class="text-lg md:text-xl text-primary mb-4">Tab nicht gefunden</h2><p class="text-muted">Der angeforderte Bereich existiert nicht.</p></div>';
         }
         ?>
       </div>
@@ -466,6 +540,20 @@ document.addEventListener('DOMContentLoaded', function() {
     card.style.animationDelay = `${index * 100}ms`;
     card.classList.add('animate-fade-in');
   });
+  
+  // Mobile optimization: Close navigation when clicking on content area
+  const mainContent = document.querySelector('main');
+  if (mainContent && window.innerWidth <= 768) {
+    mainContent.addEventListener('click', function() {
+      const sidebar = document.querySelector('.sidebar-content');
+      const overlay = document.getElementById('mobileOverlay');
+      if (sidebar && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  }
 });
 </script>
 

@@ -43,7 +43,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       border-bottom: 1px solid rgba(255,255,255,0.1);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       z-index: 50;
+      transform: none; /* Remove transform for header */
     }
+    
     .mobile-menu { 
       display: flex; 
       align-items: center;
@@ -52,6 +54,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       height: 100%;
       padding: 0 1rem;
     }
+    
     .sidebar-content {
       display: none;
       position: fixed;
@@ -64,8 +67,28 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       z-index: 49;
       padding: 1rem;
       overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
     }
+    
     .sidebar-content.active {
+      display: block;
+      transform: translateX(0);
+    }
+    
+    /* Mobile overlay */
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 48;
+    }
+    
+    .mobile-overlay.active {
       display: block;
     }
   }
@@ -589,6 +612,9 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   </div>
 </div>
 
+<!-- Mobile overlay -->
+<div id="mobileOverlay" class="mobile-overlay md:hidden"></div>
+
 <!-- Profile Modal -->
 <?php if ($user): ?>
 <div id="profileModal" class="profile-modal">
@@ -649,12 +675,45 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   document.addEventListener('DOMContentLoaded', function() {
     const mobileToggleBtn = document.getElementById('mobileToggleBtn');
     const sidebar = document.querySelector('.sidebar-content');
+    const mobileOverlay = document.getElementById('mobileOverlay');
     
-    if (mobileToggleBtn && sidebar) {
-      mobileToggleBtn.addEventListener('click', function() {
-        document.querySelector('nav#sidebar').classList.toggle('active');
-      });
+    function toggleMobileMenu() {
+      if (sidebar && mobileOverlay) {
+        const isActive = sidebar.classList.contains('active');
+        
+        if (isActive) {
+          sidebar.classList.remove('active');
+          mobileOverlay.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          sidebar.classList.add('active');
+          mobileOverlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
     }
+    
+    function closeMobileMenu() {
+      if (sidebar && mobileOverlay) {
+        sidebar.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    if (mobileToggleBtn) {
+      mobileToggleBtn.addEventListener('click', toggleMobileMenu);
+    }
+    
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close menu when clicking on nav links
+    const navLinks = document.querySelectorAll('.sidebar-content .nav-link-modern');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
   });
 
   function openProfileModal() {
