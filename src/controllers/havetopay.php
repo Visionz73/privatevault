@@ -58,11 +58,11 @@ try {
     
     // Get all users for expense participant selection
     if ($hasFirstName && $hasLastName) {
-        $stmt = $pdo->prepare("SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username");
+        $stmt = $pdo->prepare("SELECT id, username, first_name, last_name FROM users ORDER BY username");
     } else {
-        $stmt = $pdo->prepare("SELECT id, username FROM users WHERE id != ? ORDER BY username");
+        $stmt = $pdo->prepare("SELECT id, username FROM users ORDER BY username");
     }
-    $stmt->execute([$userId]);
+    $stmt->execute();
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add display names to all users
@@ -71,6 +71,24 @@ try {
             !empty($user['first_name']) && !empty($user['last_name']) ? 
             $user['first_name'] . ' ' . $user['last_name'] : 
             $user['username'];
+    }
+    
+    // Get all groups for filter dropdown
+    try {
+        // Determine which groups table exists
+        $groupsTable = 'user_groups';
+        try {
+            $pdo->query("SELECT 1 FROM user_groups LIMIT 1");
+        } catch (Exception $e) {
+            $groupsTable = 'groups';
+        }
+        
+        $stmt = $pdo->prepare("SELECT id, name FROM $groupsTable ORDER BY name");
+        $stmt->execute();
+        $allGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        $allGroups = [];
+        error_log('Error fetching groups for filter: ' . $e->getMessage());
     }
     
     // Get balances: what others owe current user
