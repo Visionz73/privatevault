@@ -10,8 +10,8 @@ if (!$taskId) {
     exit;
 }
 
-// Fetch main task details - use correct column name 'created_by' instead of 'user_id'
-$stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = ? AND created_by = ?");
+// Fetch main task details (adjust table/column names as needed)
+$stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = ? AND user_id = ?");
 $stmt->execute([$taskId, $_SESSION['user_id']]);
 $task = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$task) {
@@ -40,7 +40,7 @@ $progressPercent = $totalSub > 0 ? round(($completed / $totalSub) * 100) : 0;
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Aufgabenblatt | Private Vault</title>
-  <link rel="stylesheet" href="/privatevault/css/main.css">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
   <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">

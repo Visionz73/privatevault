@@ -11,69 +11,14 @@ $statuses = [
   'done'  => 'Erledigt'
 ];
 
-// Get filter mode
-$filterMode = $_GET['filter'] ?? 'all';
-
-// Build WHERE clause based on filter
-$where = [];
-$params = [];
-
-switch ($filterMode) {
-    case 'user':
-        $where[] = "t.assigned_to = ?";
-        $params[] = $_SESSION['user_id'];
-        break;
-    case 'group':
-        // Get user's groups first
-        $groupStmt = $pdo->prepare("SELECT group_id FROM user_group_members WHERE user_id = ?");
-        $groupStmt->execute([$_SESSION['user_id']]);
-        $userGroups = $groupStmt->fetchAll(PDO::FETCH_COLUMN);
-        
-        if (!empty($userGroups)) {
-            $placeholders = implode(',', array_fill(0, count($userGroups), '?'));
-            $where[] = "t.assigned_group_id IN ($placeholders)";
-            $params = array_merge($params, $userGroups);
-        } else {
-            // User has no groups, show no tasks
-            $where[] = "1 = 0";
-        }
-        break;
-    default: // 'all'
-        // Show tasks assigned to user OR to their groups OR created by user
-        $groupStmt = $pdo->prepare("SELECT group_id FROM user_group_members WHERE user_id = ?");
-        $groupStmt->execute([$_SESSION['user_id']]);
-        $userGroups = $groupStmt->fetchAll(PDO::FETCH_COLUMN);
-        
-        $conditions = ["t.assigned_to = ?", "t.created_by = ?"];
-        $params = [$_SESSION['user_id'], $_SESSION['user_id']];
-        
-        if (!empty($userGroups)) {
-            $placeholders = implode(',', array_fill(0, count($userGroups), '?'));
-            $conditions[] = "t.assigned_group_id IN ($placeholders)";
-            $params = array_merge($params, $userGroups);
-        }
-        
-        $where[] = "(" . implode(' OR ', $conditions) . ")";
-        break;
-}
-
-// Add condition to exclude completed tasks (use status instead of is_done)
-$where[] = "t.status != 'done'";
-
-// Alle Tasks laden mit erweiterten Informationen
+// Alle Tasks des Users laden
 $stmt = $pdo->prepare('
-  SELECT t.*, 
-         creator.username AS creator_name,
-         assignee.username AS assignee_name,
-         g.name AS group_name
-    FROM tasks t
-    LEFT JOIN users creator ON creator.id = t.created_by
-    LEFT JOIN users assignee ON assignee.id = t.assigned_to
-    LEFT JOIN user_groups g ON g.id = t.assigned_group_id
-   WHERE ' . implode(' AND ', $where) . '
-ORDER BY t.created_at DESC
+  SELECT * 
+    FROM tasks 
+   WHERE created_by = ? 
+ORDER BY created_at DESC
 ');
-$stmt->execute($params);
+$stmt->execute([$_SESSION['user_id']]);
 $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Nach Status gruppieren
@@ -87,7 +32,7 @@ foreach ($all as $t) {
 <head>
   <meta charset="UTF-8">
   <title>TaskBoard</title>
-  <link rel="stylesheet" href="/privatevault/css/main.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {font-family: Inter, sans-serif; }
@@ -259,7 +204,7 @@ foreach ($all as $t) {
                 document.getElementById('modalContent').innerHTML = html;
                 document.getElementById('taskModal').classList.remove('hidden');
                 document.getElementById('taskModal').classList.add('flex');
-                // Event-Listener für das neue Formular im Modal neu binden
+                 // Event-Listener für das neue Formular im Modal neu binden
                 const taskForm = document.getElementById('taskForm');
                 if(taskForm) {
                     taskForm.addEventListener('submit', handleTaskFormSubmit);

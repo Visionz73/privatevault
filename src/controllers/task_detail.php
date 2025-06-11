@@ -19,11 +19,9 @@ $stmt = $pdo->prepare("
     LEFT JOIN users creator ON creator.id = t.created_by
     LEFT JOIN users assignee ON assignee.id = t.assigned_to
     LEFT JOIN user_groups g ON g.id = t.assigned_group_id
-    WHERE t.id = ? AND (t.assigned_to = ? OR t.created_by = ? OR t.assigned_group_id IN (
-        SELECT group_id FROM user_group_members WHERE user_id = ?
-    ))
+    WHERE t.id = ?
 ");
-$stmt->execute([$taskId, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
+$stmt->execute([$taskId]);
 $task = $stmt->fetch();
 
 if (!$task) {

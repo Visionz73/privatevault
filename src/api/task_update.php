@@ -5,7 +5,6 @@ header('Content-Type: application/json');
 // Required files
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../lib/auth.php';
-require_once __DIR__ . '/../lib/db.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -23,9 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Get task ID and new status
 $taskId = $_POST['id'] ?? null;
-$newStatus = $_POST['status'] ?? null;
+$status = $_POST['status'] ?? null;
 
-if (!$taskId || !$newStatus) {
+if (!$taskId || !$status) {
     http_response_code(400);
     echo json_encode(['error' => 'Fehlende Parameter']);
     exit;
@@ -33,7 +32,7 @@ if (!$taskId || !$newStatus) {
 
 // Validate status
 $validStatuses = ['todo', 'doing', 'done'];
-if (!in_array($newStatus, $validStatuses)) {
+if (!in_array($status, $validStatuses)) {
     http_response_code(400);
     echo json_encode(['error' => 'Ungültiger Status']);
     exit;
@@ -41,32 +40,55 @@ if (!in_array($newStatus, $validStatuses)) {
 
 try {
     // Check if the user has permission to update this task
-    $checkStmt = $pdo->prepare("
-        SELECT id FROM tasks 
-        WHERE id = ? AND (
-            created_by = ? OR 
-            assigned_to = ? OR 
-            assigned_group_id IN (
-                SELECT group_id FROM user_group_members WHERE user_id = ?
-            )
-        )
+    $stmt = $pdo->prepare("
+        SELECT t.id 
+        FROM tasks t
+        LEFT JOIN user_group_members m ON t.assigned_group_id = m.group_id
+        WHERE t.id = :task_id 
+          AND (t.created_by = :user_id 
+               OR t.assigned_to = :user_id
+               OR m.user_id = :user_id)
+        LIMIT 1
     ");
-    $checkStmt->execute([$taskId, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
     
-    if (!$checkStmt->fetch()) {
+    $stmt->execute([
+        ':task_id' => $taskId,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+    
+    $task = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$task) {
         http_response_code(403);
-        echo json_encode(['error' => 'Keine Berechtigung für diese Aufgabe']);
+        echo json_encode(['error' => 'Keine Berechtigung']);
         exit;
     }
     
     // Update the task status
-    $updateStmt = $pdo->prepare("UPDATE tasks SET status = ? WHERE id = ?");
-    $updateStmt->execute([$newStatus, $taskId]);
+    $stmt = $pdo->prepare("
+        UPDATE tasks 
+        SET status = :status, 
+            updated_at = NOW(),
+            is_done = :is_done
+        WHERE id = :task_id
+    ");
     
-    echo json_encode(['success' => true, 'message' => 'Status erfolgreich aktualisiert']);
+    $stmt->execute([
+        ':status' => $status,
+        ':task_id' => $taskId,
+        ':is_done' => ($status === 'done' ? 1 : 0)
+    ]);
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Aufgabenstatus aktualisiert'
+    ]);
     
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Datenbankfehler: ' . $e->getMessage()]);
+    echo json_encode([
+        'error' => 'Datenbankfehler',
+        'details' => $e->getMessage() 
+    ]);
 }
 ?>
