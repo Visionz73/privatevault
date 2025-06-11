@@ -84,12 +84,12 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <!-- Recent Expenses -->
+      <!-- Recent Expenses (excluding fully settled) -->
       <?php if (!empty($recentExpenses)): ?>
         <div class="border-t border-white/10 pt-3 mt-3">
           <div class="text-xs text-white/60 mb-2 flex items-center">
             <div class="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
-            Letzte Ausgaben
+            Aktuelle Ausgaben
           </div>
           <?php foreach(array_slice($recentExpenses, 0, 3) as $expense): ?>
             <div class="widget-list-item py-2 cursor-pointer" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
@@ -97,13 +97,21 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
                 <span class="text-white/90 text-sm truncate">
                   <?= htmlspecialchars($expense['title']) ?>
                 </span>
-                <span class="text-purple-300 text-xs font-medium">
-                  <?= number_format($expense['amount'], 2) ?> €
-                </span>
+                <div class="flex items-center gap-2">
+                  <!-- Settlement Status Indicator -->
+                  <?php if ($expense['settlement_status'] === 'partially_settled'): ?>
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <?php else: ?>
+                    <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                  <?php endif; ?>
+                  <span class="text-purple-300 text-xs font-medium">
+                    <?= number_format($expense['amount'], 2) ?> €
+                  </span>
+                </div>
               </div>
-              <div class="text-xs text-white/50 mt-1">
-                <?= date('d.m.Y', strtotime($expense['expense_date'])) ?>
-                <span class="ml-2"><i class="fas fa-users mr-1"></i><?= $expense['participant_count'] ?></span>
+              <div class="text-xs text-white/50 mt-1 flex justify-between">
+                <span><?= date('d.m.Y', strtotime($expense['expense_date'])) ?></span>
+                <span><?= $expense['settled_count'] ?>/<?= $expense['participant_count'] ?> bezahlt</span>
               </div>
             </div>
           <?php endforeach; ?>

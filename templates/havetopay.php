@@ -154,40 +154,136 @@
                 </div>
             </div>
 
-            <!-- Recent Expenses -->
+            <!-- Filter Section -->
+            <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 mb-4 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600/30 via-purple-700/40 to-blue-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
+                    <h3 class="text-sm font-semibold text-white/90 flex items-center">
+                        <i class="fas fa-filter mr-2"></i>Filter Expenses
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="block text-xs text-white/60 mb-1">Status</label>
+                            <select name="status" class="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white/90 text-sm">
+                                <option value="">All Expenses</option>
+                                <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Pending Payment</option>
+                                <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Fully Settled</option>
+                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Partially Settled</option>
+                            </select>
+                        </div>
+
+                        <!-- User Filter -->
+                        <div>
+                            <label class="block text-xs text-white/60 mb-1">User</label>
+                            <select name="user" class="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white/90 text-sm">
+                                <option value="">All Users</option>
+                                <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>My Expenses</option>
+                                <?php foreach ($allUsers as $user): ?>
+                                    <option value="<?= $user['id'] ?>" <?= ($_GET['user'] ?? '') == $user['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($user['display_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div>
+                            <label class="block text-xs text-white/60 mb-1">Group</label>
+                            <select name="group" class="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white/90 text-sm">
+                                <option value="">All Groups</option>
+                                <option value="no_group" <?= ($_GET['group'] ?? '') === 'no_group' ? 'selected' : '' ?>>No Group</option>
+                                <?php foreach ($allGroups as $group): ?>
+                                    <option value="<?= $group['id'] ?>" <?= ($_GET['group'] ?? '') == $group['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($group['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Apply Filter Button -->
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                                <i class="fas fa-search mr-1"></i>Apply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filtered Expenses -->
             <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-600/30 via-indigo-700/40 to-purple-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-sm font-semibold text-white/90">Recent Expenses</h3>
+                        <h3 class="text-sm font-semibold text-white/90">
+                            <?php if (!empty($_GET['status']) || !empty($_GET['user']) || !empty($_GET['group'])): ?>
+                                Filtered Expenses
+                            <?php else: ?>
+                                Recent Expenses
+                            <?php endif; ?>
+                        </h3>
                         <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                            <?php echo count($recentExpenses); ?>
+                            <?php echo count($filteredExpenses); ?>
                         </span>
                     </div>
                 </div>
                 <div class="p-4 max-h-80 overflow-y-auto">
-                    <?php if (empty($recentExpenses)): ?>
+                    <?php if (empty($filteredExpenses)): ?>
                         <div class="text-center py-12">
                             <i class="fas fa-receipt text-4xl text-white/20 mb-3"></i>
-                            <p class="text-white/50 mb-4 text-sm">No expenses recorded yet.</p>
+                            <p class="text-white/50 mb-4 text-sm">No expenses found matching the selected filters.</p>
                             <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white font-semibold py-2 px-4 rounded-xl inline-flex items-center transition-all text-sm">
                                 <i class="fas fa-plus mr-2"></i>Add Your First Expense
                             </a>
                         </div>
                     <?php else: ?>
                         <div class="space-y-2">
-                            <?php foreach ($recentExpenses as $expense): ?>
+                            <?php foreach ($filteredExpenses as $expense): ?>
                             <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1 min-w-0">
-                                            <div class="font-medium text-white/90 text-sm truncate"><?php echo htmlspecialchars($expense['title']); ?></div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="font-medium text-white/90 text-sm truncate"><?php echo htmlspecialchars($expense['title']); ?></div>
+                                                
+                                                <!-- Settlement Status Badge -->
+                                                <?php if ($expense['settlement_status'] === 'fully_settled'): ?>
+                                                    <span class="bg-green-500/20 border border-green-400/30 text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <i class="fas fa-check-circle mr-1"></i>Settled
+                                                    </span>
+                                                <?php elseif ($expense['settlement_status'] === 'partially_settled'): ?>
+                                                    <span class="bg-yellow-500/20 border border-yellow-400/30 text-yellow-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <i class="fas fa-clock mr-1"></i>Partial
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="bg-red-500/20 border border-red-400/30 text-red-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <i class="fas fa-exclamation-circle mr-1"></i>Pending
+                                                    </span>
+                                                <?php endif; ?>
+
+                                                <!-- Group Badge -->
+                                                <?php if (!empty($expense['group_name'])): ?>
+                                                    <span class="bg-purple-500/20 border border-purple-400/30 text-purple-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <i class="fas fa-users mr-1"></i><?= htmlspecialchars($expense['group_name']) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                            
                                             <?php if(!empty($expense['description'])): ?>
                                                 <div class="text-xs text-white/50 mt-1 truncate"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 40, "...")); ?></div>
                                             <?php endif; ?>
+                                            
                                             <div class="flex items-center gap-3 mt-1 text-xs text-white/60">
                                                 <span><?php echo number_format($expense['amount'], 2); ?> €</span>
                                                 <span><?php echo date('d M', strtotime($expense['expense_date'])); ?></span>
                                                 <span><i class="fas fa-users mr-1"></i><?php echo $expense['participant_count']; ?></span>
+                                                <span><i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($expense['payer_display_name']); ?></span>
+                                                
+                                                <!-- Settlement Progress -->
+                                                <span class="text-xs">
+                                                    <?= $expense['settled_count'] ?>/<?= $expense['participant_count'] ?> paid
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="flex gap-2 ml-3">

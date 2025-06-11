@@ -15,8 +15,10 @@ $totalOwed = 0;
 $totalOwing = 0;
 $netBalance = 0;
 $recentExpenses = [];
+$filteredExpenses = [];
 $currentUser = [];
 $allUsers = [];
+$allGroups = [];
 
 try {
     // First, check users table structure
@@ -119,7 +121,53 @@ try {
         $balances['user_owes'][] = $balance;
     }
     
-    // Get recent expenses involving the current user
+    // Get filter parameters
+    $statusFilter = $_GET['status'] ?? '';
+    $userFilter = $_GET['user'] ?? '';
+    $groupFilter = $_GET['group'] ?? '';
+
+    // Get filtered expenses with settlement status
+    $whereConditions = [];
+    $params = [$userId, $userId];
+    
+    // Build WHERE clause based on filters
+    if ($statusFilter) {
+        switch ($statusFilter) {
+            case 'pending':
+                $whereConditions[] = "settlement_stats.settlement_status = 'pending'";
+                break;
+            case 'settled':
+                $whereConditions[] = "settlement_stats.settlement_status = 'fully_settled'";
+                break;
+            case 'partially_settled':
+                $whereConditions[] = "settlement_stats.settlement_status = 'partially_settled'";
+                break;
+        }
+    }
+    
+    if ($userFilter) {
+        if ($userFilter === 'me') {
+            $whereConditions[] = "e.payer_id = ?";
+            $params[] = $userId;
+        } else {
+            $whereConditions[] = "(e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))";
+            $params[] = $userFilter;
+            $params[] = $userFilter;
+        }
+    }
+    
+    if ($groupFilter) {
+        if ($groupFilter === 'no_group') {
+            $whereConditions[] = "e.group_id IS NULL";
+        } else {
+            $whereConditions[] = "e.group_id = ?";
+            $params[] = $groupFilter;
+        }
+    }
+    
+    $whereClause = !empty($whereConditions) ? 'AND ' . implode(' AND ', $whereConditions) : '';
+    
+    // Get expenses with settlement statistics
     $userNameFields = $hasFirstName && $hasLastName ? 
         "u.first_name as payer_first_name, u.last_name as payer_last_name," : 
         "";
@@ -128,15 +176,32 @@ try {
         SELECT e.*,
                u.username as payer_name,
                $userNameFields
-               (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+               g.name as group_name,
+               settlement_stats.participant_count,
+               settlement_stats.settled_count,
+               settlement_stats.settlement_status
         FROM expenses e
         JOIN users u ON e.payer_id = u.id
-        WHERE e.payer_id = ? 
-        OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
+        LEFT JOIN $groupsTable g ON e.group_id = g.id
+        JOIN (
+            SELECT 
+                ep.expense_id,
+                COUNT(*) as participant_count,
+                SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) as settled_count,
+                CASE 
+                    WHEN COUNT(*) = SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) THEN 'fully_settled'
+                    WHEN SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) > 0 THEN 'partially_settled'
+                    ELSE 'pending'
+                END as settlement_status
+            FROM expense_participants ep
+            GROUP BY ep.expense_id
+        ) settlement_stats ON e.id = settlement_stats.expense_id
+        WHERE (e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))
+        $whereClause
         ORDER BY e.created_at DESC
-        LIMIT 10
+        LIMIT 50
     ");
-    $stmt->execute([$userId, $userId]);
+    $stmt->execute($params);
     $expenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add display names to expenses
@@ -145,8 +210,70 @@ try {
             !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
             $expense['payer_first_name'] . ' ' . $expense['payer_last_name'] : 
             $expense['payer_name'];
-        $recentExpenses[] = $expense;
+        $filteredExpenses[] = $expense;
     }
+    
+    // If no filters applied, use recent expenses (excluding fully settled)
+    if (empty($statusFilter) && empty($userFilter) && empty($groupFilter)) {
+        $stmt = $pdo->prepare("
+            SELECT e.*,
+                   u.username as payer_name,
+                   $userNameFields
+                   g.name as group_name,
+                   settlement_stats.participant_count,
+                   settlement_stats.settled_count,
+                   settlement_stats.settlement_status
+            FROM expenses e
+            JOIN users u ON e.payer_id = u.id
+            LEFT JOIN $groupsTable g ON e.group_id = g.id
+            JOIN (
+                SELECT 
+                    ep.expense_id,
+                    COUNT(*) as participant_count,
+                    SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) as settled_count,
+                    CASE 
+                        WHEN COUNT(*) = SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) THEN 'fully_settled'
+                        WHEN SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) > 0 THEN 'partially_settled'
+                        ELSE 'pending'
+                    END as settlement_status
+                FROM expense_participants ep
+                GROUP BY ep.expense_id
+            ) settlement_stats ON e.id = settlement_stats.expense_id
+            WHERE (e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))
+            AND settlement_stats.settlement_status != 'fully_settled'
+            ORDER BY e.created_at DESC
+            LIMIT 15
+        ");
+        $stmt->execute([$userId, $userId]);
+        $recentExpenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Add display names to recent expenses
+        $filteredExpenses = [];
+        foreach ($recentExpenses as $expense) {
+            $expense['payer_display_name'] = $hasFirstName && $hasLastName && 
+                !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
+                $expense['payer_first_name'] . ' ' . $expense['payer_last_name'] : 
+                $expense['payer_name'];
+            $filteredExpenses[] = $expense;
+        }
+    }
+    
+    // Auto-update settlement status when all participants have paid
+    $autoSettleStmt = $pdo->prepare("
+        UPDATE expenses e
+        JOIN (
+            SELECT 
+                ep.expense_id,
+                COUNT(*) as total_participants,
+                SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) as settled_participants
+            FROM expense_participants ep
+            GROUP BY ep.expense_id
+            HAVING total_participants = settled_participants
+        ) settlement_check ON e.id = settlement_check.expense_id
+        SET e.updated_at = NOW()
+        WHERE e.id = settlement_check.expense_id
+    ");
+    $autoSettleStmt->execute();
     
     // Calculate total balances
     foreach ($balances['others_owe'] as $balance) {

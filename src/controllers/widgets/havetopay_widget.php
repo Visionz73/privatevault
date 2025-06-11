@@ -111,7 +111,7 @@ try {
         $balances['user_owes'][] = $balance;
     }
 
-    // Fetch recent expenses
+    // Fetch recent expenses (excluding fully settled ones)
     $userNameFields = $hasFirstName && $hasLastName ? 
         "u.first_name as payer_first_name, u.last_name as payer_last_name," : 
         "";
@@ -120,11 +120,26 @@ try {
         SELECT e.id, e.title, e.amount, e.expense_date,
                u.username as payer_name,
                $userNameFields
-               (SELECT COUNT(*) FROM expense_participants WHERE expense_id = e.id) as participant_count
+               settlement_stats.participant_count,
+               settlement_stats.settled_count,
+               settlement_stats.settlement_status
         FROM expenses e
         JOIN users u ON e.payer_id = u.id
-        WHERE e.payer_id = ? 
-        OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?)
+        JOIN (
+            SELECT 
+                ep.expense_id,
+                COUNT(*) as participant_count,
+                SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) as settled_count,
+                CASE 
+                    WHEN COUNT(*) = SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) THEN 'fully_settled'
+                    WHEN SUM(CASE WHEN ep.is_settled = 1 THEN 1 ELSE 0 END) > 0 THEN 'partially_settled'
+                    ELSE 'pending'
+                END as settlement_status
+            FROM expense_participants ep
+            GROUP BY ep.expense_id
+        ) settlement_stats ON e.id = settlement_stats.expense_id
+        WHERE (e.payer_id = ? OR e.id IN (SELECT expense_id FROM expense_participants WHERE user_id = ?))
+        AND settlement_stats.settlement_status != 'fully_settled'
         ORDER BY e.created_at DESC
         LIMIT 5
     ");
