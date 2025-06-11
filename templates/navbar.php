@@ -463,7 +463,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         <!-- Logo/Header inside container -->
         <div class="mb-6 text-center">
           <a href="/" class="logo-container">
-            <img src="/assets/logo.png" alt="Private Vault" class="logo-image" style="max-height: 4rem;">
+            <img src="/assets/logo.png" alt="Private Vault" class="logo-image" style="max-height: 10rem;">
           </a>
         </div>
         
