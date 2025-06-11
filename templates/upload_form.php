@@ -13,7 +13,7 @@
       min-height: 100vh;
     }
     @media (max-width: 768px) {
-      main { margin-top: 3.5rem; }
+      main { margin-top: 4rem; }
     }
     
     .glassmorphism-container {
@@ -120,74 +120,51 @@
         <p class="mt-2 text-secondary">Laden Sie ein neues Dokument in Ihre private Ablage hoch.</p>
       </header>
       
-      <?php if (!empty($uploadSuccess)): ?>
-        <div class="mb-6 success-message px-4 py-3">
-          <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <?= htmlspecialchars($uploadSuccess) ?>
-          </div>
-        </div>
-      <?php endif; ?>
-      
-      <?php if (!empty($uploadError)): ?>
-        <div class="mb-6 error-message px-4 py-3">
-          <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <?= htmlspecialchars($uploadError) ?>
-          </div>
-        </div>
-      <?php endif; ?>
-
+      <!-- Upload Form Container -->
       <div class="glassmorphism-container p-8">
         <form method="post" enctype="multipart/form-data" class="space-y-6">
-          <div>
-            <label for="title" class="block text-sm font-medium text-secondary mb-2">Dokumententitel</label>
-            <input type="text" id="title" name="title" required
-                   class="form-input w-full px-4 py-3"
-                   placeholder="Geben Sie einen aussagekräftigen Titel ein">
-          </div>
-
-          <div>
-            <label for="category_id" class="block text-sm font-medium text-secondary mb-2">Kategorie</label>
-            <select id="category_id" name="category_id" required class="form-input w-full px-4 py-3">
-              <option value="">Bitte wählen...</option>
-              <?php foreach($cats as $cat): ?>
-                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-secondary mb-2">Datei auswählen</label>
-            <div class="file-drop-area">
-              <input type="file" id="docfile" name="docfile" required
-                     accept=".pdf,.png,.jpg,.jpeg,.docx"
-                     class="file-input">
-              <div class="file-msg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <p class="font-medium">Datei hier ablegen oder klicken zum Auswählen</p>
-                <p class="text-sm mt-2">PDF, PNG, JPG, JPEG, DOCX (max. 10MB)</p>
-              </div>
+          <!-- File Drop Area -->
+          <div class="file-drop-area">
+            <input type="file" name="file" class="file-input" required>
+            <div class="file-msg text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="mb-2">Datei hier ablegen oder klicken zum Auswählen</p>
+              <p class="text-xs text-white/60">Unterstützte Formate: PDF, DOC, DOCX, JPG, PNG (Max. 10MB)</p>
             </div>
-            <div id="file-info" class="mt-2 text-sm text-secondary hidden"></div>
           </div>
-
-          <div class="flex justify-end space-x-4">
-            <a href="/profile.php?tab=documents" class="px-6 py-3 bg-gray-600/50 text-gray-200 rounded-lg hover:bg-gray-600/70 transition">
-              Abbrechen
-            </a>
+          
+          <!-- Title Input -->
+          <div>
+            <label for="title" class="block text-sm font-medium text-white mb-2">Titel</label>
+            <input type="text" name="title" id="title" required 
+                   class="form-input w-full px-4 py-3" 
+                   placeholder="Dokumententitel eingeben...">
+          </div>
+          
+          <!-- Description Textarea -->
+          <div>
+            <label for="description" class="block text-sm font-medium text-white mb-2">Beschreibung</label>
+            <textarea name="description" id="description" rows="4" 
+                      class="form-input w-full px-4 py-3" 
+                      placeholder="Optionale Beschreibung..."></textarea>
+          </div>
+          
+          <!-- Submit Button -->
+          <div class="flex justify-end">
             <button type="submit" class="btn-primary px-6 py-3">
               Dokument hochladen
             </button>
           </div>
         </form>
       </div>
+      
+      <?php if (!empty($uploadSuccess)): ?>
+        <div class="mb-6 success-message px-4 py-3 mt-6">
+          Dokument erfolgreich hochgeladen!
+        </div>
+      <?php endif; ?>
     </div>
   </main>
 

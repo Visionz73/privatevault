@@ -15,24 +15,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        /* Adjust main content margin for mobile when top navbar is present */
-        @media (max-width: 768px) { /* md breakpoint in Tailwind is 768px */
+        body { 
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+            min-height: 100vh;
+        }
+        @media (max-width: 768px) {
             main.content-area { 
-                margin-top: 4rem; /* Approx h-16, adjust if navbar.php mobile height changes from h-14 (3.5rem) */
+                margin-top: 4rem;
             }
+        }
+        
+        .glassmorphism-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 0.75rem;
+        }
+        
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-100 via-gray-100 to-stone-100 flex flex-col antialiased">
+<body class="min-h-screen flex">
 
-    <?php require_once __DIR__ . '/navbar.php'; // The Tailwind sidebar navbar ?>
+    <?php require_once __DIR__ . '/navbar.php'; ?>
 
     <!-- Main content area, adjusted for sidebar -->
     <main class="content-area ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 md:p-8 space-y-6">
         <div class="max-w-3xl mx-auto">
             <header class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-3xl font-bold text-white">
                     <?php echo htmlspecialchars($pageTitle ?? 'User Settings'); ?>
                 </h1>
             </header>
@@ -65,9 +104,9 @@
             <?php endif; ?>
 
             <?php // Account Information Form ?>
-            <section class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
-                <div class="bg-gray-50 p-5 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-700">Account Information</h2>
+            <section class="glassmorphism-container overflow-hidden mb-8">
+                <div class="bg-white/10 p-5 border-b border-white/20">
+                    <h2 class="text-xl font-semibold text-white">Account Information</h2>
                 </div>
                 <div class="p-6">
                     <form action="settings.php" method="POST" class="space-y-6">
@@ -78,7 +117,7 @@
                             <input type="text" name="displayName" id="displayName" 
                                    value="<?php echo htmlspecialchars($currentDisplayName ?? ''); ?>" 
                                    placeholder="Enter your display name" required
-                                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                   class="form-input mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
                         
                         <div>
@@ -86,12 +125,12 @@
                             <input type="email" name="email" id="email" 
                                    value="<?php echo htmlspecialchars($currentEmail ?? ''); ?>" 
                                    placeholder="Enter your email address" required
-                                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                   class="form-input mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
                         
                         <div class="flex justify-end pt-2">
                             <button type="submit" name="saveAccountChanges" 
-                                    class="inline-flex justify-center py-2 px-5 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    class="btn-primary px-5 py-2">
                                 Save Account Changes
                             </button>
                         </div>
@@ -100,15 +139,15 @@
             </section>
 
             <?php // Security Section ?>
-            <section class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
-                <div class="bg-gray-50 p-5 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-700">Security</h2>
+            <section class="glassmorphism-container overflow-hidden mb-8">
+                <div class="bg-white/10 p-5 border-b border-white/20">
+                    <h2 class="text-xl font-semibold text-white">Security</h2>
                 </div>
                 <div class="p-6">
-                    <p class="text-gray-600 mb-4">To change your password, please proceed to the password change page.</p>
+                    <p class="text-white/80 mb-4">To change your password, please proceed to the password change page.</p>
                     <div class="flex justify-start">
                         <a href="change_password.php" 
-                           class="inline-flex justify-center py-2 px-5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                           class="inline-flex justify-center py-2 px-5 border border-white/20 text-white bg-white/10 hover:bg-white/15 rounded-lg transition-all duration-200">
                            Change Password
                         </a>
                     </div>
@@ -116,7 +155,7 @@
             </section>
             
             <div class="text-center mt-10">
-                 <a href="profile.php" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                 <a href="profile.php" class="text-white/80 hover:text-white text-sm font-medium">
                     &larr; Back to Profile
                  </a>
             </div>
