@@ -1,5 +1,5 @@
 <?php
-// Include the HaveToPay widget controller to get data
+// Include the widget controller to get data
 require_once __DIR__ . '/../../src/controllers/widgets/havetopay_widget.php';
 ?>
 
@@ -12,67 +12,91 @@ require_once __DIR__ . '/../../src/controllers/widgets/havetopay_widget.php';
       </svg>
     </a>
     
-    <!-- Balance indicator -->
+    <!-- Net Balance Indicator -->
     <div class="text-right">
-      <?php if ($widgetNetBalance > 0): ?>
-        <span class="widget-button text-sm bg-green-600/30 border-green-400/50">
-          +€<?= number_format($widgetNetBalance, 2) ?>
-        </span>
-      <?php elseif ($widgetNetBalance < 0): ?>
-        <span class="widget-button text-sm bg-red-600/30 border-red-400/50">
-          -€<?= number_format(abs($widgetNetBalance), 2) ?>
-        </span>
-      <?php else: ?>
-        <span class="widget-button text-sm">€0.00</span>
-      <?php endif; ?>
+      <div class="text-xs widget-description">Netto-Saldo</div>
+      <div class="font-bold <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+        €<?= number_format(abs($widgetNetBalance), 2) ?>
+        <?= $widgetNetBalance >= 0 ? '↑' : '↓' ?>
+      </div>
     </div>
   </div>
   
   <p class="widget-description mb-4">
-    <?php if ($widgetNetBalance > 0): ?>
-      Sie bekommen €<?= number_format($widgetNetBalance, 2) ?>
-    <?php elseif ($widgetNetBalance < 0): ?>
-      Sie schulden €<?= number_format(abs($widgetNetBalance), 2) ?>
-    <?php else: ?>
-      Alle Schulden beglichen
-    <?php endif; ?>
+    Schulden: €<?= number_format($widgetTotalOwing, 2) ?> | 
+    Guthaben: €<?= number_format($widgetTotalOwed, 2) ?>
   </p>
 
   <div class="widget-scroll-container flex-1">
     <div class="widget-scroll-content space-y-2">
-      <?php if (!empty($recentExpenses)): ?>
-        <?php foreach($recentExpenses as $expense): ?>
-          <div class="widget-list-item" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
-            <div class="flex justify-between items-center mb-1">
-              <span class="task-title truncate"><?= htmlspecialchars($expense['title']) ?></span>
-              <span class="task-meta text-xs">€<?= number_format($expense['amount'], 2) ?></span>
-            </div>
-            
-            <div class="flex justify-between items-center text-xs task-meta">
-              <span>
-                <?php 
-                $payerName = !empty($expense['payer_first_name']) && !empty($expense['payer_last_name']) ? 
-                    $expense['payer_first_name'] . ' ' . $expense['payer_last_name'] : 
-                    $expense['payer_name'];
-                ?>
-                Bezahlt von: <?= htmlspecialchars($payerName) ?>
-              </span>
-              <span>
-                <?php if ($expense['settlement_status'] === 'partially_settled'): ?>
-                  <span class="status-due px-1 py-0.5 rounded-full">Teilweise</span>
-                <?php else: ?>
-                  <span class="status-overdue px-1 py-0.5 rounded-full">Offen</span>
-                <?php endif; ?>
-              </span>
-            </div>
-            
-            <div class="text-xs task-meta mt-1">
-              <?= date('d.m.Y', strtotime($expense['expense_date'])) ?>
-            </div>
+      <?php if (!empty($balances['user_owes']) || !empty($balances['others_owe'])): ?>
+        
+        <!-- What user owes others -->
+        <?php if (!empty($balances['user_owes'])): ?>
+          <div class="mb-3">
+            <h4 class="text-xs font-medium text-red-400 mb-2">Du schuldest:</h4>
+            <?php foreach (array_slice($balances['user_owes'], 0, 3) as $debt): ?>
+              <div class="widget-list-item flex justify-between items-center">
+                <span class="task-title text-sm truncate">
+                  <?= htmlspecialchars($debt['display_name']) ?>
+                </span>
+                <span class="text-red-400 font-medium text-sm">
+                  €<?= number_format($debt['amount_owed'], 2) ?>
+                </span>
+              </div>
+            <?php endforeach; ?>
           </div>
-        <?php endforeach; ?>
+        <?php endif; ?>
+        
+        <!-- What others owe user -->
+        <?php if (!empty($balances['others_owe'])): ?>
+          <div class="mb-3">
+            <h4 class="text-xs font-medium text-green-400 mb-2">Dir schulden:</h4>
+            <?php foreach (array_slice($balances['others_owe'], 0, 3) as $credit): ?>
+              <div class="widget-list-item flex justify-between items-center">
+                <span class="task-title text-sm truncate">
+                  <?= htmlspecialchars($credit['display_name']) ?>
+                </span>
+                <span class="text-green-400 font-medium text-sm">
+                  €<?= number_format($credit['amount_owed'], 2) ?>
+                </span>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        
+        <!-- Recent expenses -->
+        <?php if (!empty($recentExpenses)): ?>
+          <div class="border-t border-white/10 pt-3 mt-3">
+            <h4 class="text-xs font-medium text-white/70 mb-2">Letzte Ausgaben:</h4>
+            <?php foreach (array_slice($recentExpenses, 0, 2) as $expense): ?>
+              <div class="widget-list-item">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1 min-w-0">
+                    <span class="task-title text-sm truncate block">
+                      <?= htmlspecialchars($expense['title']) ?>
+                    </span>
+                    <div class="task-meta text-xs flex gap-2">
+                      <span>€<?= number_format($expense['amount'], 2) ?></span>
+                      <span><?= date('d.m.', strtotime($expense['expense_date'])) ?></span>
+                    </div>
+                  </div>
+                  <span class="status-badge px-1 py-0.5 rounded-full text-xs whitespace-nowrap ml-2 
+                    <?= $expense['settlement_status'] === 'fully_settled' ? 'bg-green-100 text-green-800' : 
+                        ($expense['settlement_status'] === 'partially_settled' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') ?>">
+                    <?= $expense['settlement_status'] === 'fully_settled' ? 'Bezahlt' : 
+                        ($expense['settlement_status'] === 'partially_settled' ? 'Teilweise' : 'Offen') ?>
+                  </span>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        
       <?php else: ?>
-        <div class="widget-list-item text-center task-meta py-4">Keine Ausgaben gefunden.</div>
+        <div class="widget-list-item text-center task-meta py-4">
+          Keine offenen Schulden oder Guthaben.
+        </div>
       <?php endif; ?>
     </div>
   </div>

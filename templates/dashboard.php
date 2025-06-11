@@ -409,12 +409,6 @@
       <!-- HaveToPay Widget -->
       <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
 
-      <!-- Placeholder Cards for future features -->
-      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
-        <article class="placeholder-widget">
-          <?= $name ?>-Widget
-        </article>
-      <?php endforeach; ?>
     </div><!-- /grid -->
   </main>
   

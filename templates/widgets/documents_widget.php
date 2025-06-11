@@ -1,23 +1,19 @@
 <?php
-// Get documents for the current user
+// Fetch recent documents for the current user
 $stmt = $pdo->prepare("
-    SELECT id, title, upload_date, file_size
+    SELECT id, filename, file_size, upload_date, category
     FROM documents 
     WHERE user_id = ? 
     ORDER BY upload_date DESC 
     LIMIT 5
 ");
 $stmt->execute([$user['id']]);
-$docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$recentDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Count total documents
-$stmtCount = $pdo->prepare("
-    SELECT COUNT(*) as count
-    FROM documents 
-    WHERE user_id = ?
-");
-$stmtCount->execute([$user['id']]);
-$docCount = $stmtCount->fetch(PDO::FETCH_ASSOC)['count'];
+// Get total document count
+$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM documents WHERE user_id = ?");
+$stmt->execute([$user['id']]);
+$docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 ?>
 
 <article class="widget-card p-6 flex flex-col">
@@ -29,47 +25,67 @@ $docCount = $stmtCount->fetch(PDO::FETCH_ASSOC)['count'];
       </svg>
     </a>
     
-    <button onclick="openDocumentUpload()" class="widget-button">
-      +
+    <button onclick="openDocumentUpload()" class="widget-button text-sm flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Upload
     </button>
   </div>
-  <p class="widget-description mb-4"><?= $docCount ?> Dateien</p>
+  
+  <p class="widget-description mb-4"><?= $docCount ?> Dokumente gespeichert</p>
 
   <div class="widget-scroll-container flex-1">
     <div class="widget-scroll-content space-y-2">
-      <?php if(!empty($docs)): ?>
-        <?php foreach($docs as $d): ?>
-          <div class="widget-list-item" onclick="window.location.href='profile.php?tab=documents&doc=<?= $d['id'] ?>'">
-            <div class="flex justify-between items-center mb-1">
-              <span class="task-title truncate"><?= htmlspecialchars($d['title'] ?? 'Unbenanntes Dokument') ?></span>
-              <?php if (!empty($d['file_size'])): ?>
-                <span class="task-meta text-xs">
-                  <?= formatFileSize($d['file_size']) ?>
-                </span>
-              <?php endif; ?>
+      <?php if (!empty($recentDocuments)): ?>
+        <?php foreach ($recentDocuments as $doc): ?>
+          <div class="widget-list-item flex items-center gap-3">
+            <!-- File type icon -->
+            <div class="flex-shrink-0">
+              <?php
+              $extension = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION));
+              $iconClass = match($extension) {
+                'pdf' => 'text-red-400',
+                'doc', 'docx' => 'text-blue-400',
+                'xls', 'xlsx' => 'text-green-400',
+                'jpg', 'jpeg', 'png', 'gif' => 'text-purple-400',
+                default => 'text-gray-400'
+              };
+              ?>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <?= $iconClass ?>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
             </div>
-            <div class="task-meta text-xs">
-              <?= date('d.m.Y', strtotime($d['upload_date'])) ?>
+            
+            <div class="flex-1 min-w-0">
+              <div class="task-title text-sm truncate">
+                <?= htmlspecialchars($doc['filename']) ?>
+              </div>
+              <div class="task-meta text-xs flex gap-2">
+                <?php if (!empty($doc['category'])): ?>
+                  <span class="group-badge px-1 py-0.5 rounded-full">
+                    <?= htmlspecialchars($doc['category']) ?>
+                  </span>
+                <?php endif; ?>
+                <span><?= date('d.m.Y', strtotime($doc['upload_date'])) ?></span>
+                <?php if (!empty($doc['file_size'])): ?>
+                  <span><?= round($doc['file_size'] / 1024, 1) ?> KB</span>
+                <?php endif; ?>
+              </div>
             </div>
           </div>
         <?php endforeach; ?>
       <?php else: ?>
-        <div class="widget-list-item text-center task-meta py-4">Keine Dokumente vorhanden.</div>
+        <div class="widget-list-item text-center task-meta py-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Keine Dokumente vorhanden.
+          <button onclick="openDocumentUpload()" class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
+            Erstes Dokument hochladen
+          </button>
+        </div>
       <?php endif; ?>
     </div>
   </div>
 </article>
-
-<?php
-// Helper function for file size formatting
-if (!function_exists('formatFileSize')) {
-    function formatFileSize($bytes) {
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow(1024, $pow);
-        return round($bytes, 2) . ' ' . $units[$pow];
-    }
-}
-?>
