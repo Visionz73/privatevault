@@ -84,7 +84,7 @@
 <body class="min-h-screen flex">
     <?php include_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-3 md:p-5">
+    <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-3 md:p-5">
         <div class="max-w-5xl mx-auto">
             <!-- Compact Header -->
             <div class="flex justify-between items-center mb-5">

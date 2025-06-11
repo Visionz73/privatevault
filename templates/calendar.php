@@ -13,7 +13,7 @@
       min-height: 100vh;
     }
     @media (max-width: 768px) {
-      main { margin-top: 3.5rem; }
+      main { margin-top: 4rem; }
     }
     
     /* Calendar container styling */
@@ -238,7 +238,7 @@
 <body class="min-h-screen flex">
   <?php require_once __DIR__.'/navbar.php'; ?>
   
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
+  <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <header class="mb-6">
       <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <h1 class="text-3xl font-bold header-text">Kalender</h1>

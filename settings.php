@@ -24,7 +24,7 @@ $settings = ['theme' => 'dark', 'language' => 'de'];
 
 <?php require_once __DIR__ . '/templates/navbar.php'; ?>
 
-<div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
+<div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-16 md:mt-0">
     <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">Einstellungen</h1>
 

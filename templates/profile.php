@@ -310,7 +310,7 @@ if (file_exists($navbarPath)) {
 ?>
 
 <!-- Main Content -->
-<div class="profile-layout flex-1 p-4 lg:p-8 mt-14 md:mt-0">
+<div class="profile-layout flex-1 p-4 lg:p-8 mt-16 md:mt-0">
   <!-- Profile Header -->
   <header class="profile-header mb-8">
     <div class="p-8">

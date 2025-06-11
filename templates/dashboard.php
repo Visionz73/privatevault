@@ -32,7 +32,7 @@
         width: 117.6%;
         height: 117.6%;
       }
-      main { margin-top: 4.1rem; } /* Adjusted for scaling */
+      main { margin-top: 4rem; }
     }
 
     /* Dark theme widget styling */
@@ -235,7 +235,7 @@
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
+  <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
     <?php

@@ -28,7 +28,7 @@
 <body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
   <?php require_once __DIR__.'/../../templates/navbar.php'; ?>
 
-  <main class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
+  <main class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-16 md:mt-0">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-wrap justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Benutzergruppen</h1>
