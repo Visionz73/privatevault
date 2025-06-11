@@ -457,16 +457,16 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
 <nav id="sidebar">
   <div class="sidebar-content flex flex-col h-full">
-    <!-- Logo/Header -->
-    <div class="p-4">
-      <a href="/" class="logo-container">
-        <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
-      </a>
-    </div>
-
-    <!-- Navigation Links Container -->
+    <!-- Navigation Links Container with Logo -->
     <div class="flex-1">
       <div class="nav-container">
+        <!-- Logo/Header inside container -->
+        <div class="mb-6 text-center">
+          <a href="/" class="logo-container">
+            <img src="/assets/logo.png" alt="Private Vault" class="logo-image" style="max-height: 4rem;">
+          </a>
+        </div>
+        
         <ul class="space-y-1">
           <li>
             <a href="/dashboard.php" class="nav-link-modern">
