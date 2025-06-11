@@ -13,11 +13,10 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
         </a>
-        <a href="havetopay_add.php" title="Ausgabe hinzufügen" class="widget-button text-sm flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <a href="havetopay_add.php" title="Ausgabe hinzufügen" class="widget-button text-sm flex items-center justify-center w-8 h-8 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            Ausgabe hinzufügen
         </a>
     </div>
 

@@ -157,8 +157,9 @@
                                 <div class="ml-auto">
                                     <button type="button" 
                                             onclick="confirmDeleteExpense()"
-                                            class="bg-red-500/20 border border-red-500/30 text-red-300 font-medium px-4 py-3 rounded-xl transition-colors flex items-center hover:bg-red-500/30">
-                                        <i class="fas fa-trash-alt mr-2"></i>Ausgabe löschen
+                                            class="bg-red-500/20 border border-red-500/30 text-red-300 font-medium px-3 py-3 rounded-xl transition-colors flex items-center hover:bg-red-500/30"
+                                            title="Ausgabe löschen">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             <?php endif; ?>
@@ -257,9 +258,9 @@
                                             <form method="post" class="inline">
                                                 <input type="hidden" name="action" value="settle">
                                                 <input type="hidden" name="participant_id" value="<?php echo $participant['id']; ?>">
-                                                <button type="submit" class="text-green-400 hover:text-green-300 font-medium text-sm bg-green-500/20 hover:bg-green-500/30 px-3 py-1.5 rounded-lg transition-colors border border-green-500/30">
-                                                    <i class="fas fa-check-circle mr-1"></i>
-                                                    Als beglichen markieren
+                                                <button type="submit" class="text-green-400 hover:text-green-300 font-medium text-sm bg-green-500/20 hover:bg-green-500/30 px-3 py-1.5 rounded-lg transition-colors border border-green-500/30"
+                                                        title="Als beglichen markieren">
+                                                    <i class="fas fa-check-circle"></i>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -267,9 +268,9 @@
                                         <?php if ($expense['payer_id'] == $userId || $participant['user_id'] == $userId): ?>
                                             <button type="button" 
                                                     onclick="confirmRemoveParticipant(<?php echo $participant['id']; ?>, '<?php echo htmlspecialchars($participant['full_name'] ?: $participant['username'], ENT_QUOTES); ?>')"
-                                                    class="text-red-400 hover:text-red-300 font-medium text-sm bg-red-500/20 hover:bg-red-500/30 px-3 py-1.5 rounded-lg transition-colors border border-red-500/30">
-                                                <i class="fas fa-user-minus mr-1"></i>
-                                                Entfernen
+                                                    class="text-red-400 hover:text-red-300 font-medium text-sm bg-red-500/20 hover:bg-red-500/30 px-3 py-1.5 rounded-lg transition-colors border border-red-500/30"
+                                                    title="Entfernen">
+                                                <i class="fas fa-user-minus"></i>
                                             </button>
                                         <?php endif; ?>
                                     </div>

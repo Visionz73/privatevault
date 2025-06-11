@@ -63,6 +63,22 @@
             border-radius: 1rem;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
+
+        .glass-select {
+            background: #374151 !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.75rem;
+            color: white !important;
+            backdrop-filter: blur(10px);
+        }
+        .glass-select option {
+            background: #374151 !important;
+            color: white !important;
+        }
+        .glass-select:focus {
+            background: #4b5563 !important;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -73,8 +89,8 @@
             <!-- Compact Header -->
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-white">Schuldenverwaltung</h1>
-                <a href="havetopay_add.php" class="glass-btn px-4 py-2 rounded-lg text-sm flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Ausgabe hinzufügen
+                <a href="havetopay_add.php" class="glass-btn px-3 py-2 rounded-lg text-sm flex items-center" title="Ausgabe hinzufügen">
+                    <i class="fas fa-plus"></i>
                 </a>
             </div>
 
@@ -193,7 +209,7 @@
                             <form method="GET" class="flex items-center gap-2">
                                 <label for="filter_user" class="text-xs text-white/70">Filter:</label>
                                 <select name="filter_user" id="filter_user" onchange="this.form.submit()" 
-                                        class="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white">
+                                        class="bg-gray-800 border border-white/20 rounded px-2 py-1 text-xs text-white focus:bg-gray-700 focus:border-white/40">
                                     <option value="own" <?php echo ($expenseFilter === 'own') ? 'selected' : ''; ?>>
                                         Meine Ausgaben
                                     </option>
@@ -303,7 +319,13 @@
         
         document.getElementById('deleteModal').addEventListener('click', function(e) {
             if (e.target === this) {
-                closeDeleteModal();
+
+
+
+
+
+
+</html></body>    </script>        });            }                closeDeleteModal();                closeDeleteModal();
             }
         });
     </script>

@@ -109,6 +109,16 @@
             border: 1px solid rgba(34, 197, 94, 0.3);
             color: #86efac;
         }
+        
+        /* Checkbox styling */
+        input[type="checkbox"] {
+            accent-color: #3b82f6;
+        }
+        
+        input[type="checkbox"]:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -124,13 +134,10 @@
         </div>
         
         <!-- Header -->
-        <div class="glass-container mb-10 overflow-hidden">
-            <div class="glass-header px-8 py-6 text-white">
-                <h1 class="text-3xl font-bold flex items-center">
-                    <i class="fas fa-plus-circle mr-4 opacity-80"></i>Neue Ausgabe hinzufügen
-                </h1>
-                <p class="mt-2 text-white/70">Teile Ausgaben mit deinen Freunden und verfolge, wer was schuldet</p>
-            </div>
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-white flex items-center mb-2">
+                <i class="fas fa-plus-circle mr-3 text-blue-400"></i>Neue Ausgabe hinzufügen
+            </h1>
         </div>
         
         <!-- Error and Success Messages -->
@@ -229,18 +236,25 @@
                         
                         <!-- Participants -->
                         <div class="space-y-3">
-                            <label for="participants" class="block text-sm font-medium text-white">Teilen mit *</label>
-                            <select id="participants" name="participants[]" multiple required
-                                    class="glass-select w-full px-4 py-3 transition-all"
-                                    style="min-height: 120px;">
-                                <?php foreach ($allUsers as $user): ?>
-                                <option value="<?php echo $user['id']; ?>"
-                                        <?php echo in_array($user['id'], $_POST['participants'] ?? []) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($user['display_name']); ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <p class="text-sm text-white/60 mt-2">Halte Strg/Cmd gedrückt, um mehrere Teilnehmer auszuwählen</p>
+                            <label class="block text-sm font-medium text-white">Teilen mit *</label>
+                            <div class="glass-input p-4 max-h-48 overflow-y-auto">
+                                <div class="space-y-2">
+                                    <?php foreach ($allUsers as $user): ?>
+                                    <label class="flex items-center space-x-3 cursor-pointer hover:bg-white/5 p-2 rounded">
+                                        <input type="checkbox" 
+                                               name="participants[]" 
+                                               value="<?php echo $user['id']; ?>"
+                                               <?php echo in_array($user['id'], $_POST['participants'] ?? []) ? 'checked' : ''; ?>
+                                               class="w-4 h-4 text-blue-500 bg-white/10 border-white/30 rounded focus:ring-blue-500 focus:ring-2">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                                            <?php echo strtoupper(substr($user['display_name'], 0, 1)); ?>
+                                        </div>
+                                        <span class="text-white text-sm font-medium"><?php echo htmlspecialchars($user['display_name']); ?></span>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <p class="text-sm text-white/60">Wähle die Teilnehmer für diese Ausgabe</p>
                         </div>
                     </div>
                     
