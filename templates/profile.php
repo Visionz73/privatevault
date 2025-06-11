@@ -276,6 +276,7 @@ $initials = getUserInitials($user);
       text-decoration: none;
       transition: all 0.3s ease;
       margin: 0.125rem;
+      display: inline-block;
     }
     
     .subtab-link:hover {
@@ -486,7 +487,7 @@ if (file_exists($navbarPath)) {
             foreach ($personalSubtabs as $key => $label) {
               $isActive = $currentPersonalSubtab === $key;
               $href = "?tab=personal_info&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
             }
             echo '</div>';
             echo '</div>';
@@ -497,7 +498,7 @@ if (file_exists($navbarPath)) {
             if (file_exists($subtabFile)) {
               include $subtabFile;
             } else {
-              echo '<div class="text-center py-12 text-muted">Subtab-Inhalt nicht gefunden.</div>';
+              echo '<div class="content-card text-center py-12 text-muted">Subtab-Inhalt nicht gefunden: ' . htmlspecialchars($currentPersonalSubtab) . '</div>';
             }
             break;
             
@@ -515,7 +516,7 @@ if (file_exists($navbarPath)) {
             foreach ($financeSubtabs as $key => $label) {
               $isActive = $currentFinanceSubtab === $key;
               $href = "?tab=finance&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
             }
             echo '</div>';
             echo '</div>';
@@ -526,8 +527,7 @@ if (file_exists($navbarPath)) {
             if (file_exists($subtabFile)) {
               include $subtabFile;
             } else {
-              // Fallback to finance overview
-              include __DIR__ . '/profile_tabs/finance/finance_overview.php';
+              echo '<div class="content-card text-center py-12 text-muted">Finance-Subtab nicht gefunden: ' . htmlspecialchars($currentFinanceSubtab) . '</div>';
             }
             break;
             
@@ -547,7 +547,7 @@ if (file_exists($navbarPath)) {
             foreach ($docSubtabs as $key => $label) {
               $isActive = $currentDocSubtab === $key;
               $href = "?tab=documents&subtab=" . $key;
-              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+              echo '<a href="' . $href . '" class="subtab-link ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
             }
             echo '</div>';
             echo '</div>';
@@ -558,19 +558,19 @@ if (file_exists($navbarPath)) {
             if (file_exists($subtabFile)) {
               include $subtabFile;
             } else {
-              include __DIR__ . '/profile_tabs/documents/documents.php';
+              echo '<div class="content-card text-center py-12 text-muted">Dokument-Subtab nicht gefunden: ' . htmlspecialchars($currentDocSubtab) . '</div>';
             }
             break;
             
           case 'security':
-            echo '<div class="glassmorphism-container p-6">';
+            echo '<div class="content-card">';
             echo '<h2 class="text-xl font-semibold text-primary mb-4">Sicherheitseinstellungen</h2>';
             echo '<div class="text-center py-12 text-muted">Sicherheitseinstellungen werden demnächst verfügbar sein.</div>';
             echo '</div>';
             break;
             
           default:
-            echo '<div class="text-center py-12 text-muted">Tab-Inhalt nicht gefunden.</div>';
+            echo '<div class="content-card text-center py-12 text-muted">Tab-Inhalt nicht gefunden: ' . htmlspecialchars($activeTab) . '</div>';
         }
         ?>
       </div>

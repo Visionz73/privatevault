@@ -2,7 +2,7 @@
 <div class="bg-card-bg rounded-xl shadow-card-lg p-6 space-y-4">
   <div class="space-y-8">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 mb-2">HR Information</h2>
+      <h2 class="text-xl font-semibold text-gray-900 mb-2">HR Informationen</h2>
       <p class="text-gray-600">Berufliche und arbeitsrelevante Informationen.</p>
     </div>
 
