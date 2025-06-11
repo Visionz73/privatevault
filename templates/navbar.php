@@ -491,6 +491,304 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   .close-modal:hover {
     color: #6b7280;
   }
+
+  /* Shortcuts Container */
+  .shortcuts-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    margin: 0 1rem 1rem;
+  }
+  
+  .shortcuts-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .shortcut-item {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 4rem;
+    justify-content: center;
+  }
+  
+  .shortcut-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .shortcut-item:hover::before {
+    left: 100%;
+  }
+  
+  .shortcut-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+  
+  .shortcut-item.predefined.logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+  
+  .shortcut-item.empty {
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .shortcut-item.empty:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .shortcut-icon {
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .shortcut-item:hover .shortcut-icon {
+    transform: scale(1.1);
+  }
+  
+  .shortcut-label {
+    font-size: 0.625rem;
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: 0.9;
+  }
+  
+  .shortcut-item:hover .shortcut-label {
+    opacity: 1;
+  }
+
+  /* Custom Shortcut Modal */
+  .shortcuts-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .shortcuts-modal.active {
+    display: flex;
+  }
+  
+  .shortcuts-modal-content {
+    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: white;
+  }
+  
+  .shortcuts-modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .shortcuts-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .shortcuts-modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .shortcuts-modal-close:hover {
+    color: white;
+  }
+  
+  .shortcuts-modal-body {
+    padding: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+  
+  .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .btn-cancel,
+  .btn-delete,
+  .btn-save {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+  }
+  
+  .btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+  
+  .btn-delete {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: white;
+  }
+  
+  .btn-save {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(34, 197, 94, 0.6) 100%);
+    color: white;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  .btn-save:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(34, 197, 94, 0.7) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  /* Mobile optimizations for shortcuts */
+  @media (max-width: 768px) {
+    .shortcuts-container {
+      padding: 0.75rem;
+      margin: 0 0.75rem 0.75rem;
+    }
+    
+    .shortcuts-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.375rem;
+    }
+    
+    .shortcut-item {
+      padding: 0.5rem;
+      min-height: 3.5rem;
+    }
+    
+    .shortcut-label {
+      font-size: 0.5rem;
+    }
+    
+    .shortcuts-modal-content {
+      margin: 0.5rem;
+      max-width: none;
+    }
+    
+    .shortcuts-modal-header,
+    .shortcuts-modal-body {
+      padding: 1rem;
+    }
+  }
 </style>
 
 <!-- Add the haveToPay-layout class to body if on HaveToPay page -->
@@ -590,6 +888,74 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </svg>
       </button>
     </div>
+
+    <!-- Shortcuts Section -->
+    <div class="shortcuts-container">
+      <h3 class="shortcuts-title">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Shortcuts
+      </h3>
+      
+      <div class="shortcuts-grid" id="shortcutsGrid">
+        <!-- Predefined shortcuts -->
+        <a href="/taskboard.php?action=create" class="shortcut-item predefined" title="Neue Aufgabe erstellen">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Create Task</span>
+        </a>
+
+        <a href="/logout.php" class="shortcut-item predefined logout" title="Abmelden">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Logout</span>
+        </a>
+
+        <!-- Custom shortcut slots -->
+        <div class="shortcut-item custom-slot empty" onclick="openCustomShortcutModal(this)" data-slot="0">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+
+        <div class="shortcut-item custom-slot empty" onclick="openCustomShortcutModal(this)" data-slot="1">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+
+        <div class="shortcut-item custom-slot empty" onclick="openCustomShortcutModal(this)" data-slot="2">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+
+        <div class="shortcut-item custom-slot empty" onclick="openCustomShortcutModal(this)" data-slot="3">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -641,7 +1007,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         </a>
         <a href="/settings.php" class="modal-menu-item">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37 2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
           Einstellungen
         </a>
@@ -669,6 +1035,46 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   </div>
 </div>
 <?php endif; ?>
+
+<!-- Custom Shortcut Modal -->
+<div id="customShortcutModal" class="shortcuts-modal">
+  <div class="shortcuts-modal-content">
+    <div class="shortcuts-modal-header">
+      <h3 class="shortcuts-modal-title">Custom Shortcut erstellen</h3>
+      <button class="shortcuts-modal-close" onclick="closeCustomShortcutModal()">&times;</button>
+    </div>
+    <div class="shortcuts-modal-body">
+      <form id="customShortcutForm">
+        <div class="form-group">
+          <label for="shortcutName">Name</label>
+          <input type="text" id="shortcutName" name="name" required placeholder="z.B. Quick Notes">
+        </div>
+        <div class="form-group">
+          <label for="shortcutUrl">URL</label>
+          <input type="url" id="shortcutUrl" name="url" required placeholder="https://example.com oder /relative/path">
+        </div>
+        <div class="form-group">
+          <label for="shortcutIcon">Icon (optional)</label>
+          <select id="shortcutIcon" name="icon">
+            <option value="link">🔗 Link</option>
+            <option value="note">📝 Note</option>
+            <option value="calendar">📅 Calendar</option>
+            <option value="mail">📧 Mail</option>
+            <option value="folder">📁 Folder</option>
+            <option value="settings">⚙️ Settings</option>
+            <option value="star">⭐ Star</option>
+            <option value="bookmark">🔖 Bookmark</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeCustomShortcutModal()" class="btn-cancel">Abbrechen</button>
+          <button type="button" onclick="deleteCustomShortcut()" class="btn-delete" id="deleteShortcutBtn" style="display: none;">Löschen</button>
+          <button type="submit" class="btn-save">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- Enhanced navigation scripts -->
 <script>
@@ -735,6 +1141,134 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     const modal = document.getElementById('profileModal');
     if (modal && modal.classList.contains('active') && !modal.contains(e.target) && !e.target.closest('button[onclick="openProfileModal()"]')) {
       closeProfileModal();
+    }
+  });
+
+  let currentSlot = null;
+  let customShortcuts = JSON.parse(localStorage.getItem('customShortcuts') || '{}');
+  
+  // Load custom shortcuts on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCustomShortcuts();
+    
+    // ...existing code...
+  });
+  
+  function loadCustomShortcuts() {
+    Object.keys(customShortcuts).forEach(slot => {
+      const shortcut = customShortcuts[slot];
+      const slotElement = document.querySelector(`[data-slot="${slot}"]`);
+      if (slotElement && shortcut) {
+        updateShortcutSlot(slotElement, shortcut);
+      }
+    });
+  }
+  
+  function updateShortcutSlot(slotElement, shortcut) {
+    slotElement.classList.remove('empty');
+    slotElement.onclick = () => window.open(shortcut.url, '_blank');
+    
+    const iconElement = slotElement.querySelector('.shortcut-icon');
+    const labelElement = slotElement.querySelector('.shortcut-label');
+    
+    iconElement.innerHTML = getIconHtml(shortcut.icon);
+    labelElement.textContent = shortcut.name;
+    
+    // Add edit functionality on right click
+    slotElement.oncontextmenu = (e) => {
+      e.preventDefault();
+      openCustomShortcutModal(slotElement, shortcut);
+    };
+  }
+  
+  function getIconHtml(iconType) {
+    const icons = {
+      link: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>',
+      note: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',
+      mail: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',
+      folder: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>',
+      settings: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>',
+      bookmark: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>'
+    };
+    return icons[iconType] || icons.link;
+  }
+  
+  function openCustomShortcutModal(slotElement, existingShortcut = null) {
+    const modal = document.getElementById('customShortcutModal');
+    const form = document.getElementById('customShortcutForm');
+    const deleteBtn = document.getElementById('deleteShortcutBtn');
+    
+    currentSlot = slotElement.dataset.slot;
+    
+    if (existingShortcut) {
+      document.getElementById('shortcutName').value = existingShortcut.name;
+      document.getElementById('shortcutUrl').value = existingShortcut.url;
+      document.getElementById('shortcutIcon').value = existingShortcut.icon;
+      deleteBtn.style.display = 'block';
+    } else {
+      form.reset();
+      deleteBtn.style.display = 'none';
+    }
+    
+    modal.classList.add('active');
+  }
+  
+  function closeCustomShortcutModal() {
+    const modal = document.getElementById('customShortcutModal');
+    modal.classList.remove('active');
+    currentSlot = null;
+  }
+  
+  function deleteCustomShortcut() {
+    if (currentSlot !== null && customShortcuts[currentSlot]) {
+      delete customShortcuts[currentSlot];
+      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+      
+      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+      resetShortcutSlot(slotElement);
+      
+      closeCustomShortcutModal();
+    }
+  }
+  
+  function resetShortcutSlot(slotElement) {
+    slotElement.classList.add('empty');
+    slotElement.onclick = () => openCustomShortcutModal(slotElement);
+    slotElement.oncontextmenu = null;
+    
+    const iconElement = slotElement.querySelector('.shortcut-icon');
+    const labelElement = slotElement.querySelector('.shortcut-label');
+    
+    iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
+    labelElement.textContent = 'Add Shortcut';
+  }
+  
+  // Handle form submission
+  document.getElementById('customShortcutForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('shortcutName').value.trim();
+    const url = document.getElementById('shortcutUrl').value.trim();
+    const icon = document.getElementById('shortcutIcon').value;
+    
+    if (name && url && currentSlot !== null) {
+      const shortcut = { name, url, icon };
+      customShortcuts[currentSlot] = shortcut;
+      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+      
+      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+      updateShortcutSlot(slotElement, shortcut);
+      
+      closeCustomShortcutModal();
+    }
+  });
+  
+  // Close modal on background click
+  document.getElementById('customShortcutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCustomShortcutModal();
     }
   });
 </script>
