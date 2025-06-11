@@ -9,7 +9,7 @@ if (!$taskId || !is_numeric($taskId)) {
     exit;
 }
 
-// Task mit allen Details laden
+// Task mit allen Details laden - use correct column name 'created_by' instead of 'user_id'
 $stmt = $pdo->prepare("
     SELECT t.*, 
            creator.username AS creator_name,

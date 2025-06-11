@@ -14,14 +14,16 @@ if (!$id) {
     exit;
 }
 
-// Task & Creator laden
+// Task & Creator laden - add proper permission check
 $stmt = $pdo->prepare('
   SELECT t.*, u.username AS creator
     FROM tasks t
     JOIN users u ON u.id = t.created_by
-   WHERE t.id = ?
+   WHERE t.id = ? AND (t.assigned_to = ? OR t.created_by = ? OR t.assigned_group_id IN (
+       SELECT group_id FROM user_group_members WHERE user_id = ?
+   ))
 ');
-$stmt->execute([$id]);
+$stmt->execute([$id, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
 $task = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$task) {
     http_response_code(404);

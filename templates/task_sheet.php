@@ -10,8 +10,8 @@ if (!$taskId) {
     exit;
 }
 
-// Fetch main task details (adjust table/column names as needed)
-$stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = ? AND user_id = ?");
+// Fetch main task details - use correct column name 'created_by' instead of 'user_id'
+$stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = ? AND created_by = ?");
 $stmt->execute([$taskId, $_SESSION['user_id']]);
 $task = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$task) {

@@ -11,14 +11,69 @@ $statuses = [
   'done'  => 'Erledigt'
 ];
 
-// Alle Tasks des Users laden
+// Get filter mode
+$filterMode = $_GET['filter'] ?? 'all';
+
+// Build WHERE clause based on filter
+$where = [];
+$params = [];
+
+switch ($filterMode) {
+    case 'user':
+        $where[] = "t.assigned_to = ?";
+        $params[] = $_SESSION['user_id'];
+        break;
+    case 'group':
+        // Get user's groups first
+        $groupStmt = $pdo->prepare("SELECT group_id FROM user_group_members WHERE user_id = ?");
+        $groupStmt->execute([$_SESSION['user_id']]);
+        $userGroups = $groupStmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (!empty($userGroups)) {
+            $placeholders = implode(',', array_fill(0, count($userGroups), '?'));
+            $where[] = "t.assigned_group_id IN ($placeholders)";
+            $params = array_merge($params, $userGroups);
+        } else {
+            // User has no groups, show no tasks
+            $where[] = "1 = 0";
+        }
+        break;
+    default: // 'all'
+        // Show tasks assigned to user OR to their groups OR created by user
+        $groupStmt = $pdo->prepare("SELECT group_id FROM user_group_members WHERE user_id = ?");
+        $groupStmt->execute([$_SESSION['user_id']]);
+        $userGroups = $groupStmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        $conditions = ["t.assigned_to = ?", "t.created_by = ?"];
+        $params = [$_SESSION['user_id'], $_SESSION['user_id']];
+        
+        if (!empty($userGroups)) {
+            $placeholders = implode(',', array_fill(0, count($userGroups), '?'));
+            $conditions[] = "t.assigned_group_id IN ($placeholders)";
+            $params = array_merge($params, $userGroups);
+        }
+        
+        $where[] = "(" . implode(' OR ', $conditions) . ")";
+        break;
+}
+
+// Add condition to exclude completed tasks (use status instead of is_done)
+$where[] = "t.status != 'done'";
+
+// Alle Tasks laden mit erweiterten Informationen
 $stmt = $pdo->prepare('
-  SELECT * 
-    FROM tasks 
-   WHERE created_by = ? 
-ORDER BY created_at DESC
+  SELECT t.*, 
+         creator.username AS creator_name,
+         assignee.username AS assignee_name,
+         g.name AS group_name
+    FROM tasks t
+    LEFT JOIN users creator ON creator.id = t.created_by
+    LEFT JOIN users assignee ON assignee.id = t.assigned_to
+    LEFT JOIN user_groups g ON g.id = t.assigned_group_id
+   WHERE ' . implode(' AND ', $where) . '
+ORDER BY t.created_at DESC
 ');
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute($params);
 $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Nach Status gruppieren
