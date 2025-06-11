@@ -31,20 +31,169 @@ $initials = getUserInitials($user);
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      min-height: 100vh;
+    }
+    
+    /* Main glassmorphism containers */
+    .glassmorphism-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Header styling */
+    .profile-header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Sidebar styling */
+    .settings-sidebar {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Content area styling */
+    .settings-content {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Form inputs */
+    .form-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+    
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Navigation items */
+    .nav-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(3px);
+      color: white;
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.6) 0%, rgba(79, 70, 229, 0.6) 100%);
+      border-color: rgba(147, 51, 234, 0.4);
+      color: white;
+      font-weight: 600;
+    }
+    
+    /* Subtab navigation */
+    .subtab-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+      padding: 0.25rem;
+    }
+    
+    .subtab-item {
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .subtab-item:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .subtab-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-weight: 500;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
+    }
+    
+    /* Avatar styling */
+    .profile-avatar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Badge styling */
+    .role-badge {
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+      color: #c4b5fd;
+    }
+    
+    /* Text colors */
+    .text-primary {
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .text-secondary {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .text-muted {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    /* Mobile adjustments */
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
+      .profile-header { margin: 1rem; }
     }
-    .settings-sidebar {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      border-right: 1px solid #e2e8f0;
-    }
-    .settings-content {
-      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    
+    @media (min-width: 769px) {
+      main { margin-left: 16rem; }
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
+<body class="min-h-screen flex">
 <?php 
 $navbarPath = __DIR__ . '/navbar.php';
 if (file_exists($navbarPath)) {
@@ -57,26 +206,28 @@ if (file_exists($navbarPath)) {
 <!-- Main Content -->
 <div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
   <!-- Header with user info and breadcrumb -->
-  <header class="bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl mb-8">
+  <header class="profile-header mb-8">
     <div class="max-w-6xl mx-auto px-8 py-6">
       <!-- Breadcrumb -->
-      <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-        <a href="/privatevault/dashboard.php" class="hover:text-[#4A90E2]">Dashboard</a>
+      <nav class="flex items-center space-x-2 text-sm text-secondary mb-4">
+        <a href="/dashboard.php" class="hover:text-white transition-colors">Dashboard</a>
         <span>&rsaquo;</span>
-        <span class="text-gray-900 font-medium">Profil Einstellungen</span>
+        <span class="text-primary font-medium">Profil Einstellungen</span>
       </nav>
       
       <!-- User Header -->
       <div class="flex items-center gap-6">
-        <div class="h-20 w-20 rounded-full bg-gradient-to-br from-[#4A90E2] to-[#667eea] flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+        <div class="profile-avatar h-20 w-20 rounded-full flex items-center justify-center text-2xl font-bold text-white">
           <?= $initials ?>
         </div>
         <div class="flex-1">
           <div class="flex flex-wrap items-center gap-3">
-            <h1 class="text-2xl font-bold text-gray-900"><?= htmlspecialchars($user['username']) ?></h1>
-            <span class="px-3 py-1 rounded-full bg-[#4A90E2]/10 text-[#4A90E2] text-sm font-medium"><?= ucfirst($user['role'] ?? 'user') ?></span>
+            <h1 class="text-2xl font-bold text-primary"><?= htmlspecialchars($user['username']) ?></h1>
+            <span class="role-badge px-3 py-1 rounded-full text-sm font-medium">
+              <?= ucfirst($user['role'] ?? 'user') ?>
+            </span>
           </div>
-          <p class="mt-2 text-gray-600 text-sm">
+          <p class="mt-2 text-muted text-sm">
             Verwalten Sie Ihre Profil-Informationen und Einstellungen
           </p>
         </div>
@@ -88,16 +239,16 @@ if (file_exists($navbarPath)) {
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <!-- Settings Sidebar -->
     <aside class="lg:col-span-1">
-      <div class="settings-sidebar rounded-2xl shadow-sm p-6 sticky top-8">
-        <h3 class="font-semibold text-gray-900 mb-4">Einstellungen</h3>
+      <div class="settings-sidebar p-6 sticky top-8">
+        <h3 class="font-semibold text-primary mb-4">Einstellungen</h3>
         
         <!-- Search/Filter -->
         <input id="settingsFilter" type="text" 
                placeholder="Suchen..." 
-               class="w-full px-4 py-2 rounded-lg bg-white border border-gray-200 focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2] text-sm mb-4">
+               class="form-input w-full px-4 py-2 text-sm mb-4">
         
         <!-- Categories -->
-        <nav id="settingsList" class="space-y-1">
+        <nav id="settingsList" class="space-y-2">
           <?php
           $categories = [
             'personal_info' => [
@@ -131,14 +282,14 @@ if (file_exists($navbarPath)) {
             $isActive = $activeTab === $catKey;
           ?>
             <a href="?tab=<?= $catKey ?>" 
-               class="filter-item group flex items-start p-3 rounded-lg transition-all duration-200 <?= $isActive ? 'bg-[#4A90E2] text-white shadow-md' : 'hover:bg-white hover:shadow-sm text-gray-700' ?>">
-              <svg class="w-5 h-5 mt-0.5 mr-3 flex-shrink-0 <?= $isActive ? 'text-white' : 'text-gray-400 group-hover:text-[#4A90E2]' ?>" 
+               class="filter-item nav-item <?= $isActive ? 'active' : '' ?> group flex items-start p-3 transition-all duration-200">
+              <svg class="w-5 h-5 mt-0.5 mr-3 flex-shrink-0" 
                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <?= $cat['icon'] ?>
               </svg>
               <div class="flex-1 min-w-0">
                 <div class="font-medium text-sm"><?= $cat['label'] ?></div>
-                <div class="text-xs <?= $isActive ? 'text-white/80' : 'text-gray-500' ?> mt-0.5">
+                <div class="text-xs text-muted mt-0.5">
                   <?= $cat['description'] ?>
                 </div>
               </div>
@@ -150,7 +301,7 @@ if (file_exists($navbarPath)) {
 
     <!-- Content Area -->
     <section class="lg:col-span-3">
-      <div class="settings-content rounded-2xl shadow-sm p-8">
+      <div class="settings-content p-8">
         <?php
         // Determine content based on active tab
         switch($activeTab) {
@@ -165,6 +316,7 @@ if (file_exists($navbarPath)) {
             break;
           case 'documents':
             $sidebarCats = [
+              'documents' => 'Alle Dokumente',
               'contracts' => 'Verträge',
               'invoices' => 'Rechnungen',
               'ids' => 'Ausweise/ID',
@@ -177,7 +329,7 @@ if (file_exists($navbarPath)) {
             if (file_exists($securityTabPath)) {
                 include $securityTabPath;
             } else {
-                echo '<div class="text-center py-12"><p class="text-gray-500">Security settings will be available soon.</p></div>';
+                echo '<div class="text-center py-12"><p class="text-muted">Security settings will be available soon.</p></div>';
             }
             break;
           case 'notifications':
@@ -185,7 +337,7 @@ if (file_exists($navbarPath)) {
             if (file_exists($notificationsTabPath)) {
                 include $notificationsTabPath;
             } else {
-                echo '<div class="text-center py-12"><p class="text-gray-500">Notification settings will be available soon.</p></div>';
+                echo '<div class="text-center py-12"><p class="text-muted">Notification settings will be available soon.</p></div>';
             }
             break;
           default: // personal_info
@@ -201,12 +353,12 @@ if (file_exists($navbarPath)) {
           $sub = $_GET['subtab'] ?? array_key_first($sidebarCats);
         ?>
           <!-- Subtab Navigation -->
-          <nav class="flex space-x-1 mb-8 bg-gray-100 rounded-lg p-1">
+          <nav class="subtab-nav flex space-x-1 mb-8">
             <?php foreach($sidebarCats as $catKey => $catLabel): 
               $isActive = $sub === $catKey;
             ?>
               <a href="?tab=<?= $activeTab ?>&subtab=<?= $catKey ?>" 
-                 class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 <?= $isActive ? 'bg-white text-[#4A90E2] shadow-sm' : 'text-gray-600 hover:text-gray-900' ?>">
+                 class="subtab-item <?= $isActive ? 'active' : '' ?> px-4 py-2 text-sm font-medium transition-all duration-200">
                 <?= $catLabel ?>
               </a>
             <?php endforeach; ?>
@@ -219,8 +371,8 @@ if (file_exists($navbarPath)) {
               include $filePath;
           } else {
               echo '<div class="text-center py-12">';
-              echo '<p class="text-gray-500">Kein Inhalt verfügbar für diese Kategorie.</p>';
-              echo '<p class="text-xs text-gray-400 mt-2">Looking for: ' . htmlspecialchars($filePath) . '</p>';
+              echo '<p class="text-muted">Kein Inhalt verfügbar für diese Kategorie.</p>';
+              echo '<p class="text-xs text-muted mt-2">Looking for: ' . htmlspecialchars($filePath) . '</p>';
               echo '</div>';
           }
           ?>
