@@ -29,19 +29,23 @@
         <input type="password" name="current_password" required class="form-input w-full px-4 py-3">
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-2">Neues Passwort</label>
-        <input type="password" name="new_password" required class="form-input w-full px-4 py-3">
+      <div class="row">
+        <div class="col-md-6">
+          <label for="new_password" class="form-label">Neues Passwort *</label>
+          <input type="password" class="form-control form-input" id="new_password" name="new_password" minlength="8" required>
+          <small class="form-text">Mindestens 8 Zeichen</small>
+        </div>
+        <div class="col-md-6">
+          <label for="confirm_password" class="form-label">Passwort bestätigen *</label>
+          <input type="password" class="form-control form-input" id="confirm_password" name="confirm_password" minlength="8" required>
+        </div>
       </div>
-
-      <div>
-        <label class="block text-sm font-medium text-secondary mb-2">Passwort bestätigen</label>
-        <input type="password" name="confirm_password" required class="form-input w-full px-4 py-3">
+      
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          Passwort ändern
+        </button>
       </div>
-
-      <button type="submit" class="btn-primary px-6 py-2">
-        Passwort ändern
-      </button>
     </form>
   </div>
 
