@@ -1,5 +1,5 @@
 <?php
-// src/api/task_save.php - API endpoint for saving tasks
+// src/api/task_save.php - Enhanced API endpoint for saving tasks
 header('Content-Type: application/json');
 
 // Required files
@@ -32,12 +32,16 @@ $isDone = ($status === 'done') ? 1 : 0;
 // Assignment data
 $assignmentType = $_POST['assignment_type'] ?? 'user';
 $assignedTo = ($assignmentType === 'user') ? ($_POST['assigned_to'] ?? null) : null;
-$assignedGroupId = ($assignmentType === 'group') ? ($_POST['assigned_group'] ?? null) : null;
+$assignedGroupId = ($assignmentType === 'group') ? ($_POST['assigned_group_id'] ?? null) : null;
 
-// Recurrence data
-$recurrenceType = $_POST['recurrence_type'] ?? 'none';
-$recurrenceInterval = (!empty($_POST['recurrence_interval']) && $recurrenceType !== 'none') ? intval($_POST['recurrence_interval']) : null;
-$recurrenceEndDate = (!empty($_POST['recurrence_end_date']) && $recurrenceType !== 'none') ? $_POST['recurrence_end_date'] : null;
+// New enhanced fields
+$estimatedBudget = !empty($_POST['estimated_budget']) ? floatval($_POST['estimated_budget']) : null;
+$estimatedHours = !empty($_POST['estimated_hours']) ? floatval($_POST['estimated_hours']) : null;
+$category = !empty($_POST['category']) ? $_POST['category'] : null;
+$tags = !empty($_POST['tags']) ? trim($_POST['tags']) : null;
+
+// Subtasks data
+$subtasks = $_POST['subtasks'] ?? [];
 
 // Validate required fields
 if (empty($title)) {
@@ -61,14 +65,29 @@ try {
                 is_done = :is_done,
                 assigned_to = :assigned_to,
                 assigned_group_id = :assigned_group_id,
-                recurrence_type = :recurrence_type,
-                recurrence_interval = :recurrence_interval,
-                recurrence_end_date = :recurrence_end_date,
+                estimated_budget = :estimated_budget,
+                estimated_hours = :estimated_hours,
+                category = :category,
+                tags = :tags,
                 updated_at = NOW()
             WHERE id = :id
         ");
         
-        $stmt->bindParam(':id', $taskId);
+        $stmt->execute([
+            ':id' => $taskId,
+            ':title' => $title,
+            ':description' => $description,
+            ':due_date' => $dueDate,
+            ':status' => $status,
+            ':priority' => $priority,
+            ':is_done' => $isDone,
+            ':assigned_to' => $assignedTo,
+            ':assigned_group_id' => $assignedGroupId,
+            ':estimated_budget' => $estimatedBudget,
+            ':estimated_hours' => $estimatedHours,
+            ':category' => $category,
+            ':tags' => $tags
+        ]);
         
     } else {
         // Create new task
@@ -76,39 +95,73 @@ try {
             INSERT INTO tasks (
                 title, description, created_by, due_date, 
                 status, priority, is_done, assigned_to, assigned_group_id,
-                recurrence_type, recurrence_interval, recurrence_end_date,
-                created_at, updated_at, user_id
+                estimated_budget, estimated_hours, category, tags,
+                created_at, updated_at
             ) VALUES (
                 :title, :description, :created_by, :due_date,
                 :status, :priority, :is_done, :assigned_to, :assigned_group_id,
-                :recurrence_type, :recurrence_interval, :recurrence_end_date,
-                NOW(), NOW(), :user_id
+                :estimated_budget, :estimated_hours, :category, :tags,
+                NOW(), NOW()
             )
         ");
         
-        $stmt->bindParam(':created_by', $_SESSION['user_id']);
-        $stmt->bindParam(':user_id', $_SESSION['user_id']); // This seems to be a duplicate column in your schema
+        $stmt->execute([
+            ':title' => $title,
+            ':description' => $description,
+            ':created_by' => $_SESSION['user_id'],
+            ':due_date' => $dueDate,
+            ':status' => $status,
+            ':priority' => $priority,
+            ':is_done' => $isDone,
+            ':assigned_to' => $assignedTo,
+            ':assigned_group_id' => $assignedGroupId,
+            ':estimated_budget' => $estimatedBudget,
+            ':estimated_hours' => $estimatedHours,
+            ':category' => $category,
+            ':tags' => $tags
+        ]);
+        
+        $taskId = $pdo->lastInsertId();
     }
     
-    // Bind common parameters
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':description', $description);
-    $stmt->bindParam(':due_date', $dueDate);
-    $stmt->bindParam(':status', $status);
-    $stmt->bindParam(':priority', $priority);
-    $stmt->bindParam(':is_done', $isDone);
-    $stmt->bindParam(':assigned_to', $assignedTo);
-    $stmt->bindParam(':assigned_group_id', $assignedGroupId);
-    $stmt->bindParam(':recurrence_type', $recurrenceType);
-    $stmt->bindParam(':recurrence_interval', $recurrenceInterval);
-    $stmt->bindParam(':recurrence_end_date', $recurrenceEndDate);
-    
-    // Execute the statement
-    $stmt->execute();
-    
-    // If creating new task, get the ID
-    if (!$taskId) {
-        $taskId = $pdo->lastInsertId();
+    // Handle subtasks
+    if (!empty($subtasks)) {
+        // Create task_subtasks table if it doesn't exist
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS task_subtasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                task_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                is_completed TINYINT(1) DEFAULT 0,
+                sort_order INT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+            )
+        ");
+        
+        // Remove existing subtasks for update
+        if ($taskId) {
+            $stmt = $pdo->prepare("DELETE FROM task_subtasks WHERE task_id = ?");
+            $stmt->execute([$taskId]);
+        }
+        
+        // Insert/update subtasks
+        $sortOrder = 0;
+        foreach ($subtasks as $subtask) {
+            if (!empty($subtask['title'])) {
+                $stmt = $pdo->prepare("
+                    INSERT INTO task_subtasks (task_id, title, is_completed, sort_order)
+                    VALUES (?, ?, ?, ?)
+                ");
+                $stmt->execute([
+                    $taskId,
+                    trim($subtask['title']),
+                    isset($subtask['is_completed']) ? intval($subtask['is_completed']) : 0,
+                    $sortOrder++
+                ]);
+            }
+        }
     }
     
     // Commit transaction

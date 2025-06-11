@@ -230,7 +230,7 @@
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
-      <!-- Inbox Widget -->
+      <!-- Enhanced Inbox Widget -->
       <article class="widget-card p-6 flex flex-col">
         <div class="flex justify-between items-center mb-4">
           <a href="inbox.php" class="group inline-flex items-center widget-header">
@@ -285,23 +285,46 @@
             <?php foreach($tasks as $idx => $t): ?>
               <li class="widget-list-item flex flex-col gap-2"
                   onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
-                <!-- Title and Due Date -->
+                <!-- Title and Due Date with Budget -->
                 <div class="flex justify-between items-center">
                   <span class="task-title"><?= htmlspecialchars($t['title']) ?></span>
-                  <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                    <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
-                      <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                    </span>
-                  <?php endif; ?>
+                  <div class="flex items-center gap-2">
+                    <?php if (!empty($t['estimated_budget'])): ?>
+                      <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">
+                        €<?= number_format($t['estimated_budget'], 0) ?>
+                      </span>
+                    <?php endif; ?>
+                    <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
+                      <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+                        <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
+                      </span>
+                    <?php endif; ?>
+                  </div>
                 </div>
+                
+                <!-- Category and Priority -->
+                <?php if (!empty($t['category']) || !empty($t['priority'])): ?>
+                  <div class="flex gap-2">
+                    <?php if (!empty($t['category'])): ?>
+                      <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">
+                        <?= htmlspecialchars(ucfirst($t['category'])) ?>
+                      </span>
+                    <?php endif; ?>
+                    <?php if ($t['priority'] === 'urgent' || $t['priority'] === 'high'): ?>
+                      <span class="<?= $t['priority'] === 'urgent' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800' ?> px-2 py-0.5 rounded-full text-xs">
+                        <?= strtoupper($t['priority']) ?>
+                      </span>
+                    <?php endif; ?>
+                  </div>
+                <?php endif; ?>
                 
                 <!-- Description (short) -->
                 <?php if(!empty($t['description'])): ?>
                   <p class="task-description line-clamp-1"><?= htmlspecialchars($t['description']) ?></p>
                 <?php endif; ?>
                 
-                <!-- Creator and Assignee Info -->
-                <div class="flex gap-4 task-meta">
+                <!-- Creator and Assignee Info with Hours -->
+                <div class="flex gap-4 task-meta text-xs">
                   <span>
                     <span class="font-medium">Von:</span> 
                     <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
@@ -316,7 +339,24 @@
                       <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
                     <?php endif; ?>
                   </span>
+                  <?php if (!empty($t['estimated_hours'])): ?>
+                    <span>
+                      <span class="font-medium">Zeit:</span> 
+                      <?= $t['estimated_hours'] ?>h
+                    </span>
+                  <?php endif; ?>
                 </div>
+                
+                <!-- Tags if available -->
+                <?php if (!empty($t['tags'])): ?>
+                  <div class="flex flex-wrap gap-1">
+                    <?php foreach (array_slice(explode(',', $t['tags']), 0, 3) as $tag): ?>
+                      <span class="bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-xs">
+                        #<?= htmlspecialchars(trim($tag)) ?>
+                      </span>
+                    <?php endforeach; ?>
+                  </div>
+                <?php endif; ?>
               </li>
             <?php endforeach; ?>
           <?php else: ?>
