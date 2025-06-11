@@ -230,6 +230,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     justify-content: space-between;
     width: 100%;
     padding: 0 1rem;
+    height: 100%;
   }
 
   .mobile-toggle-btn {
@@ -239,9 +240,30 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     padding: 0.5rem;
     color: white;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    min-width: 2.5rem;
   }
   .mobile-toggle-btn:hover {
     background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Fix mobile user avatar */
+  .mobile-user-avatar {
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   /* Profile Modal dark theme adjustments */
@@ -550,7 +572,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
 <!-- Mobile header -->
 <div class="md:hidden fixed top-0 left-0 right-0 h-16 z-30" style="background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);">
-  <div class="mobile-header-content h-full">
+  <div class="mobile-header-content">
     <button id="mobileToggleBtn" class="mobile-toggle-btn">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -560,7 +582,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
     </a>
     <button onclick="openProfileModal()" class="mobile-toggle-btn">
-      <div class="h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+      <div class="mobile-user-avatar">
         <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
       </div>
     </button>

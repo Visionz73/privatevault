@@ -30,20 +30,10 @@ try {
     $hasFirstName = in_array('first_name', $userColumns);
     $hasLastName = in_array('last_name', $userColumns);
     
-    // Make sure tables exist
-    $tableCreationOutput = '';
+    // Silently ensure tables exist without showing messages
     ob_start();
     require_once __DIR__ . '/../../database/havetopay_tables.php';
-    $tableCreationOutput = ob_get_clean();
-
-    // Process any success or error messages from table creation
-    if (!empty($tableCreationOutput)) {
-        if (strpos(strtolower($tableCreationOutput), 'error') !== false) {
-            $errorMessage = "Error during table setup: " . htmlspecialchars($tableCreationOutput);
-        } elseif (strpos($tableCreationOutput, 'successfully') !== false) {
-            $successMessage = htmlspecialchars($tableCreationOutput);
-        }
-    }
+    ob_end_clean(); // Discard any output from table creation
     
     // Get current user data
     if ($hasFirstName && $hasLastName) {

@@ -16,103 +16,95 @@
 <body class="min-h-screen flex">
     <?php include_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-white/90 flex items-center">
-                        <i class="fas fa-wallet mr-3 text-white/70"></i>HaveToPay
-                    </h1>
-                    <p class="text-white/60 mt-1">Manage shared expenses with friends</p>
-                </div>
-                <div class="flex gap-3">
-                    <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white px-5 py-3 rounded-xl transition-all duration-200 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Add Expense
-                    </a>
-                    <a href="index.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/70 hover:text-white/90 px-5 py-3 rounded-xl transition-all duration-200 flex items-center">
-                        <i class="fas fa-home mr-2"></i>Dashboard
-                    </a>
-                </div>
-            </div>
-
+    <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-2 md:p-4">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-2">
             <!-- Success/Error Messages -->
             <?php if (!empty($successMessage)): ?>
-            <div class="bg-green-500/20 border border-green-400/30 backdrop-blur-sm text-green-300 p-4 rounded-xl mb-6 flex items-center">
-                <i class="fas fa-check-circle text-xl mr-3"></i>
-                <p><?php echo htmlspecialchars($successMessage); ?></p>
+            <div class="bg-green-500/20 border border-green-400/30 backdrop-blur-sm text-green-300 p-3 rounded-xl mb-4 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <p class="text-sm"><?php echo htmlspecialchars($successMessage); ?></p>
             </div>
             <?php endif; ?>
 
             <?php if (!empty($errorMessage)): ?>
-            <div class="bg-red-500/20 border border-red-400/30 backdrop-blur-sm text-red-300 p-4 rounded-xl mb-6 flex items-center">
-                <i class="fas fa-exclamation-circle text-xl mr-3"></i>
-                <p><?php echo htmlspecialchars($errorMessage); ?></p>
+            <div class="bg-red-500/20 border border-red-400/30 backdrop-blur-sm text-red-300 p-3 rounded-xl mb-4 flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <p class="text-sm"><?php echo htmlspecialchars($errorMessage); ?></p>
             </div>
             <?php endif; ?>
 
             <!-- Balance Summary -->
-            <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-3xl border border-white/10 mb-8 overflow-hidden">
-                <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div class="bg-green-500/10 border border-green-400/20 backdrop-blur-sm rounded-2xl p-6">
-                            <div class="text-white/60 text-sm font-medium mb-2">You are owed</div>
-                            <div class="text-3xl font-bold text-green-400"><?php echo number_format($totalOwed, 2); ?> €</div>
+            <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 mb-4 overflow-hidden">
+                <div class="p-4 md:p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-green-500/10 border border-green-400/20 backdrop-blur-sm rounded-xl p-4">
+                            <div class="text-white/60 text-xs font-medium mb-1">You are owed</div>
+                            <div class="text-2xl font-bold text-green-400"><?php echo number_format($totalOwed, 2); ?> €</div>
                         </div>
                         
-                        <div class="bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6">
-                            <div class="text-white/60 text-sm font-medium mb-2">Net balance</div>
-                            <div class="text-3xl font-bold <?php echo $netBalance >= 0 ? 'text-green-400' : 'text-red-400'; ?>">
+                        <div class="bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl p-4">
+                            <div class="text-white/60 text-xs font-medium mb-1">Net balance</div>
+                            <div class="text-2xl font-bold <?php echo $netBalance >= 0 ? 'text-green-400' : 'text-red-400'; ?>">
                                 <?php echo number_format($netBalance, 2); ?> €
                             </div>
-                            <div class="mt-3">
-                                <span class="px-3 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-500/20 border border-green-400/30 text-green-300' : 'bg-red-500/20 border border-red-400/30 text-red-300'; ?>">
+                            <div class="mt-2">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-500/20 border border-green-400/30 text-green-300' : 'bg-red-500/20 border border-red-400/30 text-red-300'; ?>">
                                     <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> mr-1"></i>
                                     <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?>
                                 </span>
                             </div>
                         </div>
                         
-                        <div class="bg-red-500/10 border border-red-400/20 backdrop-blur-sm rounded-2xl p-6">
-                            <div class="text-white/60 text-sm font-medium mb-2">You owe</div>
-                            <div class="text-3xl font-bold text-red-400"><?php echo number_format($totalOwing, 2); ?> €</div>
+                        <div class="bg-red-500/10 border border-red-400/20 backdrop-blur-sm rounded-xl p-4">
+                            <div class="text-white/60 text-xs font-medium mb-1">You owe</div>
+                            <div class="text-2xl font-bold text-red-400"><?php echo number_format($totalOwing, 2); ?> €</div>
                         </div>
+                    </div>
+                    
+                    <!-- Quick Action Buttons -->
+                    <div class="flex justify-center gap-3 mt-4">
+                        <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white px-4 py-2 rounded-xl transition-all duration-200 flex items-center text-sm">
+                            <i class="fas fa-plus mr-2"></i>Add Expense
+                        </a>
+                        <a href="index.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/70 hover:text-white/90 px-4 py-2 rounded-xl transition-all duration-200 flex items-center text-sm">
+                            <i class="fas fa-home mr-2"></i>Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 <!-- People who owe me -->
-                <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
-                    <div class="bg-gradient-to-r from-green-600/30 via-green-700/40 to-green-800/30 backdrop-blur-sm px-6 py-4 border-b border-white/10">
+                <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-600/30 via-green-700/40 to-green-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-white/90">People Who Owe You</h3>
-                            <span class="bg-white/10 border border-white/20 text-white/80 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                                <?php echo count($balances['others_owe']); ?> people
+                            <h3 class="text-sm font-semibold text-white/90">People Who Owe You</h3>
+                            <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                <?php echo count($balances['others_owe']); ?>
                             </span>
                         </div>
                     </div>
-                    <div class="p-6">
+                    <div class="p-4 max-h-64 overflow-y-auto">
                         <?php if (empty($balances['others_owe'])): ?>
-                            <div class="text-center py-12">
-                                <i class="fas fa-check-circle text-6xl text-white/20 mb-4"></i>
-                                <p class="text-white/50">No one owes you money.</p>
+                            <div class="text-center py-8">
+                                <i class="fas fa-check-circle text-4xl text-white/20 mb-2"></i>
+                                <p class="text-white/50 text-sm">No one owes you money.</p>
                             </div>
                         <?php else: ?>
-                            <div class="space-y-3">
+                            <div class="space-y-2">
                                 <?php foreach ($balances['others_owe'] as $balance): ?>
-                                <div class="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full flex items-center justify-center font-semibold mr-3 text-sm">
+                                <div class="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
+                                    <div class="flex items-center min-w-0">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full flex items-center justify-center font-semibold mr-3 text-xs flex-shrink-0">
                                             <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                         </div>
-                                        <div>
-                                            <div class="font-medium text-white/90"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                            <div class="text-sm text-white/50">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="font-medium text-white/90 text-sm truncate"><?php echo htmlspecialchars($balance['display_name']); ?></div>
+                                            <div class="text-xs text-white/50">@<?php echo htmlspecialchars($balance['username']); ?></div>
                                         </div>
                                     </div>
-                                    <span class="bg-green-500/20 border border-green-400/30 text-green-300 px-3 py-1.5 rounded-lg text-sm font-semibold backdrop-blur-sm">
+                                    <span class="bg-green-500/20 border border-green-400/30 text-green-300 px-2 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex-shrink-0">
                                         <?php echo number_format($balance['amount_owed'], 2); ?> €
                                     </span>
                                 </div>
@@ -123,35 +115,35 @@
                 </div>
 
                 <!-- People I owe -->
-                <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
-                    <div class="bg-gradient-to-r from-red-600/30 via-red-700/40 to-red-800/30 backdrop-blur-sm px-6 py-4 border-b border-white/10">
+                <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+                    <div class="bg-gradient-to-r from-red-600/30 via-red-700/40 to-red-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-white/90">People You Owe</h3>
-                            <span class="bg-white/10 border border-white/20 text-white/80 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                                <?php echo count($balances['user_owes']); ?> people
+                            <h3 class="text-sm font-semibold text-white/90">People You Owe</h3>
+                            <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                <?php echo count($balances['user_owes']); ?>
                             </span>
                         </div>
                     </div>
-                    <div class="p-6">
+                    <div class="p-4 max-h-64 overflow-y-auto">
                         <?php if (empty($balances['user_owes'])): ?>
-                            <div class="text-center py-12">
-                                <i class="fas fa-smile text-6xl text-white/20 mb-4"></i>
-                                <p class="text-white/50">You don't owe anyone money.</p>
+                            <div class="text-center py-8">
+                                <i class="fas fa-smile text-4xl text-white/20 mb-2"></i>
+                                <p class="text-white/50 text-sm">You don't owe anyone money.</p>
                             </div>
                         <?php else: ?>
-                            <div class="space-y-3">
+                            <div class="space-y-2">
                                 <?php foreach ($balances['user_owes'] as $balance): ?>
-                                <div class="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full flex items-center justify-center font-semibold mr-3 text-sm">
+                                <div class="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
+                                    <div class="flex items-center min-w-0">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full flex items-center justify-center font-semibold mr-3 text-xs flex-shrink-0">
                                             <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                         </div>
-                                        <div>
-                                            <div class="font-medium text-white/90"><?php echo htmlspecialchars($balance['display_name']); ?></div>
-                                            <div class="text-sm text-white/50">@<?php echo htmlspecialchars($balance['username']); ?></div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="font-medium text-white/90 text-sm truncate"><?php echo htmlspecialchars($balance['display_name']); ?></div>
+                                            <div class="text-xs text-white/50">@<?php echo htmlspecialchars($balance['username']); ?></div>
                                         </div>
                                     </div>
-                                    <span class="bg-red-500/20 border border-red-400/30 text-red-300 px-3 py-1.5 rounded-lg text-sm font-semibold backdrop-blur-sm">
+                                    <span class="bg-red-500/20 border border-red-400/30 text-red-300 px-2 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex-shrink-0">
                                         <?php echo number_format($balance['amount_owed'], 2); ?> €
                                     </span>
                                 </div>
@@ -163,42 +155,42 @@
             </div>
 
             <!-- Recent Expenses -->
-            <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-600/30 via-indigo-700/40 to-purple-800/30 backdrop-blur-sm px-6 py-4 border-b border-white/10">
+            <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600/30 via-indigo-700/40 to-purple-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-white/90">Recent Expenses</h3>
-                        <span class="bg-white/10 border border-white/20 text-white/80 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                            <?php echo count($recentExpenses); ?> expenses
+                        <h3 class="text-sm font-semibold text-white/90">Recent Expenses</h3>
+                        <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            <?php echo count($recentExpenses); ?>
                         </span>
                     </div>
                 </div>
-                <div class="p-6">
+                <div class="p-4 max-h-80 overflow-y-auto">
                     <?php if (empty($recentExpenses)): ?>
-                        <div class="text-center py-16">
-                            <i class="fas fa-receipt text-6xl text-white/20 mb-5"></i>
-                            <p class="text-white/50 mb-6 text-lg">No expenses recorded yet.</p>
-                            <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white font-semibold py-3 px-6 rounded-xl inline-flex items-center transition-all">
+                        <div class="text-center py-12">
+                            <i class="fas fa-receipt text-4xl text-white/20 mb-3"></i>
+                            <p class="text-white/50 mb-4 text-sm">No expenses recorded yet.</p>
+                            <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white font-semibold py-2 px-4 rounded-xl inline-flex items-center transition-all text-sm">
                                 <i class="fas fa-plus mr-2"></i>Add Your First Expense
                             </a>
                         </div>
                     <?php else: ?>
-                        <div class="space-y-3">
+                        <div class="space-y-2">
                             <?php foreach ($recentExpenses as $expense): ?>
-                            <div class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all backdrop-blur-sm">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1 min-w-0">
-                                            <div class="font-medium text-white/90 truncate"><?php echo htmlspecialchars($expense['title']); ?></div>
+                                            <div class="font-medium text-white/90 text-sm truncate"><?php echo htmlspecialchars($expense['title']); ?></div>
                                             <?php if(!empty($expense['description'])): ?>
-                                                <div class="text-xs text-white/50 mt-1 truncate"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 50, "...")); ?></div>
+                                                <div class="text-xs text-white/50 mt-1 truncate"><?php echo htmlspecialchars(mb_strimwidth($expense['description'], 0, 40, "...")); ?></div>
                                             <?php endif; ?>
-                                            <div class="flex items-center gap-4 mt-2 text-xs text-white/60">
+                                            <div class="flex items-center gap-3 mt-1 text-xs text-white/60">
                                                 <span><?php echo number_format($expense['amount'], 2); ?> €</span>
-                                                <span><?php echo date('d M Y', strtotime($expense['expense_date'])); ?></span>
-                                                <span><i class="fas fa-users mr-1"></i><?php echo $expense['participant_count']; ?> people</span>
+                                                <span><?php echo date('d M', strtotime($expense['expense_date'])); ?></span>
+                                                <span><i class="fas fa-users mr-1"></i><?php echo $expense['participant_count']; ?></span>
                                             </div>
                                         </div>
-                                        <div class="flex gap-2 ml-4">
+                                        <div class="flex gap-2 ml-3">
                                             <a href="havetopay_detail.php?id=<?php echo $expense['id']; ?>" 
                                                class="text-blue-400 hover:text-blue-300 text-sm transition-colors">
                                                 <i class="fas fa-eye"></i>
@@ -223,22 +215,22 @@
     
         <!-- Delete Confirmation Modal -->
         <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
-            <div class="bg-gradient-to-br from-purple-900/40 via-gray-900/50 to-red-900/40 backdrop-blur-xl border border-white/20 rounded-3xl p-8 max-w-md mx-4">
-                <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-red-500/20 border border-red-400/30 text-red-400 rounded-2xl flex items-center justify-center mr-4">
-                        <i class="fas fa-exclamation-triangle text-xl"></i>
+            <div class="bg-gradient-to-br from-purple-900/40 via-gray-900/50 to-red-900/40 backdrop-blur-xl border border-white/20 rounded-2xl p-6 max-w-md mx-4">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-red-500/20 border border-red-400/30 text-red-400 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white/90">Confirm Delete</h3>
+                    <h3 class="text-lg font-semibold text-white/90">Confirm Delete</h3>
                 </div>
-                <p class="text-white/70 mb-8">Are you sure you want to delete "<span id="expenseTitle" class="font-medium text-white/90"></span>"? This action cannot be undone.</p>
-                <div class="flex justify-end gap-4">
-                    <button type="button" onclick="closeDeleteModal()" class="px-5 py-3 text-white/70 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 font-medium transition-all backdrop-blur-sm">
+                <p class="text-white/70 mb-6 text-sm">Are you sure you want to delete "<span id="expenseTitle" class="font-medium text-white/90"></span>"? This action cannot be undone.</p>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-white/70 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 font-medium transition-all backdrop-blur-sm text-sm">
                         Cancel
                     </button>
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="action" value="delete_expense">
                         <input type="hidden" name="expense_id" id="deleteExpenseId" value="">
-                        <button type="submit" class="px-5 py-3 bg-red-500/30 border border-red-400/40 text-red-300 rounded-xl hover:bg-red-500/40 font-medium transition-all backdrop-blur-sm">
+                        <button type="submit" class="px-4 py-2 bg-red-500/30 border border-red-400/40 text-red-300 rounded-xl hover:bg-red-500/40 font-medium transition-all backdrop-blur-sm text-sm">
                             <i class="fas fa-trash mr-2"></i>Delete
                         </button>
                     </form>
