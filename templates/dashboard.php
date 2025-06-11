@@ -27,6 +27,9 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       color: white;
       transition: all 0.3s ease;
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
     }
     .widget-card:hover {
       background: rgba(255, 255, 255, 0.12);
@@ -35,26 +38,44 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
+    /* Draggable widget styling */
+    .widget-slot {
+      min-height: 320px;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .widget-slot.drag-over {
+      border-color: rgba(147, 51, 234, 0.5);
+      background: rgba(147, 51, 234, 0.1);
+      transform: scale(1.02);
+    }
+    
+    .widget-dragging {
+      opacity: 0.5;
+      transform: rotate(5deg);
+    }
+
     /* Enhanced scrollable widget containers */
     .widget-scroll-container {
       position: relative;
       overflow: hidden;
-      max-height: 280px; /* Approximately 4 items */
+      max-height: 220px;
     }
     
     .widget-scroll-content {
       overflow-y: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* Internet Explorer/Edge */
-      max-height: 280px;
-      padding-right: 4px; /* Space for hover scroll indicator */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      max-height: 220px;
+      padding-right: 4px;
     }
     
     .widget-scroll-content::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
     
-    /* Hover scroll indicator */
     .widget-scroll-container:hover .widget-scroll-content {
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
@@ -78,7 +99,6 @@
       background: rgba(255, 255, 255, 0.5);
     }
     
-    /* Gradient fade effect at bottom when scrollable */
     .widget-scroll-container::after {
       content: '';
       position: absolute;
@@ -96,168 +116,146 @@
       opacity: 1;
     }
 
-    /* Widget headers */
-    .widget-header {
-      color: white;
-      font-weight: 600;
-      font-size: 1.125rem;
-    }
-    .widget-header a {
-      color: white !important;
-      text-decoration: none;
+    /* Widget controls */
+    .widget-controls {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      opacity: 0;
       transition: all 0.3s ease;
+      z-index: 10;
     }
-    .widget-header a:hover {
-      color: rgba(255, 255, 255, 0.8) !important;
+    
+    .widget-card:hover .widget-controls {
+      opacity: 1;
     }
-    .widget-header svg {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Widget content */
-    .widget-description {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.875rem;
-    }
-
-    /* List items in widgets */
-    .widget-list-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.75rem;
-      padding: 0.75rem;
-      margin-bottom: 0.5rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    .widget-list-item:hover {
+    
+    .widget-control-btn {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(3px);
-    }
-    .widget-list-item:nth-child(even) {
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .widget-list-item:nth-child(even):hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    /* Task list specific styling */
-    .task-title {
-      color: white;
-      font-weight: 500;
-    }
-    .task-description {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.875rem;
-    }
-    .task-meta {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.75rem;
-    }
-    .task-meta .font-medium {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Status badges */
-    .status-overdue {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .status-due {
-      background: rgba(156, 163, 175, 0.2);
-      color: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(156, 163, 175, 0.3);
-    }
-    .group-badge {
-      background: rgba(147, 51, 234, 0.2);
-      color: #c4b5fd;
-      border: 1px solid rgba(147, 51, 234, 0.3);
-    }
-
-    /* Buttons and controls */
-    .widget-button {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    .widget-button:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Dropdown menus */
-    .dropdown-menu {
-      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 0.75rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    .dropdown-item {
-      color: rgba(255, 255, 255, 0.9);
-      padding: 0.75rem 1rem;
-      transition: all 0.3s ease;
-    }
-    .dropdown-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    .dropdown-item.active {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-    }
-
-    /* Forms in widgets */
-    .widget-form input, .widget-form select, .widget-form textarea {
-      background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.5rem;
       color: white;
-      padding: 0.75rem;
+      border-radius: 0.375rem;
+      padding: 0.25rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
-    .widget-form input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-    .widget-form input:focus, .widget-form select:focus, .widget-form textarea:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      outline: none;
+    
+    .widget-control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
     }
 
-    /* Modal dark theme */
-    .modal-content {
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .modal-header {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Greeting text */
-    .greeting-text {
-      color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Placeholder widgets */
+    /* Placeholder styling */
     .placeholder-widget {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 2px dashed rgba(255, 255, 255, 0.1);
       border-radius: 1.5rem;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.4);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 3rem;
       font-size: 0.875rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 320px;
+    }
+    
+    .placeholder-widget:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Widget customization panel */
+    .customization-panel {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    
+    .customization-panel.open {
+      right: 0;
+    }
+    
+    .customization-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    
+    .customization-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Available widgets list */
+    .available-widget {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      cursor: grab;
+      transition: all 0.3s ease;
+    }
+    
+    .available-widget:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+    
+    .available-widget:active {
+      cursor: grabbing;
+    }
+
+    /* 4-column grid for desktop */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      auto-rows: min-content;
+    }
+    
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -265,8 +263,6 @@
 
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
-  <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
     <!-- Greeting --------------------------------------------------------->
@@ -282,299 +278,306 @@
         $formattedDate = date('l, d. F'); // Fallback using date()
     }
     ?>
-    <h1 class="text-3xl font-bold greeting-text leading-tight">
-      <?= $formattedDate ?><br>
-      Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
-      <?= htmlspecialchars($user['first_name']??$user['username']) ?>
-    </h1>
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold greeting-text leading-tight">
+        <?= $formattedDate ?><br>
+        Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
+        <?= htmlspecialchars($user['first_name']??$user['username']) ?>
+      </h1>
+      
+      <button id="customizeBtn" class="px-6 py-3 btn-primary rounded-lg text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Anpassen
+      </button>
+    </div>
 
-    <!-- Grid ------------------------------------------------------------->
-    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
-
-      <!-- Enhanced Inbox Widget - Now same size as other widgets -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <a href="inbox.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Inbox</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
+    <!-- Dashboard Grid -------------------------------------------------->
+    <div class="dashboard-grid" id="dashboardGrid">
+      <?php for ($i = 1; $i <= 16; $i++): ?>
+        <?php $slot = $widgetSlots[$i]; ?>
+        <div class="widget-slot" 
+             data-slot="<?= $i ?>" 
+             ondrop="dropWidget(event)" 
+             ondragover="allowDrop(event)"
+             ondragenter="dragEnter(event)"
+             ondragleave="dragLeave(event)">
           
-          <!-- Group Filter Dropdown -->
-          <div class="relative">
-            <button id="groupFilterBtn" class="widget-button text-sm flex items-center">
-              <?php if ($filterType === 'mine'): ?>
-                Meine Aufgaben
-              <?php else: ?>
-                <?php 
-                $groupName = "Gruppe";
-                foreach ($userGroups as $g) {
-                  if ($g['id'] == $filterGroupId) {
-                    $groupName = $g['name'];
-                    break;
-                  }
-                }
-                ?>
-                Gruppe: <?= htmlspecialchars($groupName) ?>
-              <?php endif; ?>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          <?php if ($slot['widget_type'] === 'placeholder'): ?>
+            <!-- Placeholder Widget -->
+            <div class="placeholder-widget" onclick="openCustomizationPanel()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m8-8H4" />
               </svg>
-            </button>
-            <div id="groupFilterMenu" class="absolute right-0 mt-2 w-56 dropdown-menu hidden z-20">
-              <a href="?filter=mine" class="block dropdown-item <?= $filterType==='mine' ? 'active' : '' ?>">
-                Meine Aufgaben
-              </a>
-              <?php if (!empty($userGroups)): ?>
-                <div class="border-t border-white/10 my-1"></div>
-                <?php foreach($userGroups as $g): ?>
-                  <a href="?filter=group&group_id=<?= $g['id'] ?>" 
-                     class="block dropdown-item <?= ($filterType==='group' && $filterGroupId==$g['id']) ? 'active' : '' ?>">
-                    <?= htmlspecialchars($g['name']) ?>
-                  </a>
-                <?php endforeach; ?>
-              <?php endif; ?>
+              <p>Widget hinzufügen</p>
+              <p class="text-xs mt-2 opacity-75">Klicken zum Anpassen</p>
             </div>
-          </div>
+          <?php else: ?>
+            <!-- Render Widget -->
+            <div class="widget-card" draggable="true" ondragstart="dragStart(event)" data-widget-type="<?= $slot['widget_type'] ?>">
+              <!-- Widget Controls -->
+              <div class="widget-controls flex gap-2">
+                <button class="widget-control-btn" onclick="removeWidget(<?= $i ?>)" title="Widget entfernen">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Widget Content -->
+              <?php
+              switch ($slot['widget_type']) {
+                case 'inbox':
+                  include __DIR__ . '/widgets/inbox_widget.php';
+                  break;
+                case 'documents':
+                  include __DIR__ . '/widgets/documents_widget.php';
+                  break;
+                case 'calendar':
+                  include __DIR__ . '/widgets/calendar_widget.php';
+                  break;
+                case 'havetopay':
+                  include __DIR__ . '/widgets/havetopay_widget.php';
+                  break;
+              }
+              ?>
+            </div>
+          <?php endif; ?>
         </div>
-        
-        <p class="widget-description mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
+      <?php endfor; ?>
+    </div>
+  </main>
 
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <?php if (!empty($tasks)): ?>
-              <?php foreach($tasks as $idx => $t): ?>
-                <div class="widget-list-item flex flex-col gap-2"
-                     onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
-                  <!-- Title and Due Date with Budget -->
-                  <div class="flex justify-between items-center">
-                    <span class="task-title truncate"><?= htmlspecialchars($t['title']) ?></span>
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                      <?php if (!empty($t['estimated_budget'])): ?>
-                        <span class="bg-green-100 text-green-800 px-1 py-0.5 rounded-full text-xs">
-                          €<?= number_format($t['estimated_budget'], 0) ?>
-                        </span>
-                      <?php endif; ?>
-                      <?php if (!empty($t['estimated_hours'])): ?>
-                        <span class="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs">
-                          <?= $t['estimated_hours'] ?>h
-                        </span>
-                      <?php endif; ?>
-                      <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                        <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-1 py-0.5 rounded-full text-xs whitespace-nowrap">
-                          <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                        </span>
-                      <?php endif; ?>
+  <!-- Customization Panel --------------------------------------------->
+  <div class="customization-overlay" id="customizationOverlay" onclick="closeCustomizationPanel()"></div>
+  <div class="customization-panel" id="customizationPanel">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-white">Dashboard anpassen</h2>
+        <button class="widget-control-btn" onclick="closeCustomizationPanel()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-4">Verfügbare Widgets</h3>
+          <div class="space-y-3">
+            <?php foreach ($availableWidgets as $type => $info): ?>
+              <?php if ($type !== 'placeholder'): ?>
+                <div class="available-widget" 
+                     draggable="true" 
+                     ondragstart="dragStartFromPanel(event, '<?= $type ?>')"
+                     data-widget-type="<?= $type ?>">
+                  <div class="flex items-center">
+                    <div class="p-2 rounded-lg bg-purple-500/20 text-purple-300 mr-3">
+                      <?php
+                      $icons = [
+                        'inbox' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>',
+                        'folder' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>',
+                        'calendar' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+                        'money' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4"/></svg>'
+                      ];
+                      echo $icons[$info['icon']] ?? $icons['inbox'];
+                      ?>
+                    </div>
+                    <div>
+                      <div class="text-white font-medium"><?= htmlspecialchars($info['name']) ?></div>
+                      <div class="text-xs text-gray-400">Zum Dashboard ziehen</div>
                     </div>
                   </div>
-                  
-                  <!-- Description (short) -->
-                  <?php if(!empty($t['description'])): ?>
-                    <p class="task-description line-clamp-1 text-xs"><?= htmlspecialchars(mb_strimwidth($t['description'], 0, 60, "...")) ?></p>
-                  <?php endif; ?>
-                  
-                  <!-- Creator and Assignee Info -->
-                  <div class="flex gap-2 task-meta text-xs">
-                    <span class="truncate">
-                      <span class="font-medium">Von:</span> 
-                      <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
-                    </span>
-                    <span class="truncate">
-                      <span class="font-medium">Für:</span> 
-                      <?php if ($t['assigned_group_id']): ?>
-                        <span class="group-badge px-1 py-0.5 rounded-full">
-                          <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
-                        </span>
-                      <?php else: ?>
-                        <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
-                      <?php endif; ?>
-                    </span>
-                  </div>
                 </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine offenen Aufgaben.</div>
-            <?php endif; ?>
+              <?php endif; ?>
+            <?php endforeach; ?>
           </div>
         </div>
-      </article>
-
-      <!-- Dokumente Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <a href="profile.php?tab=documents" class="group inline-flex items-center mb-4 widget-header">
-          <h2 class="mr-1">Dokumente</h2>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-        <p class="widget-description mb-4"><?= $docCount ?> Dateien</p>
-
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <?php if(!empty($docs)): ?>
-              <?php foreach($docs as $idx=>$d): ?>
-                <div class="widget-list-item">
-                  <span class="truncate block task-title"><?= htmlspecialchars($d['title'] ?? '') ?></span>
-                  <div class="text-xs text-white/50 mt-1">
-                    <?= date('d.m.Y', strtotime($d['upload_date'])) ?>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine Dokumente vorhanden.</div>
-            <?php endif; ?>
-          </div>
-        </div>
-      </article>
-
-      <!-- Meine Termine Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <a href="calendar.php" class="inline-flex items-center widget-header">
-            Meine Termine
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-          <button id="showInlineEventForm" class="widget-button">
-            +
+        
+        <div class="border-t border-white/10 pt-6">
+          <button onclick="resetDashboard()" class="w-full px-4 py-3 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition">
+            Dashboard zurücksetzen
           </button>
         </div>
-        <p class="widget-description mb-4"><?= count($events) ?> Termine</p>
-        <!-- Inline event creation form (initially hidden) -->
-        <div id="inlineEventFormContainer" class="mb-4 hidden">
-          <form id="inlineEventForm" class="space-y-2 widget-form">
-            <input type="text" name="title" placeholder="Event Titel" required>
-            <input type="date" name="date" required>
-            <button type="submit" class="w-full widget-button">
-              Termin erstellen
-            </button>
-          </form>
-        </div>
-        
-        <div class="widget-scroll-container flex-1">
-          <div id="dashboardEventList" class="widget-scroll-content space-y-2">
-            <?php if(!empty($events)): ?>
-              <?php foreach($events as $evt): ?>
-                <div class="widget-list-item flex justify-between items-center">
-                  <a href="calendar.php" class="truncate pr-2 flex-1 task-title"><?= htmlspecialchars($evt['title']) ?></a>
-                  <span class="task-meta text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine Termine gefunden.</div>
-            <?php endif; ?>
-          </div>
-        </div>
-      </article>
+      </div>
+    </div>
+  </div>
 
-      <!-- HaveToPay Widget - Now placed next to calendar widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
-
-      <!-- Placeholder Cards --------------------------------------------->
-      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
-        <article class="placeholder-widget">
-          <?= $name ?>-Widget
-        </article>
-      <?php endforeach; ?>
-    </div><!-- /grid -->
-  </main>
-  
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Group filter dropdown
-      const groupFilterBtn = document.getElementById('groupFilterBtn');
-      const groupFilterMenu = document.getElementById('groupFilterMenu');
-      
-      if (groupFilterBtn && groupFilterMenu) {
-        groupFilterBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          groupFilterMenu.classList.toggle('hidden');
-        });
-        
-        document.addEventListener('click', () => {
-          groupFilterMenu.classList.add('hidden');
-        });
-      }
-
-      // Initialize scroll indicators for widgets
-      function initScrollIndicators() {
-        const scrollContainers = document.querySelectorAll('.widget-scroll-container');
-        
-        scrollContainers.forEach(container => {
-          const content = container.querySelector('.widget-scroll-content');
-          if (content) {
-            function checkScroll() {
-              if (content.scrollHeight > content.clientHeight) {
-                container.classList.add('has-scroll');
-              } else {
-                container.classList.remove('has-scroll');
-              }
-            }
-            
-            // Check initially
-            checkScroll();
-            
-            // Check on resize
-            window.addEventListener('resize', checkScroll);
-            
-            // Smooth scrolling on wheel
-            content.addEventListener('wheel', (e) => {
-              e.preventDefault();
-              content.scrollBy({
-                top: e.deltaY * 0.5,
-                behavior: 'smooth'
-              });
-            });
-          }
-        });
-      }
-      
-      // Initialize scroll indicators
-      initScrollIndicators();
-    });
+    // Dashboard customization
+    let draggedWidget = null;
+    let draggedFromPanel = false;
     
-    // Toggle inline event creation form
-    document.getElementById('showInlineEventForm').addEventListener('click', function() {
-      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-    });
-
-    // Handle inline event form submission via AJAX
-    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const title = this.title.value.trim();
-      const date = this.date.value;
-      if(title && date){
-        fetch('/create_event.php', {
+    function openCustomizationPanel() {
+      document.getElementById('customizationPanel').classList.add('open');
+      document.getElementById('customizationOverlay').classList.add('open');
+    }
+    
+    function closeCustomizationPanel() {
+      document.getElementById('customizationPanel').classList.remove('open');
+      document.getElementById('customizationOverlay').classList.remove('open');
+    }
+    
+    document.getElementById('customizeBtn').addEventListener('click', openCustomizationPanel);
+    
+    // Drag and Drop functionality
+    function dragStart(event) {
+      draggedWidget = event.target.dataset.widgetType;
+      draggedFromPanel = false;
+      event.target.classList.add('widget-dragging');
+    }
+    
+    function dragStartFromPanel(event, widgetType) {
+      draggedWidget = widgetType;
+      draggedFromPanel = true;
+      event.dataTransfer.setData('text/plain', widgetType);
+    }
+    
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+    
+    function dragEnter(event) {
+      event.preventDefault();
+      if (draggedWidget) {
+        event.currentTarget.classList.add('drag-over');
+      }
+    }
+    
+    function dragLeave(event) {
+      event.currentTarget.classList.remove('drag-over');
+    }
+    
+    function dropWidget(event) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      
+      if (draggedWidget) {
+        const slotPosition = event.currentTarget.dataset.slot;
+        updateWidgetPosition(slotPosition, draggedWidget);
+      }
+      
+      // Clean up dragging styles
+      document.querySelectorAll('.widget-dragging').forEach(el => {
+        el.classList.remove('widget-dragging');
+      });
+      
+      draggedWidget = null;
+      draggedFromPanel = false;
+    }
+    
+    function updateWidgetPosition(slotPosition, widgetType) {
+      fetch('/src/controllers/widget_management.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          action: 'update_widget_position',
+          slot_position: slotPosition,
+          widget_type: widgetType
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Fehler beim Aktualisieren des Widgets: ' + (data.error || 'Unbekannter Fehler'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Fehler beim Aktualisieren des Widgets');
+      });
+    }
+    
+    function removeWidget(slotPosition) {
+      if (confirm('Widget entfernen?')) {
+        fetch('/src/controllers/widget_management.php', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ title: title, date: date })
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'remove_widget',
+            slot_position: slotPosition
+          })
         })
         .then(response => response.json())
         .then(data => {
-          if(data.success){
-            // Create new list element for the event
-            const newEvent = data.event;
-            const li = document.createElement('div');
-            li.className = "widget-list-item flex justify-between items-center";
-            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
-                             <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-            const eventList = document.getElementById('dashboardEventList');
-            
-            // If "Keine Termine gefunden." is present, remove it.
-            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-              eventList.innerHTML = '';
-            }
-            eventList.prepend(li); // Add to top
-            this.reset();
-            document.getElementById('inlineEventFormContainer').classList.add('hidden');
+          if (data.success) {
+            location.reload();
           } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+            alert('Fehler beim Entfernen des Widgets: ' + (data.error || 'Unbekannter Fehler'));
           }
         })
-        .catch(() => alert('Fehler beim Erstellen des Termins.'));
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Fehler beim Entfernen des Widgets');
+        });
       }
+    }
+    
+    function resetDashboard() {
+      if (confirm('Dashboard auf Standardlayout zurücksetzen? Alle Anpassungen gehen verloren.')) {
+        fetch('/src/controllers/widget_management.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'reset_dashboard'
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Fehler beim Zurücksetzen: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Fehler beim Zurücksetzen');
+        });
+      }
+    }
+
+    // Initialize scroll indicators for widgets
+    function initScrollIndicators() {
+      const scrollContainers = document.querySelectorAll('.widget-scroll-container');
+      
+      scrollContainers.forEach(container => {
+        const content = container.querySelector('.widget-scroll-content');
+        if (content) {
+          function checkScroll() {
+            if (content.scrollHeight > content.clientHeight) {
+              container.classList.add('has-scroll');
+            } else {
+              container.classList.remove('has-scroll');
+            }
+          }
+          
+          checkScroll();
+          window.addEventListener('resize', checkScroll);
+          
+          content.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            content.scrollBy({
+              top: e.deltaY * 0.5,
+              behavior: 'smooth'
+            });
+          });
+        }
+      });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initScrollIndicators();
     });
   </script>
 </body>
