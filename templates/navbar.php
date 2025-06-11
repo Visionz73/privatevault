@@ -201,7 +201,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     transform: rotate(180deg);
   }
 
-  /* Profile avatar styling for dark theme */
+  /* Profile avatar styling for dark theme - FIXED */
   .profile-avatar {
     width: 2.5rem;
     height: 2.5rem;
@@ -216,6 +216,8 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     border: 2px solid rgba(255,255,255,0.3);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
+    line-height: 1; /* Ensure text doesn't affect height */
   }
   .user-banner button:hover .profile-avatar {
     transform: scale(1.05);
@@ -223,239 +225,41 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   }
 
-  /* Mobile header styling */
+  /* Mobile header styling - FIXED */
   .mobile-header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 0 1rem;
+    height: 100%; /* Ensure full height usage */
   }
 
-  .mobile-toggle-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    color: white;
-    transition: all 0.3s ease;
-  }
-  .mobile-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  /* Profile Modal dark theme adjustments */
-  .profile-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 9999 !important;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-  }
-  .profile-modal.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  .profile-modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    transition: all 0.3s ease;
-    z-index: 10000;
-  }
-  .profile-modal.active .profile-modal-content {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  .profile-modal-header {
-    padding: 1.5rem 1.5rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .profile-modal-body {
-    padding: 1.5rem;
-  }
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #6b7280;
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  .close-modal:hover {
-    color: #374151;
-  }
-  .modal-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: #374151;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-  }
-  .modal-menu-item:hover {
-    background: #f3f4f6;
-    color: #667eea;
-    border-color: #e5e7eb;
-  }
-  .modal-menu-item svg {
-    margin-right: 0.75rem;
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  /* User Banner Styles */
-  .user-banner {
-    @apply border-t border-gray-200 p-4;
-  }
-  .user-banner button {
-    @apply w-full flex items-center p-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 transition-all duration-200;
-  }
-  .user-banner .user-info {
-    @apply flex-1 text-left;
-  }
-  .user-banner .user-info .user-name {
-    @apply font-medium text-gray-900;
-  }
-  .user-banner .user-info .user-role {
-    @apply text-xs text-gray-500 capitalize;
-  }
-  .user-banner svg {
-    @apply h-4 w-4 text-gray-400;
-  }
-
-  /* Sidebar styles */
-  #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 16rem;
-    height: 100vh;
-    background: white;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    z-index: 40;
-    transition: transform 0.3s ease;
-  }
-  
-  @media (max-width: 768px) {
-    #sidebar {
-      transform: translateX(-100%);
-    }
-    
-    #sidebar.active {
-      transform: translateX(0);
-    }
-  }
-  
-  /* Profile modal styles */
-  .profile-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    z-index: 50;
-  }
-  
-  .profile-modal.active {
+  /* Mobile user avatar - FIXED */
+  .mobile-user-avatar {
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .profile-modal-content {
-    background: white;
-    border-radius: 0.75rem;
-    width: 100%;
-    max-width: 20rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    margin: 1rem;
-  }
-  
-  .profile-modal-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .profile-modal-body {
-    padding: 1rem 1.5rem;
-  }
-  
-  .profile-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(74, 144, 226, 0.1);
-    color: #4A90E2;
-    font-weight: 600;
-    border-radius: 9999px;
-  }
-  
-  .modal-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    color: #4b5563;
-    transition: all 0.2s;
-  }
-  
-  .modal-menu-item:hover {
-    background-color: #f3f4f6;
-  }
-  
-  .modal-menu-item svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.75rem;
-  }
-  
-  .close-modal {
-    font-size: 1.5rem;
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    flex-shrink: 0;
     line-height: 1;
-    color: #9ca3af;
-    cursor: pointer;
   }
-  
-  .close-modal:hover {
-    color: #6b7280;
-  }
-</style>
 
-<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
-<script>
+  /* Add the haveToPay-layout class to body if on HaveToPay page */
+  <script>
   if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
     document.body.classList.add('haveToPay-layout');
   }
-</script>
+  </script>
 
-<nav id="sidebar">
+  nav id="sidebar">
   <div class="sidebar-content flex flex-col h-full">
     <!-- Navigation Links Container with Logo -->
     <div class="flex-1">
@@ -550,7 +354,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
 
 <!-- Mobile header -->
 <div class="md:hidden fixed top-0 left-0 right-0 h-16 z-30" style="background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);">
-  <div class="mobile-header-content h-full">
+  <div class="mobile-header-content">
     <button id="mobileToggleBtn" class="mobile-toggle-btn">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -560,7 +364,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
     </a>
     <button onclick="openProfileModal()" class="mobile-toggle-btn">
-      <div class="h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+      <div class="mobile-user-avatar">
         <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
       </div>
     </button>

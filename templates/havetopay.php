@@ -13,6 +13,20 @@
             font-family: 'Inter', sans-serif;
         }
         
+        /* Scale up main content by 10% */
+        main {
+            transform: scale(1.1);
+            transform-origin: top left;
+            width: 90.9%; /* Compensate for scaling (100/1.1) */
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                transform: scale(1.1);
+                width: 90.9%;
+            }
+        }
+        
         .glass-container {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px);
@@ -147,7 +161,7 @@
                                 <?php foreach ($balances['others_owe'] as $balance): ?>
                                 <div class="glass-item p-2.5 flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-green-500 text-white rounded-full flex items-center justify-center text-xs font-semibold mr-2">
+                                        <div class="w-7 h-7 bg-gradient-to-br from-green-400 to-green-500 text-white rounded-full flex items-center justify-center text-xs font-semibold mr-2">
                                             <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                         </div>
                                         <div>
@@ -181,7 +195,7 @@
                                 <?php foreach ($balances['user_owes'] as $balance): ?>
                                 <div class="glass-item p-2.5 flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <div class="w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 text-white rounded-full flex items-center justify-center text-xs font-semibold mr-2">
+                                        <div class="w-7 h-7 bg-gradient-to-br from-red-400 to-red-500 text-white rounded-full flex items-center justify-center text-xs font-semibold mr-2">
                                             <?php echo strtoupper(substr($balance['username'], 0, 1)); ?>
                                         </div>
                                         <div>

@@ -12,27 +12,24 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
-      /* Zoom-like effect - scale everything down to 80% */
-      transform: scale(0.8);
-      transform-origin: top left;
-      width: 125%; /* Compensate for the scaling */
-      height: 125%;
+      /* Removed scaling - navbar will now be normal size */
     }
     
-    /* Adjust main container for scaling */
+    /* Scale up main content by 10% */
     main {
-      width: 100%;
-      min-height: 100vh;
+      transform: scale(1.1);
+      transform-origin: top left;
+      width: 90.9%; /* Compensate for scaling (100/1.1) */
+      min-height: 90.9vh;
     }
     
     /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
-      body {
-        transform: scale(0.85); /* Slightly less aggressive scaling on mobile */
-        width: 117.6%;
-        height: 117.6%;
+      main { 
+        margin-top: 4rem;
+        transform: scale(1.1);
+        width: 90.9%;
       }
-      main { margin-top: 4rem; }
     }
 
     /* Dark theme widget styling */

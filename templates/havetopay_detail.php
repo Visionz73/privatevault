@@ -13,6 +13,20 @@
             font-family: 'Inter', sans-serif;
         }
         
+        /* Scale up main content by 10% */
+        main {
+            transform: scale(1.1);
+            transform-origin: top left;
+            width: 90.9%; /* Compensate for scaling (100/1.1) */
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                transform: scale(1.1);
+                width: 90.9%;
+            }
+        }
+        
         /* Glass effect containers */
         .glass-container {
             background: rgba(255, 255, 255, 0.08);
