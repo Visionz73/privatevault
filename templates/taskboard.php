@@ -204,7 +204,7 @@ foreach ($all as $t) {
                 document.getElementById('modalContent').innerHTML = html;
                 document.getElementById('taskModal').classList.remove('hidden');
                 document.getElementById('taskModal').classList.add('flex');
-                 // Event-Listener für das neue Formular im Modal neu binden
+                // Event-Listener für das neue Formular im Modal neu binden
                 const taskForm = document.getElementById('taskForm');
                 if(taskForm) {
                     taskForm.addEventListener('submit', handleTaskFormSubmit);
