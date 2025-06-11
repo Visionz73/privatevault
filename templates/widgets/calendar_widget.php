@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__.'/../../src/lib/auth.php';
+requireLogin();
+require_once __DIR__.'/../../src/lib/db.php';
+
 // Fetch upcoming events for the current user
 $stmt = $pdo->prepare("
     SELECT e.*, u.username AS creator_name

@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__.'/../../src/lib/auth.php';
+requireLogin();
+require_once __DIR__.'/../../src/lib/db.php';
+
 // Fetch recent documents for the current user
 $stmt = $pdo->prepare("
     SELECT id, filename, file_size, upload_date, category

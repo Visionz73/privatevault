@@ -263,7 +263,13 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <?php require_once __DIR__.'/navbar.php'; ?>
+  <?php
+  // sicherstellen, dass Session, User und $pdo zur Verfügung stehen
+  require_once __DIR__.'/../src/lib/auth.php';
+  requireLogin();
+  require_once __DIR__.'/../src/lib/db.php';
+
+  require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
