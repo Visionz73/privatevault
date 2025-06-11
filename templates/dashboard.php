@@ -35,6 +35,67 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
+    /* Enhanced scrollable widget containers */
+    .widget-scroll-container {
+      position: relative;
+      overflow: hidden;
+      max-height: 280px; /* Approximately 4 items */
+    }
+    
+    .widget-scroll-content {
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer/Edge */
+      max-height: 280px;
+      padding-right: 4px; /* Space for hover scroll indicator */
+    }
+    
+    .widget-scroll-content::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    /* Hover scroll indicator */
+    .widget-scroll-container:hover .widget-scroll-content {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+    
+    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar {
+      display: block;
+      width: 4px;
+    }
+    
+    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+    
+    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Gradient fade effect at bottom when scrollable */
+    .widget-scroll-container::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(transparent, rgba(255, 255, 255, 0.08));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .widget-scroll-container.has-scroll::after {
+      opacity: 1;
+    }
+
     /* Widget headers */
     .widget-header {
       color: white;
@@ -280,61 +341,63 @@
         
         <p class="widget-description mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
 
-        <ul class="flex-1 overflow-y-auto text-sm space-y-2">
-          <?php if (!empty($tasks)): ?>
-            <?php foreach(array_slice($tasks, 0, 3) as $idx => $t): ?>
-              <li class="widget-list-item flex flex-col gap-2"
-                  onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
-                <!-- Title and Due Date with Budget -->
-                <div class="flex justify-between items-center">
-                  <span class="task-title truncate"><?= htmlspecialchars($t['title']) ?></span>
-                  <div class="flex items-center gap-1 flex-shrink-0">
-                    <?php if (!empty($t['estimated_budget'])): ?>
-                      <span class="bg-green-100 text-green-800 px-1 py-0.5 rounded-full text-xs">
-                        €<?= number_format($t['estimated_budget'], 0) ?>
-                      </span>
-                    <?php endif; ?>
-                    <?php if (!empty($t['estimated_hours'])): ?>
-                      <span class="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs">
-                        <?= $t['estimated_hours'] ?>h
-                      </span>
-                    <?php endif; ?>
-                    <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                      <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-1 py-0.5 rounded-full text-xs whitespace-nowrap">
-                        <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                      </span>
-                    <?php endif; ?>
+        <div class="widget-scroll-container flex-1">
+          <div class="widget-scroll-content space-y-2">
+            <?php if (!empty($tasks)): ?>
+              <?php foreach($tasks as $idx => $t): ?>
+                <div class="widget-list-item flex flex-col gap-2"
+                     onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
+                  <!-- Title and Due Date with Budget -->
+                  <div class="flex justify-between items-center">
+                    <span class="task-title truncate"><?= htmlspecialchars($t['title']) ?></span>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                      <?php if (!empty($t['estimated_budget'])): ?>
+                        <span class="bg-green-100 text-green-800 px-1 py-0.5 rounded-full text-xs">
+                          €<?= number_format($t['estimated_budget'], 0) ?>
+                        </span>
+                      <?php endif; ?>
+                      <?php if (!empty($t['estimated_hours'])): ?>
+                        <span class="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs">
+                          <?= $t['estimated_hours'] ?>h
+                        </span>
+                      <?php endif; ?>
+                      <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
+                        <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-1 py-0.5 rounded-full text-xs whitespace-nowrap">
+                          <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
+                        </span>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                  
+                  <!-- Description (short) -->
+                  <?php if(!empty($t['description'])): ?>
+                    <p class="task-description line-clamp-1 text-xs"><?= htmlspecialchars(mb_strimwidth($t['description'], 0, 60, "...")) ?></p>
+                  <?php endif; ?>
+                  
+                  <!-- Creator and Assignee Info -->
+                  <div class="flex gap-2 task-meta text-xs">
+                    <span class="truncate">
+                      <span class="font-medium">Von:</span> 
+                      <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
+                    </span>
+                    <span class="truncate">
+                      <span class="font-medium">Für:</span> 
+                      <?php if ($t['assigned_group_id']): ?>
+                        <span class="group-badge px-1 py-0.5 rounded-full">
+                          <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
+                        </span>
+                      <?php else: ?>
+                        <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
+                      <?php endif; ?>
+                    </span>
                   </div>
                 </div>
-                
-                <!-- Description (short) -->
-                <?php if(!empty($t['description'])): ?>
-                  <p class="task-description line-clamp-1 text-xs"><?= htmlspecialchars(mb_strimwidth($t['description'], 0, 60, "...")) ?></p>
-                <?php endif; ?>
-                
-                <!-- Creator and Assignee Info -->
-                <div class="flex gap-2 task-meta text-xs">
-                  <span class="truncate">
-                    <span class="font-medium">Von:</span> 
-                    <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
-                  </span>
-                  <span class="truncate">
-                    <span class="font-medium">Für:</span> 
-                    <?php if ($t['assigned_group_id']): ?>
-                      <span class="group-badge px-1 py-0.5 rounded-full">
-                        <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
-                      </span>
-                    <?php else: ?>
-                      <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
-                    <?php endif; ?>
-                  </span>
-                </div>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="widget-list-item text-center task-meta">Keine offenen Aufgaben.</li>
-          <?php endif; ?>
-        </ul>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="widget-list-item text-center task-meta py-4">Keine offenen Aufgaben.</div>
+            <?php endif; ?>
+          </div>
+        </div>
       </article>
 
       <!-- Dokumente Widget -->
@@ -347,17 +410,22 @@
         </a>
         <p class="widget-description mb-4"><?= $docCount ?> Dateien</p>
 
-        <ul class="flex-1 overflow-y-auto text-sm space-y-2">
-          <?php if(!empty($docs)): ?>
-            <?php foreach($docs as $idx=>$d): ?>
-              <li class="widget-list-item">
-                <span class="truncate block task-title"><?= htmlspecialchars($d['title'] ?? '') ?></span>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="widget-list-item text-center task-meta">Keine Dokumente vorhanden.</li>
-          <?php endif; ?>
-        </ul>
+        <div class="widget-scroll-container flex-1">
+          <div class="widget-scroll-content space-y-2">
+            <?php if(!empty($docs)): ?>
+              <?php foreach($docs as $idx=>$d): ?>
+                <div class="widget-list-item">
+                  <span class="truncate block task-title"><?= htmlspecialchars($d['title'] ?? '') ?></span>
+                  <div class="text-xs text-white/50 mt-1">
+                    <?= date('d.m.Y', strtotime($d['upload_date'])) ?>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="widget-list-item text-center task-meta py-4">Keine Dokumente vorhanden.</div>
+            <?php endif; ?>
+          </div>
+        </div>
       </article>
 
       <!-- Meine Termine Widget -->
@@ -384,18 +452,21 @@
             </button>
           </form>
         </div>
-        <ul id="dashboardEventList" class="flex-1 overflow-y-auto text-sm space-y-2">
-          <?php if(!empty($events)): ?>
-            <?php foreach($events as $evt): ?>
-              <li class="widget-list-item flex justify-between items-center">
-                <a href="calendar.php" class="truncate pr-2 flex-1 task-title"><?= htmlspecialchars($evt['title']) ?></a>
-                <span class="task-meta text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <li class="widget-list-item text-center task-meta">Keine Termine gefunden.</li>
-          <?php endif; ?>
-        </ul>
+        
+        <div class="widget-scroll-container flex-1">
+          <div id="dashboardEventList" class="widget-scroll-content space-y-2">
+            <?php if(!empty($events)): ?>
+              <?php foreach($events as $evt): ?>
+                <div class="widget-list-item flex justify-between items-center">
+                  <a href="calendar.php" class="truncate pr-2 flex-1 task-title"><?= htmlspecialchars($evt['title']) ?></a>
+                  <span class="task-meta text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="widget-list-item text-center task-meta py-4">Keine Termine gefunden.</div>
+            <?php endif; ?>
+          </div>
+        </div>
       </article>
 
       <!-- HaveToPay Widget - Now placed next to calendar widget -->
@@ -426,6 +497,42 @@
           groupFilterMenu.classList.add('hidden');
         });
       }
+
+      // Initialize scroll indicators for widgets
+      function initScrollIndicators() {
+        const scrollContainers = document.querySelectorAll('.widget-scroll-container');
+        
+        scrollContainers.forEach(container => {
+          const content = container.querySelector('.widget-scroll-content');
+          if (content) {
+            function checkScroll() {
+              if (content.scrollHeight > content.clientHeight) {
+                container.classList.add('has-scroll');
+              } else {
+                container.classList.remove('has-scroll');
+              }
+            }
+            
+            // Check initially
+            checkScroll();
+            
+            // Check on resize
+            window.addEventListener('resize', checkScroll);
+            
+            // Smooth scrolling on wheel
+            content.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              content.scrollBy({
+                top: e.deltaY * 0.5,
+                behavior: 'smooth'
+              });
+            });
+          }
+        });
+      }
+      
+      // Initialize scroll indicators
+      initScrollIndicators();
     });
     
     // Toggle inline event creation form
@@ -449,17 +556,17 @@
           if(data.success){
             // Create new list element for the event
             const newEvent = data.event;
-            const li = document.createElement('li');
-            li.className = "px-2 py-2 flex justify-between items-center";
-            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1">${newEvent.title}</a>
-                             <span class="text-gray-400 text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+            const li = document.createElement('div');
+            li.className = "widget-list-item flex justify-between items-center";
+            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
+                             <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
             const eventList = document.getElementById('dashboardEventList');
             
             // If "Keine Termine gefunden." is present, remove it.
             if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
               eventList.innerHTML = '';
             }
-            eventList.appendChild(li);
+            eventList.prepend(li); // Add to top
             this.reset();
             document.getElementById('inlineEventFormContainer').classList.add('hidden');
           } else {
