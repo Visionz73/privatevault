@@ -230,8 +230,8 @@
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
-      <!-- Enhanced Inbox Widget -->
-      <article class="widget-card p-6 flex flex-col">
+      <!-- Enhanced Inbox Widget - Now spans 2 columns -->
+      <article class="widget-card p-6 flex flex-col col-span-1 md:col-span-2">
         <div class="flex justify-between items-center mb-4">
           <a href="inbox.php" class="group inline-flex items-center widget-header">
             <h2 class="mr-1">Inbox</h2>
@@ -393,7 +393,7 @@
         </ul>
       </article>
 
-      <!-- Meine Termine Widget – Updated for consistent formatting -->
+      <!-- Meine Termine Widget -->
       <article class="widget-card p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
           <a href="calendar.php" class="inline-flex items-center widget-header">
@@ -431,15 +431,15 @@
         </ul>
       </article>
 
+      <!-- HaveToPay Widget - Now placed next to calendar widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+
       <!-- Placeholder Cards --------------------------------------------->
       <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="placeholder-widget">
           <?= $name ?>-Widget
         </article>
       <?php endforeach; ?>
-
-      <!-- HaveToPay Widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
     </div><!-- /grid -->
   </main>
   

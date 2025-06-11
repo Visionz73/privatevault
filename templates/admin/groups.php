@@ -7,14 +7,75 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      min-height: 100vh;
+    }
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
     }
+    
+    /* Liquid glass styling */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .glass-button {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+    }
+    .glass-button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .glass-input {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.5rem;
+    }
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+    .glass-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .glass-modal {
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
     .tag {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
+      padding: 4px 12px;
       border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 500;
@@ -22,34 +83,80 @@
       margin-right: 0.25rem;
       margin-bottom: 0.25rem;
       white-space: nowrap;
+      backdrop-filter: blur(10px);
+    }
+    
+    .member-badge {
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      color: #c4b5fd;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .action-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 4px;
+      transition: all 0.3s ease;
+    }
+    .action-button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+    
+    .header-text {
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .success-message {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      border-radius: 0.75rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      border-radius: 0.75rem;
+      backdrop-filter: blur(10px);
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex">
+<body class="min-h-screen flex">
   <?php require_once __DIR__.'/../../templates/navbar.php'; ?>
 
   <main class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-16 md:mt-0">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-wrap justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Benutzergruppen</h1>
-        <div class="flex space-x-2 mt-2 md:mt-0">
-          <button id="createGroupBtn" class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90">
-            Neue Gruppe
+        <h1 class="text-3xl font-bold header-text">Benutzergruppen</h1>
+        <div class="flex space-x-3 mt-2 md:mt-0">
+          <button id="createGroupBtn" class="glass-button px-6 py-3 font-medium">
+            <i class="fas fa-plus mr-2"></i>Neue Gruppe
           </button>
-          <button id="createTagBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
-            Neuer Tag
+          <button id="createTagBtn" class="glass-button px-6 py-3 font-medium">
+            <i class="fas fa-tag mr-2"></i>Neuer Tag
           </button>
         </div>
       </div>
 
       <?php if (!empty($success)): ?>
-        <div class="mb-6 p-4 bg-green-50 border border-green-100 text-green-700 rounded-xl">
+        <div class="mb-6 success-message p-4">
+          <i class="fas fa-check-circle mr-2"></i>
           <?= htmlspecialchars($success) ?>
         </div>
       <?php endif; ?>
 
       <?php if (!empty($errors)): ?>
-        <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-700 rounded-xl">
+        <div class="mb-6 error-message p-4">
+          <i class="fas fa-exclamation-circle mr-2"></i>
           <ul class="list-disc pl-5">
             <?php foreach ($errors as $error): ?>
               <li><?= htmlspecialchars($error) ?></li>
@@ -59,20 +166,20 @@
       <?php endif; ?>
       
       <!-- Tag management section -->
-      <div class="bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">Verfügbare Tags</h2>
+      <div class="glass-card p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-white/90">
+          <i class="fas fa-tags mr-2"></i>Verfügbare Tags
+        </h2>
         
         <div class="flex flex-wrap gap-2 mb-4">
           <?php if (empty($allTags)): ?>
-            <p class="text-gray-500">Keine Tags gefunden.</p>
+            <p class="text-white/50">Keine Tags gefunden.</p>
           <?php else: ?>
             <?php foreach ($allTags as $tag): ?>
               <div class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
                 <?= htmlspecialchars($tag['name']) ?>
-                <button class="edit-tag-btn ml-2" data-tag-id="<?= $tag['id'] ?>" data-tag-name="<?= htmlspecialchars($tag['name']) ?>" data-tag-color="<?= htmlspecialchars($tag['color']) ?>">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+                <button class="edit-tag-btn ml-2 hover:scale-110 transition-transform" data-tag-id="<?= $tag['id'] ?>" data-tag-name="<?= htmlspecialchars($tag['name']) ?>" data-tag-color="<?= htmlspecialchars($tag['color']) ?>">
+                  <i class="fas fa-edit text-xs"></i>
                 </button>
               </div>
             <?php endforeach; ?>
@@ -81,46 +188,42 @@
       </div>
 
       <!-- Groups section -->
-      <div class="bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm p-6 mb-8">
-        <h2 class="text-xl font-semibold mb-4">Gruppen</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-card p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-6 text-white/90">
+          <i class="fas fa-users mr-2"></i>Gruppen
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <?php if (empty($groups)): ?>
-            <p class="md:col-span-3 text-gray-500">Keine Gruppen gefunden.</p>
+            <p class="md:col-span-3 text-white/50 text-center py-8">Keine Gruppen gefunden.</p>
           <?php else: ?>
             <?php foreach ($groups as $group): ?>
-              <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                <div class="flex justify-between items-start">
-                  <h3 class="text-lg font-semibold text-gray-900"><?= htmlspecialchars($group['name']) ?></h3>
+              <div class="glass-card p-5 border border-white/10">
+                <div class="flex justify-between items-start mb-4">
+                  <h3 class="text-lg font-semibold text-white/90"><?= htmlspecialchars($group['name']) ?></h3>
                   <div class="flex space-x-1">
-                    <button class="edit-group-btn p-1 text-blue-500 hover:text-blue-700" 
+                    <button class="edit-group-btn action-button text-blue-400 hover:text-blue-300" 
                             data-group-id="<?= $group['id'] ?>"
                             data-name="<?= htmlspecialchars($group['name']) ?>"
                             data-description="<?= htmlspecialchars($group['description']) ?>">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
+                      <i class="fas fa-edit"></i>
                     </button>
-                    <button class="assign-tags-btn p-1 text-purple-500 hover:text-purple-700"
+                    <button class="assign-tags-btn action-button text-purple-400 hover:text-purple-300"
                             data-group-id="<?= $group['id'] ?>"
                             data-group-name="<?= htmlspecialchars($group['name']) ?>">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
+                      <i class="fas fa-tag"></i>
                     </button>
-                    <button class="delete-group-btn p-1 text-red-500 hover:text-red-700"
+                    <button class="delete-group-btn action-button text-red-400 hover:text-red-300"
                             data-group-id="<?= $group['id'] ?>">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                      </svg>
+                      <i class="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
                 
-                <p class="text-sm text-gray-600 mt-2"><?= htmlspecialchars($group['description']) ?></p>
+                <p class="text-sm text-white/60 mb-4"><?= htmlspecialchars($group['description']) ?></p>
                 
                 <!-- Display group tags -->
                 <?php if (!empty($group['tags'])): ?>
-                  <div class="mt-3 flex flex-wrap">
+                  <div class="mb-4 flex flex-wrap gap-1">
                     <?php foreach ($group['tags'] as $tag): ?>
                       <span class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
                         <?= htmlspecialchars($tag['name']) ?>
@@ -129,14 +232,16 @@
                   </div>
                 <?php endif; ?>
                 
-                <div class="mt-4">
-                  <h4 class="text-sm font-medium text-gray-700">Mitglieder (<?= $group['member_count'] ?>):</h4>
-                  <div class="flex flex-wrap gap-2 mt-2">
+                <div>
+                  <h4 class="text-sm font-medium text-white/70 mb-2">
+                    <i class="fas fa-user mr-1"></i>Mitglieder (<?= $group['member_count'] ?>):
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
                     <?php if (empty($group['members'])): ?>
-                      <span class="text-gray-500 text-xs">Keine Mitglieder gefunden.</span>
+                      <span class="text-white/40 text-xs">Keine Mitglieder gefunden.</span>
                     <?php else: ?>
                       <?php foreach ($group['members'] as $member): ?>
-                        <span class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
+                        <span class="member-badge">
                           <?= htmlspecialchars($member['username']) ?>
                         </span>
                       <?php endforeach; ?>
@@ -152,11 +257,11 @@
   </main>
 
   <!-- Create Group Modal -->
-  <div id="groupModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+  <div id="groupModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-start mb-4">
-        <h2 id="modalTitle" class="text-xl font-semibold">Neue Gruppe erstellen</h2>
-        <button id="closeModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+        <h2 id="modalTitle" class="text-xl font-semibold text-white">Neue Gruppe erstellen</h2>
+        <button id="closeModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
       <form id="groupForm" method="post" class="space-y-4">
@@ -164,30 +269,30 @@
         <input type="hidden" id="groupId" name="group_id" value="">
         
         <div>
-          <label for="groupName" class="block text-sm font-medium text-gray-700 mb-1">Gruppenname</label>
-          <input type="text" id="groupName" name="group_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <label for="groupName" class="block text-sm font-medium text-white/80 mb-1">Gruppenname</label>
+          <input type="text" id="groupName" name="group_name" required class="w-full px-4 py-3 glass-input">
         </div>
         
         <div>
-          <label for="groupDescription" class="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
-          <textarea id="groupDescription" name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <label for="groupDescription" class="block text-sm font-medium text-white/80 mb-1">Beschreibung</label>
+          <textarea id="groupDescription" name="description" rows="3" class="w-full px-4 py-3 glass-input"></textarea>
         </div>
         
         <div>
-          <label for="groupMembers" class="block text-sm font-medium text-gray-700 mb-1">Mitglieder</label>
-          <select id="groupMembers" name="members[]" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <label for="groupMembers" class="block text-sm font-medium text-white/80 mb-1">Mitglieder</label>
+          <select id="groupMembers" name="members[]" multiple class="w-full px-4 py-3 glass-input" style="min-height: 120px;">
             <?php foreach ($allUsers as $user): ?>
               <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?> (<?= htmlspecialchars($user['email']) ?>)</option>
             <?php endforeach; ?>
           </select>
-          <p class="text-xs text-gray-500 mt-1">Mehrere Mitglieder mit Strg+Klick auswählen</p>
+          <p class="text-xs text-white/50 mt-1">Mehrere Mitglieder mit Strg+Klick auswählen</p>
         </div>
         
-        <div class="flex justify-end space-x-3">
-          <button type="button" id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelBtn" class="glass-button px-4 py-2">
             Abbrechen
           </button>
-          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          <button type="submit" class="glass-button px-4 py-2 bg-blue-600/30 border-blue-400/50">
             Speichern
           </button>
         </div>
@@ -196,11 +301,11 @@
   </div>
 
   <!-- Create Tag Modal -->
-  <div id="tagModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+  <div id="tagModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
-        <h2 id="tagModalTitle" class="text-xl font-semibold">Neuen Tag erstellen</h2>
-        <button id="closeTagModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+        <h2 id="tagModalTitle" class="text-xl font-semibold text-white">Neuen Tag erstellen</h2>
+        <button id="closeTagModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
       <form id="tagForm" method="post" class="space-y-4">
@@ -208,23 +313,23 @@
         <input type="hidden" id="tagId" name="tag_id" value="">
         
         <div>
-          <label for="tagName" class="block text-sm font-medium text-gray-700 mb-1">Tag-Name</label>
-          <input type="text" id="tagName" name="tag_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <label for="tagName" class="block text-sm font-medium text-white/80 mb-1">Tag-Name</label>
+          <input type="text" id="tagName" name="tag_name" required class="w-full px-4 py-3 glass-input">
         </div>
         
         <div>
-          <label for="tagColor" class="block text-sm font-medium text-gray-700 mb-1">Farbe</label>
+          <label for="tagColor" class="block text-sm font-medium text-white/80 mb-1">Farbe</label>
           <div class="flex space-x-2">
-            <input type="color" id="tagColor" name="tag_color" value="#4A90E2" class="h-10 w-10 rounded cursor-pointer">
-            <input type="text" id="tagColorText" value="#4A90E2" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+            <input type="color" id="tagColor" name="tag_color" value="#4A90E2" class="h-12 w-12 rounded-lg cursor-pointer border border-white/20">
+            <input type="text" id="tagColorText" value="#4A90E2" class="flex-1 px-4 py-3 glass-input">
           </div>
         </div>
         
-        <div class="flex justify-end space-x-3">
-          <button type="button" id="cancelTagBtn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelTagBtn" class="glass-button px-4 py-2">
             Abbrechen
           </button>
-          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          <button type="submit" class="glass-button px-4 py-2 bg-green-600/30 border-green-400/50">
             Speichern
           </button>
         </div>
@@ -233,27 +338,27 @@
   </div>
 
   <!-- Assign Tags Modal -->
-  <div id="assignTagsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+  <div id="assignTagsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
-        <h2 id="assignTagsTitle" class="text-xl font-semibold">Tags zuweisen</h2>
-        <button id="closeAssignTagsModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+        <h2 id="assignTagsTitle" class="text-xl font-semibold text-white">Tags zuweisen</h2>
+        <button id="closeAssignTagsModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
       <form id="assignTagsForm" method="post" class="space-y-4">
         <input type="hidden" name="action" value="assign_tags">
         <input type="hidden" id="assignGroupId" name="group_id" value="">
         
-        <p class="text-gray-600 text-sm mb-2">Wählen Sie die Tags aus, die der Gruppe zugewiesen werden sollen.</p>
+        <p class="text-white/60 text-sm mb-2">Wählen Sie die Tags aus, die der Gruppe zugewiesen werden sollen.</p>
         
-        <div class="max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+        <div class="max-h-60 overflow-y-auto p-3 glass-card border border-white/20 rounded-lg">
           <?php if (empty($allTags)): ?>
-            <p class="text-gray-500 text-sm">Keine Tags verfügbar. Bitte erstellen Sie zuerst Tags.</p>
+            <p class="text-white/50 text-sm">Keine Tags verfügbar. Bitte erstellen Sie zuerst Tags.</p>
           <?php else: ?>
             <?php foreach ($allTags as $tag): ?>
-              <div class="flex items-center mb-2">
-                <input type="checkbox" id="tag-<?= $tag['id'] ?>" name="tag_ids[]" value="<?= $tag['id'] ?>" class="h-4 w-4 text-blue-600 rounded">
-                <label for="tag-<?= $tag['id'] ?>" class="ml-2 block">
+              <div class="flex items-center mb-3">
+                <input type="checkbox" id="tag-<?= $tag['id'] ?>" name="tag_ids[]" value="<?= $tag['id'] ?>" class="h-4 w-4 text-blue-600 rounded bg-white/10 border-white/20">
+                <label for="tag-<?= $tag['id'] ?>" class="ml-3 block">
                   <span class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
                     <?= htmlspecialchars($tag['name']) ?>
                   </span>
@@ -263,11 +368,11 @@
           <?php endif; ?>
         </div>
         
-        <div class="flex justify-end space-x-3">
-          <button type="button" id="cancelAssignTagsBtn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelAssignTagsBtn" class="glass-button px-4 py-2">
             Abbrechen
           </button>
-          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          <button type="submit" class="glass-button px-4 py-2 bg-purple-600/30 border-purple-400/50">
             Tags zuweisen
           </button>
         </div>
@@ -276,24 +381,24 @@
   </div>
 
   <!-- Delete Group Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+  <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
       <div class="flex justify-between items-start mb-4">
-        <h2 class="text-xl font-semibold">Gruppe löschen</h2>
-        <button id="closeDeleteModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+        <h2 class="text-xl font-semibold text-white">Gruppe löschen</h2>
+        <button id="closeDeleteModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
-      <p class="mb-4">Bist du sicher, dass du diese Gruppe löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+      <p class="mb-6 text-white/80">Bist du sicher, dass du diese Gruppe löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.</p>
       
       <form method="post">
         <input type="hidden" name="action" value="delete_group">
         <input type="hidden" id="deleteGroupId" name="group_id" value="">
         
         <div class="flex justify-end space-x-3">
-          <button type="button" id="cancelDeleteBtn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button type="button" id="cancelDeleteBtn" class="glass-button px-4 py-2">
             Abbrechen
           </button>
-          <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+          <button type="submit" class="glass-button px-4 py-2 bg-red-600/30 border-red-400/50">
             Löschen
           </button>
         </div>
