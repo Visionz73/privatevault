@@ -74,10 +74,38 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   .logo-container {
     display: flex;
     align-items: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
+    justify-content: center;
     text-decoration: none;
+    padding: 0.5rem 1rem;
+  }
+
+  .logo-image {
+    max-height: 2.5rem;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+  }
+
+  .logo-container:hover .logo-image {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  /* Mobile logo adjustments */
+  @media (max-width: 768px) {
+    .logo-image {
+      max-height: 2rem;
+    }
+    
+    .mobile-header-content .logo-container {
+      padding: 0.25rem;
+    }
+    
+    .mobile-header-content .logo-image {
+      max-height: 1.75rem;
+    }
   }
 
   /* Rounded container for navigation items */
@@ -432,10 +460,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     <!-- Logo/Header -->
     <div class="p-4">
       <a href="/" class="logo-container">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-        </svg>
-        <span class="text-xl font-semibold">Private Vault</span>
+        <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
       </a>
     </div>
 
@@ -532,10 +557,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       </svg>
     </button>
     <a href="/" class="logo-container">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-      </svg>
-      <span class="font-semibold">Private Vault</span>
+      <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
     </a>
     <button onclick="openProfileModal()" class="mobile-toggle-btn">
       <div class="h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">

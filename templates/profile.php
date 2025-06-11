@@ -62,6 +62,7 @@ $initials = getUserInitials($user);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      height: fit-content;
     }
     
     /* Content area styling */
@@ -71,6 +72,7 @@ $initials = getUserInitials($user);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-height: calc(100vh - 12rem);
     }
     
     /* Form inputs */
@@ -100,6 +102,11 @@ $initials = getUserInitials($user);
       border-radius: 0.75rem;
       transition: all 0.3s ease;
       color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      text-decoration: none;
+      margin-bottom: 0.5rem;
     }
     
     .nav-item:hover {
@@ -107,6 +114,7 @@ $initials = getUserInitials($user);
       border-color: rgba(255, 255, 255, 0.2);
       transform: translateX(3px);
       color: white;
+      text-decoration: none;
     }
     
     .nav-item.active {
@@ -116,80 +124,45 @@ $initials = getUserInitials($user);
       font-weight: 600;
     }
     
-    /* Subtab navigation */
-    .subtab-nav {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 1rem;
-      padding: 0.25rem;
+    .nav-item-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
     }
     
-    .subtab-item {
-      color: rgba(255, 255, 255, 0.7);
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
+    .nav-item-content {
+      flex: 1;
     }
     
-    .subtab-item:hover {
-      color: rgba(255, 255, 255, 0.9);
+    .nav-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
     }
     
-    .subtab-item.active {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      font-weight: 500;
+    .nav-item-description {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      line-height: 1.3;
     }
     
-    /* Buttons */
-    .btn-primary {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
+    /* Full-width layout adjustments */
+    .profile-layout {
+      min-height: calc(100vh - 4rem);
     }
     
-    .btn-primary:hover {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
-    }
-    
-    /* Avatar styling */
-    .profile-avatar {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Badge styling */
-    .role-badge {
-      background: rgba(147, 51, 234, 0.2);
-      border: 1px solid rgba(147, 51, 234, 0.4);
-      color: #c4b5fd;
-    }
-    
-    /* Text colors */
-    .text-primary {
-      color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    
-    .text-secondary {
-      color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .text-muted {
-      color: rgba(255, 255, 255, 0.6);
+    @media (min-width: 769px) {
+      .profile-layout {
+        min-height: 100vh;
+        margin-left: 16rem;
+      }
     }
     
     /* Mobile adjustments */
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
       .profile-header { margin: 1rem; }
-    }
-    
-    @media (min-width: 769px) {
-      main { margin-left: 16rem; }
     }
   </style>
 </head>
@@ -203,11 +176,11 @@ if (file_exists($navbarPath)) {
 }
 ?>
 
-<!-- Main Content -->
-<div class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-14 md:mt-0">
+<!-- Main Content - Full Width -->
+<div class="profile-layout flex-1 p-4 md:p-6 mt-14 md:mt-0">
   <!-- Header with user info and breadcrumb -->
-  <header class="profile-header mb-8">
-    <div class="max-w-6xl mx-auto px-8 py-6">
+  <header class="profile-header mb-6">
+    <div class="max-w-full mx-auto px-6 py-6">
       <!-- Breadcrumb -->
       <nav class="flex items-center space-x-2 text-sm text-secondary mb-4">
         <a href="/dashboard.php" class="hover:text-white transition-colors">Dashboard</a>
@@ -222,7 +195,7 @@ if (file_exists($navbarPath)) {
         </div>
         <div class="flex-1">
           <div class="flex flex-wrap items-center gap-3">
-            <h1 class="text-2xl font-bold text-primary"><?= htmlspecialchars($user['username']) ?></h1>
+            <h1 class="text-3xl font-bold text-primary"><?= htmlspecialchars($user['username']) ?></h1>
             <span class="role-badge px-3 py-1 rounded-full text-sm font-medium">
               <?= ucfirst($user['role'] ?? 'user') ?>
             </span>
@@ -235,11 +208,11 @@ if (file_exists($navbarPath)) {
     </div>
   </header>
 
-  <!-- Settings Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+  <!-- Settings Layout - Full Width Grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 max-w-full mx-auto">
     <!-- Settings Sidebar -->
-    <aside class="lg:col-span-1">
-      <div class="settings-sidebar p-6 sticky top-8">
+    <aside class="xl:col-span-1">
+      <div class="settings-sidebar p-6 sticky top-6">
         <h3 class="font-semibold text-primary mb-4">Einstellungen</h3>
         
         <!-- Search/Filter -->
@@ -248,7 +221,7 @@ if (file_exists($navbarPath)) {
                class="form-input w-full px-4 py-2 text-sm mb-4">
         
         <!-- Categories -->
-        <nav id="settingsList" class="space-y-2">
+        <nav id="settingsList" class="space-y-1">
           <?php
           $categories = [
             'personal_info' => [
@@ -270,125 +243,152 @@ if (file_exists($navbarPath)) {
               'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>',
               'label' => 'Sicherheit',
               'description' => 'Passwort & 2FA'
-            ],
-            'notifications' => [
-              'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>',
-              'label' => 'Benachrichtigungen',
-              'description' => 'E-Mail & Push-Benachrichtigungen'
             ]
           ];
-
-          foreach ($categories as $catKey => $cat):
-            $isActive = $activeTab === $catKey;
+          
+          foreach ($categories as $key => $category):
+            $isActive = $activeTab === $key;
+            $href = "?tab=" . $key;
           ?>
-            <a href="?tab=<?= $catKey ?>" 
-               class="filter-item nav-item <?= $isActive ? 'active' : '' ?> group flex items-start p-3 transition-all duration-200">
-              <svg class="w-5 h-5 mt-0.5 mr-3 flex-shrink-0" 
-                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <?= $cat['icon'] ?>
+            <a href="<?= $href ?>" class="nav-item <?= $isActive ? 'active' : '' ?>" data-category="<?= $key ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <?= $category['icon'] ?>
               </svg>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-sm"><?= $cat['label'] ?></div>
-                <div class="text-xs text-muted mt-0.5">
-                  <?= $cat['description'] ?>
-                </div>
+              <div class="nav-item-content">
+                <div class="nav-item-title"><?= htmlspecialchars($category['label']) ?></div>
+                <div class="nav-item-description"><?= htmlspecialchars($category['description']) ?></div>
               </div>
             </a>
           <?php endforeach; ?>
         </nav>
       </div>
     </aside>
-
-    <!-- Content Area -->
-    <section class="lg:col-span-3">
-      <div class="settings-content p-8">
+    
+    <!-- Content Area - Full Width -->
+    <main class="xl:col-span-4">
+      <div class="settings-content p-6">
         <?php
-        // Determine content based on active tab
-        switch($activeTab) {
+        // Tab content rendering
+        switch ($activeTab) {
+          case 'personal_info':
+            // Subtab navigation for personal_info
+            $personalSubtabs = [
+              'personal_data' => 'Persönliche Daten',
+              'public_profile' => 'Öffentliches Profil',
+              'hr_information' => 'HR Informationen'
+            ];
+            $currentPersonalSubtab = $_GET['subtab'] ?? 'personal_data';
+            
+            echo '<div class="mb-6">';
+            echo '<div class="subtab-nav p-1">';
+            echo '<div class="flex flex-wrap gap-1">';
+            foreach ($personalSubtabs as $key => $label) {
+              $isActive = $currentPersonalSubtab === $key;
+              $href = "?tab=personal_info&subtab=" . $key;
+              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+            }
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+            
+            // Include the appropriate subtab template
+            $subtabFile = __DIR__ . "/profile_tabs/personal_info/{$currentPersonalSubtab}.php";
+            if (file_exists($subtabFile)) {
+              include $subtabFile;
+            } else {
+              echo '<div class="text-center py-12 text-muted">Subtab-Inhalt nicht gefunden.</div>';
+            }
+            break;
+            
           case 'finance':
-            $sidebarCats = [
+            $financeSubtabs = [
               'finance_overview' => 'Übersicht',
               'income' => 'Einnahmen',
-              'expenses' => 'Ausgaben',
-              'budgets' => 'Budgets',
-              'balance' => 'Kontostand'
+              'expenses' => 'Ausgaben'
             ];
+            $currentFinanceSubtab = $_GET['subtab'] ?? 'finance_overview';
+            
+            echo '<div class="mb-6">';
+            echo '<div class="subtab-nav p-1">';
+            echo '<div class="flex flex-wrap gap-1">';
+            foreach ($financeSubtabs as $key => $label) {
+              $isActive = $currentFinanceSubtab === $key;
+              $href = "?tab=finance&subtab=" . $key;
+              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+            }
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+            
+            // Include the appropriate finance subtab template
+            $subtabFile = __DIR__ . "/profile_tabs/finance/{$currentFinanceSubtab}.php";
+            if (file_exists($subtabFile)) {
+              include $subtabFile;
+            } else {
+              // Fallback to finance overview
+              include __DIR__ . '/profile_tabs/finance/finance_overview.php';
+            }
             break;
+            
           case 'documents':
-            $sidebarCats = [
+            $docSubtabs = [
               'documents' => 'Alle Dokumente',
               'contracts' => 'Verträge',
               'invoices' => 'Rechnungen',
-              'ids' => 'Ausweise/ID',
               'insurance' => 'Versicherungen',
-              'other_docs' => 'Sonstige Dokumente'
+              'other_docs' => 'Sonstige'
             ];
+            $currentDocSubtab = $_GET['subtab'] ?? 'documents';
+            
+            echo '<div class="mb-6">';
+            echo '<div class="subtab-nav p-1">';
+            echo '<div class="flex flex-wrap gap-1">';
+            foreach ($docSubtabs as $key => $label) {
+              $isActive = $currentDocSubtab === $key;
+              $href = "?tab=documents&subtab=" . $key;
+              echo '<a href="' . $href . '" class="subtab-item px-4 py-2 ' . ($isActive ? 'active' : '') . '">' . htmlspecialchars($label) . '</a>';
+            }
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+            
+            // Include the appropriate documents subtab template
+            $subtabFile = __DIR__ . "/profile_tabs/documents/{$currentDocSubtab}.php";
+            if (file_exists($subtabFile)) {
+              include $subtabFile;
+            } else {
+              include __DIR__ . '/profile_tabs/documents/documents.php';
+            }
             break;
+            
           case 'security':
-            $securityTabPath = __DIR__ . '/profile_tabs/security.php';
-            if (file_exists($securityTabPath)) {
-                include $securityTabPath;
-            } else {
-                echo '<div class="text-center py-12"><p class="text-muted">Security settings will be available soon.</p></div>';
-            }
+            echo '<div class="glassmorphism-container p-6">';
+            echo '<h2 class="text-xl font-semibold text-primary mb-4">Sicherheitseinstellungen</h2>';
+            echo '<div class="text-center py-12 text-muted">Sicherheitseinstellungen werden demnächst verfügbar sein.</div>';
+            echo '</div>';
             break;
-          case 'notifications':
-            $notificationsTabPath = __DIR__ . '/profile_tabs/notifications.php';
-            if (file_exists($notificationsTabPath)) {
-                include $notificationsTabPath;
-            } else {
-                echo '<div class="text-center py-12"><p class="text-muted">Notification settings will be available soon.</p></div>';
-            }
-            break;
-          default: // personal_info
-            $sidebarCats = [
-              'public_profile' => 'Public profile',
-              'hr_information' => 'HR information',
-              'personal_data' => 'Personal data'
-            ];
+            
+          default:
+            echo '<div class="text-center py-12 text-muted">Tab-Inhalt nicht gefunden.</div>';
         }
-
-        // For tabs that have subtabs, show subtab navigation and content
-        if (in_array($activeTab, ['personal_info', 'finance', 'documents'])):
-          $sub = $_GET['subtab'] ?? array_key_first($sidebarCats);
         ?>
-          <!-- Subtab Navigation -->
-          <nav class="subtab-nav flex space-x-1 mb-8">
-            <?php foreach($sidebarCats as $catKey => $catLabel): 
-              $isActive = $sub === $catKey;
-            ?>
-              <a href="?tab=<?= $activeTab ?>&subtab=<?= $catKey ?>" 
-                 class="subtab-item <?= $isActive ? 'active' : '' ?> px-4 py-2 text-sm font-medium transition-all duration-200">
-                <?= $catLabel ?>
-              </a>
-            <?php endforeach; ?>
-          </nav>
-
-          <!-- Subtab Content -->
-          <?php
-          $filePath = __DIR__ . "/profile_tabs/{$activeTab}/{$sub}.php";
-          if (file_exists($filePath)) {
-              include $filePath;
-          } else {
-              echo '<div class="text-center py-12">';
-              echo '<p class="text-muted">Kein Inhalt verfügbar für diese Kategorie.</p>';
-              echo '<p class="text-xs text-muted mt-2">Looking for: ' . htmlspecialchars($filePath) . '</p>';
-              echo '</div>';
-          }
-          ?>
-        <?php endif; ?>
       </div>
-    </section>
+    </main>
   </div>
 </div>
 
 <script>
-// Settings filter functionality
-document.getElementById('settingsFilter').addEventListener('input', e => {
-  const filter = e.target.value.toLowerCase();
-  document.querySelectorAll('#settingsList .filter-item').forEach(item => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(filter) ? '' : 'none';
+// Enhanced search functionality
+document.getElementById('settingsFilter').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  const navItems = document.querySelectorAll('#settingsList .nav-item');
+  
+  navItems.forEach(item => {
+    const title = item.querySelector('.nav-item-title').textContent.toLowerCase();
+    const description = item.querySelector('.nav-item-description').textContent.toLowerCase();
+    const matches = title.includes(searchTerm) || description.includes(searchTerm);
+    
+    item.style.display = matches ? 'flex' : 'none';
   });
 });
 </script>
