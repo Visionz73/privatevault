@@ -4,84 +4,71 @@ $widgetTotalOwed = $widgetTotalOwed ?? 0.00;
 $widgetTotalOwing = $widgetTotalOwing ?? 0.00;
 $widgetNetBalance = $widgetNetBalance ?? 0.00;
 ?>
+<!-- HaveToPay Widget for Dashboard -->
 <article class="widget-card p-6 flex flex-col">
-    <!-- Widget Header with Gradient Background -->
-    <div class="flex justify-between items-center mb-4">
-        <a href="havetopay.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Schuldenverwaltung</h2>
-            <svg class="w-4 h-4 fill-current opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
-        </a>
-        <a href="havetopay_add.php" title="Ausgabe hinzufügen" class="widget-button text-sm flex items-center justify-center w-8 h-8 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
-        </a>
+  <!-- Header Section -->
+  <div class="flex items-center justify-between mb-4">
+    <a href="/havetopay.php" class="inline-flex items-center widget-header">
+      <h2 class="mr-1">HaveToPay</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+    <button onclick="window.location.href='/havetopay_add.php'" class="widget-button">
+      +
+    </button>
+  </div>
+  
+  <!-- Balance Summary Section -->
+  <div class="grid grid-cols-1 gap-3 mb-4">
+    <div class="glass-item p-3 text-center">
+      <div class="text-xs text-white/50 mb-1">Netto-Saldo</div>
+      <div class="text-lg font-bold <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+        €<?= number_format($widgetNetBalance, 2) ?>
+      </div>
     </div>
-
-    <p class="widget-description mb-4">Finanzübersicht und Salden</p>
-
-    <div class="space-y-4 flex-1">
-        <!-- Balance Information with Glass Effect -->
-        <div class="grid grid-cols-1 gap-3">
-            <div class="widget-list-item flex justify-between items-center">
-                <span class="text-white font-medium">Du bekommst:</span>
-                <span class="text-green-400 font-semibold">
-                    €<?php echo htmlspecialchars(number_format($widgetTotalOwed, 2, ',', '.')); ?>
-                </span>
-            </div>
-            
-            <div class="widget-list-item flex justify-between items-center">
-                <span class="text-white font-medium">Du schuldest:</span>
-                <span class="text-red-400 font-semibold">
-                    €<?php echo htmlspecialchars(number_format($widgetTotalOwing, 2, ',', '.')); ?>
-                </span>
-            </div>
-            
-            <div class="h-px bg-white/20 my-2"></div>
-            
-            <div class="widget-list-item flex justify-between items-center">
-                <span class="text-white font-semibold">Netto-Saldo:</span>
-                <span class="<?php echo ($widgetNetBalance >= 0) ? 'text-green-400' : 'text-red-400'; ?> font-bold text-lg">
-                    €<?php echo htmlspecialchars(number_format($widgetNetBalance, 2, ',', '.')); ?>
-                </span>
-            </div>
-        </div>
-        
-        <!-- Visual Balance Indicator with Glass Effect -->
-        <div class="w-full h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
-            <?php 
-            $percentOwed = 0;
-            $percentOwing = 0;
-            $maxAmount = max(abs($widgetTotalOwed), abs($widgetTotalOwing));
-            
-            if ($maxAmount > 0) {
-                $percentOwed = ($widgetTotalOwed / $maxAmount) * 50;
-                $percentOwing = ($widgetTotalOwing / $maxAmount) * 50;
-            }
-            ?>
-            <div class="flex h-full">
-                <div class="bg-gradient-to-r from-green-400 to-green-500 h-full transition-all duration-500" style="width: <?php echo $percentOwed; ?>%;"></div>
-                <div class="bg-white/5 h-full" style="width: <?php echo 100 - $percentOwed - $percentOwing; ?>%;"></div>
-                <div class="bg-gradient-to-r from-red-400 to-red-500 h-full transition-all duration-500" style="width: <?php echo $percentOwing; ?>%;"></div>
-            </div>
-        </div>
-        
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-2 mt-4">
-            <div class="widget-list-item text-center p-3">
-                <div class="text-xs text-white/60 mb-1">Status</div>
-                <div class="text-sm font-medium <?php echo ($widgetNetBalance >= 0) ? 'text-green-400' : 'text-red-400'; ?>">
-                    <?php echo ($widgetNetBalance >= 0) ? 'Positiv' : 'Negativ'; ?>
-                </div>
-            </div>
-            <div class="widget-list-item text-center p-3">
-                <div class="text-xs text-white/60 mb-1">Saldo</div>
-                <div class="text-sm font-medium text-white">
-                    €<?php echo number_format(abs($widgetNetBalance), 0); ?>
-                </div>
-            </div>
-        </div>
+    
+    <div class="grid grid-cols-2 gap-2">
+      <div class="glass-item p-2 text-center">
+        <div class="text-xs text-white/50 mb-1">Du bekommst</div>
+        <div class="text-sm font-semibold text-green-400">€<?= number_format($widgetTotalOwed, 2) ?></div>
+      </div>
+      <div class="glass-item p-2 text-center">
+        <div class="text-xs text-white/50 mb-1">Du schuldest</div>
+        <div class="text-sm font-semibold text-red-400">€<?= number_format($widgetTotalOwing, 2) ?></div>
+      </div>
     </div>
+  </div>
+  
+  <!-- Quick Status Section -->
+  <div class="flex-1 flex items-center justify-center">
+    <?php if ($widgetNetBalance > 0): ?>
+      <div class="text-center">
+        <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v2"/>
+          </svg>
+        </div>
+        <p class="text-sm text-green-400 font-medium">Guthaben</p>
+      </div>
+    <?php elseif ($widgetNetBalance < 0): ?>
+      <div class="text-center">
+        <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+          <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="text-sm text-red-400 font-medium">Schulden</p>
+      </div>
+    <?php else: ?>
+      <div class="text-center">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="text-sm text-blue-400 font-medium">Ausgeglichen</p>
+      </div>
+    <?php endif; ?>
+  </div>
 </article>

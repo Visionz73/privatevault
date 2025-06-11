@@ -12,10 +12,27 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
+      /* Zoom-like effect - scale everything down to 80% */
+      transform: scale(0.8);
+      transform-origin: top left;
+      width: 125%; /* Compensate for the scaling */
+      height: 125%;
     }
+    
+    /* Adjust main container for scaling */
+    main {
+      width: 100%;
+      min-height: 100vh;
+    }
+    
     /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
-      main { margin-top: 3.5rem; }
+      body {
+        transform: scale(0.85); /* Slightly less aggressive scaling on mobile */
+        width: 117.6%;
+        height: 117.6%;
+      }
+      main { margin-top: 4.1rem; } /* Adjusted for scaling */
     }
 
     /* Dark theme widget styling */
@@ -130,6 +147,18 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
+    /* HaveToPay widget specific styling */
+    .glass-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .glass-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
     /* Dropdown menus */
     .dropdown-menu {
       background: rgba(255, 255, 255, 0.08);
@@ -228,7 +257,7 @@
     </h1>
 
     <!-- Grid ------------------------------------------------------------->
-    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
+    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
 
       <!-- Enhanced Inbox Widget -->
       <article class="widget-card p-6 flex flex-col">
@@ -431,15 +460,15 @@
         </ul>
       </article>
 
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+
       <!-- Placeholder Cards --------------------------------------------->
       <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="placeholder-widget">
           <?= $name ?>-Widget
         </article>
       <?php endforeach; ?>
-
-      <!-- HaveToPay Widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
     </div><!-- /grid -->
   </main>
   
