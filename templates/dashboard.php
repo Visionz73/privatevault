@@ -286,7 +286,9 @@
       <?= $formattedDate ?><br>
       Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
       <?= htmlspecialchars($user['first_name']??$user['username']) ?>
-    </h1>    <!-- Grid ------------------------------------------------------------->
+    </h1>
+
+    <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
 
       <!-- Enhanced Inbox Widget - Now same size as other widgets -->
@@ -465,11 +467,13 @@
             <?php endif; ?>
           </div>
         </div>
-      </article>      <!-- HaveToPay Widget - Now placed next to calendar widget -->
+      </article>
+
+      <!-- HaveToPay Widget - Now placed next to calendar widget -->
       <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
 
-      <!-- Placeholder Cards - Display fewer placeholders to maintain balance -->
-      <?php foreach(['Recruiting','Org-Chart'] as $name): ?>
+      <!-- Placeholder Cards --------------------------------------------->
+      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
         <article class="placeholder-widget">
           <?= $name ?>-Widget
         </article>
