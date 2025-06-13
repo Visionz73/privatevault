@@ -582,20 +582,11 @@
       </div>
     </div>
 
-    <!-- Chart Grid -->
+    <!-- Widgets statt Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      <article class="widget-card p-6 flex flex-col">
-        <h2 class="widget-header mb-2">Aufgaben (letzte 7 Tage)</h2>
-        <canvas id="tasksChart"></canvas>
-      </article>
-      <article class="widget-card p-6 flex flex-col">
-        <h2 class="widget-header mb-2">Schuldenübersicht</h2>
-        <canvas id="debtsChart"></canvas>
-      </article>
-      <article class="widget-card p-6 flex flex-col">
-        <h2 class="widget-header mb-2">Termine</h2>
-        <canvas id="eventsChart"></canvas>
-      </article>
+      <?php include __DIR__.'/widgets/tasks_widget.php'; ?>
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+      <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
     </div>
 
     <!-- Grid ------------------------------------------------------------->
