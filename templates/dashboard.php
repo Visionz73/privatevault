@@ -27,12 +27,27 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       color: white;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .widget-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+    .widget-card:hover::before {
+      left: 100%;
     }
     .widget-card:hover {
       background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
     }
 
     /* Enhanced scrollable widget containers */
@@ -259,6 +274,41 @@
       padding: 3rem;
       font-size: 0.875rem;
     }
+
+    /* Loading states */
+    .widget-loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .widget-loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Success animations */
+    @keyframes slideOut {
+      0% { transform: translateX(0); opacity: 1; }
+      100% { transform: translateX(-100%); opacity: 0; }
+    }
+    
+    .slide-out {
+      animation: slideOut 0.3s ease forwards;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -436,7 +486,7 @@
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
-    <!-- Greeting --------------------------------------------------------->
+    <!-- Enhanced Greeting -->
     <?php
     if (class_exists('IntlDateFormatter')) {
         $formatter = new IntlDateFormatter(
@@ -446,14 +496,44 @@
         );
         $formattedDate = $formatter->format(new DateTime());
     } else {
-        $formattedDate = date('l, d. F'); // Fallback using date()
+        $formattedDate = date('l, d. F');
     }
+    
+    // Get productivity stats
+    $todayTasks = 0;
+    $completedToday = 0;
+    try {
+      $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM tasks WHERE (assigned_to = ? OR created_by = ?) AND DATE(created_at) = CURDATE()");
+      $stmt->execute([$user['id'], $user['id']]);
+      $todayTasks = $stmt->fetch()['total'] ?? 0;
+      
+      $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM tasks WHERE (assigned_to = ? OR created_by = ?) AND status = 'completed' AND DATE(updated_at) = CURDATE()");
+      $stmt->execute([$user['id'], $user['id']]);
+      $completedToday = $stmt->fetch()['total'] ?? 0;
+    } catch (Exception $e) {}
     ?>
-    <h1 class="text-3xl font-bold greeting-text leading-tight">
-      <?= $formattedDate ?><br>
-      Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
-      <?= htmlspecialchars($user['first_name']??$user['username']) ?>
-    </h1>
+    
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold greeting-text leading-tight">
+          <?= $formattedDate ?><br>
+          Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
+          <?= htmlspecialchars($user['first_name']??$user['username']) ?>
+        </h1>
+      </div>
+      
+      <!-- Daily Stats -->
+      <div class="flex gap-3">
+        <div class="bg-green-500/10 border border-green-400/20 rounded-xl p-3 text-center min-w-[80px]">
+          <div class="text-xs text-green-300">Heute erledigt</div>
+          <div class="text-lg font-bold text-green-400"><?= $completedToday ?></div>
+        </div>
+        <div class="bg-blue-500/10 border border-blue-400/20 rounded-xl p-3 text-center min-w-[80px]">
+          <div class="text-xs text-blue-300">Neue Aufgaben</div>
+          <div class="text-lg font-bold text-blue-400"><?= $todayTasks ?></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-6 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
@@ -570,9 +650,6 @@
       <!-- Tasks Widget -->
       <?php include __DIR__.'/widgets/tasks_widget.php'; ?>
 
-      <!-- Dokumente Widget -->
-      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
-
       <!-- Calendar Widget -->
       <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
 
@@ -581,6 +658,9 @@
 
       <!-- Notes Widget -->
       <?php include __DIR__.'/widgets/notes_widget.php'; ?>
+
+      <!-- Documents Widget -->
+      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
 
     </div><!-- /grid -->
   </main>
@@ -602,7 +682,16 @@
         });
       }
 
-      // Initialize scroll indicators for widgets
+      // Add loading states for widget interactions
+      window.showWidgetLoading = function(element) {
+        element.classList.add('widget-loading');
+      };
+      
+      window.hideWidgetLoading = function(element) {
+        element.classList.remove('widget-loading');
+      };
+      
+      // Enhanced scroll indicators
       function initScrollIndicators() {
         const scrollContainers = document.querySelectorAll('.widget-scroll-container');
         
@@ -617,80 +706,48 @@
               }
             }
             
-            // Check initially
             checkScroll();
-            
-            // Check on resize
             window.addEventListener('resize', checkScroll);
             
-            // Smooth scrolling on wheel
+            // Smooth scrolling
             content.addEventListener('wheel', (e) => {
-              e.preventDefault();
-              content.scrollBy({
-                top: e.deltaY * 0.5,
-                behavior: 'smooth'
-              });
+              if (content.scrollHeight > content.clientHeight) {
+                e.preventDefault();
+                content.scrollBy({
+                  top: e.deltaY * 0.8,
+                  behavior: 'smooth'
+                });
+              }
             });
           }
         });
       }
       
-      // Initialize scroll indicators
       initScrollIndicators();
       
-      // Document upload handler
-      window.openDocumentUpload = function() {
-        window.location.href = 'profile.php?tab=documents#upload';
+      // Auto-refresh widgets every 5 minutes
+      setInterval(() => {
+        // Only refresh if page is visible
+        if (!document.hidden) {
+          location.reload();
+        }
+      }, 300000);
+      
+      // Show notification for completed tasks
+      window.showTaskCompleted = function(taskTitle) {
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 opacity-0 transition-opacity';
+        toast.textContent = `✓ ${taskTitle} abgeschlossen`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.style.opacity = '1', 100);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
       };
     });
-    
-    // Toggle inline event creation form
-    const showInlineEventFormBtn = document.getElementById('showInlineEventForm');
-    if (showInlineEventFormBtn) {
-      showInlineEventFormBtn.addEventListener('click', function() {
-        document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-      });
-    }
-
-    // Handle inline event form submission via AJAX
-    const inlineEventForm = document.getElementById('inlineEventForm');
-    if (inlineEventForm) {
-      inlineEventForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const title = this.title.value.trim();
-        const date = this.date.value;
-        if(title && date){
-          fetch('/create_event.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ title: title, date: date })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if(data.success){
-              // Create new list element for the event
-              const newEvent = data.event;
-              const li = document.createElement('div');
-              li.className = "widget-list-item flex justify-between items-center";
-              li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
-                               <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-              const eventList = document.getElementById('dashboardEventList');
-              
-              // If "Keine Termine gefunden." is present, remove it.
-              if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-                eventList.innerHTML = '';
-              }
-              eventList.prepend(li); // Add to top
-              this.reset();
-              document.getElementById('inlineEventFormContainer').classList.add('hidden');
-            } else {
-              alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-            }
-          })
-          .catch(() => alert('Fehler beim Erstellen des Termins.'));
-        }
-      });
-    }
   </script>
 </body>
 </html>
