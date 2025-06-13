@@ -274,69 +274,82 @@
   $filterGroupId = $_GET['group_id'] ?? null;
 
   // Get user's groups for filter dropdown
-  $stmt = $pdo->prepare("
-    SELECT g.id, g.name 
-    FROM groups g 
-    JOIN group_memberships gm ON g.id = gm.group_id 
-    WHERE gm.user_id = ?
-  ");
-  $stmt->execute([$user['id']]);
-  $userGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  try {
+    $stmt = $pdo->prepare("
+      SELECT g.id, g.name 
+      FROM groups g 
+      JOIN group_memberships gm ON g.id = gm.group_id 
+      WHERE gm.user_id = ?
+    ");
+    $stmt->execute([$user['id']]);
+    $userGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (Exception $e) {
+    $userGroups = [];
+    $filterType = 'mine'; // Force to 'mine' if groups don't exist
+  }
 
   // Fetch tasks based on filter
-  if ($filterType === 'mine') {
-    $stmt = $pdo->prepare("
-      SELECT t.*, 
-             creator.username as creator_name,
-             assignee.username as assignee_name,
-             g.name as group_name
-      FROM tasks t
-      LEFT JOIN users creator ON t.created_by = creator.id
-      LEFT JOIN users assignee ON t.assigned_to = assignee.id
-      LEFT JOIN groups g ON t.assigned_group_id = g.id
-      WHERE (t.assigned_to = ? OR t.created_by = ?) 
-        AND t.status != 'completed'
-      ORDER BY 
-        CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
-        t.due_date ASC, t.created_at DESC
-      LIMIT 10
-    ");
-    $stmt->execute([$user['id'], $user['id']]);
-  } else {
-    $stmt = $pdo->prepare("
-      SELECT t.*, 
-             creator.username as creator_name,
-             assignee.username as assignee_name,
-             g.name as group_name
-      FROM tasks t
-      LEFT JOIN users creator ON t.created_by = creator.id
-      LEFT JOIN users assignee ON t.assigned_to = assignee.id
-      LEFT JOIN groups g ON t.assigned_group_id = g.id
-      WHERE t.assigned_group_id = ? AND t.status != 'completed'
-      ORDER BY 
-        CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
-        t.due_date ASC, t.created_at DESC
-      LIMIT 10
-    ");
-    $stmt->execute([$filterGroupId]);
+  try {
+    if ($filterType === 'mine') {
+      $stmt = $pdo->prepare("
+        SELECT t.*, 
+               creator.username as creator_name,
+               assignee.username as assignee_name,
+               g.name as group_name
+        FROM tasks t
+        LEFT JOIN users creator ON t.created_by = creator.id
+        LEFT JOIN users assignee ON t.assigned_to = assignee.id
+        LEFT JOIN groups g ON t.assigned_group_id = g.id
+        WHERE (t.assigned_to = ? OR t.created_by = ?) 
+          AND t.status != 'completed'
+        ORDER BY 
+          CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
+          t.due_date ASC, t.created_at DESC
+        LIMIT 10
+      ");
+      $stmt->execute([$user['id'], $user['id']]);
+    } else {
+      $stmt = $pdo->prepare("
+        SELECT t.*, 
+               creator.username as creator_name,
+               assignee.username as assignee_name,
+               g.name as group_name
+        FROM tasks t
+        LEFT JOIN users creator ON t.created_by = creator.id
+        LEFT JOIN users assignee ON t.assigned_to = assignee.id
+        LEFT JOIN groups g ON t.assigned_group_id = g.id
+        WHERE t.assigned_group_id = ? AND t.status != 'completed'
+        ORDER BY 
+          CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
+          t.due_date ASC, t.created_at DESC
+        LIMIT 10
+      ");
+      $stmt->execute([$filterGroupId]);
+    }
+    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (Exception $e) {
+    $tasks = [];
   }
-  $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   // Count open tasks
-  if ($filterType === 'mine') {
-    $stmt = $pdo->prepare("
-      SELECT COUNT(*) as count FROM tasks 
-      WHERE (assigned_to = ? OR created_by = ?) AND status != 'completed'
-    ");
-    $stmt->execute([$user['id'], $user['id']]);
-  } else {
-    $stmt = $pdo->prepare("
-      SELECT COUNT(*) as count FROM tasks 
-      WHERE assigned_group_id = ? AND status != 'completed'
-    ");
-    $stmt->execute([$filterGroupId]);
+  try {
+    if ($filterType === 'mine') {
+      $stmt = $pdo->prepare("
+        SELECT COUNT(*) as count FROM tasks 
+        WHERE (assigned_to = ? OR created_by = ?) AND status != 'completed'
+      ");
+      $stmt->execute([$user['id'], $user['id']]);
+    } else {
+      $stmt = $pdo->prepare("
+        SELECT COUNT(*) as count FROM tasks 
+        WHERE assigned_group_id = ? AND status != 'completed'
+      ");
+      $stmt->execute([$filterGroupId]);
+    }
+    $openTaskCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+  } catch (Exception $e) {
+    $openTaskCount = 0;
   }
-  $openTaskCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
   // Fetch data for HaveToPay Widget
   try {

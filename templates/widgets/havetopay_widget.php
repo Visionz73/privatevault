@@ -3,6 +3,7 @@
 $widgetTotalOwed = $widgetTotalOwed ?? 0.00;
 $widgetTotalOwing = $widgetTotalOwing ?? 0.00;
 $widgetNetBalance = $widgetNetBalance ?? 0.00;
+$balances = $balances ?? ['others_owe' => [], 'user_owes' => []];
 ?>
 <!-- HaveToPay Widget -->
 <article class="widget-card p-6 flex flex-col">
