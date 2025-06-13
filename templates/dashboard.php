@@ -567,6 +567,9 @@
         </div>
       </article>
 
+      <!-- Tasks Widget -->
+      <?php include __DIR__.'/widgets/tasks_widget.php'; ?>
+
       <!-- Dokumente Widget -->
       <?php include __DIR__.'/widgets/documents_widget.php'; ?>
 
@@ -575,6 +578,9 @@
 
       <!-- HaveToPay Widget -->
       <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+
+      <!-- Notes Widget -->
+      <?php include __DIR__.'/widgets/notes_widget.php'; ?>
 
     </div><!-- /grid -->
   </main>

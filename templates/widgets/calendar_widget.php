@@ -28,11 +28,6 @@ $stmt->execute([$user['id'], $user['id']]);
 $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 ?>
 
-<?php
-// Calendar widget should have access to $upcomingEvents from dashboard
-$upcomingEvents = $upcomingEvents ?? [];
-?>
-
 <article class="widget-card p-6 flex flex-col">
   <div class="flex justify-between items-center mb-4">
     <a href="calendar.php" class="group inline-flex items-center widget-header">
@@ -75,11 +70,11 @@ $upcomingEvents = $upcomingEvents ?? [];
             </a>
             <div class="flex-shrink-0 text-right">
               <div class="text-xs font-medium text-blue-400">
-                <?= date('d.m.', strtotime($event['date'])) ?>
+                <?= date('d.m.', strtotime($event['event_date'])) ?>
               </div>
-              <?php if (!empty($event['time'])): ?>
+              <?php if (!empty($event['start_time'])): ?>
                 <div class="task-meta text-xs">
-                  <?= date('H:i', strtotime($event['time'])) ?>
+                  <?= date('H:i', strtotime($event['start_time'])) ?>
                 </div>
               <?php endif; ?>
             </div>
