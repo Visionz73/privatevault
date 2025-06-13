@@ -28,6 +28,11 @@ $stmt->execute([$user['id'], $user['id']]);
 $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 ?>
 
+<?php
+// Calendar widget should have access to $upcomingEvents from dashboard
+$upcomingEvents = $upcomingEvents ?? [];
+?>
+
 <article class="widget-card p-6 flex flex-col">
   <div class="flex justify-between items-center mb-4">
     <a href="calendar.php" class="group inline-flex items-center widget-header">
@@ -41,25 +46,21 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
       </svg>
-      Ereignis
+      Termin
     </button>
   </div>
   
-  <p class="widget-description mb-4"><?= $monthlyEvents ?> Termine in diesem Monat</p>
+  <p class="widget-description mb-4"><?= count($upcomingEvents) ?> anstehende Termine</p>
 
   <!-- Inline Event Creation Form -->
-  <div id="inlineEventFormContainer" class="hidden mb-4 p-3 bg-white/5 rounded-lg">
-    <form id="inlineEventForm" class="widget-form space-y-2">
-      <input type="text" name="title" placeholder="Ereignis-Titel..." required class="w-full px-3 py-2 text-sm">
-      <input type="date" name="date" required class="w-full px-3 py-2 text-sm">
+  <div id="inlineEventFormContainer" class="hidden mb-4">
+    <form id="inlineEventForm" class="widget-form space-y-3">
+      <input type="text" name="title" placeholder="Titel des Termins" required class="w-full text-sm">
+      <input type="date" name="date" required class="w-full text-sm">
       <div class="flex gap-2">
-        <button type="submit" class="widget-button px-3 py-1 text-xs bg-green-600/30 border-green-400/50">
-          Erstellen
-        </button>
+        <button type="submit" class="widget-button text-xs flex-1">Erstellen</button>
         <button type="button" onclick="document.getElementById('inlineEventFormContainer').classList.add('hidden')" 
-                class="widget-button px-3 py-1 text-xs">
-          Abbrechen
-        </button>
+                class="widget-button text-xs px-3">✕</button>
       </div>
     </form>
   </div>
@@ -68,36 +69,19 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     <div id="dashboardEventList" class="widget-scroll-content space-y-2">
       <?php if (!empty($upcomingEvents)): ?>
         <?php foreach ($upcomingEvents as $event): ?>
-          <div class="widget-list-item" onclick="window.location.href='calendar.php'">
-            <div class="flex justify-between items-start">
-              <div class="flex-1 min-w-0">
-                <div class="task-title text-sm truncate">
-                  <?= htmlspecialchars($event['title']) ?>
-                </div>
-                <?php if (!empty($event['description'])): ?>
-                  <div class="task-description text-xs truncate">
-                    <?= htmlspecialchars($event['description']) ?>
-                  </div>
-                <?php endif; ?>
+          <div class="widget-list-item flex justify-between items-center">
+            <a href="calendar.php" class="truncate pr-2 flex-1 task-title">
+              <?= htmlspecialchars($event['title']) ?>
+            </a>
+            <div class="flex-shrink-0 text-right">
+              <div class="text-xs font-medium text-blue-400">
+                <?= date('d.m.', strtotime($event['date'])) ?>
+              </div>
+              <?php if (!empty($event['time'])): ?>
                 <div class="task-meta text-xs">
-                  <span class="font-medium">Erstellt von:</span> 
-                  <?= htmlspecialchars($event['creator_name'] ?? 'Unbekannt') ?>
+                  <?= date('H:i', strtotime($event['time'])) ?>
                 </div>
-              </div>
-              <div class="flex-shrink-0 text-right">
-                <div class="text-xs font-medium text-blue-400">
-                  <?= date('d.m.', strtotime($event['event_date'])) ?>
-                </div>
-                <?php if (date('Y-m-d', strtotime($event['event_date'])) === date('Y-m-d')): ?>
-                  <span class="status-badge bg-green-100 text-green-800 px-1 py-0.5 rounded-full text-xs">
-                    Heute
-                  </span>
-                <?php elseif (strtotime($event['event_date']) < strtotime('+7 days')): ?>
-                  <span class="status-badge bg-orange-100 text-orange-800 px-1 py-0.5 rounded-full text-xs">
-                    Diese Woche
-                  </span>
-                <?php endif; ?>
-              </div>
+              <?php endif; ?>
             </div>
           </div>
         <?php endforeach; ?>
@@ -107,7 +91,7 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
           Keine Termine gefunden.
-          <button id="createFirstEvent" onclick="document.getElementById('inlineEventFormContainer').classList.remove('hidden')" 
+          <button id="showInlineEventFormAlt" onclick="document.getElementById('inlineEventFormContainer').classList.remove('hidden')" 
                   class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
             Ersten Termin erstellen
           </button>

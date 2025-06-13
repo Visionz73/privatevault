@@ -269,6 +269,154 @@
   requireLogin();
   require_once __DIR__.'/../src/lib/db.php';
 
+  // Fetch data for Inbox Widget (Tasks)
+  $filterType = $_GET['filter'] ?? 'mine';
+  $filterGroupId = $_GET['group_id'] ?? null;
+
+  // Get user's groups for filter dropdown
+  $stmt = $pdo->prepare("
+    SELECT g.id, g.name 
+    FROM groups g 
+    JOIN group_memberships gm ON g.id = gm.group_id 
+    WHERE gm.user_id = ?
+  ");
+  $stmt->execute([$user['id']]);
+  $userGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Fetch tasks based on filter
+  if ($filterType === 'mine') {
+    $stmt = $pdo->prepare("
+      SELECT t.*, 
+             creator.username as creator_name,
+             assignee.username as assignee_name,
+             g.name as group_name
+      FROM tasks t
+      LEFT JOIN users creator ON t.created_by = creator.id
+      LEFT JOIN users assignee ON t.assigned_to = assignee.id
+      LEFT JOIN groups g ON t.assigned_group_id = g.id
+      WHERE (t.assigned_to = ? OR t.created_by = ?) 
+        AND t.status != 'completed'
+      ORDER BY 
+        CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
+        t.due_date ASC, t.created_at DESC
+      LIMIT 10
+    ");
+    $stmt->execute([$user['id'], $user['id']]);
+  } else {
+    $stmt = $pdo->prepare("
+      SELECT t.*, 
+             creator.username as creator_name,
+             assignee.username as assignee_name,
+             g.name as group_name
+      FROM tasks t
+      LEFT JOIN users creator ON t.created_by = creator.id
+      LEFT JOIN users assignee ON t.assigned_to = assignee.id
+      LEFT JOIN groups g ON t.assigned_group_id = g.id
+      WHERE t.assigned_group_id = ? AND t.status != 'completed'
+      ORDER BY 
+        CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
+        t.due_date ASC, t.created_at DESC
+      LIMIT 10
+    ");
+    $stmt->execute([$filterGroupId]);
+  }
+  $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Count open tasks
+  if ($filterType === 'mine') {
+    $stmt = $pdo->prepare("
+      SELECT COUNT(*) as count FROM tasks 
+      WHERE (assigned_to = ? OR created_by = ?) AND status != 'completed'
+    ");
+    $stmt->execute([$user['id'], $user['id']]);
+  } else {
+    $stmt = $pdo->prepare("
+      SELECT COUNT(*) as count FROM tasks 
+      WHERE assigned_group_id = ? AND status != 'completed'
+    ");
+    $stmt->execute([$filterGroupId]);
+  }
+  $openTaskCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+
+  // Fetch data for HaveToPay Widget
+  try {
+    // Calculate total amounts owed to user
+    $stmt = $pdo->prepare("
+      SELECT COALESCE(SUM(amount), 0) as total
+      FROM debts 
+      WHERE creditor_id = ? AND status = 'active'
+    ");
+    $stmt->execute([$user['id']]);
+    $widgetTotalOwed = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0.00;
+
+    // Calculate total amounts user owes
+    $stmt = $pdo->prepare("
+      SELECT COALESCE(SUM(amount), 0) as total
+      FROM debts 
+      WHERE debtor_id = ? AND status = 'active'
+    ");
+    $stmt->execute([$user['id']]);
+    $widgetTotalOwing = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0.00;
+
+    // Calculate net balance
+    $widgetNetBalance = $widgetTotalOwed - $widgetTotalOwing;
+
+    // Get detailed balances for the widget
+    $balances = ['others_owe' => [], 'user_owes' => []];
+
+    // People who owe the user
+    $stmt = $pdo->prepare("
+      SELECT u.username, u.first_name, u.last_name,
+             COALESCE(SUM(d.amount), 0) as amount_owed,
+             CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as display_name
+      FROM debts d
+      JOIN users u ON d.debtor_id = u.id
+      WHERE d.creditor_id = ? AND d.status = 'active'
+      GROUP BY u.id, u.username, u.first_name, u.last_name
+      HAVING amount_owed > 0
+      ORDER BY amount_owed DESC
+    ");
+    $stmt->execute([$user['id']]);
+    $balances['others_owe'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // People the user owes
+    $stmt = $pdo->prepare("
+      SELECT u.username, u.first_name, u.last_name,
+             COALESCE(SUM(d.amount), 0) as amount_owed,
+             CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as display_name
+      FROM debts d
+      JOIN users u ON d.creditor_id = u.id
+      WHERE d.debtor_id = ? AND d.status = 'active'
+      GROUP BY u.id, u.username, u.first_name, u.last_name
+      HAVING amount_owed > 0
+      ORDER BY amount_owed DESC
+    ");
+    $stmt->execute([$user['id']]);
+    $balances['user_owes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  } catch (Exception $e) {
+    // Fallback values if HaveToPay tables don't exist
+    $widgetTotalOwed = 0.00;
+    $widgetTotalOwing = 0.00;
+    $widgetNetBalance = 0.00;
+    $balances = ['others_owe' => [], 'user_owes' => []];
+  }
+
+  // Fetch upcoming events for Calendar Widget
+  try {
+    $stmt = $pdo->prepare("
+      SELECT title, date, time 
+      FROM events 
+      WHERE user_id = ? AND date >= CURDATE() 
+      ORDER BY date ASC, time ASC 
+      LIMIT 5
+    ");
+    $stmt->execute([$user['id']]);
+    $upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (Exception $e) {
+    $upcomingEvents = [];
+  }
+
   require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
