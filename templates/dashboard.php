@@ -7,6 +7,7 @@
   <title>Dashboard | Private Vault</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { 
       font-family: 'Inter', sans-serif;
@@ -480,6 +481,52 @@
     $upcomingEvents = [];
   }
 
+  // --- Prepare event stats for charts ---
+  try {
+      $stmt = $pdo->prepare("
+        SELECT COUNT(*) as total 
+        FROM events 
+        WHERE (assigned_to = ? OR created_by = ?) 
+          AND DATE(event_date) = CURDATE()
+      ");
+      $stmt->execute([$user['id'], $user['id']]);
+      $chartTodayEvents = $stmt->fetch()['total'] ?? 0;
+
+      $stmt = $pdo->prepare("
+        SELECT COUNT(*) as total 
+        FROM events 
+        WHERE (assigned_to = ? OR created_by = ?) 
+          AND WEEK(event_date) = WEEK(CURDATE()) 
+          AND YEAR(event_date) = YEAR(CURDATE())
+      ");
+      $stmt->execute([$user['id'], $user['id']]);
+      $chartWeekEvents = $stmt->fetch()['total'] ?? 0;
+  } catch (Exception $e) {
+      $chartTodayEvents = $chartWeekEvents = 0;
+  }
+
+  // --- Prepare task completions over last 7 days ---
+  try {
+      $stmt = $pdo->prepare("
+        SELECT DATE(updated_at) as d, COUNT(*) as cnt
+        FROM tasks
+        WHERE (assigned_to = ? OR created_by = ?)
+          AND status = 'completed'
+          AND DATE(updated_at) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(updated_at)
+      ");
+      $stmt->execute([$user['id'], $user['id']]);
+      $rows = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+  } catch (Exception $e) {
+      $rows = [];
+  }
+  $dates = $counts = [];
+  for ($i = 6; $i >= 0; $i--) {
+    $d = date('Y-m-d', strtotime("-{$i} days"));
+    $dates[] = $d;
+    $counts[] = isset($rows[$d]) ? (int)$rows[$d] : 0;
+  }
+
   require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
@@ -533,6 +580,22 @@
           <div class="text-lg font-bold text-blue-400"><?= $todayTasks ?></div>
         </div>
       </div>
+    </div>
+
+    <!-- Chart Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <article class="widget-card p-6 flex flex-col">
+        <h2 class="widget-header mb-2">Aufgaben (letzte 7 Tage)</h2>
+        <canvas id="tasksChart"></canvas>
+      </article>
+      <article class="widget-card p-6 flex flex-col">
+        <h2 class="widget-header mb-2">Schuldenübersicht</h2>
+        <canvas id="debtsChart"></canvas>
+      </article>
+      <article class="widget-card p-6 flex flex-col">
+        <h2 class="widget-header mb-2">Termine</h2>
+        <canvas id="eventsChart"></canvas>
+      </article>
     </div>
 
     <!-- Grid ------------------------------------------------------------->
@@ -819,57 +882,4 @@
         
         scrollContainers.forEach(container => {
           const content = container.querySelector('.widget-scroll-content');
-          if (content) {
-            function checkScroll() {
-              if (content.scrollHeight > content.clientHeight) {
-                container.classList.add('has-scroll');
-              } else {
-                container.classList.remove('has-scroll');
-              }
-            }
-            
-            checkScroll();
-            window.addEventListener('resize', checkScroll);
-            
-            // Smooth scrolling
-            content.addEventListener('wheel', (e) => {
-              if (content.scrollHeight > content.clientHeight) {
-                e.preventDefault();
-                content.scrollBy({
-                  top: e.deltaY * 0.8,
-                  behavior: 'smooth'
-                });
-              }
-            });
-          }
-        });
-      }
-      
-      initScrollIndicators();
-      
-      // Auto-refresh widgets every 5 minutes
-      setInterval(() => {
-        // Only refresh if page is visible
-        if (!document.hidden) {
-          location.reload();
-        }
-      }, 300000);
-      
-      // Show notification for completed tasks
-      window.showTaskCompleted = function(taskTitle) {
-        // Create a simple toast notification
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 opacity-0 transition-opacity';
-        toast.textContent = `✓ ${taskTitle} abgeschlossen`;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => toast.style.opacity = '1', 100);
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          setTimeout(() => document.body.removeChild(toast), 300);
-        }, 3000);
-      };
-    });
-  </script>
-</body>
-</html>
+          if
