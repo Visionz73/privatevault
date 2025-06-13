@@ -3,7 +3,6 @@
 $widgetTotalOwed = $widgetTotalOwed ?? 0.00;
 $widgetTotalOwing = $widgetTotalOwing ?? 0.00;
 $widgetNetBalance = $widgetNetBalance ?? 0.00;
-$balances = $balances ?? ['others_owe' => [], 'user_owes' => []];
 ?>
 <!-- HaveToPay Widget -->
 <article class="widget-card p-6 flex flex-col">
@@ -84,13 +83,53 @@ $balances = $balances ?? ['others_owe' => [], 'user_owes' => []];
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
-      
-      <?php if (empty($balances['others_owe']) && empty($balances['user_owes'])): ?>
-        <div class="widget-list-item text-center task-meta py-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 8v4"/>
-          </svg>
-          Alle Schulden beglichen!
+
+      <!-- Recent Expenses (excluding fully settled) -->
+      <?php if (!empty($recentExpenses)): ?>
+        <div class="border-t border-white/10 pt-3 mt-3">
+          <div class="text-xs text-white/60 mb-2 flex items-center">
+            <div class="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
+            Aktuelle Ausgaben
+          </div>
+          <?php foreach(array_slice($recentExpenses, 0, 3) as $expense): ?>
+            <div class="widget-list-item py-2 cursor-pointer" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
+              <div class="flex justify-between items-center">
+                <span class="text-white/90 text-sm truncate">
+                  <?= htmlspecialchars($expense['title']) ?>
+                </span>
+                <div class="flex items-center gap-2">
+                  <!-- Settlement Status Indicator -->
+                  <?php if ($expense['settlement_status'] === 'partially_settled'): ?>
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <?php else: ?>
+                    <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                  <?php endif; ?>
+                  <span class="text-purple-300 text-xs font-medium">
+                    <?= number_format($expense['amount'], 2) ?> €
+                  </span>
+                </div>
+              </div>
+              <div class="text-xs text-white/50 mt-1 flex justify-between">
+                <span><?= date('d.m.Y', strtotime($expense['expense_date'])) ?></span>
+                <span><?= $expense['settled_count'] ?>/<?= $expense['participant_count'] ?> bezahlt</span>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <!-- Empty state -->
+      <?php if (empty($balances['others_owe']) && empty($balances['user_owes']) && empty($recentExpenses)): ?>
+        <div class="widget-list-item text-center task-meta py-6">
+          <div class="text-white/30 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+          </div>
+          <div class="text-white/50 text-sm mb-3">Keine Ausgaben vorhanden</div>
+          <a href="havetopay_add.php" class="text-blue-400 hover:text-blue-300 text-xs font-medium">
+            <i class="fas fa-plus mr-1"></i>Ausgabe hinzufügen
+          </a>
         </div>
       <?php endif; ?>
     </div>

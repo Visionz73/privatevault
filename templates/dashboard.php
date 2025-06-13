@@ -7,7 +7,6 @@
   <title>Dashboard | Private Vault</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { 
       font-family: 'Inter', sans-serif;
@@ -28,27 +27,12 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       color: white;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .widget-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s;
-    }
-    .widget-card:hover::before {
-      left: 100%;
     }
     .widget-card:hover {
       background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
     /* Enhanced scrollable widget containers */
@@ -275,41 +259,6 @@
       padding: 3rem;
       font-size: 0.875rem;
     }
-
-    /* Loading states */
-    .widget-loading {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-    
-    .widget-loading::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      transform: translate(-50%, -50%);
-    }
-    
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    
-    /* Success animations */
-    @keyframes slideOut {
-      0% { transform: translateX(0); opacity: 1; }
-      100% { transform: translateX(-100%); opacity: 0; }
-    }
-    
-    .slide-out {
-      animation: slideOut 0.3s ease forwards;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -320,220 +269,13 @@
   requireLogin();
   require_once __DIR__.'/../src/lib/db.php';
 
-  // Fetch data for Inbox Widget (Tasks)
-  $filterType = $_GET['filter'] ?? 'mine';
-  $filterGroupId = $_GET['group_id'] ?? null;
-
-  // Get user's groups for filter dropdown
-  try {
-    $stmt = $pdo->prepare("
-      SELECT g.id, g.name 
-      FROM groups g 
-      JOIN group_memberships gm ON g.id = gm.group_id 
-      WHERE gm.user_id = ?
-    ");
-    $stmt->execute([$user['id']]);
-    $userGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (Exception $e) {
-    $userGroups = [];
-    $filterType = 'mine'; // Force to 'mine' if groups don't exist
-  }
-
-  // Fetch tasks based on filter
-  try {
-    if ($filterType === 'mine') {
-      $stmt = $pdo->prepare("
-        SELECT t.*, 
-               creator.username as creator_name,
-               assignee.username as assignee_name,
-               g.name as group_name
-        FROM tasks t
-        LEFT JOIN users creator ON t.created_by = creator.id
-        LEFT JOIN users assignee ON t.assigned_to = assignee.id
-        LEFT JOIN groups g ON t.assigned_group_id = g.id
-        WHERE (t.assigned_to = ? OR t.created_by = ?) 
-          AND t.status != 'completed'
-        ORDER BY 
-          CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
-          t.due_date ASC, t.created_at DESC
-        LIMIT 10
-      ");
-      $stmt->execute([$user['id'], $user['id']]);
-    } else {
-      $stmt = $pdo->prepare("
-        SELECT t.*, 
-               creator.username as creator_name,
-               assignee.username as assignee_name,
-               g.name as group_name
-        FROM tasks t
-        LEFT JOIN users creator ON t.created_by = creator.id
-        LEFT JOIN users assignee ON t.assigned_to = assignee.id
-        LEFT JOIN groups g ON t.assigned_group_id = g.id
-        WHERE t.assigned_group_id = ? AND t.status != 'completed'
-        ORDER BY 
-          CASE WHEN t.due_date IS NOT NULL AND t.due_date < NOW() THEN 0 ELSE 1 END,
-          t.due_date ASC, t.created_at DESC
-        LIMIT 10
-      ");
-      $stmt->execute([$filterGroupId]);
-    }
-    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (Exception $e) {
-    $tasks = [];
-  }
-
-  // Count open tasks
-  try {
-    if ($filterType === 'mine') {
-      $stmt = $pdo->prepare("
-        SELECT COUNT(*) as count FROM tasks 
-        WHERE (assigned_to = ? OR created_by = ?) AND status != 'completed'
-      ");
-      $stmt->execute([$user['id'], $user['id']]);
-    } else {
-      $stmt = $pdo->prepare("
-        SELECT COUNT(*) as count FROM tasks 
-        WHERE assigned_group_id = ? AND status != 'completed'
-      ");
-      $stmt->execute([$filterGroupId]);
-    }
-    $openTaskCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
-  } catch (Exception $e) {
-    $openTaskCount = 0;
-  }
-
-  // Fetch data for HaveToPay Widget
-  try {
-    // Calculate total amounts owed to user
-    $stmt = $pdo->prepare("
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM debts 
-      WHERE creditor_id = ? AND status = 'active'
-    ");
-    $stmt->execute([$user['id']]);
-    $widgetTotalOwed = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0.00;
-
-    // Calculate total amounts user owes
-    $stmt = $pdo->prepare("
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM debts 
-      WHERE debtor_id = ? AND status = 'active'
-    ");
-    $stmt->execute([$user['id']]);
-    $widgetTotalOwing = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0.00;
-
-    // Calculate net balance
-    $widgetNetBalance = $widgetTotalOwed - $widgetTotalOwing;
-
-    // Get detailed balances for the widget
-    $balances = ['others_owe' => [], 'user_owes' => []];
-
-    // People who owe the user
-    $stmt = $pdo->prepare("
-      SELECT u.username, u.first_name, u.last_name,
-             COALESCE(SUM(d.amount), 0) as amount_owed,
-             CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as display_name
-      FROM debts d
-      JOIN users u ON d.debtor_id = u.id
-      WHERE d.creditor_id = ? AND d.status = 'active'
-      GROUP BY u.id, u.username, u.first_name, u.last_name
-      HAVING amount_owed > 0
-      ORDER BY amount_owed DESC
-    ");
-    $stmt->execute([$user['id']]);
-    $balances['others_owe'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // People the user owes
-    $stmt = $pdo->prepare("
-      SELECT u.username, u.first_name, u.last_name,
-             COALESCE(SUM(d.amount), 0) as amount_owed,
-             CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as display_name
-      FROM debts d
-      JOIN users u ON d.creditor_id = u.id
-      WHERE d.debtor_id = ? AND d.status = 'active'
-      GROUP BY u.id, u.username, u.first_name, u.last_name
-      HAVING amount_owed > 0
-      ORDER BY amount_owed DESC
-    ");
-    $stmt->execute([$user['id']]);
-    $balances['user_owes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-  } catch (Exception $e) {
-    // Fallback values if HaveToPay tables don't exist
-    $widgetTotalOwed = 0.00;
-    $widgetTotalOwing = 0.00;
-    $widgetNetBalance = 0.00;
-    $balances = ['others_owe' => [], 'user_owes' => []];
-  }
-
-  // Fetch upcoming events for Calendar Widget
-  try {
-    $stmt = $pdo->prepare("
-      SELECT title, date, time 
-      FROM events 
-      WHERE user_id = ? AND date >= CURDATE() 
-      ORDER BY date ASC, time ASC 
-      LIMIT 5
-    ");
-    $stmt->execute([$user['id']]);
-    $upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (Exception $e) {
-    $upcomingEvents = [];
-  }
-
-  // --- Prepare event stats for charts ---
-  try {
-      $stmt = $pdo->prepare("
-        SELECT COUNT(*) as total 
-        FROM events 
-        WHERE (assigned_to = ? OR created_by = ?) 
-          AND DATE(event_date) = CURDATE()
-      ");
-      $stmt->execute([$user['id'], $user['id']]);
-      $chartTodayEvents = $stmt->fetch()['total'] ?? 0;
-
-      $stmt = $pdo->prepare("
-        SELECT COUNT(*) as total 
-        FROM events 
-        WHERE (assigned_to = ? OR created_by = ?) 
-          AND WEEK(event_date) = WEEK(CURDATE()) 
-          AND YEAR(event_date) = YEAR(CURDATE())
-      ");
-      $stmt->execute([$user['id'], $user['id']]);
-      $chartWeekEvents = $stmt->fetch()['total'] ?? 0;
-  } catch (Exception $e) {
-      $chartTodayEvents = $chartWeekEvents = 0;
-  }
-
-  // --- Prepare task completions over last 7 days ---
-  try {
-      $stmt = $pdo->prepare("
-        SELECT DATE(updated_at) as d, COUNT(*) as cnt
-        FROM tasks
-        WHERE (assigned_to = ? OR created_by = ?)
-          AND status = 'completed'
-          AND DATE(updated_at) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-        GROUP BY DATE(updated_at)
-      ");
-      $stmt->execute([$user['id'], $user['id']]);
-      $rows = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-  } catch (Exception $e) {
-      $rows = [];
-  }
-  $dates = $counts = [];
-  for ($i = 6; $i >= 0; $i--) {
-    $d = date('Y-m-d', strtotime("-{$i} days"));
-    $dates[] = $d;
-    $counts[] = isset($rows[$d]) ? (int)$rows[$d] : 0;
-  }
-
   require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
   <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
 
-    <!-- Enhanced Greeting -->
+    <!-- Greeting --------------------------------------------------------->
     <?php
     if (class_exists('IntlDateFormatter')) {
         $formatter = new IntlDateFormatter(
@@ -543,51 +285,20 @@
         );
         $formattedDate = $formatter->format(new DateTime());
     } else {
-        $formattedDate = date('l, d. F');
+        $formattedDate = date('l, d. F'); // Fallback using date()
     }
-    
-    // Get productivity stats
-    $todayTasks = 0;
-    $completedToday = 0;
-    try {
-      $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM tasks WHERE (assigned_to = ? OR created_by = ?) AND DATE(created_at) = CURDATE()");
-      $stmt->execute([$user['id'], $user['id']]);
-      $todayTasks = $stmt->fetch()['total'] ?? 0;
-      
-      $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM tasks WHERE (assigned_to = ? OR created_by = ?) AND status = 'completed' AND DATE(updated_at) = CURDATE()");
-      $stmt->execute([$user['id'], $user['id']]);
-      $completedToday = $stmt->fetch()['total'] ?? 0;
-    } catch (Exception $e) {}
     ?>
-    
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold greeting-text leading-tight">
-          <?= $formattedDate ?><br>
-          Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
-          <?= htmlspecialchars($user['first_name']??$user['username']) ?>
-        </h1>
-      </div>
-      
-      <!-- Daily Stats -->
-      <div class="flex gap-3">
-        <div class="bg-green-500/10 border border-green-400/20 rounded-xl p-3 text-center min-w-[80px]">
-          <div class="text-xs text-green-300">Heute erledigt</div>
-          <div class="text-lg font-bold text-green-400"><?= $completedToday ?></div>
-        </div>
-        <div class="bg-blue-500/10 border border-blue-400/20 rounded-xl p-3 text-center min-w-[80px]">
-          <div class="text-xs text-blue-300">Neue Aufgaben</div>
-          <div class="text-lg font-bold text-blue-400"><?= $todayTasks ?></div>
-        </div>
-      </div>
-    </div>
+    <h1 class="text-3xl font-bold greeting-text leading-tight">
+      <?= $formattedDate ?><br>
+      Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
+      <?= htmlspecialchars($user['first_name']??$user['username']) ?>
+    </h1>
+<<<<<<< HEAD
 
-    <!-- Widgets statt Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      <?php include __DIR__.'/widgets/tasks_widget.php'; ?>
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
-      <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
-    </div>
+    <!-- Grid ------------------------------------------------------------->
+    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
+=======
+>>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
 
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-6 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
@@ -701,143 +412,68 @@
         </div>
       </article>
 
-      <!-- Tasks Widget -->
-      <?php include __DIR__.'/widgets/tasks_widget.php'; ?>
+      <!-- Dokumente Widget -->
+      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
 
       <!-- Calendar Widget -->
       <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
 
-      <!-- HaveToPay Widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
-
-      <!-- Notes Widget -->
-      <?php include __DIR__.'/widgets/notes_widget.php'; ?>
-
-      <!-- Documents Widget -->
-      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
-
-      <!-- Backup Widget -->
+<<<<<<< HEAD
+      <!-- Meine Termine Widget -->
       <article class="widget-card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <a href="backup.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Backup</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        <div class="flex items-center justify-between mb-4">
+          <a href="calendar.php" class="inline-flex items-center widget-header">
+            Meine Termine
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          
-          <span class="status-overdue px-2 py-1 rounded-full text-xs">
-            Überfällig
-          </span>
-        </div>
-        
-        <p class="widget-description mb-4">Von: Test Für: ghost1</p>
-
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <div class="widget-list-item text-center task-meta py-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-              </svg>
-              Backup-System bereit.
-              <button onclick="window.location.href='backup.php'" 
-                      class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
-                Backup erstellen
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- Groups Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <a href="groups.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Gruppen</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-          
-          <button onclick="window.location.href='groups.php?action=create'" class="widget-button text-sm flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Gruppe
+          <button id="showInlineEventForm" class="widget-button">
+            +
           </button>
         </div>
+        <p class="widget-description mb-4"><?= count($events) ?> Termine</p>
+        <!-- Inline event creation form (initially hidden) -->
+        <div id="inlineEventFormContainer" class="mb-4 hidden">
+          <form id="inlineEventForm" class="space-y-2 widget-form">
+            <input type="text" name="title" placeholder="Event Titel" required>
+            <input type="date" name="date" required>
+            <button type="submit" class="w-full widget-button">
+              Termin erstellen
+            </button>
+          </form>
+        </div>
         
-        <p class="widget-description mb-4"><?= count($userGroups) ?> Gruppen</p>
-
         <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <?php if (!empty($userGroups)): ?>
-              <?php foreach ($userGroups as $group): ?>
-                <div class="widget-list-item" onclick="window.location.href='groups.php?id=<?= $group['id'] ?>'">
-                  <div class="flex justify-between items-center">
-                    <div class="flex items-center min-w-0">
-                      <div class="w-6 h-6 bg-purple-500/20 text-purple-300 rounded-full flex items-center justify-center text-xs font-semibold mr-2 flex-shrink-0">
-                        <?= strtoupper(substr($group['name'], 0, 1)) ?>
-                      </div>
-                      <span class="text-white/90 text-sm truncate">
-                        <?= htmlspecialchars($group['name']) ?>
-                      </span>
-                    </div>
-                    <span class="group-badge px-1 py-0.5 rounded-full text-xs">
-                      Aktiv
-                    </span>
-                  </div>
+          <div id="dashboardEventList" class="widget-scroll-content space-y-2">
+            <?php if(!empty($events)): ?>
+              <?php foreach($events as $evt): ?>
+                <div class="widget-list-item flex justify-between items-center">
+                  <a href="calendar.php" class="truncate pr-2 flex-1 task-title"><?= htmlspecialchars($evt['title']) ?></a>
+                  <span class="task-meta text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
                 </div>
               <?php endforeach; ?>
             <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                Keine Gruppen gefunden.
-                <button onclick="window.location.href='groups.php?action=create'" 
-                        class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
-                  Erste Gruppe erstellen
-                </button>
-              </div>
+              <div class="widget-list-item text-center task-meta py-4">Keine Termine gefunden.</div>
             <?php endif; ?>
           </div>
         </div>
       </article>
 
-      <!-- Cheat Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <a href="cheat.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Cheat</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-          
-          <span class="status-overdue px-2 py-1 rounded-full text-xs">
-            Überfällig
-          </span>
-        </div>
-        
-        <p class="widget-description mb-4">Schnelle Referenzen und Befehle</p>
+      <!-- HaveToPay Widget - Now placed next to calendar widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
 
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <div class="widget-list-item text-center task-meta py-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              Cheat-Sheets verfügbar.
-              <button onclick="window.location.href='cheat.php'" 
-                      class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
-                Cheat-Sheets anzeigen
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
+      <!-- Placeholder Cards --------------------------------------------->
+      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
+        <article class="placeholder-widget">
+          <?= $name ?>-Widget
+        </article>
+      <?php endforeach; ?>
+=======
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
 
+>>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
     </div><!-- /grid -->
   </main>
   
@@ -858,19 +494,89 @@
         });
       }
 
-      // Add loading states for widget interactions
-      window.showWidgetLoading = function(element) {
-        element.classList.add('widget-loading');
-      };
-      
-      window.hideWidgetLoading = function(element) {
-        element.classList.remove('widget-loading');
-      };
-      
-      // Enhanced scroll indicators
+      // Initialize scroll indicators for widgets
       function initScrollIndicators() {
         const scrollContainers = document.querySelectorAll('.widget-scroll-container');
         
         scrollContainers.forEach(container => {
           const content = container.querySelector('.widget-scroll-content');
-          if
+          if (content) {
+            function checkScroll() {
+              if (content.scrollHeight > content.clientHeight) {
+                container.classList.add('has-scroll');
+              } else {
+                container.classList.remove('has-scroll');
+              }
+            }
+            
+            // Check initially
+            checkScroll();
+            
+            // Check on resize
+            window.addEventListener('resize', checkScroll);
+            
+            // Smooth scrolling on wheel
+            content.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              content.scrollBy({
+                top: e.deltaY * 0.5,
+                behavior: 'smooth'
+              });
+            });
+          }
+        });
+      }
+      
+      // Initialize scroll indicators
+      initScrollIndicators();
+      
+      // Document upload handler
+      window.openDocumentUpload = function() {
+        window.location.href = 'profile.php?tab=documents#upload';
+      };
+    });
+    
+    // Toggle inline event creation form
+    document.getElementById('showInlineEventForm').addEventListener('click', function() {
+      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+    });
+
+    // Handle inline event form submission via AJAX
+    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = this.title.value.trim();
+      const date = this.date.value;
+      if(title && date){
+        fetch('/create_event.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ title: title, date: date })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            // Create new list element for the event
+            const newEvent = data.event;
+            const li = document.createElement('div');
+            li.className = "widget-list-item flex justify-between items-center";
+            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
+                             <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+            const eventList = document.getElementById('dashboardEventList');
+            
+            // If "Keine Termine gefunden." is present, remove it.
+            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+              eventList.innerHTML = '';
+            }
+            eventList.prepend(li); // Add to top
+            this.reset();
+            document.getElementById('inlineEventFormContainer').classList.add('hidden');
+          } else {
+            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+          }
+        })
+        .catch(() => alert('Fehler beim Erstellen des Termins.'));
+      }
+    });
+  </script>
+</body>
+</html>
