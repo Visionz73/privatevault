@@ -662,6 +662,128 @@
       <!-- Documents Widget -->
       <?php include __DIR__.'/widgets/documents_widget.php'; ?>
 
+      <!-- Backup Widget -->
+      <article class="widget-card p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <a href="backup.php" class="group inline-flex items-center widget-header">
+            <h2 class="mr-1">Backup</h2>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          
+          <span class="status-overdue px-2 py-1 rounded-full text-xs">
+            Überfällig
+          </span>
+        </div>
+        
+        <p class="widget-description mb-4">Von: Test Für: ghost1</p>
+
+        <div class="widget-scroll-container flex-1">
+          <div class="widget-scroll-content space-y-2">
+            <div class="widget-list-item text-center task-meta py-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              Backup-System bereit.
+              <button onclick="window.location.href='backup.php'" 
+                      class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
+                Backup erstellen
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Groups Widget -->
+      <article class="widget-card p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <a href="groups.php" class="group inline-flex items-center widget-header">
+            <h2 class="mr-1">Gruppen</h2>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          
+          <button onclick="window.location.href='groups.php?action=create'" class="widget-button text-sm flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Gruppe
+          </button>
+        </div>
+        
+        <p class="widget-description mb-4"><?= count($userGroups) ?> Gruppen</p>
+
+        <div class="widget-scroll-container flex-1">
+          <div class="widget-scroll-content space-y-2">
+            <?php if (!empty($userGroups)): ?>
+              <?php foreach ($userGroups as $group): ?>
+                <div class="widget-list-item" onclick="window.location.href='groups.php?id=<?= $group['id'] ?>'">
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center min-w-0">
+                      <div class="w-6 h-6 bg-purple-500/20 text-purple-300 rounded-full flex items-center justify-center text-xs font-semibold mr-2 flex-shrink-0">
+                        <?= strtoupper(substr($group['name'], 0, 1)) ?>
+                      </div>
+                      <span class="text-white/90 text-sm truncate">
+                        <?= htmlspecialchars($group['name']) ?>
+                      </span>
+                    </div>
+                    <span class="group-badge px-1 py-0.5 rounded-full text-xs">
+                      Aktiv
+                    </span>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="widget-list-item text-center task-meta py-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Keine Gruppen gefunden.
+                <button onclick="window.location.href='groups.php?action=create'" 
+                        class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
+                  Erste Gruppe erstellen
+                </button>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+      </article>
+
+      <!-- Cheat Widget -->
+      <article class="widget-card p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <a href="cheat.php" class="group inline-flex items-center widget-header">
+            <h2 class="mr-1">Cheat</h2>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          
+          <span class="status-overdue px-2 py-1 rounded-full text-xs">
+            Überfällig
+          </span>
+        </div>
+        
+        <p class="widget-description mb-4">Schnelle Referenzen und Befehle</p>
+
+        <div class="widget-scroll-container flex-1">
+          <div class="widget-scroll-content space-y-2">
+            <div class="widget-list-item text-center task-meta py-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Cheat-Sheets verfügbar.
+              <button onclick="window.location.href='cheat.php'" 
+                      class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
+                Cheat-Sheets anzeigen
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
     </div><!-- /grid -->
   </main>
   
