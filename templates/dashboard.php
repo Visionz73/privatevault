@@ -263,7 +263,13 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <?php require_once __DIR__.'/navbar.php'; ?>
+  <?php
+  // sicherstellen, dass Session, User und $pdo zur Verfügung stehen
+  require_once __DIR__.'/../src/lib/auth.php';
+  requireLogin();
+  require_once __DIR__.'/../src/lib/db.php';
+
+  require_once __DIR__.'/navbar.php'; ?>
 
   <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
   <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
@@ -287,11 +293,17 @@
       Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
       <?= htmlspecialchars($user['first_name']??$user['username']) ?>
     </h1>
+<<<<<<< HEAD
 
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
+=======
+>>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
 
-      <!-- Enhanced Inbox Widget - Now same size as other widgets -->
+    <!-- Grid ------------------------------------------------------------->
+    <div class="grid gap-6 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
+
+      <!-- Enhanced Inbox Widget -->
       <article class="widget-card p-6 flex flex-col">
         <div class="flex justify-between items-center mb-4">
           <a href="inbox.php" class="group inline-flex items-center widget-header">
@@ -401,33 +413,12 @@
       </article>
 
       <!-- Dokumente Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <a href="profile.php?tab=documents" class="group inline-flex items-center mb-4 widget-header">
-          <h2 class="mr-1">Dokumente</h2>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-        <p class="widget-description mb-4"><?= $docCount ?> Dateien</p>
+      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
 
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
-            <?php if(!empty($docs)): ?>
-              <?php foreach($docs as $idx=>$d): ?>
-                <div class="widget-list-item">
-                  <span class="truncate block task-title"><?= htmlspecialchars($d['title'] ?? '') ?></span>
-                  <div class="text-xs text-white/50 mt-1">
-                    <?= date('d.m.Y', strtotime($d['upload_date'])) ?>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine Dokumente vorhanden.</div>
-            <?php endif; ?>
-          </div>
-        </div>
-      </article>
+      <!-- Calendar Widget -->
+      <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
 
+<<<<<<< HEAD
       <!-- Meine Termine Widget -->
       <article class="widget-card p-6 flex flex-col">
         <div class="flex items-center justify-between mb-4">
@@ -478,6 +469,11 @@
           <?= $name ?>-Widget
         </article>
       <?php endforeach; ?>
+=======
+      <!-- HaveToPay Widget -->
+      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+
+>>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
     </div><!-- /grid -->
   </main>
   
@@ -533,6 +529,11 @@
       
       // Initialize scroll indicators
       initScrollIndicators();
+      
+      // Document upload handler
+      window.openDocumentUpload = function() {
+        window.location.href = 'profile.php?tab=documents#upload';
+      };
     });
     
     // Toggle inline event creation form
