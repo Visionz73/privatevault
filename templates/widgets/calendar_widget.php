@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 require_once __DIR__.'/../../src/lib/auth.php';
 requireLogin();
@@ -118,4 +116,3 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     </div>
   </div>
 </article>
->>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff

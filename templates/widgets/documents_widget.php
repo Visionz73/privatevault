@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 require_once __DIR__.'/../../src/lib/auth.php';
 requireLogin();
@@ -45,38 +43,28 @@ $docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     <div class="widget-scroll-content space-y-2">
       <?php if (!empty($recentDocuments)): ?>
         <?php foreach ($recentDocuments as $doc): ?>
-          <div class="widget-list-item flex items-center gap-3">
-            <!-- File type icon -->
-            <div class="flex-shrink-0">
-              <?php
-              $extension = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION));
-              $iconClass = match($extension) {
-                'pdf' => 'text-red-400',
-                'doc', 'docx' => 'text-blue-400',
-                'xls', 'xlsx' => 'text-green-400',
-                'jpg', 'jpeg', 'png', 'gif' => 'text-purple-400',
-                default => 'text-gray-400'
-              };
-              ?>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <?= $iconClass ?>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-            </div>
-            
-            <div class="flex-1 min-w-0">
-              <div class="task-title text-sm truncate">
-                <?= htmlspecialchars($doc['filename']) ?>
-              </div>
-              <div class="task-meta text-xs flex gap-2">
+          <div class="widget-list-item" onclick="window.open('download.php?id=<?= $doc['id'] ?>', '_blank')">
+            <div class="flex justify-between items-start">
+              <div class="flex-1 min-w-0">
+                <div class="task-title text-sm truncate">
+                  <?= htmlspecialchars($doc['filename']) ?>
+                </div>
                 <?php if (!empty($doc['category'])): ?>
-                  <span class="group-badge px-1 py-0.5 rounded-full">
-                    <?= htmlspecialchars($doc['category']) ?>
-                  </span>
+                  <div class="task-description text-xs truncate">
+                    Kategorie: <?= htmlspecialchars($doc['category']) ?>
+                  </div>
                 <?php endif; ?>
-                <span><?= date('d.m.Y', strtotime($doc['upload_date'])) ?></span>
-                <?php if (!empty($doc['file_size'])): ?>
-                  <span><?= round($doc['file_size'] / 1024, 1) ?> KB</span>
-                <?php endif; ?>
+                <div class="task-meta text-xs">
+                  <span><?= formatFileSize($doc['file_size']) ?></span>
+                </div>
+              </div>
+              <div class="flex-shrink-0 text-right">
+                <div class="text-xs font-medium text-blue-400">
+                  <?= date('d.m.', strtotime($doc['upload_date'])) ?>
+                </div>
+                <span class="status-badge bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs">
+                  <?= strtoupper(pathinfo($doc['filename'], PATHINFO_EXTENSION)) ?>
+                </span>
               </div>
             </div>
           </div>
@@ -86,8 +74,9 @@ $docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Keine Dokumente vorhanden.
-          <button onclick="openDocumentUpload()" class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
+          Keine Dokumente gefunden.
+          <button onclick="openDocumentUpload()" 
+                  class="block mx-auto mt-2 text-blue-400 hover:text-blue-300 text-xs">
             Erstes Dokument hochladen
           </button>
         </div>
@@ -95,4 +84,18 @@ $docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     </div>
   </div>
 </article>
->>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
+
+<?php
+// Helper function for file size formatting
+if (!function_exists('formatFileSize')) {
+    function formatFileSize($bytes, $precision = 2) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, $precision) . ' ' . $units[$i];
+    }
+}
+?>

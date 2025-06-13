@@ -293,12 +293,6 @@
       Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
       <?= htmlspecialchars($user['first_name']??$user['username']) ?>
     </h1>
-<<<<<<< HEAD
-
-    <!-- Grid ------------------------------------------------------------->
-    <div class="grid gap-8 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
-=======
->>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
 
     <!-- Grid ------------------------------------------------------------->
     <div class="grid gap-6 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
@@ -418,62 +412,9 @@
       <!-- Calendar Widget -->
       <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
 
-<<<<<<< HEAD
-      <!-- Meine Termine Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-          <a href="calendar.php" class="inline-flex items-center widget-header">
-            Meine Termine
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-          <button id="showInlineEventForm" class="widget-button">
-            +
-          </button>
-        </div>
-        <p class="widget-description mb-4"><?= count($events) ?> Termine</p>
-        <!-- Inline event creation form (initially hidden) -->
-        <div id="inlineEventFormContainer" class="mb-4 hidden">
-          <form id="inlineEventForm" class="space-y-2 widget-form">
-            <input type="text" name="title" placeholder="Event Titel" required>
-            <input type="date" name="date" required>
-            <button type="submit" class="w-full widget-button">
-              Termin erstellen
-            </button>
-          </form>
-        </div>
-        
-        <div class="widget-scroll-container flex-1">
-          <div id="dashboardEventList" class="widget-scroll-content space-y-2">
-            <?php if(!empty($events)): ?>
-              <?php foreach($events as $evt): ?>
-                <div class="widget-list-item flex justify-between items-center">
-                  <a href="calendar.php" class="truncate pr-2 flex-1 task-title"><?= htmlspecialchars($evt['title']) ?></a>
-                  <span class="task-meta text-xs"><?= date('d.m.Y', strtotime($evt['event_date'])) ?></span>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine Termine gefunden.</div>
-            <?php endif; ?>
-          </div>
-        </div>
-      </article>
-
-      <!-- HaveToPay Widget - Now placed next to calendar widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
-
-      <!-- Placeholder Cards --------------------------------------------->
-      <?php foreach(['Recruiting','Abwesenheit','Org-Chart','Events'] as $name): ?>
-        <article class="placeholder-widget">
-          <?= $name ?>-Widget
-        </article>
-      <?php endforeach; ?>
-=======
       <!-- HaveToPay Widget -->
       <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
 
->>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
     </div><!-- /grid -->
   </main>
   
@@ -537,46 +478,52 @@
     });
     
     // Toggle inline event creation form
-    document.getElementById('showInlineEventForm').addEventListener('click', function() {
-      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-    });
+    const showInlineEventFormBtn = document.getElementById('showInlineEventForm');
+    if (showInlineEventFormBtn) {
+      showInlineEventFormBtn.addEventListener('click', function() {
+        document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+      });
+    }
 
     // Handle inline event form submission via AJAX
-    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const title = this.title.value.trim();
-      const date = this.date.value;
-      if(title && date){
-        fetch('/create_event.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ title: title, date: date })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            // Create new list element for the event
-            const newEvent = data.event;
-            const li = document.createElement('div');
-            li.className = "widget-list-item flex justify-between items-center";
-            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
-                             <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-            const eventList = document.getElementById('dashboardEventList');
-            
-            // If "Keine Termine gefunden." is present, remove it.
-            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-              eventList.innerHTML = '';
+    const inlineEventForm = document.getElementById('inlineEventForm');
+    if (inlineEventForm) {
+      inlineEventForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = this.title.value.trim();
+        const date = this.date.value;
+        if(title && date){
+          fetch('/create_event.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ title: title, date: date })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if(data.success){
+              // Create new list element for the event
+              const newEvent = data.event;
+              const li = document.createElement('div');
+              li.className = "widget-list-item flex justify-between items-center";
+              li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
+                               <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
+              const eventList = document.getElementById('dashboardEventList');
+              
+              // If "Keine Termine gefunden." is present, remove it.
+              if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
+                eventList.innerHTML = '';
+              }
+              eventList.prepend(li); // Add to top
+              this.reset();
+              document.getElementById('inlineEventFormContainer').classList.add('hidden');
+            } else {
+              alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
             }
-            eventList.prepend(li); // Add to top
-            this.reset();
-            document.getElementById('inlineEventFormContainer').classList.add('hidden');
-          } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-          }
-        })
-        .catch(() => alert('Fehler beim Erstellen des Termins.'));
-      }
-    });
+          })
+          .catch(() => alert('Fehler beim Erstellen des Termins.'));
+        }
+      });
+    }
   </script>
 </body>
 </html>
