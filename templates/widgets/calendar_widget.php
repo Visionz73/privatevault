@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 require_once __DIR__.'/../../src/lib/auth.php';
 requireLogin();
@@ -118,4 +116,35 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     </div>
   </div>
 </article>
->>>>>>> 4486856ffb8252c5928d33f9a44226de3f9130ff
+
+<script>
+// Toggle inline event creation form
+document.getElementById('showInlineEventForm').addEventListener('click', function() {
+  document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
+});
+
+// Handle inline event form submission
+document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const title = this.title.value.trim();
+  const date = this.date.value;
+  
+  if(title && date){
+    fetch('/src/api/create_event.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ title: title, date: date })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success){
+        // Reload page to show new event
+        window.location.reload();
+      } else {
+        alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
+      }
+    })
+    .catch(() => alert('Fehler beim Erstellen des Termins.'));
+  }
+});
+</script>
