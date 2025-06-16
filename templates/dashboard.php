@@ -3,520 +3,548 @@
 <html lang="de" class="h-full">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { 
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 100%);
       min-height: 100vh;
     }
-    /* On mobile, add a top margin to main to push content below the fixed mobile navbar */
     @media (max-width: 768px) {
-      main { margin-top: 3.5rem; }
+      main { margin-top: 4rem; }
     }
 
-    /* Dark theme widget styling */
-    .widget-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      color: white;
-      transition: all 0.3s ease;
-    }
-    .widget-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Enhanced scrollable widget containers */
-    .widget-scroll-container {
+    /* Dashboard Shorts - Modern Card System */
+    .dashboard-short {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
       position: relative;
       overflow: hidden;
-      max-height: 280px; /* Approximately 4 items */
     }
-    
-    .widget-scroll-content {
-      overflow-y: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* Internet Explorer/Edge */
-      max-height: 280px;
-      padding-right: 4px; /* Space for hover scroll indicator */
-    }
-    
-    .widget-scroll-content::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
-    }
-    
-    /* Hover scroll indicator */
-    .widget-scroll-container:hover .widget-scroll-content {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-    }
-    
-    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar {
-      display: block;
-      width: 4px;
-    }
-    
-    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
-    }
-    
-    .widget-scroll-container:hover .widget-scroll-content::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-    
-    /* Gradient fade effect at bottom when scrollable */
-    .widget-scroll-container::after {
+    .dashboard-short::before {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 20px;
-      background: linear-gradient(transparent, rgba(255, 255, 255, 0.08));
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
     }
-    
-    .widget-scroll-container.has-scroll::after {
-      opacity: 1;
-    }
-
-    /* Widget headers */
-    .widget-header {
-      color: white;
-      font-weight: 600;
-      font-size: 1.125rem;
-    }
-    .widget-header a {
-      color: white !important;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-    .widget-header a:hover {
-      color: rgba(255, 255, 255, 0.8) !important;
-    }
-    .widget-header svg {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Widget content */
-    .widget-description {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.875rem;
-    }
-
-    /* List items in widgets */
-    .widget-list-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.75rem;
-      padding: 0.75rem;
-      margin-bottom: 0.5rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    .widget-list-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(3px);
-    }
-    .widget-list-item:nth-child(even) {
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .widget-list-item:nth-child(even):hover {
+    .dashboard-short:hover {
       background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    .dashboard-short:hover::before {
+      left: 100%;
     }
 
-    /* Task list specific styling */
-    .task-title {
+    /* Short Header Styling */
+    .short-header {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Icon Gradients */
+    .icon-gradient-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .icon-gradient-green { background: linear-gradient(135deg, #10b981, #047857); }
+    .icon-gradient-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .icon-gradient-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .icon-gradient-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .icon-gradient-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+
+    /* Stats Numbers */
+    .stats-number {
+      background: linear-gradient(135deg, #ffffff, #e5e7eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Quick Action Buttons */
+    .quick-action-btn {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-size: 0.875rem;
       font-weight: 500;
     }
-    .task-description {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.875rem;
-    }
-    .task-meta {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.75rem;
-    }
-    .task-meta .font-medium {
-      color: rgba(255, 255, 255, 0.7);
+    .quick-action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
-    /* Status badges */
-    .status-overdue {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .status-due {
-      background: rgba(156, 163, 175, 0.2);
-      color: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(156, 163, 175, 0.3);
-    }
-    .group-badge {
-      background: rgba(147, 51, 234, 0.2);
-      color: #c4b5fd;
-      border: 1px solid rgba(147, 51, 234, 0.3);
-    }
-
-    /* Buttons and controls */
-    .widget-button {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
+    /* List Items in Shorts */
+    .short-list-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
       transition: all 0.3s ease;
       cursor: pointer;
     }
-    .widget-button:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Dropdown menus */
-    .dropdown-menu {
+    .short-list-item:hover {
       background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 0.75rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(4px);
     }
-    .dropdown-item {
-      color: rgba(255, 255, 255, 0.9);
-      padding: 0.75rem 1rem;
-      transition: all 0.3s ease;
+
+    /* Scrollable Areas */
+    .short-scroll {
+      max-height: 320px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     }
-    .dropdown-item:hover {
+    .short-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .short-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .short-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    /* Progress Bars */
+    .progress-bar {
       background: rgba(255, 255, 255, 0.1);
-      color: white;
+      border-radius: 8px;
+      overflow: hidden;
     }
-    .dropdown-item.active {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-    }
-
-    /* Forms in widgets */
-    .widget-form input, .widget-form select, .widget-form textarea {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.5rem;
-      color: white;
-      padding: 0.75rem;
-    }
-    .widget-form input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-    .widget-form input:focus, .widget-form select:focus, .widget-form textarea:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      outline: none;
+    .progress-fill {
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      height: 8px;
+      border-radius: 8px;
+      transition: width 0.5s ease;
     }
 
-    /* Modal dark theme */
-    .modal-content {
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .modal-header {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Greeting text */
+    /* Greeting */
     .greeting-text {
-      color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    /* Placeholder widgets */
-    .placeholder-widget {
-      background: rgba(255, 255, 255, 0.05);
+    /* Badge Styles */
+    .status-badge {
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1.5rem;
-      color: rgba(255, 255, 255, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      font-size: 0.875rem;
     }
+    .badge-pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+    .badge-completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-overdue { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen">
+  <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <?php
-  // sicherstellen, dass Session, User und $pdo zur Verfügung stehen
-  require_once __DIR__.'/../src/lib/auth.php';
-  requireLogin();
-  require_once __DIR__.'/../src/lib/db.php';
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 space-y-8">
+    <!-- Dynamic Greeting -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-6xl font-bold greeting-text mb-4">
+        <?php
+        $hour = date('H');
+        $greeting = $hour < 12 ? 'Guten Morgen' : ($hour < 18 ? 'Guten Tag' : 'Guten Abend');
+        echo $greeting;
+        ?>,
+        <?= htmlspecialchars($user['first_name'] ?? $user['username']) ?>
+      </h1>
+      <p class="text-xl text-white/70">
+        <?= date('l, d. F Y') ?> • Willkommen in deinem Dashboard
+      </p>
+    </div>
 
-  require_once __DIR__.'/navbar.php'; ?>
-
-  <!-- Use responsive margin: on small screens, remove left margin so content fills the screen -->
-  <!-- Adjust main margin: on mobile use top margin to push content below the fixed top navbar; on desktop use left margin -->
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-8 space-y-10">
-
-    <!-- Greeting --------------------------------------------------------->
-    <?php
-    if (class_exists('IntlDateFormatter')) {
-        $formatter = new IntlDateFormatter(
-            'de_DE',
-            IntlDateFormatter::FULL,
-            IntlDateFormatter::NONE
-        );
-        $formattedDate = $formatter->format(new DateTime());
-    } else {
-        $formattedDate = date('l, d. F'); // Fallback using date()
-    }
-    ?>
-    <h1 class="text-3xl font-bold greeting-text leading-tight">
-      <?= $formattedDate ?><br>
-      Guten <?= date('H')<12?'Morgen':(date('H')<18?'Tag':'Abend') ?>,
-      <?= htmlspecialchars($user['first_name']??$user['username']) ?>
-    </h1>
-
-    <!-- Grid ------------------------------------------------------------->
-    <div class="grid gap-6 auto-rows-min" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
-
-      <!-- Enhanced Inbox Widget -->
-      <article class="widget-card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <a href="inbox.php" class="group inline-flex items-center widget-header">
-            <h2 class="mr-1">Inbox</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-          
-          <!-- Group Filter Dropdown -->
-          <div class="relative">
-            <button id="groupFilterBtn" class="widget-button text-sm flex items-center">
-              <?php if ($filterType === 'mine'): ?>
-                Meine Aufgaben
-              <?php else: ?>
-                <?php 
-                $groupName = "Gruppe";
-                foreach ($userGroups as $g) {
-                  if ($g['id'] == $filterGroupId) {
-                    $groupName = $g['name'];
-                    break;
-                  }
-                }
-                ?>
-                Gruppe: <?= htmlspecialchars($groupName) ?>
-              <?php endif; ?>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-            <div id="groupFilterMenu" class="absolute right-0 mt-2 w-56 dropdown-menu hidden z-20">
-              <a href="?filter=mine" class="block dropdown-item <?= $filterType==='mine' ? 'active' : '' ?>">
-                Meine Aufgaben
-              </a>
-              <?php if (!empty($userGroups)): ?>
-                <div class="border-t border-white/10 my-1"></div>
-                <?php foreach($userGroups as $g): ?>
-                  <a href="?filter=group&group_id=<?= $g['id'] ?>" 
-                     class="block dropdown-item <?= ($filterType==='group' && $filterGroupId==$g['id']) ? 'active' : '' ?>">
-                    <?= htmlspecialchars($g['name']) ?>
-                  </a>
-                <?php endforeach; ?>
-              <?php endif; ?>
+    <!-- Dashboard Shorts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+      
+      <!-- Tasks Short -->
+      <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
+        <div class="short-header p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-blue p-3 rounded-xl">
+              <i class="fas fa-tasks text-white text-xl"></i>
             </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Aufgaben</h3>
+              <p class="text-white/60 text-sm">Deine offenen To-Dos</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="stats-number text-3xl"><?= $openTaskCount ?></div>
+            <div class="text-white/60 text-sm">offen</div>
           </div>
         </div>
         
-        <p class="widget-description mb-4"><?= $openTaskCount ?> abschließende Elemente</p>
-
-        <div class="widget-scroll-container flex-1">
-          <div class="widget-scroll-content space-y-2">
+        <div class="p-6">
+          <div class="short-scroll space-y-3">
             <?php if (!empty($tasks)): ?>
-              <?php foreach($tasks as $idx => $t): ?>
-                <div class="widget-list-item flex flex-col gap-2"
-                     onclick="window.location.href='task_detail.php?id=<?= $t['id'] ?>'">
-                  <!-- Title and Due Date with Budget -->
-                  <div class="flex justify-between items-center">
-                    <span class="task-title truncate"><?= htmlspecialchars($t['title']) ?></span>
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                      <?php if (!empty($t['estimated_budget'])): ?>
-                        <span class="bg-green-100 text-green-800 px-1 py-0.5 rounded-full text-xs">
-                          €<?= number_format($t['estimated_budget'], 0) ?>
-                        </span>
-                      <?php endif; ?>
-                      <?php if (!empty($t['estimated_hours'])): ?>
-                        <span class="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs">
-                          <?= $t['estimated_hours'] ?>h
-                        </span>
-                      <?php endif; ?>
-                      <?php if(isset($t['due_date']) && $t['due_date']): $over = strtotime($t['due_date']) < time(); ?>
-                        <span class="<?= $over ? 'status-overdue' : 'status-due' ?> px-1 py-0.5 rounded-full text-xs whitespace-nowrap">
-                          <?= $over ? 'Überfällig' : date('d.m.', strtotime($t['due_date'])) ?>
-                        </span>
-                      <?php endif; ?>
-                    </div>
+              <?php foreach(array_slice($tasks, 0, 5) as $task): ?>
+                <div class="short-list-item p-4" onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-white font-medium text-sm truncate flex-1"><?= htmlspecialchars($task['title']) ?></h4>
+                    <?php if(isset($task['due_date']) && $task['due_date']): ?>
+                      <span class="status-badge <?= strtotime($task['due_date']) < time() ? 'badge-overdue' : 'badge-pending' ?> ml-2">
+                        <?= date('d.m.', strtotime($task['due_date'])) ?>
+                      </span>
+                    <?php endif; ?>
                   </div>
-                  
-                  <!-- Description (short) -->
-                  <?php if(!empty($t['description'])): ?>
-                    <p class="task-description line-clamp-1 text-xs"><?= htmlspecialchars(mb_strimwidth($t['description'], 0, 60, "...")) ?></p>
+                  <?php if(!empty($task['description'])): ?>
+                    <p class="text-white/60 text-xs truncate"><?= htmlspecialchars($task['description']) ?></p>
                   <?php endif; ?>
-                  
-                  <!-- Creator and Assignee Info -->
-                  <div class="flex gap-2 task-meta text-xs">
-                    <span class="truncate">
-                      <span class="font-medium">Von:</span> 
-                      <?= htmlspecialchars($t['creator_name'] ?? 'Unbekannt') ?>
-                    </span>
-                    <span class="truncate">
-                      <span class="font-medium">Für:</span> 
-                      <?php if ($t['assigned_group_id']): ?>
-                        <span class="group-badge px-1 py-0.5 rounded-full">
-                          <?= htmlspecialchars($t['group_name'] ?? 'Unbekannt') ?>
-                        </span>
-                      <?php else: ?>
-                        <?= htmlspecialchars($t['assignee_name'] ?? 'Nicht zugewiesen') ?>
-                      <?php endif; ?>
-                    </span>
+                  <div class="flex justify-between text-xs text-white/50 mt-2">
+                    <span>Von: <?= htmlspecialchars($task['creator_name'] ?? 'Unbekannt') ?></span>
+                    <span><?= $task['assigned_group_id'] ? 'Gruppe' : 'Persönlich' ?></span>
                   </div>
                 </div>
               <?php endforeach; ?>
             <?php else: ?>
-              <div class="widget-list-item text-center task-meta py-4">Keine offenen Aufgaben.</div>
+              <div class="text-center py-8">
+                <i class="fas fa-check-circle text-white/30 text-3xl mb-3"></i>
+                <p class="text-white/60">Keine offenen Aufgaben</p>
+              </div>
             <?php endif; ?>
           </div>
+          
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button onclick="window.location.href='inbox.php'" class="quick-action-btn px-4 py-2">
+              <i class="fas fa-inbox mr-2"></i>Inbox
+            </button>
+            <button onclick="window.location.href='create_task.php'" class="quick-action-btn px-4 py-2">
+              <i class="fas fa-plus mr-2"></i>Neue Aufgabe
+            </button>
+          </div>
         </div>
-      </article>
+      </div>
 
-      <!-- Dokumente Widget -->
-      <?php include __DIR__.'/widgets/documents_widget.php'; ?>
+      <!-- Calendar Short -->
+      <div class="dashboard-short">
+        <div class="short-header p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-purple p-3 rounded-xl">
+              <i class="fas fa-calendar-alt text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Kalender</h3>
+              <p class="text-white/60 text-sm">Kommende Termine</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="stats-number text-3xl"><?= count($upcomingEvents ?? []) ?></div>
+            <div class="text-white/60 text-sm">heute</div>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <div class="short-scroll space-y-3">
+            <?php if (!empty($upcomingEvents)): ?>
+              <?php foreach(array_slice($upcomingEvents, 0, 4) as $event): ?>
+                <div class="short-list-item p-4" onclick="window.location.href='calendar.php'">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-white font-medium text-sm truncate flex-1"><?= htmlspecialchars($event['title']) ?></h4>
+                    <span class="text-blue-400 text-xs ml-2"><?= date('H:i', strtotime($event['event_date'])) ?></span>
+                  </div>
+                  <?php if(!empty($event['description'])): ?>
+                    <p class="text-white/60 text-xs truncate"><?= htmlspecialchars($event['description']) ?></p>
+                  <?php endif; ?>
+                  <div class="text-xs text-white/50 mt-2">
+                    <span><?= date('d.m.Y', strtotime($event['event_date'])) ?></span>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center py-6">
+                <i class="fas fa-calendar-plus text-white/30 text-3xl mb-3"></i>
+                <p class="text-white/60 text-sm">Keine Termine geplant</p>
+              </div>
+            <?php endif; ?>
+          </div>
+          
+          <div class="mt-6">
+            <button onclick="window.location.href='calendar.php'" class="quick-action-btn w-full px-4 py-2">
+              <i class="fas fa-calendar-plus mr-2"></i>Neuer Termin
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <!-- Calendar Widget -->
-      <?php include __DIR__.'/widgets/calendar_widget.php'; ?>
+      <!-- Documents Short -->
+      <div class="dashboard-short">
+        <div class="short-header p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-green p-3 rounded-xl">
+              <i class="fas fa-file-alt text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Dokumente</h3>
+              <p class="text-white/60 text-sm">Deine Dateien</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="stats-number text-3xl"><?= $docCount ?></div>
+            <div class="text-white/60 text-sm">gesamt</div>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <div class="short-scroll space-y-3">
+            <?php if (!empty($recentDocuments)): ?>
+              <?php foreach(array_slice($recentDocuments, 0, 4) as $doc): ?>
+                <div class="short-list-item p-4" onclick="window.location.href='profile.php?tab=documents'">
+                  <div class="flex items-center space-x-3">
+                    <div class="icon-gradient-green p-2 rounded-lg">
+                      <i class="fas fa-file text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($doc['filename']) ?></h4>
+                      <p class="text-white/60 text-xs"><?= date('d.m.Y', strtotime($doc['upload_date'])) ?></p>
+                    </div>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center py-6">
+                <i class="fas fa-cloud-upload-alt text-white/30 text-3xl mb-3"></i>
+                <p class="text-white/60 text-sm">Keine Dokumente hochgeladen</p>
+              </div>
+            <?php endif; ?>
+          </div>
+          
+          <div class="mt-6">
+            <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn w-full px-4 py-2">
+              <i class="fas fa-upload mr-2"></i>Hochladen
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <!-- HaveToPay Widget -->
-      <?php include __DIR__.'/widgets/havetopay_widget.php'; ?>
+      <!-- HaveToPay Short -->
+      <div class="dashboard-short">
+        <div class="short-header p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-orange p-3 rounded-xl">
+              <i class="fas fa-euro-sign text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Finanzen</h3>
+              <p class="text-white/60 text-sm">Ausgaben & Schulden</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="stats-number text-3xl <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+              <?= number_format($widgetNetBalance, 0) ?>€
+            </div>
+            <div class="text-white/60 text-sm">Bilanz</div>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="text-center p-3 bg-green-500/10 border border-green-400/20 rounded-xl">
+              <div class="text-green-400 font-bold text-lg">+<?= number_format($widgetTotalOwed, 0) ?>€</div>
+              <div class="text-white/60 text-xs">Du bekommst</div>
+            </div>
+            <div class="text-center p-3 bg-red-500/10 border border-red-400/20 rounded-xl">
+              <div class="text-red-400 font-bold text-lg">-<?= number_format($widgetTotalOwing, 0) ?>€</div>
+              <div class="text-white/60 text-xs">Du schuldest</div>
+            </div>
+          </div>
+          
+          <div class="short-scroll space-y-2">
+            <?php if (!empty($recentExpenses)): ?>
+              <?php foreach(array_slice($recentExpenses, 0, 3) as $expense): ?>
+                <div class="short-list-item p-3" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
+                  <div class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($expense['title']) ?></h4>
+                      <p class="text-white/60 text-xs">€<?= number_format($expense['amount'], 2) ?></p>
+                    </div>
+                    <span class="status-badge badge-pending"><?= date('d.m.', strtotime($expense['expense_date'])) ?></span>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center py-4">
+                <i class="fas fa-coins text-white/30 text-2xl mb-2"></i>
+                <p class="text-white/60 text-sm">Keine Ausgaben</p>
+              </div>
+            <?php endif; ?>
+          </div>
+          
+          <div class="mt-6">
+            <button onclick="window.location.href='havetopay.php'" class="quick-action-btn w-full px-4 py-2">
+              <i class="fas fa-plus mr-2"></i>Ausgabe hinzufügen
+            </button>
+          </div>
+        </div>
+      </div>
 
-    </div><!-- /grid -->
+      <!-- System Stats Short -->
+      <div class="dashboard-short">
+        <div class="short-header p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-pink p-3 rounded-xl">
+              <i class="fas fa-chart-bar text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Statistiken</h3>
+              <p class="text-white/60 text-sm">Übersicht</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-white/80 text-sm">Aufgaben erledigt</span>
+            <span class="text-white font-semibold"><?= $completedTasksCount ?? 0 ?></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: <?= min(100, ($completedTasksCount ?? 0) * 10) ?>%"></div>
+          </div>
+          
+          <div class="flex justify-between items-center">
+            <span class="text-white/80 text-sm">Dokumente</span>
+            <span class="text-white font-semibold"><?= $docCount ?></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-gradient-to-r from-green-500 to-green-400" style="width: <?= min(100, $docCount * 5) ?>%"></div>
+          </div>
+          
+          <div class="flex justify-between items-center">
+            <span class="text-white/80 text-sm">Termine</span>
+            <span class="text-white font-semibold"><?= count($upcomingEvents ?? []) ?></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width: <?= min(100, count($upcomingEvents ?? []) * 20) ?>%"></div>
+          </div>
+          
+          <div class="mt-6">
+            <button onclick="window.location.href='profile.php'" class="quick-action-btn w-full px-4 py-2">
+              <i class="fas fa-user mr-2"></i>Profil
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Short -->
+      <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
+        <div class="short-header p-6">
+          <div class="flex items-center space-x-4">
+            <div class="icon-gradient-red p-3 rounded-xl">
+              <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold text-lg">Schnellaktionen</h3>
+              <p class="text-white/60 text-sm">Häufige Funktionen</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <button onclick="window.location.href='create_task.php'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-plus text-2xl mb-2"></i>
+              <div class="text-sm">Neue Aufgabe</div>
+            </button>
+            <button onclick="window.location.href='calendar.php'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-calendar-plus text-2xl mb-2"></i>
+              <div class="text-sm">Termin</div>
+            </button>
+            <button onclick="window.location.href='havetopay_add.php'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-receipt text-2xl mb-2"></i>
+              <div class="text-sm">Ausgabe</div>
+            </button>
+            <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-upload text-2xl mb-2"></i>
+              <div class="text-sm">Upload</div>
+            </button>
+            <button onclick="window.location.href='taskboard.php'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-tasks text-2xl mb-2"></i>
+              <div class="text-sm">Kanban</div>
+            </button>
+            <button onclick="window.location.href='admin/groups.php'" class="quick-action-btn p-4 text-center">
+              <i class="fas fa-users text-2xl mb-2"></i>
+              <div class="text-sm">Gruppen</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dashboard-short mt-8">
+      <div class="short-header p-6">
+        <div class="flex items-center space-x-4">
+          <div class="icon-gradient-blue p-3 rounded-xl">
+            <i class="fas fa-history text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-white font-semibold text-lg">Letzte Aktivität</h3>
+            <p class="text-white/60 text-sm">Was ist passiert</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div class="short-scroll space-y-3 max-h-48">
+          <div class="short-list-item p-4">
+            <div class="flex items-center space-x-3">
+              <div class="icon-gradient-green p-2 rounded-full w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-check text-white text-xs"></i>
+              </div>
+              <div>
+                <p class="text-white text-sm">Dashboard wurde geladen</p>
+                <p class="text-white/60 text-xs">vor wenigen Sekunden</p>
+              </div>
+            </div>
+          </div>
+          <!-- Add more activities dynamically here -->
+        </div>
+      </div>
+    </div>
+
   </main>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Group filter dropdown
-      const groupFilterBtn = document.getElementById('groupFilterBtn');
-      const groupFilterMenu = document.getElementById('groupFilterMenu');
-      
-      if (groupFilterBtn && groupFilterMenu) {
-        groupFilterBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          groupFilterMenu.classList.toggle('hidden');
-        });
-        
-        document.addEventListener('click', () => {
-          groupFilterMenu.classList.add('hidden');
-        });
-      }
+      // Animate cards on load
+      const cards = document.querySelectorAll('.dashboard-short');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
 
-      // Initialize scroll indicators for widgets
-      function initScrollIndicators() {
-        const scrollContainers = document.querySelectorAll('.widget-scroll-container');
-        
-        scrollContainers.forEach(container => {
-          const content = container.querySelector('.widget-scroll-content');
-          if (content) {
-            function checkScroll() {
-              if (content.scrollHeight > content.clientHeight) {
-                container.classList.add('has-scroll');
-              } else {
-                container.classList.remove('has-scroll');
-              }
-            }
-            
-            // Check initially
-            checkScroll();
-            
-            // Check on resize
-            window.addEventListener('resize', checkScroll);
-            
-            // Smooth scrolling on wheel
-            content.addEventListener('wheel', (e) => {
-              e.preventDefault();
-              content.scrollBy({
-                top: e.deltaY * 0.5,
-                behavior: 'smooth'
-              });
-            });
-          }
-        });
-      }
-      
-      // Initialize scroll indicators
-      initScrollIndicators();
-      
-      // Document upload handler
-      window.openDocumentUpload = function() {
-        window.location.href = 'profile.php?tab=documents#upload';
-      };
-    });
-    
-    // Toggle inline event creation form
-    document.getElementById('showInlineEventForm').addEventListener('click', function() {
-      document.getElementById('inlineEventFormContainer').classList.toggle('hidden');
-    });
-
-    // Handle inline event form submission via AJAX
-    document.getElementById('inlineEventForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const title = this.title.value.trim();
-      const date = this.date.value;
-      if(title && date){
-        fetch('/create_event.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ title: title, date: date })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            // Create new list element for the event
-            const newEvent = data.event;
-            const li = document.createElement('div');
-            li.className = "widget-list-item flex justify-between items-center";
-            li.innerHTML = `<a href="calendar.php" class="truncate pr-2 flex-1 task-title">${newEvent.title}</a>
-                             <span class="task-meta text-xs">${new Date(newEvent.date).toLocaleDateString('de-DE')}</span>`;
-            const eventList = document.getElementById('dashboardEventList');
-            
-            // If "Keine Termine gefunden." is present, remove it.
-            if(eventList.childElementCount === 1 && eventList.firstElementChild.textContent.includes('Keine Termine')) {
-              eventList.innerHTML = '';
-            }
-            eventList.prepend(li); // Add to top
-            this.reset();
-            document.getElementById('inlineEventFormContainer').classList.add('hidden');
-          } else {
-            alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
-          }
-        })
-        .catch(() => alert('Fehler beim Erstellen des Termins.'));
-      }
+      // Auto-refresh stats every 30 seconds
+      setInterval(() => {
+        // You can add AJAX calls here to refresh data without page reload
+        console.log('Auto-refreshing dashboard data...');
+      }, 30000);
     });
   </script>
 </body>

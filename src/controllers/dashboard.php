@@ -4,7 +4,6 @@ require_once __DIR__.'/../lib/auth.php';
 requireLogin();
 $userId = $_SESSION['user_id'];
 
-// 2) DB-Verbindung
 require_once __DIR__.'/../lib/db.php';
 
 // Gruppen des Benutzers laden
@@ -101,6 +100,35 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Load HaveToPay widget data
 require_once __DIR__.'/widgets/havetopay_widget.php';
+
+// Get upcoming events for calendar short
+$stmt = $pdo->prepare("
+    SELECT e.*, u.username AS creator_name
+    FROM events e
+    LEFT JOIN users u ON u.id = e.created_by
+    WHERE (e.assigned_to = ? OR e.created_by = ?)
+    AND e.event_date >= CURDATE()
+    ORDER BY e.event_date ASC
+    LIMIT 5
+");
+$stmt->execute([$userId, $userId]);
+$upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get recent documents for documents short
+$stmt = $pdo->prepare("
+    SELECT id, filename, file_size, upload_date, category
+    FROM documents 
+    WHERE user_id = ? 
+    ORDER BY upload_date DESC 
+    LIMIT 5
+");
+$stmt->execute([$userId]);
+$recentDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get completed tasks count for stats
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND is_done = 1");
+$stmt->execute([$userId]);
+$completedTasksCount = $stmt->fetchColumn();
 
 // 8) Template rendern
 require_once __DIR__.'/../../templates/dashboard.php';
