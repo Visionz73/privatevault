@@ -11,19 +11,20 @@
   <style>
     body { 
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 100%);
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
     }
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
     }
 
-    /* Dashboard Shorts - Modern Card System */
+    /* Dashboard Shorts - Konsistentes dunkles Glassmorphism */
     .dashboard-short {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
       position: relative;
       overflow: hidden;
@@ -39,46 +40,72 @@
       transition: left 0.5s;
     }
     .dashboard-short:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
     .dashboard-short:hover::before {
       left: 100%;
     }
 
-    /* Short Header Styling */
+    /* Short Header Styling - Dunkles Theme */
     .short-header {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
     }
 
-    /* Icon Gradients */
-    .icon-gradient-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-    .icon-gradient-green { background: linear-gradient(135deg, #10b981, #047857); }
-    .icon-gradient-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
-    .icon-gradient-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .icon-gradient-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
-    .icon-gradient-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
-
-    /* Stats Numbers */
-    .stats-number {
-      background: linear-gradient(135deg, #ffffff, #e5e7eb);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Icon Container - Weniger grelle Farben */
+    .icon-container {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .icon-gradient-blue { 
+      background: rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+    .icon-gradient-green { 
+      background: rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+    .icon-gradient-purple { 
+      background: rgba(147, 51, 234, 0.3);
+      color: #c4b5fd;
+    }
+    .icon-gradient-orange { 
+      background: rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+    .icon-gradient-red { 
+      background: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    .icon-gradient-pink { 
+      background: rgba(236, 72, 153, 0.3);
+      color: #f9a8d4;
     }
 
-    /* Quick Action Buttons */
+    /* Stats Numbers - Weißer Text für bessere Lesbarkeit */
+    .stats-number {
+      color: white;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Quick Action Buttons - Konsistent mit anderem Design */
     .quick-action-btn {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
-      border-radius: 12px;
+      border-radius: 0.75rem;
       transition: all 0.3s ease;
       font-size: 0.875rem;
       font-weight: 500;
@@ -86,27 +113,91 @@
     .quick-action-btn:hover {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
-    /* List Items in Shorts */
+    /* List Items in Shorts - Dunkles Theme */
     .short-list-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
       transition: all 0.3s ease;
       cursor: pointer;
     }
     .short-list-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateX(4px);
     }
 
-    /* Scrollable Areas */
+    /* Greeting - Weißer Text */
+    .greeting-text {
+      color: white;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Badge Styles - Konsistent mit dunklem Theme */
+    .status-badge {
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      backdrop-filter: blur(10px);
+    }
+    .badge-pending { 
+      background: rgba(251, 191, 36, 0.2); 
+      color: #fbbf24; 
+      border: 1px solid rgba(251, 191, 36, 0.3); 
+    }
+    .badge-completed { 
+      background: rgba(34, 197, 94, 0.2); 
+      color: #86efac; 
+      border: 1px solid rgba(34, 197, 94, 0.3); 
+    }
+    .badge-overdue { 
+      background: rgba(239, 68, 68, 0.2); 
+      color: #fca5a5; 
+      border: 1px solid rgba(239, 68, 68, 0.3); 
+    }
+
+    /* Progress Bars - Dunkles Theme */
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      height: 8px;
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+
+    /* Text Colors - Bessere Lesbarkeit auf dunklem Hintergrund */
+    .text-primary { color: white !important; }
+    .text-secondary { color: rgba(255, 255, 255, 0.8) !important; }
+    .text-muted { color: rgba(255, 255, 255, 0.6) !important; }
+    
+    /* Spezifische Icon-Farben für bessere Unterscheidung */
+    .short-header .icon-container i {
+      font-size: 1.25rem;
+    }
+
+    /* Member Badge für Gruppen */
+    .member-badge {
+      background: rgba(147, 51, 234, 0.2);
+      color: #c4b5fd;
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Anpassungen für bessere Konsistenz */
     .short-scroll {
-      max-height: 320px;
+      max-height: 280px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -121,39 +212,6 @@
       background: rgba(255, 255, 255, 0.2);
       border-radius: 3px;
     }
-
-    /* Progress Bars */
-    .progress-bar {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-      height: 8px;
-      border-radius: 8px;
-      transition: width 0.5s ease;
-    }
-
-    /* Greeting */
-    .greeting-text {
-      background: linear-gradient(135deg, #ffffff, #cbd5e1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Badge Styles */
-    .status-badge {
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      backdrop-filter: blur(10px);
-    }
-    .badge-pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
-    .badge-completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-    .badge-overdue { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
   </style>
 </head>
 <body class="min-h-screen">
@@ -182,8 +240,8 @@
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6 flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <div class="icon-gradient-blue p-3 rounded-xl">
-              <i class="fas fa-tasks text-white text-xl"></i>
+            <div class="icon-container icon-gradient-blue">
+              <i class="fas fa-tasks"></i>
             </div>
             <div>
               <h3 class="text-white font-semibold text-lg">Aufgaben</h3>
@@ -241,8 +299,8 @@
       <div class="dashboard-short">
         <div class="short-header p-6 flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <div class="icon-gradient-purple p-3 rounded-xl">
-              <i class="fas fa-calendar-alt text-white text-xl"></i>
+            <div class="icon-container icon-gradient-purple">
+              <i class="fas fa-calendar-alt"></i>
             </div>
             <div>
               <h3 class="text-white font-semibold text-lg">Kalender</h3>
@@ -292,8 +350,8 @@
       <div class="dashboard-short">
         <div class="short-header p-6 flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <div class="icon-gradient-green p-3 rounded-xl">
-              <i class="fas fa-file-alt text-white text-xl"></i>
+            <div class="icon-container icon-gradient-green">
+              <i class="fas fa-file-alt"></i>
             </div>
             <div>
               <h3 class="text-white font-semibold text-lg">Dokumente</h3>
@@ -342,8 +400,8 @@
       <div class="dashboard-short">
         <div class="short-header p-6 flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <div class="icon-gradient-orange p-3 rounded-xl">
-              <i class="fas fa-euro-sign text-white text-xl"></i>
+            <div class="icon-container icon-gradient-orange">
+              <i class="fas fa-euro-sign"></i>
             </div>
             <div>
               <h3 class="text-white font-semibold text-lg">Finanzen</h3>
@@ -360,11 +418,11 @@
         
         <div class="p-6">
           <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center p-3 bg-green-500/10 border border-green-400/20 rounded-xl">
+            <div class="text-center p-3 bg-green-500/10 border border-green-400/20 rounded-xl backdrop-filter blur-10">
               <div class="text-green-400 font-bold text-lg">+<?= number_format($widgetTotalOwed, 0) ?>€</div>
               <div class="text-white/60 text-xs">Du bekommst</div>
             </div>
-            <div class="text-center p-3 bg-red-500/10 border border-red-400/20 rounded-xl">
+            <div class="text-center p-3 bg-red-500/10 border border-red-400/20 rounded-xl backdrop-filter blur-10">
               <div class="text-red-400 font-bold text-lg">-<?= number_format($widgetTotalOwing, 0) ?>€</div>
               <div class="text-white/60 text-xs">Du schuldest</div>
             </div>

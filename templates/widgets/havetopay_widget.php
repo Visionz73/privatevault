@@ -5,7 +5,7 @@ $widgetTotalOwing = $widgetTotalOwing ?? 0.00;
 $widgetNetBalance = $widgetNetBalance ?? 0.00;
 ?>
 <!-- HaveToPay Widget -->
-<article class="widget-card p-6 flex flex-col">
+<article class="widget-card p-6 flex flex-col" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 1.5rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
   <div class="flex justify-between items-center mb-4">
     <a href="havetopay.php" class="group inline-flex items-center widget-header">
       <h2 class="mr-1 text-white/90">Finanzen</h2>
@@ -37,10 +37,12 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
   
   <!-- Recent Expenses -->
   <div class="widget-scroll-container flex-1">
-    <div class="widget-scroll-content space-y-2">
+    <div class="widget-scroll-content space-y-2" style="max-height: 200px; overflow-y: auto;">
       <?php if (!empty($recentExpenses)): ?>
         <?php foreach ($recentExpenses as $expense): ?>
-          <div class="widget-list-item" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
+          <div class="widget-list-item p-3 rounded-lg cursor-pointer transition-all duration-300" 
+               style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);"
+               onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
             <div class="flex justify-between items-start">
               <div class="flex-1 min-w-0">
                 <div class="task-title text-sm truncate text-white/90">
