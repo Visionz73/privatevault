@@ -80,13 +80,12 @@
       color: white;
     }
     
-    /* Task cards */
+    /* Task cards - No hover animation on container */
     .task-card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1rem;
-      transition: all 0.3s ease;
       cursor: pointer;
     }
     .task-card:hover {

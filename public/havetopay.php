@@ -19,7 +19,7 @@ try {
         <style>
             body {
                 font-family: 'Poppins', sans-serif;
-                background-color: #f8f9fa;
+                background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
                 color: #343a40;
             }
             .error-container {
@@ -27,9 +27,11 @@ try {
                 margin: 80px auto;
             }
             .error-card {
-                border: none;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                background: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 1.5rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
                 overflow: hidden;
             }
             .error-header {
@@ -59,7 +61,7 @@ try {
                 box-shadow: 0 7px 20px rgba(0,210,255,0.5);
             }
             .error-details {
-                background-color: #f8f9fa;
+                background: rgba(255, 255, 255, 0.1);
                 border-radius: 10px;
                 padding: 15px;
                 margin-top: 20px;

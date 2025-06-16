@@ -70,15 +70,13 @@
       opacity: 0.4; 
     }
     
-    /* Calendar headers */
+    /* Calendar headers - No separate background */
     .calendar-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
       font-weight: 600;
     }
     
-    /* Event styling */
+    /* Event styling - Only these have hover animations */
     .event-item { 
       cursor: pointer;
       overflow: hidden;

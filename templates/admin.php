@@ -23,7 +23,7 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
     
-    /* Stats cards */
+    /* Stats cards - Only hover on these */
     .stats-card {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(15px);

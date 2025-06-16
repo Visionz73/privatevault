@@ -133,19 +133,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      min-height: 100vh;
+    }
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
     }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+    
+    .glass-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      color: white;
+    }
+    
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#eef7ff] via-[#f7fbff] to-[#f9fdf2] flex flex-col">
+<body class="min-h-screen">
   <?php require_once __DIR__.'/../templates/navbar.php'; ?>
   
   <main class="ml-0 mt-16 md:ml-64 md:mt-0 flex-1 p-4 md:p-8">
     <div class="max-w-2xl mx-auto">
       <div class="mb-6">
-        <a href="/calendar.php" class="text-[#4A90E2] flex items-center hover:underline">
+        <a href="/calendar.php" class="text-white/70 flex items-center hover:text-white transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
@@ -153,10 +180,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
       </div>
     
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">Termin bearbeiten</h1>
+      <h1 class="text-2xl font-bold text-white mb-6">Termin bearbeiten</h1>
       
       <?php if (!empty($errors)): ?>
-        <div class="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-red-500/20 border border-red-400/30 text-red-300 px-4 py-3 rounded-lg mb-6">
           <ul class="list-disc list-inside">
             <?php foreach ($errors as $error): ?>
               <li><?= htmlspecialchars($error) ?></li>
@@ -165,59 +192,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       <?php endif; ?>
       
-      <form method="post" class="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <form method="post" class="glass-card p-6 space-y-4">
         <div>
-          <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+          <label for="title" class="block text-sm font-medium text-white/80 mb-1">Titel *</label>
           <input type="text" id="title" name="title" required 
                  value="<?= htmlspecialchars($event['title']) ?>"
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 glass-input">
         </div>
         
         <div>
-          <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+          <label for="description" class="block text-sm font-medium text-white/80 mb-1">Beschreibung</label>
           <textarea id="description" name="description" rows="3" 
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]"><?= htmlspecialchars($event['description'] ?? '') ?></textarea>
+                    class="w-full px-4 py-2 glass-input"><?= htmlspecialchars($event['description'] ?? '') ?></textarea>
         </div>
         
         <div>
-          <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ort</label>
+          <label for="location" class="block text-sm font-medium text-white/80 mb-1">Ort</label>
           <input type="text" id="location" name="location" 
                  value="<?= htmlspecialchars($event['location'] ?? '') ?>"
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 glass-input">
         </div>
         
         <div>
-          <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
+          <label for="event_date" class="block text-sm font-medium text-white/80 mb-1">Datum *</label>
           <input type="date" id="event_date" name="event_date" required 
                  value="<?= htmlspecialchars($event['event_date']) ?>"
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                 class="w-full px-4 py-2 glass-input">
         </div>
         
         <div class="flex items-center mb-4">
           <input type="checkbox" id="all_day" name="all_day" 
                  <?= $event['all_day'] ? 'checked' : '' ?>
                  class="h-4 w-4 text-[#4A90E2] focus:ring-[#4A90E2]">
-          <label for="all_day" class="ml-2 text-sm text-gray-700">Ganztägiger Termin</label>
+          <label for="all_day" class="ml-2 text-sm text-white/80">Ganztägiger Termin</label>
         </div>
         
         <div id="timeSelectionGroup" class="grid grid-cols-2 gap-4 <?= $event['all_day'] ? 'hidden' : '' ?>">
           <div>
-            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Startzeit</label>
+            <label for="start_time" class="block text-sm font-medium text-white/80 mb-1">Startzeit</label>
             <input type="time" id="start_time" name="start_time" 
                    value="<?= $event['start_time'] ? substr($event['start_time'], 0, 5) : '' ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                   class="w-full px-4 py-2 glass-input">
           </div>
           
           <div>
-            <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">Endzeit</label>
+            <label for="end_time" class="block text-sm font-medium text-white/80 mb-1">Endzeit</label>
             <input type="time" id="end_time" name="end_time" 
                    value="<?= $event['end_time'] ? substr($event['end_time'], 0, 5) : '' ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                   class="w-full px-4 py-2 glass-input">
           </div>
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Zuweisung</label>
+          <label class="block text-sm font-medium text-white/80 mb-2">Zuweisung</label>
           <div class="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label class="inline-flex items-center">
@@ -250,9 +277,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           
           <!-- User Assignment -->
           <div id="user_assignment" class="<?= $event['assigned_to'] ? '' : 'hidden' ?>">
-            <label for="assigned_to" class="block text-sm font-medium text-gray-700 mb-1">Benutzer auswählen</label>
+            <label for="assigned_to" class="block text-sm font-medium text-white/80 mb-1">Benutzer auswählen</label>
             <select id="assigned_to" name="assigned_to" 
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                    class="w-full px-4 py-2 glass-input">
               <option value="" disabled>Bitte auswählen...</option>
               <?php foreach ($allUsers as $u): ?>
                 <option value="<?= $u['id'] ?>" <?= $event['assigned_to'] == $u['id'] ? 'selected' : '' ?>>
@@ -264,9 +291,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           
           <!-- Group Assignment -->
           <div id="group_assignment" class="<?= $event['assigned_group_id'] ? '' : 'hidden' ?>">
-            <label for="assigned_group_id" class="block text-sm font-medium text-gray-700 mb-1">Gruppe auswählen</label>
+            <label for="assigned_group_id" class="block text-sm font-medium text-white/80 mb-1">Gruppe auswählen</label>
             <select id="assigned_group_id" name="assigned_group_id"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#4A90E2]/50 focus:border-[#4A90E2]">
+                    class="w-full px-4 py-2 glass-input">
               <option value="" disabled>Bitte auswählen...</option>
               <?php foreach ($userGroups as $group): ?>
                 <option value="<?= $group['id'] ?>" <?= $event['assigned_group_id'] == $group['id'] ? 'selected' : '' ?>>
@@ -278,7 +305,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div>
-          <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Farbe</label>
+          <label for="color" class="block text-sm font-medium text-white/80 mb-1">Farbe</label>
           <div class="flex space-x-2">
             <input type="color" id="color" name="color" value="<?= htmlspecialchars($event['color']) ?>"
                    class="h-8 w-8 rounded cursor-pointer">
@@ -288,11 +315,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class="pt-4 flex justify-end space-x-3">
-          <a href="/calendar.php" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <a href="/calendar.php" class="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/15 transition-colors">
             Abbrechen
           </a>
           <button type="submit" 
-                  class="px-4 py-2 bg-[#4A90E2] text-white rounded-lg hover:bg-[#4A90E2]/90">
+                  class="px-4 py-2 bg-blue-600/80 text-white rounded-lg hover:bg-blue-600/90 transition-colors">
             Speichern
           </button>
         </div>

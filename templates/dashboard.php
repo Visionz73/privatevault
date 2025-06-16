@@ -25,34 +25,22 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
-    .dashboard-short:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    }
 
-    /* Simple Header Styling */
+    /* Simple Header Styling - No more separate background */
     .short-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
       cursor: pointer;
       transition: all 0.3s ease;
     }
     
-    .short-header:hover {
-      background: rgba(255, 255, 255, 0.15);
+    .short-header:hover h3 {
+      color: rgba(255, 255, 255, 1);
     }
 
     /* Finance Header - Special styling for balance display */
     .finance-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
     }
 
@@ -81,7 +69,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
-    /* List Items in Shorts */
+    /* List Items in Shorts - Only these have hover animations */
     .short-list-item {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);

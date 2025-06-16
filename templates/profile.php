@@ -45,7 +45,6 @@ $initials = getUserInitials($user);
       box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
     }
     
     .glass-card:hover {
@@ -75,7 +74,7 @@ $initials = getUserInitials($user);
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
     
-    /* Navigation Items */
+    /* Navigation Items - Only these have hover animations */
     .nav-item {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
