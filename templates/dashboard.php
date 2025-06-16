@@ -25,71 +25,35 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-    }
-    .dashboard-short::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s;
     }
     .dashboard-short:hover {
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-4px);
+      transform: translateY(-2px);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
-    .dashboard-short:hover::before {
-      left: 100%;
-    }
 
-    /* Short Header Styling - Dunkles Theme */
+    /* Simple Header Styling */
     .short-header {
       background: rgba(255, 255, 255, 0.1);
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .short-header:hover {
+      background: rgba(255, 255, 255, 0.15);
     }
 
-    /* Icon Container - Weniger grelle Farben */
-    .icon-container {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* Finance Header - Special styling for balance display */
+    .finance-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .icon-gradient-blue { 
-      background: rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
-    }
-    .icon-gradient-green { 
-      background: rgba(34, 197, 94, 0.3);
-      color: #86efac;
-    }
-    .icon-gradient-purple { 
-      background: rgba(147, 51, 234, 0.3);
-      color: #c4b5fd;
-    }
-    .icon-gradient-orange { 
-      background: rgba(245, 158, 11, 0.3);
-      color: #fbbf24;
-    }
-    .icon-gradient-red { 
-      background: rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-    }
-    .icon-gradient-pink { 
-      background: rgba(236, 72, 153, 0.3);
-      color: #f9a8d4;
     }
 
     /* Stats Numbers - Weißer Text für bessere Lesbarkeit */
@@ -99,7 +63,7 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
-    /* Quick Action Buttons - Konsistent mit anderem Design */
+    /* Quick Action Buttons */
     .quick-action-btn {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -117,7 +81,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
-    /* List Items in Shorts - Dunkles Theme */
+    /* List Items in Shorts */
     .short-list-item {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -131,13 +95,13 @@
       transform: translateX(4px);
     }
 
-    /* Greeting - Weißer Text */
+    /* Greeting Text */
     .greeting-text {
       color: white;
       text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    /* Badge Styles - Konsistent mit dunklem Theme */
+    /* Badge Styles */
     .status-badge {
       border-radius: 20px;
       font-size: 0.75rem;
@@ -161,7 +125,7 @@
       border: 1px solid rgba(239, 68, 68, 0.3); 
     }
 
-    /* Progress Bars - Dunkles Theme */
+    /* Progress Bars */
     .progress-bar {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
@@ -174,15 +138,10 @@
       transition: width 0.5s ease;
     }
 
-    /* Text Colors - Bessere Lesbarkeit auf dunklem Hintergrund */
+    /* Text Colors */
     .text-primary { color: white !important; }
     .text-secondary { color: rgba(255, 255, 255, 0.8) !important; }
     .text-muted { color: rgba(255, 255, 255, 0.6) !important; }
-    
-    /* Spezifische Icon-Farben für bessere Unterscheidung */
-    .short-header .icon-container i {
-      font-size: 1.25rem;
-    }
 
     /* Member Badge für Gruppen */
     .member-badge {
@@ -195,7 +154,7 @@
       backdrop-filter: blur(10px);
     }
 
-    /* Anpassungen für bessere Konsistenz */
+    /* Scrollbar styling */
     .short-scroll {
       max-height: 280px;
       overflow-y: auto;
@@ -238,19 +197,13 @@
       
       <!-- Tasks Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
-        <div class="short-header p-6 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="icon-container icon-gradient-blue">
-              <i class="fas fa-tasks"></i>
+        <div class="short-header p-6" onclick="window.location.href='inbox.php'">
+          <div class="flex items-center justify-between">
+            <h3 class="text-white font-semibold text-xl">Inbox</h3>
+            <div class="text-right">
+              <div class="stats-number text-3xl"><?= $openTaskCount ?></div>
+              <div class="text-white/60 text-sm">offen</div>
             </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Aufgaben</h3>
-              <p class="text-white/60 text-sm">Deine offenen To-Dos</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="stats-number text-3xl"><?= $openTaskCount ?></div>
-            <div class="text-white/60 text-sm">offen</div>
           </div>
         </div>
         
@@ -278,7 +231,6 @@
               <?php endforeach; ?>
             <?php else: ?>
               <div class="text-center py-8">
-                <i class="fas fa-check-circle text-white/30 text-3xl mb-3"></i>
                 <p class="text-white/60">Keine offenen Aufgaben</p>
               </div>
             <?php endif; ?>
@@ -286,10 +238,10 @@
           
           <div class="mt-6 grid grid-cols-2 gap-3">
             <button onclick="window.location.href='inbox.php'" class="quick-action-btn px-4 py-2">
-              <i class="fas fa-inbox mr-2"></i>Inbox
+              Inbox
             </button>
             <button onclick="window.location.href='create_task.php'" class="quick-action-btn px-4 py-2">
-              <i class="fas fa-plus mr-2"></i>Neue Aufgabe
+              Neue Aufgabe
             </button>
           </div>
         </div>
@@ -297,19 +249,13 @@
 
       <!-- Calendar Short -->
       <div class="dashboard-short">
-        <div class="short-header p-6 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="icon-container icon-gradient-purple">
-              <i class="fas fa-calendar-alt"></i>
+        <div class="short-header p-6" onclick="window.location.href='calendar.php'">
+          <div class="flex items-center justify-between">
+            <h3 class="text-white font-semibold text-xl">Kalender</h3>
+            <div class="text-right">
+              <div class="stats-number text-3xl"><?= count($upcomingEvents ?? []) ?></div>
+              <div class="text-white/60 text-sm">heute</div>
             </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Kalender</h3>
-              <p class="text-white/60 text-sm">Kommende Termine</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="stats-number text-3xl"><?= count($upcomingEvents ?? []) ?></div>
-            <div class="text-white/60 text-sm">heute</div>
           </div>
         </div>
         
@@ -332,7 +278,6 @@
               <?php endforeach; ?>
             <?php else: ?>
               <div class="text-center py-6">
-                <i class="fas fa-calendar-plus text-white/30 text-3xl mb-3"></i>
                 <p class="text-white/60 text-sm">Keine Termine geplant</p>
               </div>
             <?php endif; ?>
@@ -340,7 +285,7 @@
           
           <div class="mt-6">
             <button onclick="window.location.href='calendar.php'" class="quick-action-btn w-full px-4 py-2">
-              <i class="fas fa-calendar-plus mr-2"></i>Neuer Termin
+              Neuer Termin
             </button>
           </div>
         </div>
@@ -348,19 +293,13 @@
 
       <!-- Documents Short -->
       <div class="dashboard-short">
-        <div class="short-header p-6 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="icon-container icon-gradient-green">
-              <i class="fas fa-file-alt"></i>
+        <div class="short-header p-6" onclick="window.location.href='profile.php?tab=documents'">
+          <div class="flex items-center justify-between">
+            <h3 class="text-white font-semibold text-xl">Dokumente</h3>
+            <div class="text-right">
+              <div class="stats-number text-3xl"><?= $docCount ?></div>
+              <div class="text-white/60 text-sm">gesamt</div>
             </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Dokumente</h3>
-              <p class="text-white/60 text-sm">Deine Dateien</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="stats-number text-3xl"><?= $docCount ?></div>
-            <div class="text-white/60 text-sm">gesamt</div>
           </div>
         </div>
         
@@ -382,7 +321,6 @@
               <?php endforeach; ?>
             <?php else: ?>
               <div class="text-center py-6">
-                <i class="fas fa-cloud-upload-alt text-white/30 text-3xl mb-3"></i>
                 <p class="text-white/60 text-sm">Keine Dokumente hochgeladen</p>
               </div>
             <?php endif; ?>
@@ -390,29 +328,25 @@
           
           <div class="mt-6">
             <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn w-full px-4 py-2">
-              <i class="fas fa-upload mr-2"></i>Hochladen
+              Hochladen
             </button>
           </div>
         </div>
       </div>
 
-      <!-- HaveToPay Short -->
+      <!-- HaveToPay Short - Keep existing balance layout -->
       <div class="dashboard-short">
-        <div class="short-header p-6 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="icon-container icon-gradient-orange">
-              <i class="fas fa-euro-sign"></i>
+        <div class="finance-header p-6">
+          <div class="flex items-center justify-between">
+            <a href="havetopay.php" class="text-white font-semibold text-xl hover:text-white/80 transition-colors">
+              Finanzen
+            </a>
+            <div class="text-right">
+              <div class="stats-number text-3xl <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+                <?= number_format($widgetNetBalance, 0) ?>€
+              </div>
+              <div class="text-white/60 text-sm">Bilanz</div>
             </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Finanzen</h3>
-              <p class="text-white/60 text-sm">Ausgaben & Schulden</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="stats-number text-3xl <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
-              <?= number_format($widgetNetBalance, 0) ?>€
-            </div>
-            <div class="text-white/60 text-sm">Bilanz</div>
           </div>
         </div>
         
@@ -451,7 +385,7 @@
           
           <div class="mt-6">
             <button onclick="window.location.href='havetopay.php'" class="quick-action-btn w-full px-4 py-2">
-              <i class="fas fa-plus mr-2"></i>Ausgabe hinzufügen
+              Ausgabe hinzufügen
             </button>
           </div>
         </div>
@@ -459,16 +393,8 @@
 
       <!-- System Stats Short -->
       <div class="dashboard-short">
-        <div class="short-header p-6 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="icon-gradient-pink p-3 rounded-xl">
-              <i class="fas fa-chart-bar text-white text-xl"></i>
-            </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Statistiken</h3>
-              <p class="text-white/60 text-sm">Übersicht</p>
-            </div>
-          </div>
+        <div class="short-header p-6" onclick="window.location.href='profile.php'">
+          <h3 class="text-white font-semibold text-xl">Statistiken</h3>
         </div>
         
         <div class="p-6 space-y-4">
@@ -507,15 +433,7 @@
       <!-- Quick Actions Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6">
-          <div class="flex items-center space-x-4">
-            <div class="icon-gradient-red p-3 rounded-xl">
-              <i class="fas fa-bolt text-white text-xl"></i>
-            </div>
-            <div>
-              <h3 class="text-white font-semibold text-lg">Schnellaktionen</h3>
-              <p class="text-white/60 text-sm">Häufige Funktionen</p>
-            </div>
-          </div>
+          <h3 class="text-white font-semibold text-xl">Schnellaktionen</h3>
         </div>
         
         <div class="p-6">
@@ -553,15 +471,7 @@
     <!-- Recent Activity -->
     <div class="dashboard-short mt-8">
       <div class="short-header p-6">
-        <div class="flex items-center space-x-4">
-          <div class="icon-gradient-blue p-3 rounded-xl">
-            <i class="fas fa-history text-white text-xl"></i>
-          </div>
-          <div>
-            <h3 class="text-white font-semibold text-lg">Letzte Aktivität</h3>
-            <p class="text-white/60 text-sm">Was ist passiert</p>
-          </div>
-        </div>
+        <h3 class="text-white font-semibold text-xl">Letzte Aktivität</h3>
       </div>
       
       <div class="p-6">
@@ -586,23 +496,15 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Animate cards on load
+      // Simple fade-in animation only
       const cards = document.querySelectorAll('.dashboard-short');
       cards.forEach((card, index) => {
         card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
         setTimeout(() => {
-          card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          card.style.transition = 'opacity 0.4s ease';
           card.style.opacity = '1';
-          card.style.transform = 'translateY(0)';
-        }, index * 100);
+        }, index * 50);
       });
-
-      // Auto-refresh stats every 30 seconds
-      setInterval(() => {
-        // You can add AJAX calls here to refresh data without page reload
-        console.log('Auto-refreshing dashboard data...');
-      }, 30000);
     });
   </script>
 </body>
