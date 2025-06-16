@@ -116,7 +116,7 @@ $upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get recent documents for documents short
 $stmt = $pdo->prepare("
-    SELECT id, filename, file_size, upload_date, category
+    SELECT id, filename, upload_date, category
     FROM documents 
     WHERE user_id = ? 
     ORDER BY upload_date DESC 
