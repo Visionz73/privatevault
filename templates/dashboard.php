@@ -23,7 +23,7 @@
     .control-bar {
       position: fixed;
       top: 1rem;
-      left: 1rem;
+      right: 1rem;
       z-index: 60;
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
@@ -39,10 +39,9 @@
     @media (max-width: 768px) {
       .control-bar {
         top: 5rem;
-        left: 0.5rem;
         right: 0.5rem;
-        left: 50%;
-        transform: translateX(-50%);
+        left: auto;
+        transform: none;
         width: fit-content;
       }
     }
@@ -385,9 +384,23 @@
   <!-- macOS-Style Control Bar -->
   <div class="control-bar">
     <div class="control-icon" onclick="openGradientPicker()" title="Hintergrund-Gradient ändern">
+      <i class="fas fa-palette text-sm"></i>
+    </div>
+    <div class="control-icon" onclick="toggleTheme()" title="Theme wechseln">
+      <i class="fas fa-moon text-sm"></i>
+    </div>
+    <div class="control-icon" onclick="toggleCompactMode()" title="Kompakter Modus">
+      <i class="fas fa-compress text-sm"></i>
+    </div>
+    <div class="control-icon" onclick="openNotificationSettings()" title="Benachrichtigungen">
+      <i class="fas fa-bell text-sm"></i>
+    </div>
+    <div class="control-icon" onclick="openLayoutSettings()" title="Layout anpassen">
+      <i class="fas fa-th text-sm"></i>
+    </div>
+    <div class="control-icon" onclick="openSystemSettings()" title="System-Einstellungen">
       <i class="fas fa-cog text-sm"></i>
     </div>
-    <!-- Placeholder für weitere Controls -->
   </div>
 
   <!-- Gradient Picker Modal -->
@@ -843,6 +856,32 @@
         closeGradientPicker();
       }
     });
+
+    // Placeholder functions for future features
+    function toggleTheme() {
+      console.log('Theme toggle - coming soon');
+      // TODO: Implement theme switching (light/dark mode)
+    }
+
+    function toggleCompactMode() {
+      console.log('Compact mode toggle - coming soon');
+      // TODO: Implement compact/spacious layout toggle
+    }
+
+    function openNotificationSettings() {
+      console.log('Notification settings - coming soon');
+      // TODO: Implement notification preferences modal
+    }
+
+    function openLayoutSettings() {
+      console.log('Layout settings - coming soon');
+      // TODO: Implement dashboard layout customization
+    }
+
+    function openSystemSettings() {
+      console.log('System settings - coming soon');
+      // TODO: Implement system-wide settings modal
+    }
   </script>
 </body>
 </html>
