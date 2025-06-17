@@ -1,32 +1,30 @@
 <?php
-// src/api/task_update.php - API endpoint for updating task status
+// src/api/task_update.php - Enhanced API endpoint for updating tasks
 header('Content-Type: application/json');
+header('Cache-Control: no-cache, must-revalidate');
 
-// Required files
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../lib/auth.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['error' => 'Nicht authentifiziert']);
+    echo json_encode(['success' => false, 'error' => 'Nicht authentifiziert']);
     exit;
 }
 
-// Check if request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Methode nicht erlaubt']);
+    echo json_encode(['success' => false, 'error' => 'Methode nicht erlaubt']);
     exit;
 }
 
-// Get task ID and new status
 $taskId = $_POST['id'] ?? null;
 $status = $_POST['status'] ?? null;
 
 if (!$taskId || !$status) {
     http_response_code(400);
-    echo json_encode(['error' => 'Fehlende Parameter']);
+    echo json_encode(['success' => false, 'error' => 'Fehlende Parameter']);
     exit;
 }
 
@@ -34,14 +32,14 @@ if (!$taskId || !$status) {
 $validStatuses = ['todo', 'doing', 'done'];
 if (!in_array($status, $validStatuses)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Ungültiger Status']);
+    echo json_encode(['success' => false, 'error' => 'Ungültiger Status']);
     exit;
 }
 
 try {
-    // Check if the user has permission to update this task
+    // Check permissions
     $stmt = $pdo->prepare("
-        SELECT t.id 
+        SELECT t.id, t.title
         FROM tasks t
         LEFT JOIN user_group_members m ON t.assigned_group_id = m.group_id
         WHERE t.id = :task_id 
@@ -60,35 +58,48 @@ try {
     
     if (!$task) {
         http_response_code(403);
-        echo json_encode(['error' => 'Keine Berechtigung']);
+        echo json_encode(['success' => false, 'error' => 'Keine Berechtigung für diese Aufgabe']);
         exit;
     }
     
-    // Update the task status
+    // Update the task
     $stmt = $pdo->prepare("
         UPDATE tasks 
         SET status = :status, 
-            updated_at = NOW(),
-            is_done = :is_done
+            updated_at = NOW()
         WHERE id = :task_id
     ");
     
-    $stmt->execute([
+    $result = $stmt->execute([
         ':status' => $status,
-        ':task_id' => $taskId,
-        ':is_done' => ($status === 'done' ? 1 : 0)
+        ':task_id' => $taskId
     ]);
     
-    echo json_encode([
-        'success' => true,
-        'message' => 'Aufgabenstatus aktualisiert'
-    ]);
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Aufgabe erfolgreich aktualisiert',
+            'task_id' => $taskId,
+            'new_status' => $status,
+            'task_title' => $task['title']
+        ]);
+    } else {
+        throw new Exception('Fehler beim Speichern der Änderungen');
+    }
     
 } catch (PDOException $e) {
+    error_log("Database error in task_update: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
-        'error' => 'Datenbankfehler',
-        'details' => $e->getMessage() 
+        'success' => false,
+        'error' => 'Datenbankfehler beim Aktualisieren der Aufgabe'
+    ]);
+} catch (Exception $e) {
+    error_log("General error in task_update: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
     ]);
 }
 ?>
