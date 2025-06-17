@@ -55,40 +55,40 @@
     
     /* Buttons */
     .btn-primary {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(34, 197, 94, 0.6) 100%);
+      border: 1px solid rgba(34, 197, 94, 0.3);
       color: white;
       transition: all 0.3s ease;
     }
     
     .btn-primary:hover {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(34, 197, 94, 0.7) 100%);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
     }
     
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       color: white;
       transition: all 0.3s ease;
     }
     
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(59, 130, 246, 0.7) 100%);
       transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
     }
     
     .btn-danger {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0.6) 100%);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: white;
       transition: all 0.3s ease;
     }
     
     .btn-danger:hover {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(239, 68, 68, 0.7) 100%);
       transform: translateY(-1px);
       box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
     }

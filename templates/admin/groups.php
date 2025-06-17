@@ -4,21 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gruppen | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     body { 
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
     }
-    
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
     }
     
-    /* Enhanced liquid glass styling */
+    /* Liquid glass styling */
     .glass-card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
@@ -26,273 +24,132 @@
       border-radius: 1.5rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       color: white;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-      transition: left 0.6s ease;
-    }
-    
-    .glass-card:hover::before {
-      left: 100%;
-    }
-    
-    .glass-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
     
     .glass-button {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
-      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
       border-radius: 0.75rem;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
     }
-    
-    .glass-button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .glass-button:hover::before {
-      left: 100%;
-    }
-    
     .glass-button:hover {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
     }
     
     .glass-input {
       background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
+      border-radius: 0.5rem;
     }
-    
     .glass-input:focus {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.3);
       outline: none;
       box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
     }
-    
     .glass-input::placeholder {
       color: rgba(255, 255, 255, 0.5);
     }
     
     .glass-modal {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-    }
-    
-    .modal-content {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(30px);
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+      backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
+      border-radius: 1rem;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     }
     
-    .floating-tag {
+    .tag {
       display: inline-flex;
       align-items: center;
-      padding: 6px 12px;
-      border-radius: 1rem;
+      padding: 4px 12px;
+      border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 500;
-      margin: 2px;
+      line-height: 1.25rem;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
       backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
     }
     
-    .floating-tag:hover {
-      transform: scale(1.05) translateY(-1px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    .member-bubble {
+    .member-badge {
       background: rgba(147, 51, 234, 0.2);
-      backdrop-filter: blur(10px);
       border: 1px solid rgba(147, 51, 234, 0.3);
       color: #c4b5fd;
       padding: 4px 8px;
-      border-radius: 1rem;
+      border-radius: 9999px;
       font-size: 0.75rem;
-      font-weight: 500;
-      margin: 2px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    }
-    
-    .member-bubble:hover {
-      background: rgba(147, 51, 234, 0.3);
-      transform: scale(1.05);
-    }
-    
-    .action-btn {
-      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
+    }
+    
+    .action-button {
+      background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 0.5rem;
-      padding: 6px;
+      padding: 4px;
       transition: all 0.3s ease;
-      color: white;
-      cursor: pointer;
     }
-    
-    .action-btn:hover {
+    .action-button:hover {
       background: rgba(255, 255, 255, 0.15);
       transform: scale(1.05);
     }
     
-    .stats-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1rem;
-      transition: all 0.3s ease;
+    .header-text {
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
     
-    .stats-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
-    
-    .header-gradient {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    .success-alert {
+    .success-message {
       background: rgba(34, 197, 94, 0.2);
-      backdrop-filter: blur(20px);
       border: 1px solid rgba(34, 197, 94, 0.3);
       color: #86efac;
-      border-radius: 1rem;
+      border-radius: 0.75rem;
+      backdrop-filter: blur(10px);
     }
     
-    .error-alert {
+    .error-message {
       background: rgba(239, 68, 68, 0.2);
-      backdrop-filter: blur(20px);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: #fca5a5;
-      border-radius: 1rem;
+      border-radius: 0.75rem;
+      backdrop-filter: blur(10px);
     }
-    
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .fade-in-up {
-      animation: fadeInUp 0.5s ease forwards;
-    }
-    
-    .group-card {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-    
-    .group-card:nth-child(1) { animation-delay: 0.1s; }
-    .group-card:nth-child(2) { animation-delay: 0.2s; }
-    .group-card:nth-child(3) { animation-delay: 0.3s; }
   </style>
 </head>
 <body class="min-h-screen flex">
   <?php require_once __DIR__.'/../../templates/navbar.php'; ?>
 
   <main class="ml-0 md:ml-64 flex-1 p-4 md:p-8 mt-16 md:mt-0">
-    <div class="max-w-7xl mx-auto">
-      
-      <!-- Header Section -->
-      <div class="header-gradient">
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <div>
-            <h1 class="text-4xl font-bold text-white mb-2">
-              <i class="fas fa-users-gear mr-3 text-blue-300"></i>
-              Benutzergruppen
-            </h1>
-            <p class="text-white/70 text-lg">Verwalten Sie Ihre Teams und organisieren Sie Benutzer</p>
-          </div>
-          
-          <div class="flex flex-wrap gap-3">
-            <button id="createGroupBtn" class="glass-button px-6 py-3 font-medium group">
-              <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
-              Neue Gruppe
-            </button>
-            <button id="createTagBtn" class="glass-button px-6 py-3 font-medium group">
-              <i class="fas fa-tag mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
-              Neuer Tag
-            </button>
-          </div>
-        </div>
-        
-        <!-- Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div class="stats-card">
-            <div class="text-3xl font-bold text-blue-300"><?= count($groups) ?></div>
-            <div class="text-white/70 text-sm mt-1">Gruppen</div>
-          </div>
-          <div class="stats-card">
-            <div class="text-3xl font-bold text-purple-300"><?= count($allTags) ?></div>
-            <div class="text-white/70 text-sm mt-1">Tags</div>
-          </div>
-          <div class="stats-card">
-            <div class="text-3xl font-bold text-green-300"><?= count($allUsers) ?></div>
-            <div class="text-white/70 text-sm mt-1">Benutzer</div>
-          </div>
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-wrap justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold header-text">Benutzergruppen</h1>
+        <div class="flex space-x-3 mt-2 md:mt-0">
+          <button id="createGroupBtn" class="glass-button px-6 py-3 font-medium">
+            <i class="fas fa-plus mr-2"></i>Neue Gruppe
+          </button>
+          <button id="createTagBtn" class="glass-button px-6 py-3 font-medium">
+            <i class="fas fa-tag mr-2"></i>Neuer Tag
+          </button>
         </div>
       </div>
 
-      <!-- Alerts -->
       <?php if (!empty($success)): ?>
-        <div class="mb-6 success-alert p-4">
+        <div class="mb-6 success-message p-4">
           <i class="fas fa-check-circle mr-2"></i>
           <?= htmlspecialchars($success) ?>
         </div>
       <?php endif; ?>
 
       <?php if (!empty($errors)): ?>
-        <div class="mb-6 error-alert p-4">
-          <i class="fas fa-exclamation-triangle mr-2"></i>
+        <div class="mb-6 error-message p-4">
+          <i class="fas fa-exclamation-circle mr-2"></i>
           <ul class="list-disc pl-5">
             <?php foreach ($errors as $error): ?>
               <li><?= htmlspecialchars($error) ?></li>
@@ -301,204 +158,135 @@
         </div>
       <?php endif; ?>
       
-      <!-- Tag Management Section -->
-      <div class="glass-card p-8 mb-8 pulse-glow">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white flex items-center">
-            <i class="fas fa-tags mr-3 text-yellow-400"></i>
-            Tag-Bibliothek
-          </h2>
-          <span class="text-white/50 text-sm"><?= count($allTags) ?> verfügbare Tags</span>
-        </div>
+      <!-- Tag management section -->
+      <div class="glass-card p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-white/90">
+          <i class="fas fa-tags mr-2"></i>Verfügbare Tags
+        </h2>
         
-        <div class="min-h-[120px] flex items-center justify-center">
+        <div class="flex flex-wrap gap-2 mb-4">
           <?php if (empty($allTags)): ?>
-            <div class="text-center py-8">
-              <i class="fas fa-tag text-6xl text-white/20 mb-4"></i>
-              <p class="text-white/50 text-lg">Noch keine Tags erstellt</p>
-              <p class="text-white/30 text-sm">Erstellen Sie Ihren ersten Tag!</p>
-            </div>
+            <p class="text-white/50">Keine Tags gefunden.</p>
           <?php else: ?>
-            <div class="flex flex-wrap gap-3 justify-center">
-              <?php foreach ($allTags as $tag): ?>
-                <div class="floating-tag" style="background: <?= htmlspecialchars($tag['color']) ?>40; border: 2px solid <?= htmlspecialchars($tag['color']) ?>80; color: white;">
-                  <span class="font-medium"><?= htmlspecialchars($tag['name']) ?></span>
-                  <button class="edit-tag-btn ml-3 p-1 rounded-full hover:bg-white/20 transition-all duration-200" 
-                          data-tag-id="<?= $tag['id'] ?>" 
-                          data-tag-name="<?= htmlspecialchars($tag['name']) ?>" 
-                          data-tag-color="<?= htmlspecialchars($tag['color']) ?>">
-                    <i class="fas fa-pencil text-xs"></i>
-                  </button>
-                </div>
-              <?php endforeach; ?>
-            </div>
+            <?php foreach ($allTags as $tag): ?>
+              <div class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
+                <?= htmlspecialchars($tag['name']) ?>
+                <button class="edit-tag-btn ml-2 hover:scale-110 transition-transform" data-tag-id="<?= $tag['id'] ?>" data-tag-name="<?= htmlspecialchars($tag['name']) ?>" data-tag-color="<?= htmlspecialchars($tag['color']) ?>">
+                  <i class="fas fa-edit text-xs"></i>
+                </button>
+              </div>
+            <?php endforeach; ?>
           <?php endif; ?>
         </div>
       </div>
 
-      <!-- Groups Section -->
-      <div class="glass-card p-8">
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="text-2xl font-bold text-white flex items-center">
-            <i class="fas fa-layer-group mr-3 text-blue-400"></i>
-            Gruppen-Übersicht
-          </h2>
-          <span class="text-white/50 text-sm"><?= count($groups) ?> aktive Gruppen</span>
-        </div>
-        
-        <?php if (empty($groups)): ?>
-          <div class="text-center py-16">
-            <i class="fas fa-users text-8xl text-white/20 mb-6"></i>
-            <h3 class="text-2xl font-semibold text-white/70 mb-4">Keine Gruppen gefunden</h3>
-            <p class="text-white/50 mb-8">Erstellen Sie Ihre erste Gruppe um loszulegen!</p>
-            <button onclick="document.getElementById('createGroupBtn').click()" class="glass-button px-8 py-4 text-lg font-medium">
-              <i class="fas fa-plus mr-2"></i>
-              Erste Gruppe erstellen
-            </button>
-          </div>
-        <?php else: ?>
-          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      <!-- Groups section -->
+      <div class="glass-card p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-6 text-white/90">
+          <i class="fas fa-users mr-2"></i>Gruppen
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <?php if (empty($groups)): ?>
+            <p class="md:col-span-3 text-white/50 text-center py-8">Keine Gruppen gefunden.</p>
+          <?php else: ?>
             <?php foreach ($groups as $group): ?>
-              <div class="group-card glass-card p-6 hover:scale-105 transition-all duration-300">
-                <!-- Header with actions -->
-                <div class="flex justify-between items-start mb-6">
-                  <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2 flex items-center">
-                      <i class="fas fa-users-rectangle mr-2 text-blue-300"></i>
-                      <?= htmlspecialchars($group['name']) ?>
-                    </h3>
-                    <p class="text-white/70 text-sm leading-relaxed"><?= htmlspecialchars($group['description']) ?></p>
-                  </div>
-                  
-                  <div class="flex space-x-2 ml-4">
-                    <button class="edit-group-btn action-btn edit" 
+              <div class="glass-card p-5 border border-white/10">
+                <div class="flex justify-between items-start mb-4">
+                  <h3 class="text-lg font-semibold text-white/90"><?= htmlspecialchars($group['name']) ?></h3>
+                  <div class="flex space-x-1">
+                    <button class="edit-group-btn action-button text-blue-400 hover:text-blue-300" 
                             data-group-id="<?= $group['id'] ?>"
                             data-name="<?= htmlspecialchars($group['name']) ?>"
-                            data-description="<?= htmlspecialchars($group['description']) ?>"
-                            title="Gruppe bearbeiten">
+                            data-description="<?= htmlspecialchars($group['description']) ?>">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="assign-tags-btn action-btn tag"
+                    <button class="assign-tags-btn action-button text-purple-400 hover:text-purple-300"
                             data-group-id="<?= $group['id'] ?>"
-                            data-group-name="<?= htmlspecialchars($group['name']) ?>"
-                            title="Tags zuweisen">
+                            data-group-name="<?= htmlspecialchars($group['name']) ?>">
                       <i class="fas fa-tag"></i>
                     </button>
-                    <button class="delete-group-btn action-btn delete"
-                            data-group-id="<?= $group['id'] ?>"
-                            title="Gruppe löschen">
+                    <button class="delete-group-btn action-button text-red-400 hover:text-red-300"
+                            data-group-id="<?= $group['id'] ?>">
                       <i class="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
                 
-                <!-- Tags Section -->
+                <p class="text-sm text-white/60 mb-4"><?= htmlspecialchars($group['description']) ?></p>
+                
+                <!-- Display group tags -->
                 <?php if (!empty($group['tags'])): ?>
-                  <div class="mb-6">
-                    <div class="flex items-center mb-3">
-                      <i class="fas fa-tags text-yellow-400 mr-2"></i>
-                      <span class="text-white/80 text-sm font-medium">Tags</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                      <?php foreach ($group['tags'] as $tag): ?>
-                        <span class="floating-tag text-xs" style="background: <?= htmlspecialchars($tag['color']) ?>30; border: 1px solid <?= htmlspecialchars($tag['color']) ?>; color: <?= htmlspecialchars($tag['color']) ?>;">
-                          <?= htmlspecialchars($tag['name']) ?>
-                        </span>
-                      <?php endforeach; ?>
-                    </div>
+                  <div class="mb-4 flex flex-wrap gap-1">
+                    <?php foreach ($group['tags'] as $tag): ?>
+                      <span class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
+                        <?= htmlspecialchars($tag['name']) ?>
+                      </span>
+                    <?php endforeach; ?>
                   </div>
                 <?php endif; ?>
                 
-                <!-- Members Section -->
                 <div>
-                  <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
-                      <i class="fas fa-user-friends text-purple-400 mr-2"></i>
-                      <span class="text-white/80 text-sm font-medium">Mitglieder</span>
-                    </div>
-                    <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">
-                      <?= $group['member_count'] ?>
-                    </span>
-                  </div>
-                  
-                  <div class="min-h-[60px] flex items-center">
+                  <h4 class="text-sm font-medium text-white/70 mb-2">
+                    <i class="fas fa-user mr-1"></i>Mitglieder (<?= $group['member_count'] ?>):
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
                     <?php if (empty($group['members'])): ?>
-                      <div class="text-center w-full py-4">
-                        <i class="fas fa-user-slash text-white/30 text-2xl mb-2"></i>
-                        <p class="text-white/40 text-xs">Keine Mitglieder</p>
-                      </div>
+                      <span class="text-white/40 text-xs">Keine Mitglieder gefunden.</span>
                     <?php else: ?>
-                      <div class="flex flex-wrap gap-2">
-                        <?php foreach ($group['members'] as $member): ?>
-                          <span class="member-bubble">
-                            <i class="fas fa-user mr-1"></i>
-                            <?= htmlspecialchars($member['username']) ?>
-                          </span>
-                        <?php endforeach; ?>
-                      </div>
+                      <?php foreach ($group['members'] as $member): ?>
+                        <span class="member-badge">
+                          <?= htmlspecialchars($member['username']) ?>
+                        </span>
+                      <?php endforeach; ?>
                     <?php endif; ?>
                   </div>
                 </div>
               </div>
             <?php endforeach; ?>
-          </div>
-        <?php endif; ?>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
   </main>
 
   <!-- Create Group Modal -->
-  <div id="groupModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center z-[9999]">
-    <div class="modal-content w-full max-w-lg p-8 mx-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6">
-        <h2 id="modalTitle" class="text-2xl font-bold text-white flex items-center">
-          <i class="fas fa-users-gear mr-3"></i>
-          Neue Gruppe erstellen
-        </h2>
-        <button id="closeModal" class="action-btn hover:rotate-90 transition-transform duration-300">
-          <i class="fas fa-times"></i>
-        </button>
+  <div id="groupModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-4">
+        <h2 id="modalTitle" class="text-xl font-semibold text-white">Neue Gruppe erstellen</h2>
+        <button id="closeModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
-      <form id="groupForm" method="post" class="space-y-6">
+      <form id="groupForm" method="post" class="space-y-4">
         <input type="hidden" name="action" value="create_group">
         <input type="hidden" id="groupId" name="group_id" value="">
         
         <div>
-          <label for="groupName" class="block text-sm font-semibold text-white/90 mb-2">
-            <i class="fas fa-signature mr-2"></i>Gruppenname
-          </label>
-          <input type="text" id="groupName" name="group_name" required class="w-full px-4 py-3 glass-input" placeholder="Team Alpha, Marketing, Entwicklung...">
+          <label for="groupName" class="block text-sm font-medium text-white/80 mb-1">Gruppenname</label>
+          <input type="text" id="groupName" name="group_name" required class="w-full px-4 py-3 glass-input">
         </div>
         
         <div>
-          <label for="groupDescription" class="block text-sm font-semibold text-white/90 mb-2">
-            <i class="fas fa-align-left mr-2"></i>Beschreibung
-          </label>
-          <textarea id="groupDescription" name="description" rows="3" class="w-full px-4 py-3 glass-input" placeholder="Was macht diese Gruppe besonders?"></textarea>
+          <label for="groupDescription" class="block text-sm font-medium text-white/80 mb-1">Beschreibung</label>
+          <textarea id="groupDescription" name="description" rows="3" class="w-full px-4 py-3 glass-input"></textarea>
         </div>
         
         <div>
-          <label for="groupMembers" class="block text-sm font-semibold text-white/90 mb-2">
-            <i class="fas fa-user-friends mr-2"></i>Mitglieder auswählen
-          </label>
+          <label for="groupMembers" class="block text-sm font-medium text-white/80 mb-1">Mitglieder</label>
           <select id="groupMembers" name="members[]" multiple class="w-full px-4 py-3 glass-input" style="min-height: 120px;">
             <?php foreach ($allUsers as $user): ?>
               <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?> (<?= htmlspecialchars($user['email']) ?>)</option>
             <?php endforeach; ?>
           </select>
-          <p class="text-xs text-white/60 mt-2">
-            <i class="fas fa-info-circle mr-1"></i>
-            Mehrere Mitglieder mit Strg+Klick auswählen
-          </p>
+          <p class="text-xs text-white/50 mt-1">Mehrere Mitglieder mit Strg+Klick auswählen</p>
         </div>
         
-        <div class="flex justify-end space-x-4 pt-6 border-t border-white/20">
-          <button type="button" id="cancelBtn" class="glass-button px-6 py-3">
-            <i class="fas fa-times mr-2"></i>Abbrechen
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelBtn" class="glass-button px-4 py-2">
+            Abbrechen
           </button>
-          <button type="submit" class="glass-button px-6 py-3" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3)); border-color: rgba(59, 130, 246, 0.5);">
-            <i class="fas fa-save mr-2"></i>Speichern
+          <button type="submit" class="glass-button px-4 py-2 bg-blue-600/30 border-blue-400/50">
+            Speichern
           </button>
         </div>
       </form>
@@ -506,54 +294,36 @@
   </div>
 
   <!-- Create Tag Modal -->
-  <div id="tagModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center z-[9999]">
-    <div class="modal-content w-full max-w-md p-8 mx-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 id="tagModalTitle" class="text-2xl font-bold text-white flex items-center">
-          <i class="fas fa-tag mr-3"></i>
-          Neuen Tag erstellen
-        </h2>
-        <button id="closeTagModal" class="action-btn hover:rotate-90 transition-transform duration-300">
-          <i class="fas fa-times"></i>
-        </button>
+  <div id="tagModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+      <div class="flex justify-between items-start mb-4">
+        <h2 id="tagModalTitle" class="text-xl font-semibold text-white">Neuen Tag erstellen</h2>
+        <button id="closeTagModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
-      <form id="tagForm" method="post" class="space-y-6">
+      <form id="tagForm" method="post" class="space-y-4">
         <input type="hidden" name="action" value="create_tag">
         <input type="hidden" id="tagId" name="tag_id" value="">
         
         <div>
-          <label for="tagName" class="block text-sm font-semibold text-white/90 mb-2">
-            <i class="fas fa-signature mr-2"></i>Tag-Name
-          </label>
-          <input type="text" id="tagName" name="tag_name" required class="w-full px-4 py-3 glass-input" placeholder="VIP, Premium, Beta...">
+          <label for="tagName" class="block text-sm font-medium text-white/80 mb-1">Tag-Name</label>
+          <input type="text" id="tagName" name="tag_name" required class="w-full px-4 py-3 glass-input">
         </div>
         
         <div>
-          <label for="tagColor" class="block text-sm font-semibold text-white/90 mb-2">
-            <i class="fas fa-palette mr-2"></i>Farbe wählen
-          </label>
-          <div class="flex space-x-4">
-            <input type="color" id="tagColor" name="tag_color" value="#4A90E2" class="h-14 w-14 rounded-xl cursor-pointer border-2 border-white/20">
-            <input type="text" id="tagColorText" value="#4A90E2" class="flex-1 px-4 py-3 glass-input font-mono">
-          </div>
-          <div class="flex space-x-2 mt-3">
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #ef4444" data-color="#ef4444"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #f97316" data-color="#f97316"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #eab308" data-color="#eab308"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #22c55e" data-color="#22c55e"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #3b82f6" data-color="#3b82f6"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #8b5cf6" data-color="#8b5cf6"></button>
-            <button type="button" class="color-preset w-8 h-8 rounded-lg cursor-pointer border border-white/20" style="background: #ec4899" data-color="#ec4899"></button>
+          <label for="tagColor" class="block text-sm font-medium text-white/80 mb-1">Farbe</label>
+          <div class="flex space-x-2">
+            <input type="color" id="tagColor" name="tag_color" value="#4A90E2" class="h-12 w-12 rounded-lg cursor-pointer border border-white/20">
+            <input type="text" id="tagColorText" value="#4A90E2" class="flex-1 px-4 py-3 glass-input">
           </div>
         </div>
         
-        <div class="flex justify-end space-x-4 pt-6 border-t border-white/20">
-          <button type="button" id="cancelTagBtn" class="glass-button px-6 py-3">
-            <i class="fas fa-times mr-2"></i>Abbrechen
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelTagBtn" class="glass-button px-4 py-2">
+            Abbrechen
           </button>
-          <button type="submit" class="glass-button px-6 py-3" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3)); border-color: rgba(34, 197, 94, 0.5);">
-            <i class="fas fa-save mr-2"></i>Speichern
+          <button type="submit" class="glass-button px-4 py-2 bg-green-600/30 border-green-400/50">
+            Speichern
           </button>
         </div>
       </form>
@@ -561,37 +331,28 @@
   </div>
 
   <!-- Assign Tags Modal -->
-  <div id="assignTagsModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center z-[9999]">
-    <div class="modal-content w-full max-w-lg p-8 mx-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 id="assignTagsTitle" class="text-2xl font-bold text-white flex items-center">
-          <i class="fas fa-tags mr-3"></i>
-          Tags zuweisen
-        </h2>
-        <button id="closeAssignTagsModal" class="action-btn hover:rotate-90 transition-transform duration-300">
-          <i class="fas fa-times"></i>
-        </button>
+  <div id="assignTagsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+      <div class="flex justify-between items-start mb-4">
+        <h2 id="assignTagsTitle" class="text-xl font-semibold text-white">Tags zuweisen</h2>
+        <button id="closeAssignTagsModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
-      <form id="assignTagsForm" method="post" class="space-y-6">
+      <form id="assignTagsForm" method="post" class="space-y-4">
         <input type="hidden" name="action" value="assign_tags">
         <input type="hidden" id="assignGroupId" name="group_id" value="">
         
-        <p class="text-white/70 text-sm mb-4">Wählen Sie die Tags aus, die der Gruppe zugewiesen werden sollen.</p>
+        <p class="text-white/60 text-sm mb-2">Wählen Sie die Tags aus, die der Gruppe zugewiesen werden sollen.</p>
         
-        <div class="max-h-80 overflow-y-auto p-4 glass-card border border-white/20 rounded-2xl">
+        <div class="max-h-60 overflow-y-auto p-3 glass-card border border-white/20 rounded-lg">
           <?php if (empty($allTags)): ?>
-            <div class="text-center py-8">
-              <i class="fas fa-tag text-4xl text-white/30 mb-4"></i>
-              <p class="text-white/50">Keine Tags verfügbar</p>
-              <p class="text-white/30 text-sm">Erstellen Sie zuerst Tags</p>
-            </div>
+            <p class="text-white/50 text-sm">Keine Tags verfügbar. Bitte erstellen Sie zuerst Tags.</p>
           <?php else: ?>
             <?php foreach ($allTags as $tag): ?>
-              <div class="flex items-center mb-4 p-3 rounded-xl hover:bg-white/5 transition-all duration-200">
-                <input type="checkbox" id="tag-<?= $tag['id'] ?>" name="tag_ids[]" value="<?= $tag['id'] ?>" class="h-5 w-5 text-blue-600 rounded bg-white/10 border-white/20 mr-4">
-                <label for="tag-<?= $tag['id'] ?>" class="cursor-pointer flex-1">
-                  <span class="floating-tag" style="background: <?= htmlspecialchars($tag['color']) ?>40; border: 2px solid <?= htmlspecialchars($tag['color']) ?>; color: white;">
+              <div class="flex items-center mb-3">
+                <input type="checkbox" id="tag-<?= $tag['id'] ?>" name="tag_ids[]" value="<?= $tag['id'] ?>" class="h-4 w-4 text-blue-600 rounded bg-white/10 border-white/20">
+                <label for="tag-<?= $tag['id'] ?>" class="ml-3 block">
+                  <span class="tag" style="background-color: <?= htmlspecialchars($tag['color']) ?>33; color: <?= htmlspecialchars($tag['color']) ?>; border: 1px solid <?= htmlspecialchars($tag['color']) ?>">
                     <?= htmlspecialchars($tag['name']) ?>
                   </span>
                 </label>
@@ -600,12 +361,12 @@
           <?php endif; ?>
         </div>
         
-        <div class="flex justify-end space-x-4 pt-6 border-t border-white/20">
-          <button type="button" id="cancelAssignTagsBtn" class="glass-button px-6 py-3">
-            <i class="fas fa-times mr-2"></i>Abbrechen
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancelAssignTagsBtn" class="glass-button px-4 py-2">
+            Abbrechen
           </button>
-          <button type="submit" class="glass-button px-6 py-3" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(126, 34, 206, 0.3)); border-color: rgba(147, 51, 234, 0.5);">
-            <i class="fas fa-check mr-2"></i>Tags zuweisen
+          <button type="submit" class="glass-button px-4 py-2 bg-purple-600/30 border-purple-400/50">
+            Tags zuweisen
           </button>
         </div>
       </form>
@@ -613,33 +374,25 @@
   </div>
 
   <!-- Delete Group Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center z-[9999]">
-    <div class="modal-content w-full max-w-md p-8 mx-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-white flex items-center">
-          <i class="fas fa-exclamation-triangle mr-3 text-red-400"></i>
-          Gruppe löschen
-        </h2>
-        <button id="closeDeleteModal" class="action-btn hover:rotate-90 transition-transform duration-300">
-          <i class="fas fa-times"></i>
-        </button>
+  <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+    <div class="glass-modal rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-xl font-semibold text-white">Gruppe löschen</h2>
+        <button id="closeDeleteModal" class="text-white/60 hover:text-white text-2xl">&times;</button>
       </div>
       
-      <p class="mb-8 text-white/80 text-center">
-        Sind Sie sicher, dass Sie diese Gruppe löschen möchten?<br>
-        <span class="text-red-400 font-semibold">Diese Aktion kann nicht rückgängig gemacht werden.</span>
-      </p>
+      <p class="mb-6 text-white/80">Bist du sicher, dass du diese Gruppe löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.</p>
       
       <form method="post">
         <input type="hidden" name="action" value="delete_group">
         <input type="hidden" id="deleteGroupId" name="group_id" value="">
         
-        <div class="flex justify-end space-x-4">
-          <button type="button" id="cancelDeleteBtn" class="glass-button px-6 py-3">
-            <i class="fas fa-times mr-2"></i>Abbrechen
+        <div class="flex justify-end space-x-3">
+          <button type="button" id="cancelDeleteBtn" class="glass-button px-4 py-2">
+            Abbrechen
           </button>
-          <button type="submit" class="glass-button px-6 py-3" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3)); border-color: rgba(239, 68, 68, 0.5);">
-            <i class="fas fa-trash mr-2"></i>Löschen
+          <button type="submit" class="glass-button px-4 py-2 bg-red-600/30 border-red-400/50">
+            Löschen
           </button>
         </div>
       </form>
@@ -647,180 +400,187 @@
   </div>
 
   <script>
-    // Enhanced modal management with animations
-    const modals = {
-      group: document.getElementById('groupModal'),
-      tag: document.getElementById('tagModal'),
-      assignTags: document.getElementById('assignTagsModal'),
-      delete: document.getElementById('deleteModal')
-    };
+    // Create Group Modal
+    const modal = document.getElementById('groupModal');
+    const deleteModal = document.getElementById('deleteModal');
+    const createBtn = document.getElementById('createGroupBtn');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const closeDeleteBtn = document.getElementById('closeDeleteModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
     
-    // Utility functions
-    function openModal(modalName) {
-      const modal = modals[modalName];
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      modal.style.animation = 'fadeIn 0.3s ease';
-    }
-    
-    function closeModal(modalName) {
-      const modal = modals[modalName];
-      modal.style.animation = 'fadeOut 0.3s ease';
-      setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }, 300);
-    }
-    
-    // Group Modal Events
-    document.getElementById('createGroupBtn').addEventListener('click', () => {
-      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-users-gear mr-3"></i>Neue Gruppe erstellen';
+    // Open new group modal
+    createBtn.addEventListener('click', () => {
+      document.getElementById('modalTitle').textContent = 'Neue Gruppe erstellen';
       document.getElementById('groupForm').reset();
       document.getElementById('groupForm').action.value = 'create_group';
       document.getElementById('groupId').value = '';
-      openModal('group');
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     });
     
+    // Close modal
+    [closeBtn, cancelBtn].forEach(btn => {
+      btn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+    });
+    
+    // Close delete modal
+    [closeDeleteBtn, cancelDeleteBtn].forEach(btn => {
+      btn.addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
+        deleteModal.classList.remove('flex');
+      });
+    });
+    
+    // Edit Group
     document.querySelectorAll('.edit-group-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const groupId = btn.dataset.groupId;
         const name = btn.dataset.name;
         const description = btn.dataset.description;
         
-        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit mr-3"></i>Gruppe bearbeiten';
+        document.getElementById('modalTitle').textContent = 'Gruppe bearbeiten';
         document.getElementById('groupForm').action.value = 'update_group';
         document.getElementById('groupId').value = groupId;
         document.getElementById('groupName').value = name;
         document.getElementById('groupDescription').value = description;
-        openModal('group');
+        
+        // TODO: Load group members for editing
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
       });
     });
     
-    // Tag Modal Events
-    document.getElementById('createTagBtn').addEventListener('click', () => {
-      document.getElementById('tagModalTitle').innerHTML = '<i class="fas fa-tag mr-3"></i>Neuen Tag erstellen';
-      document.getElementById('tagForm').reset();
-      document.getElementById('tagForm').action.value = 'create_tag';
+    // Delete Group
+    document.querySelectorAll('.delete-group-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('deleteGroupId').value = btn.dataset.groupId;
+        deleteModal.classList.remove('hidden');
+        deleteModal.classList.add('flex');
+      });
+    });
+    
+    // Tag Modal
+    const tagModal = document.getElementById('tagModal');
+    const createTagBtn = document.getElementById('createTagBtn');
+    const closeTagBtn = document.getElementById('closeTagModal');
+    const cancelTagBtn = document.getElementById('cancelTagBtn');
+    const tagForm = document.getElementById('tagForm');
+    const tagColor = document.getElementById('tagColor');
+    const tagColorText = document.getElementById('tagColorText');
+    
+    // Open new tag modal
+    createTagBtn.addEventListener('click', () => {
+      document.getElementById('tagModalTitle').textContent = 'Neuen Tag erstellen';
+      tagForm.reset();
+      tagForm.action.value = 'create_tag';
       document.getElementById('tagId').value = '';
-      document.getElementById('tagColor').value = '#4A90E2';
-      document.getElementById('tagColorText').value = '#4A90E2';
-      openModal('tag');
+      tagColor.value = '#4A90E2';
+      tagColorText.value = '#4A90E2';
+      
+      tagModal.classList.remove('hidden');
+      tagModal.classList.add('flex');
     });
     
-    document.querySelectorAll('.edit-tag-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        
-        const tagId = btn.dataset.tagId;
-        const tagName = btn.dataset.tagName;
-        const tagColor = btn.dataset.tagColor;
-        
-        document.getElementById('tagModalTitle').innerHTML = '<i class="fas fa-edit mr-3"></i>Tag bearbeiten';
-        document.getElementById('tagForm').action.value = 'update_tag';
-        document.getElementById('tagId').value = tagId;
-        document.getElementById('tagName').value = tagName;
-        document.getElementById('tagColor').value = tagColor;
-        document.getElementById('tagColorText').value = tagColor;
-        openModal('tag');
+    // Close tag modal
+    [closeTagBtn, cancelTagBtn].forEach(btn => {
+      btn.addEventListener('click', () => {
+        tagModal.classList.add('hidden');
+        tagModal.classList.remove('flex');
       });
     });
     
-    // Color preset functionality
-    document.querySelectorAll('.color-preset').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const color = btn.dataset.color;
-        document.getElementById('tagColor').value = color;
-        document.getElementById('tagColorText').value = color;
-      });
+    // Update color input text when color picker changes
+    tagColor.addEventListener('input', (e) => {
+      tagColorText.value = e.target.value;
     });
     
-    // Color input synchronization
-    document.getElementById('tagColor').addEventListener('input', (e) => {
-      document.getElementById('tagColorText').value = e.target.value;
-    });
-    
-    document.getElementById('tagColorText').addEventListener('input', (e) => {
+    // Update color picker when text changes
+    tagColorText.addEventListener('input', (e) => {
+      // Only update if valid hex color
       if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-        document.getElementById('tagColor').value = e.target.value;
+        tagColor.value = e.target.value;
       }
     });
     
+    // Edit Tag
+    document.querySelectorAll('.edit-tag-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        
+        const tagId = btn.dataset.tagId;
+        const tagName = btn.dataset.tagName;
+        const tagColorValue = btn.dataset.tagColor;
+        
+        document.getElementById('tagModalTitle').textContent = 'Tag bearbeiten';
+        tagForm.action.value = 'update_tag';
+        document.getElementById('tagId').value = tagId;
+        document.getElementById('tagName').value = tagName;
+        tagColor.value = tagColorValue;
+        tagColorText.value = tagColorValue;
+        
+        tagModal.classList.remove('hidden');
+        tagModal.classList.add('flex');
+      });
+    });
+    
     // Assign Tags Modal
+    const assignTagsModal = document.getElementById('assignTagsModal');
+    const closeAssignTagsBtn = document.getElementById('closeAssignTagsModal');
+    const cancelAssignTagsBtn = document.getElementById('cancelAssignTagsBtn');
+    
+    // Open assign tags modal
     document.querySelectorAll('.assign-tags-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const groupId = btn.dataset.groupId;
         const groupName = btn.dataset.groupName;
         
-        document.getElementById('assignTagsTitle').innerHTML = `<i class="fas fa-tags mr-3"></i>Tags für "${groupName}" zuweisen`;
+        document.getElementById('assignTagsTitle').textContent = `Tags für "${groupName}" zuweisen`;
         document.getElementById('assignGroupId').value = groupId;
         
-        // Reset checkboxes
+        // Reset all checkboxes
         document.querySelectorAll('#assignTagsForm input[type="checkbox"]').forEach(cb => {
           cb.checked = false;
         });
         
-        openModal('assignTags');
+        // Get current tags for this group and check the corresponding boxes
+        fetch(`/api/get_group_tags.php?group_id=${groupId}`)
+          .then(response => response.json())
+          .then(tags => {
+            tags.forEach(tagId => {
+              const checkbox = document.getElementById(`tag-${tagId}`);
+              if (checkbox) checkbox.checked = true;
+            });
+          })
+          .catch(error => console.error('Error fetching group tags:', error));
+        
+        assignTagsModal.classList.remove('hidden');
+        assignTagsModal.classList.add('flex');
       });
     });
     
-    // Delete Modal
-    document.querySelectorAll('.delete-group-btn').forEach(btn => {
+    // Close assign tags modal
+    [closeAssignTagsBtn, cancelAssignTagsBtn].forEach(btn => {
       btn.addEventListener('click', () => {
-        document.getElementById('deleteGroupId').value = btn.dataset.groupId;
-        openModal('delete');
+        assignTagsModal.classList.add('hidden');
+        assignTagsModal.classList.remove('flex');
       });
     });
     
-    // Close modal events
-    const closeButtons = [
-      ['closeModal', 'group'],
-      ['cancelBtn', 'group'],
-      ['closeTagModal', 'tag'],
-      ['cancelTagBtn', 'tag'],
-      ['closeAssignTagsModal', 'assignTags'],
-      ['cancelAssignTagsBtn', 'assignTags'],
-      ['closeDeleteModal', 'delete'],
-      ['cancelDeleteBtn', 'delete']
-    ];
-    
-    closeButtons.forEach(([buttonId, modalName]) => {
-      document.getElementById(buttonId)?.addEventListener('click', () => {
-        closeModal(modalName);
-      });
-    });
-    
-    // Close on background click
-    Object.values(modals).forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          const modalName = Object.keys(modals).find(key => modals[key] === modal);
-          closeModal(modalName);
+    // Close modals on background click
+    [modal, deleteModal, tagModal, assignTagsModal].forEach(m => {
+      m.addEventListener('click', e => {
+        if (e.target === m) {
+          m.classList.add('hidden');
+          m.classList.remove('flex');
         }
       });
     });
-    
-    // Add CSS animations
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      @keyframes fadeOut {
-        from { opacity: 1; transform: scale(1); }
-        to { opacity: 0; transform: scale(0.9); }
-      }
-    `;
-    document.head.appendChild(style);
-    
-    // Auto-hide alerts
-    setTimeout(() => {
-      document.querySelectorAll('.success-alert, .error-alert').forEach(alert => {
-        alert.style.animation = 'slideOutUp 0.5s ease forwards';
-        setTimeout(() => alert.remove(), 500);
-      });
-    }, 5000);
   </script>
 </body>
 </html>

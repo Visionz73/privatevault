@@ -46,8 +46,7 @@
       transform: translateY(-1px);
     }
     .control-button.active {
-      background: rgba(147, 51, 234, 0.3);
-      border-color: rgba(147, 51, 234, 0.5);
+      background: rgba(255, 255, 255, 0.2);
       color: white;
       font-weight: 600;
     }

@@ -42,14 +42,18 @@ $initials = getUserInitials($user);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
     
     .glass-card:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.18);
       transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
     
     .glass-nav {
@@ -65,7 +69,9 @@ $initials = getUserInitials($user);
       backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 2rem;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      box-shadow: 
+        0 16px 48px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
     
     /* Navigation Items - Only these have hover animations */
