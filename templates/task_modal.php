@@ -344,8 +344,7 @@ document.getElementById('taskForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
-    const isEdit = formData.get('id');
-    const url = isEdit ? "/src/api/task_update.php" : "/src/api/task_create.php";
+    const url = <?= $isNew ? '"/src/api/task_create.php"' : '"/src/api/task_update.php"' ?>;
     
     fetch(url, {
         method: 'POST',
@@ -365,5 +364,12 @@ document.getElementById('taskForm').addEventListener('submit', function(e) {
         console.error('Error:', error);
         alert('Es ist ein Fehler aufgetreten');
     });
+});
+
+// Handle close modal buttons
+document.addEventListener('click', function(e) {
+    if (e.target.hasAttribute('data-action') && e.target.getAttribute('data-action') === 'close-modal') {
+        closeTaskModal();
+    }
 });
 </script>

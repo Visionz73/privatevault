@@ -1,70 +1,94 @@
 <?php
-// src/api/task_update.php - Enhanced API endpoint for updating tasks
+// src/api/task_update.php - API endpoint for updating task status
 header('Content-Type: application/json');
-header('Cache-Control: no-cache, must-revalidate');
 
+// Required files
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../lib/auth.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Nicht authentifiziert']);
+    echo json_encode(['error' => 'Nicht authentifiziert']);
     exit;
 }
 
+// Check if request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Nur POST-Requests erlaubt']);
+    echo json_encode(['error' => 'Methode nicht erlaubt']);
     exit;
 }
 
-$task_id = $_POST['id'] ?? null;
-$new_status = $_POST['status'] ?? null;
+// Get task ID and new status
+$taskId = $_POST['id'] ?? null;
+$status = $_POST['status'] ?? null;
 
-if (!$task_id || !$new_status) {
-    echo json_encode(['success' => false, 'error' => 'Task ID und Status sind erforderlich']);
+if (!$taskId || !$status) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Fehlende Parameter']);
     exit;
 }
 
 // Validate status
-$valid_statuses = ['todo', 'doing', 'done'];
-if (!in_array($new_status, $valid_statuses)) {
-    echo json_encode(['success' => false, 'error' => 'Ungültiger Status']);
+$validStatuses = ['todo', 'doing', 'done'];
+if (!in_array($status, $validStatuses)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Ungültiger Status']);
     exit;
 }
 
 try {
-    // Check if user has permission to update this task
+    // Check if the user has permission to update this task
     $stmt = $pdo->prepare("
-        SELECT t.id, t.created_by, t.assigned_to, t.assigned_group_id
+        SELECT t.id 
         FROM tasks t
-        LEFT JOIN user_group_members ugm ON t.assigned_group_id = ugm.group_id
-        WHERE t.id = ? AND (
-            t.created_by = ? OR 
-            t.assigned_to = ? OR 
-            ugm.user_id = ?
-        )
+        LEFT JOIN user_group_members m ON t.assigned_group_id = m.group_id
+        WHERE t.id = :task_id 
+          AND (t.created_by = :user_id 
+               OR t.assigned_to = :user_id
+               OR m.user_id = :user_id)
+        LIMIT 1
     ");
-    $stmt->execute([$task_id, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
+    
+    $stmt->execute([
+        ':task_id' => $taskId,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+    
     $task = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$task) {
-        echo json_encode(['success' => false, 'error' => 'Aufgabe nicht gefunden oder keine Berechtigung']);
+        http_response_code(403);
+        echo json_encode(['error' => 'Keine Berechtigung']);
         exit;
     }
     
-    // Update task status
-    $stmt = $pdo->prepare("UPDATE tasks SET status = ?, updated_at = NOW() WHERE id = ?");
-    $stmt->execute([$new_status, $task_id]);
+    // Update the task status
+    $stmt = $pdo->prepare("
+        UPDATE tasks 
+        SET status = :status, 
+            updated_at = NOW(),
+            is_done = :is_done
+        WHERE id = :task_id
+    ");
     
-    echo json_encode(['success' => true, 'message' => 'Status erfolgreich aktualisiert']);
+    $stmt->execute([
+        ':status' => $status,
+        ':task_id' => $taskId,
+        ':is_done' => ($status === 'done' ? 1 : 0)
+    ]);
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Aufgabenstatus aktualisiert'
+    ]);
     
 } catch (PDOException $e) {
-    error_log("Database error in task_update.php: " . $e->getMessage());
-    echo json_encode(['success' => false, 'error' => 'Datenbankfehler']);
-} catch (Exception $e) {
-    error_log("Error in task_update: " . $e->getMessage());
-    echo json_encode(['success' => false, 'error' => 'Unbekannter Fehler']);
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'Datenbankfehler',
+        'details' => $e->getMessage() 
+    ]);
 }
 ?>
