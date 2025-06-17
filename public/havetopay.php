@@ -35,7 +35,7 @@ try {
                 overflow: hidden;
             }
             .error-header {
-                background: linear-gradient(45deg, #ff5b5b, #ff9a9e);
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.8));
                 padding: 25px;
                 position: relative;
             }
@@ -46,19 +46,21 @@ try {
             }
             .error-body {
                 padding: 30px;
+                color: white;
             }
             .btn-return {
-                background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
                 border: none;
-                border-radius: 50px;
+                border-radius: 0.75rem;
                 padding: 10px 25px;
                 font-weight: 500;
-                box-shadow: 0 4px 15px rgba(0,210,255,0.4);
-                transition: transform 0.3s, box-shadow 0.3s;
+                transition: all 0.3s ease;
+                color: white;
             }
             .btn-return:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 7px 20px rgba(0,210,255,0.5);
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
             }
             .error-details {
                 background: rgba(255, 255, 255, 0.1);
@@ -66,6 +68,7 @@ try {
                 padding: 15px;
                 margin-top: 20px;
                 font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.7);
             }
             .error-wave {
                 position: absolute;

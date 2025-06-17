@@ -94,8 +94,8 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column: Basic Info -->
                     <div class="lg:col-span-2">
-                        <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-                            <div class="bg-gradient-to-r from-purple-600/30 via-indigo-700/40 to-purple-800/30 backdrop-blur-sm px-6 py-4 border-b border-white/10">
+                        <div class="bg-gradient-to-br from-white/10 via-white/5 to-white/8 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+                            <div class="bg-white/10 backdrop-blur-sm px-6 py-4 border-b border-white/10">
                                 <h2 class="text-lg font-bold flex items-center text-white/90">
                                     <i class="fas fa-info-circle mr-3"></i>Ausgaben-Details
                                 </h2>

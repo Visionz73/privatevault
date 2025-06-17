@@ -40,17 +40,18 @@
     }
     
     .primary-button {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
       font-weight: 600;
+      border-radius: 0.75rem;
       transition: all 0.3s ease;
     }
     
     .primary-button:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%);
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 25px rgba(147, 51, 234, 0.3);
     }
     
     .error-message {
