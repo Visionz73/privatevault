@@ -795,6 +795,160 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       padding: 1rem;
     }
   }
+
+  /* Stats Container */
+  .stats-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    margin: 0 1rem 1rem;
+  }
+  
+  .stats-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stat-item {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .stat-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+  
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    flex-shrink: 0;
+  }
+  
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  
+  .stat-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    line-height: 1;
+  }
+  
+  .stat-label {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1;
+    margin-top: 0.125rem;
+  }
+  
+  .stat-item.cpu:hover .stat-icon {
+    background: rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+  }
+  
+  .stat-item.memory:hover .stat-icon {
+    background: rgba(34, 197, 94, 0.3);
+    color: #86efac;
+  }
+  
+  .stat-item.storage:hover .stat-icon {
+    background: rgba(251, 191, 36, 0.3);
+    color: #fde047;
+  }
+  
+  .stat-item.network:hover .stat-icon {
+    background: rgba(147, 51, 234, 0.3);
+    color: #c4b5fd;
+  }
+
+  /* Enhanced shortcut modal styling */
+  .form-help {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  /* Mobile optimizations for stats */
+  @media (max-width: 768px) {
+    .stats-container {
+      padding: 0.75rem;
+      margin: 0 0.75rem 0.75rem;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.375rem;
+    }
+    
+    .stat-item {
+      padding: 0.5rem;
+    }
+    
+    .stat-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    
+    .stat-value {
+      font-size: 0.625rem;
+    }
+    
+    .stat-label {
+      font-size: 0.5rem;
+    }
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 0.25rem;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+  }
 </style>
 
 <!-- Add the haveToPay-layout class to body if on HaveToPay page -->
@@ -917,7 +1071,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           <span class="shortcut-label">Abmelden</span>
         </a>
 
-        <!-- Custom Shortcut Slot 1 -->
+        <!-- Custom Shortcut Slots -->
         <div class="shortcut-item empty" data-slot="custom1" onclick="openCustomShortcutModal(this)">
           <div class="shortcut-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -927,7 +1081,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           <span class="shortcut-label">Add Shortcut</span>
         </div>
 
-        <!-- Custom Shortcut Slot 2 -->
         <div class="shortcut-item empty" data-slot="custom2" onclick="openCustomShortcutModal(this)">
           <div class="shortcut-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -935,6 +1088,70 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
             </svg>
           </div>
           <span class="shortcut-label">Add Shortcut</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Stats Section -->
+    <div class="stats-container">
+      <h3 class="stats-title">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        System
+      </h3>
+      
+      <div class="stats-grid">
+        <!-- CPU Usage -->
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="cpuUsage">--</span>
+            <span class="stat-label">CPU</span>
+          </div>
+        </div>
+
+        <!-- Memory Usage -->
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="memoryUsage">--</span>
+            <span class="stat-label">RAM</span>
+          </div>
+        </div>
+
+        <!-- Storage -->
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="storageUsage">--</span>
+            <span class="stat-label">Storage</span>
+          </div>
+        </div>
+
+        <!-- Network Status -->
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="networkStatus">Online</span>
+            <span class="stat-label">Netzwerk</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1029,23 +1246,35 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <form id="customShortcutForm">
         <div class="form-group">
           <label for="shortcutName">Name</label>
-          <input type="text" id="shortcutName" name="name" required placeholder="z.B. Quick Notes">
+          <input type="text" id="shortcutName" name="name" required placeholder="z.B. Meine Notizen, Quick Access">
         </div>
         <div class="form-group">
-          <label for="shortcutUrl">URL</label>
-          <input type="url" id="shortcutUrl" name="url" required placeholder="https://example.com oder /relative/path">
+          <label for="shortcutUrl">URL oder Seite</label>
+          <input type="text" id="shortcutUrl" name="url" required placeholder="/meine-seite.php oder https://example.com">
+          <small class="form-help">Interne Seiten: /seite.php | Externe: https://example.com</small>
         </div>
         <div class="form-group">
-          <label for="shortcutIcon">Icon (optional)</label>
+          <label for="shortcutIcon">Icon auswählen</label>
           <select id="shortcutIcon" name="icon">
             <option value="link">🔗 Link</option>
-            <option value="note">📝 Note</option>
-            <option value="calendar">📅 Calendar</option>
-            <option value="mail">📧 Mail</option>
-            <option value="folder">📁 Folder</option>
-            <option value="settings">⚙️ Settings</option>
-            <option value="star">⭐ Star</option>
-            <option value="bookmark">🔖 Bookmark</option>
+            <option value="note">📝 Notizen</option>
+            <option value="calendar">📅 Kalender</option>
+            <option value="mail">📧 E-Mail</option>
+            <option value="folder">📁 Ordner</option>
+            <option value="settings">⚙️ Einstellungen</option>
+            <option value="star">⭐ Favorit</option>
+            <option value="bookmark">🔖 Lesezeichen</option>
+            <option value="dashboard">📊 Dashboard</option>
+            <option value="chart">📈 Diagramm</option>
+            <option value="tool">🔧 Tool</option>
+            <option value="globe">🌐 Website</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="shortcutTarget">Link-Verhalten</label>
+          <select id="shortcutTarget" name="target">
+            <option value="_self">Gleiche Seite</option>
+            <option value="_blank">Neuer Tab</option>
           </select>
         </div>
         <div class="form-actions">
@@ -1133,64 +1362,38 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   document.addEventListener('DOMContentLoaded', function() {
     loadCustomShortcuts();
     
-    // ...existing code...
+    // System stats monitoring
+    function updateSystemStats() {
+      // Simulate system stats (in a real application, these would come from server-side monitoring)
+      const cpuUsage = Math.floor(Math.random() * 30 + 10) + '%';
+      const memoryUsage = Math.floor(Math.random() * 40 + 30) + '%';
+      const storageUsage = Math.floor(Math.random() * 20 + 60) + '%';
+      const networkStatus = navigator.onLine ? 'Online' : 'Offline';
+      
+      document.getElementById('cpuUsage').textContent = cpuUsage;
+      document.getElementById('memoryUsage').textContent = memoryUsage;
+      document.getElementById('storageUsage').textContent = storageUsage;
+      document.getElementById('networkStatus').textContent = networkStatus;
+      
+      // Update network status color
+      const networkStatElement = document.getElementById('networkStatus');
+      networkStatElement.style.color = navigator.onLine ? '#86efac' : '#fca5a5';
+    }
+
+    // Initialize system monitoring
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCustomShortcuts();
+      updateSystemStats();
+      
+      // Update stats every 30 seconds
+      setInterval(updateSystemStats, 30000);
+      
+      // Listen for online/offline events
+      window.addEventListener('online', updateSystemStats);
+      window.addEventListener('offline', updateSystemStats);
+    });
   });
-  
-  function loadCustomShortcuts() {
-    Object.keys(customShortcuts).forEach(slot => {
-      const shortcut = customShortcuts[slot];
-      const slotElement = document.querySelector(`[data-slot="${slot}"]`);
-      if (slotElement && shortcut) {
-        updateShortcutSlot(slotElement, shortcut);
-      }
-    });
-  }
-  
-  function updateShortcutSlot(slotElement, shortcut) {
-    slotElement.classList.remove('empty');
-    slotElement.onclick = null; // Remove the old onclick handler
-    
-    // Create new click handler that opens shortcut in new tab
-    slotElement.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.open(shortcut.url, '_blank');
-    });
-    
-    const iconElement = slotElement.querySelector('.shortcut-icon');
-    const labelElement = slotElement.querySelector('.shortcut-label');
-    
-    iconElement.innerHTML = getIconHtml(shortcut.icon);
-    labelElement.textContent = shortcut.name;
-    
-    // Add edit functionality on right click
-    slotElement.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      openCustomShortcutModal(slotElement, shortcut);
-    });
-    
-    // Add double-click for editing (more user-friendly)
-    slotElement.addEventListener('dblclick', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      openCustomShortcutModal(slotElement, shortcut);
-    });
-  }
-  
-  function getIconHtml(iconType) {
-    const icons = {
-      link: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>',
-      note: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
-      calendar: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',
-      mail: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',
-      folder: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>',
-      settings: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>',
-      star: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>',
-      bookmark: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>'
-    };
-    return icons[iconType] || icons.link;
-  }
-  
+
   function openCustomShortcutModal(slotElement, existingShortcut = null) {
     const modal = document.getElementById('customShortcutModal');
     const form = document.getElementById('customShortcutForm');
@@ -1203,10 +1406,12 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       document.getElementById('shortcutName').value = existingShortcut.name;
       document.getElementById('shortcutUrl').value = existingShortcut.url;
       document.getElementById('shortcutIcon').value = existingShortcut.icon;
+      document.getElementById('shortcutTarget').value = existingShortcut.target || '_self';
       deleteBtn.style.display = 'block';
       modalTitle.textContent = 'Shortcut bearbeiten';
     } else {
       form.reset();
+      document.getElementById('shortcutTarget').value = '_self';
       deleteBtn.style.display = 'none';
       modalTitle.textContent = 'Custom Shortcut erstellen';
     }
@@ -1218,7 +1423,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       document.getElementById('shortcutName').focus();
     }, 100);
   }
-  
+
   function closeCustomShortcutModal() {
     const modal = document.getElementById('customShortcutModal');
     modal.classList.remove('active');
@@ -1245,80 +1450,157 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     // Remove all event listeners
     slotElement.replaceWith(slotElement.cloneNode(true));
     
-    // Get the new element reference
-    const newSlotElement = document.querySelector(`[data-slot="${slotElement.dataset.slot}"]`);
+    // Get the new element referencescript>  }    }, 100);      document.getElementById('shortcutName').focus();    setTimeout(() => {    // Focus on first input        modal.classList.add('active');        }      modalTitle.textContent = 'Custom Shortcut erstellen';      deleteBtn.style.display = 'none';      form.reset();    } else {      modalTitle.textContent = 'Shortcut bearbeiten';      deleteBtn.style.display = 'block';      document.getElementById('shortcutTarget').value = existingShortcut.target || '_self';      document.getElementById('shortcutIcon').value = existingShortcut.icon;      document.getElementById('shortcutUrl').value = existingShortcut.url;      document.getElementById('shortcutName').value = existingShortcut.name;    if (existingShortcut) {        currentSlot = slotElement.dataset.slot;        const modalTitle = document.querySelector('.shortcuts-modal-title');    const deleteBtn = document.getElementById('deleteShortcutBtn');    const form = document.getElementById('customShortcutForm');    const modal = document.getElementById('customShortcutModal');  function openCustomShortcutModal(slotElement, existingShortcut = null) {    }    return icons[iconType] || icons.link;    };      bookmark: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>'      star: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>',          </svg>',      settings: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>      folder: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M3 7c0 2.21 3.582 4 8 4s8-1.79 8-4M3 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>',      mail: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',      calendar: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',      note: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',      link: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>',    const icons = {  function getIconHtml(iconType) {    }    });      openCustomShortcutModal(slotElement, shortcut);      e.stopPropagation();      e.preventDefault();    slotElement.addEventListener('dblclick', function(e) {    // Add double-click for editing (more user-friendly)        });      openCustomShortcutModal(slotElement, shortcut);      e.preventDefault();    slotElement.addEventListener('contextmenu', function(e) {    // Add edit functionality on right click        labelElement.textContent = shortcut.name;    iconElement.innerHTML = getIconHtml(shortcut.icon);        const labelElement = slotElement.querySelector('.shortcut-label');    const iconElement = slotElement.querySelector('.shortcut-icon');        });      window.open(shortcut.url, '_blank');      e.preventDefault();    slotElement.addEventListener('click', function(e) {    // Create new click handler that opens shortcut in new tab        slotElement.onclick = null; // Remove the old onclick handler    slotElement.classList.remove('empty');  function updateShortcutSlot(slotElement, shortcut) {    }    });      }        updateShortcutSlot(slotElement, shortcut);      if (slotElement && shortcut) {      const slotElement = document.querySelector(`[data-slot="${slot}"]`);      const shortcut = customShortcuts[slot];    Object.keys(customShortcuts).forEach(slot => {  function loadCustomShortcuts() {    function closeCustomShortcutModal() {
+    const newSlotElement = document.querySelector(`[data-slot="${slotElement.dataset.slot}"]`);customShortcutModal');
     
-    // Reset onclick handler for empty slot
+    // Reset onclick handler for empty slotcurrentSlot = null;
     newSlotElement.onclick = function() {
       openCustomShortcutModal(newSlotElement);
-    };
-    
+    };nction deleteCustomShortcut() {
+    omShortcuts[currentSlot]) {
     const iconElement = newSlotElement.querySelector('.shortcut-icon');
-    const labelElement = newSlotElement.querySelector('.shortcut-label');
-    
+    const labelElement = newSlotElement.querySelector('.shortcut-label');    delete customShortcuts[currentSlot];
+    ts', JSON.stringify(customShortcuts));
     iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
-    labelElement.textContent = 'Add Shortcut';
-  }
+    labelElement.textContent = 'Add Shortcut';ctor(`[data-slot="${currentSlot}"]`);
+  }  resetShortcutSlot(slotElement);
+      
+  function updateShortcutSlot(slotElement, shortcut) {
+    slotElement.classList.remove('empty');
+    slotElement.onclick = null; // Remove the old onclick handler}
+    
+    // Create new click handler that respects target setting
+    slotElement.addEventListener('click', function(e) {unction resetShortcutSlot(slotElement) {
+      e.preventDefault();  slotElement.classList.add('empty');
+      if (shortcut.target === '_blank') {
+        window.open(shortcut.url, '_blank');
+      } else {With(slotElement.cloneNode(true));
+        window.location.href = shortcut.url;
+      }
+    });tElement.dataset.slot}"]`);
+    
+    const iconElement = slotElement.querySelector('.shortcut-icon');
+    const labelElement = slotElement.querySelector('.shortcut-label');newSlotElement.onclick = function() {
+    
+    iconElement.innerHTML = getIconHtml(shortcut.icon);
+    labelElement.textContent = shortcut.name;
+    
+    // Add edit functionality on right clickent.querySelector('.shortcut-label');
+    slotElement.addEventListener('contextmenu', function(e) {
+      e.preventDefault();onElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
+      openCustomShortcutModal(slotElement, shortcut);
+    });
+    
+    // Add double-click for editing (more user-friendly)andle form submission
+    slotElement.addEventListener('dblclick', function(e) {on(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCustomShortcutModal(slotElement, shortcut);entById('shortcutName').value.trim();
+    });nst url = document.getElementById('shortcutUrl').value.trim();
+  }ElementById('shortcutIcon').value;
   
-  // Handle form submission
+  function getIconHtml(iconType) {
+    const icons = {f (name && url && currentSlot !== null) {
+      link: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>',    // Validate URL format
+      note: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',th('https://') && !url.startsWith('/')) {
+      mail: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',
+      folder: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>',
+      settings: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>',  
+      star: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>',ut = { name, url: validUrl, icon, target };
+      bookmark: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>',[currentSlot] = shortcut;
+      dashboard: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>',stringify(customShortcuts));
+      chart: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>',
+      tool: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" /></svg>',ment = document.querySelector(`[data-slot="${currentSlot}"]`);
+      globe: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 009-9" /></svg>'
+    };
+    return icons[iconType] || icons.link;tomShortcutModal();
+  }
+   // Show success message
+  // Handle form submission with enhanced validation  showNotification('Shortcut erfolgreich gespeichert!', 'success');
   document.getElementById('customShortcutForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const name = document.getElementById('shortcutName').value.trim();
-    const url = document.getElementById('shortcutUrl').value.trim();
+    const name = document.getElementById('shortcutName').value.trim();tion to show notifications
+    let url = document.getElementById('shortcutUrl').value.trim();ation(message, type = 'info') {
     const icon = document.getElementById('shortcutIcon').value;
+    const target = document.getElementById('shortcutTarget').value;tion.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transform translate-x-full transition-transform duration-300`;
     
     if (name && url && currentSlot !== null) {
-      // Validate URL format
-      let validUrl = url;
+      // Enhanced URL validation and formatting
       if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
-        validUrl = 'https://' + url;
+        // If it looks like a domain, add https://
+        if (url.includes('.') && !url.includes(' ')) {
+          url = 'https://' + url;cation.classList.add('bg-red-500');
+        } else {;
+          // Otherwise treat as internal path   default:
+          url = '/' + url.replace(/^\/+/, '');      notification.classList.add('bg-blue-500');
+        }
       }
-      
-      const shortcut = { name, url: validUrl, icon };
+       = message;
+      const shortcut = { name, url, icon, target };ification);
       customShortcuts[currentSlot] = shortcut;
-      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
-      
-      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));/ Animate in
+        setTimeout(() => {
+      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);emove('translate-x-full');
       updateShortcutSlot(slotElement, shortcut);
       
       closeCustomShortcutModal();
-      
-      // Show success message
-      showNotification('Shortcut erfolgreich gespeichert!', 'success');
-    }
-  });
-  
-  // Utility function to show notifications
-  function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transform translate-x-full transition-transform duration-300`;
-    
-    switch(type) {
-      case 'success':
-        notification.classList.add('bg-green-500');
-        break;
-      case 'error':
-        notification.classList.add('bg-red-500');
-        break;
-      default:
-        notification.classList.add('bg-blue-500');
-    }
-    
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-      notification.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      notification.classList.add('translate-x-full');
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 300);
+      etTimeout(() => {
+      // Show success message notification.classList.add('translate-x-full');
+      showNotification('Shortcut erfolgreich gespeichert!', 'success');Timeout(() => {
+    }        document.body.removeChild(notification);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>  });    }      closeCustomShortcutModal();    if (e.key === 'Escape' && document.getElementById('customShortcutModal').classList.contains('active')) {  document.addEventListener('keydown', function(e) {  // Close modal on Escape key    });    }      closeCustomShortcutModal();    if (e.target === this) {  document.getElementById('customShortcutModal').addEventListener('click', function(e) {  // Close modal on background click    }    }, 3000);      }, 300);        document.body.removeChild(notification);      setTimeout(() => {      notification.classList.add('translate-x-full');    setTimeout(() => {    // Remove after 3 seconds        }, 100);      notification.classList.remove('translate-x-full');    setTimeout(() => {    // Animate in        document.body.appendChild(notification);    notification.textContent = message;        }        notification.classList.add('bg-blue-500');      default:        break;        notification.classList.add('bg-red-500');      case 'error':        break;        notification.classList.add('bg-green-500');      case 'success':    switch(type) {        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transform translate-x-full transition-transform duration-300`;    const notification = document.createElement('div');  function showNotification(message, type = 'info') {  // Utility function to show notifications  });      }, 300);
     }, 3000);
   }
   
