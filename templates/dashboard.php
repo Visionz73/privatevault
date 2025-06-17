@@ -13,10 +13,228 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
+      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
     }
+
+    /* macOS-Style Control Bar */
+    .control-bar {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 60;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      padding: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .control-bar {
+        top: 5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: fit-content;
+      }
+    }
+
+    .control-icon {
+      width: 2rem;
+      height: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .control-icon::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .control-icon:hover::before {
+      left: 100%;
+    }
+
+    .control-icon:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .control-icon.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #93c5fd;
+    }
+
+    /* Gradient Picker Modal */
+    .gradient-picker-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gradient-picker-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .gradient-picker-content {
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: white;
+      transform: scale(0.9) translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .gradient-picker-modal.active .gradient-picker-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .gradient-picker-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .gradient-picker-close {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      padding: 0;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+    }
+
+    .gradient-picker-close:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .gradient-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    .gradient-option {
+      aspect-ratio: 16/9;
+      border-radius: 1rem;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .gradient-option::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      border-radius: inherit;
+    }
+
+    .gradient-option::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .gradient-option:hover {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .gradient-option.selected {
+      border-color: rgba(59, 130, 246, 0.8);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .gradient-option.selected::after {
+      opacity: 1;
+    }
+
+    .gradient-label {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    /* Predefined Gradients */
+    .gradient-cosmic { background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%); }
+    .gradient-ocean { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%); }
+    .gradient-sunset { background: linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%); }
+    .gradient-forest { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%); }
+    .gradient-purple { background: linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%); }
+    .gradient-rose { background: linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%); }
+    .gradient-cyber { background: linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%); }
+    .gradient-ember { background: linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%); }
 
     /* Dashboard Shorts - Konsistentes dunkles Glassmorphism */
     .dashboard-short {
@@ -164,7 +382,69 @@
 <body class="min-h-screen">
   <?php require_once __DIR__.'/navbar.php'; ?>
 
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 space-y-8">
+  <!-- macOS-Style Control Bar -->
+  <div class="control-bar">
+    <div class="control-icon" onclick="openGradientPicker()" title="Hintergrund-Gradient ändern">
+      <i class="fas fa-cog text-sm"></i>
+    </div>
+    <!-- Placeholder für weitere Controls -->
+  </div>
+
+  <!-- Gradient Picker Modal -->
+  <div id="gradientPickerModal" class="gradient-picker-modal">
+    <div class="gradient-picker-content">
+      <div class="gradient-picker-header">
+        <h3 class="text-lg font-semibold">Hintergrund-Gradient wählen</h3>
+        <button class="gradient-picker-close" onclick="closeGradientPicker()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="gradient-grid">
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-cosmic" data-gradient="cosmic" onclick="selectGradient('cosmic')"></div>
+          <div class="gradient-label">Cosmic (Standard)</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-ocean" data-gradient="ocean" onclick="selectGradient('ocean')"></div>
+          <div class="gradient-label">Ocean Blue</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-sunset" data-gradient="sunset" onclick="selectGradient('sunset')"></div>
+          <div class="gradient-label">Sunset Fire</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-forest" data-gradient="forest" onclick="selectGradient('forest')"></div>
+          <div class="gradient-label">Forest Green</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-purple" data-gradient="purple" onclick="selectGradient('purple')"></div>
+          <div class="gradient-label">Royal Purple</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-rose" data-gradient="rose" onclick="selectGradient('rose')"></div>
+          <div class="gradient-label">Rose Garden</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-cyber" data-gradient="cyber" onclick="selectGradient('cyber')"></div>
+          <div class="gradient-label">Cyber Teal</div>
+        </div>
+        
+        <div class="gradient-option-container">
+          <div class="gradient-option gradient-ember" data-gradient="ember" onclick="selectGradient('ember')"></div>
+          <div class="gradient-label">Ember Glow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 space-y-8" style="padding-top: 6rem;">
     <!-- Dynamic Greeting -->
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-6xl font-bold greeting-text mb-4">
@@ -483,7 +763,62 @@
   </main>
   
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    // Gradient management
+    const gradients = {
+      cosmic: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
+      ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
+      sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
+      forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
+      purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
+      rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
+      cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
+      ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)'
+    };
+
+    let currentGradient = localStorage.getItem('dashboardGradient') || 'cosmic';
+
+    function openGradientPicker() {
+      const modal = document.getElementById('gradientPickerModal');
+      modal.classList.add('active');
+      
+      // Update selected state
+      document.querySelectorAll('.gradient-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      document.querySelector(`[data-gradient="${currentGradient}"]`).classList.add('selected');
+    }
+
+    function closeGradientPicker() {
+      const modal = document.getElementById('gradientPickerModal');
+      modal.classList.remove('active');
+    }
+
+    function selectGradient(gradientName) {
+      currentGradient = gradientName;
+      localStorage.setItem('dashboardGradient', gradientName);
+      
+      // Apply gradient to body
+      document.body.style.background = gradients[gradientName];
+      
+      // Update selected state
+      document.querySelectorAll('.gradient-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      document.querySelector(`[data-gradient="${gradientName}"]`).classList.add('selected');
+      
+      // Close modal after short delay
+      setTimeout(() => {
+        closeGradientPicker();
+      }, 600);
+    }
+
+    // Initialize gradient on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Apply saved gradient
+      if (gradients[currentGradient]) {
+        document.body.style.background = gradients[currentGradient];
+      }
+      
       // Simple fade-in animation only
       const cards = document.querySelectorAll('.dashboard-short');
       cards.forEach((card, index) => {
@@ -493,6 +828,20 @@
           card.style.opacity = '1';
         }, index * 50);
       });
+    });
+
+    // Close modal on background click
+    document.getElementById('gradientPickerModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeGradientPicker();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('gradientPickerModal').classList.contains('active')) {
+        closeGradientPicker();
+      }
     });
   </script>
 </body>
