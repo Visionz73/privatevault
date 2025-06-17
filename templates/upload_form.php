@@ -9,8 +9,9 @@
   <style>
     body { 
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      background: var(--current-theme-bg, linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%));
       min-height: 100vh;
+      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
     @media (max-width: 768px) {
       main { margin-top: 4rem; }
@@ -109,6 +110,41 @@
       color: rgba(255, 255, 255, 0.8);
     }
   </style>
+  
+  <script>
+    // Listen for theme changes
+    window.addEventListener('themeChanged', (e) => {
+      document.documentElement.style.setProperty('--current-theme-bg', e.detail.background);
+    });
+    
+    // Apply saved theme on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('privatevault_theme') || 'cosmic';
+      const themes = {
+        cosmic: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
+        ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
+        sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
+        forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
+        purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
+        rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
+        cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
+        ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)',
+        midnight: 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)',
+        aurora: 'linear-gradient(135deg, #065f46 0%, #059669 25%, #0891b2 50%, #3b82f6 75%, #8b5cf6 100%)',
+        neon: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+        volcanic: 'linear-gradient(135deg, #2c1810 0%, #8b0000 50%, #ff4500 100%)',
+        matrix: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)',
+        synthwave: 'linear-gradient(135deg, #2d1b69 0%, #8b5a97 50%, #ff006e 100%)',
+        deepspace: 'linear-gradient(135deg, #0c0c0c 0%, #1a0033 50%, #4a148c 100%)',
+        crimson: 'linear-gradient(135deg, #1a0000 0%, #660000 50%, #cc0000 100%)',
+        arctic: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)'
+      };
+      
+      if (themes[savedTheme]) {
+        document.body.style.background = themes[savedTheme];
+      }
+    });
+  </script>
 </head>
 <body class="min-h-screen flex">
   <?php require_once __DIR__.'/navbar.php'; ?>
@@ -123,103 +159,51 @@
       <!-- Upload Form Container -->
       <div class="glassmorphism-container p-8">
         <form method="post" enctype="multipart/form-data" class="space-y-6">
-          <!-- File Drop Area -->
+          <!-- File upload area -->
           <div class="file-drop-area">
-            <input type="file" name="file" class="file-input" required>
-            <div class="file-msg text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <p class="mb-2">Datei hier ablegen oder klicken zum Auswählen</p>
-              <p class="text-xs text-white/60">Unterstützte Formate: PDF, DOC, DOCX, JPG, PNG (Max. 10MB)</p>
+            <input type="file" class="file-input" name="document" accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+            <div class="file-msg">
+              <i class="fas fa-cloud-upload-alt text-4xl mb-4 text-white/60"></i>
+              <p class="text-lg font-medium">Datei hier ablegen oder klicken zum Auswählen</p>
+              <p class="text-sm">Unterstützte Formate: PDF, DOC, DOCX, TXT, JPG, PNG</p>
             </div>
           </div>
           
-          <!-- Title Input -->
-          <div>
-            <label for="title" class="block text-sm font-medium text-white mb-2">Titel</label>
-            <input type="text" name="title" id="title" required 
-                   class="form-input w-full px-4 py-3" 
-                   placeholder="Dokumententitel eingeben...">
+          <!-- Document details -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-white font-medium mb-2">Dokumententitel</label>
+              <input type="text" name="title" class="form-input w-full px-4 py-3" placeholder="Titel eingeben...">
+            </div>
+            
+            <div>
+              <label class="block text-white font-medium mb-2">Beschreibung (optional)</label>
+              <textarea name="description" rows="3" class="form-input w-full px-4 py-3" placeholder="Beschreibung eingeben..."></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-white font-medium mb-2">Kategorie</label>
+              <select name="category" class="form-input w-full px-4 py-3">
+                <option value="">Kategorie auswählen</option>
+                <option value="personal">Persönlich</option>
+                <option value="financial">Finanziell</option>
+                <option value="medical">Medizinisch</option>
+                <option value="legal">Rechtlich</option>
+                <option value="other">Sonstiges</option>
+              </select>
+            </div>
           </div>
           
-          <!-- Description Textarea -->
-          <div>
-            <label for="description" class="block text-sm font-medium text-white mb-2">Beschreibung</label>
-            <textarea name="description" id="description" rows="4" 
-                      class="form-input w-full px-4 py-3" 
-                      placeholder="Optionale Beschreibung..."></textarea>
-          </div>
-          
-          <!-- Submit Button -->
-          <div class="flex justify-end">
-            <button type="submit" class="btn-primary px-6 py-3">
+          <!-- Submit button -->
+          <div class="pt-4">
+            <button type="submit" class="btn-primary w-full px-6 py-3 font-medium">
+              <i class="fas fa-upload mr-2"></i>
               Dokument hochladen
             </button>
           </div>
         </form>
       </div>
-      
-      <?php if (!empty($uploadSuccess)): ?>
-        <div class="mb-6 success-message px-4 py-3 mt-6">
-          Dokument erfolgreich hochgeladen!
-        </div>
-      <?php endif; ?>
     </div>
   </main>
-
-  <script>
-    // File drop functionality
-    const dropArea = document.querySelector('.file-drop-area');
-    const fileInput = document.getElementById('docfile');
-    const fileInfo = document.getElementById('file-info');
-
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropArea.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    dropArea.addEventListener('drop', handleDrop, false);
-
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    function highlight(e) {
-      dropArea.classList.add('is-active');
-    }
-
-    function unhighlight(e) {
-      dropArea.classList.remove('is-active');
-    }
-
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      fileInput.files = files;
-      updateFileInfo(files[0]);
-    }
-
-    fileInput.addEventListener('change', function(e) {
-      if (e.target.files.length > 0) {
-        updateFileInfo(e.target.files[0]);
-      }
-    });
-
-    function updateFileInfo(file) {
-      if (file) {
-        fileInfo.textContent = `Ausgewählt: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-        fileInfo.classList.remove('hidden');
-      }
-    }
-  </script>
 </body>
 </html>

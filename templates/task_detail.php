@@ -141,7 +141,43 @@
         .subtask-completed {
             opacity: 0.6;
         }
+        
+        /* Apply theme-aware styling */
+        body {
+            background: var(--current-theme-bg, linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%));
+            transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
+    
+    <script>
+        // Listen for theme changes
+        window.addEventListener('themeChanged', (e) => {
+            document.documentElement.style.setProperty('--current-theme-bg', e.detail.background);
+        });
+        
+        // Apply saved theme on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('privatevault_theme') || 'cosmic';
+            const themes = {
+                cosmic: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
+                ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
+                sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
+                forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
+                purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
+                rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
+                cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
+                ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)',
+                midnight: 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)',
+                aurora: 'linear-gradient(135deg, #065f46 0%, #059669 25%, #0891b2 50%, #3b82f6 75%, #8b5cf6 100%)',
+                neon: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+                volcanic: 'linear-gradient(135deg, #2c1810 0%, #8b0000 50%, #ff4500 100%)'
+            };
+            
+            if (themes[savedTheme]) {
+                document.body.style.background = themes[savedTheme];
+            }
+        });
+    </script>
 </head>
 <body class="min-h-screen flex flex-col">
     <?php require_once __DIR__.'/navbar.php'; ?>
