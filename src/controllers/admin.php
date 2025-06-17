@@ -51,6 +51,14 @@ try {
                     // Begin transaction for atomicity
                     $pdo->beginTransaction();
                     try {
+                        // Delete user's events first
+                        $stmt = $pdo->prepare('DELETE FROM events WHERE created_by = ?');
+                        $stmt->execute([$user_id]);
+                        
+                        // Update events where user is assigned to remove assignment
+                        $stmt = $pdo->prepare('UPDATE events SET assigned_to = NULL WHERE assigned_to = ?');
+                        $stmt->execute([$user_id]);
+                        
                         // Delete user's tasks
                         $stmt = $pdo->prepare('DELETE FROM tasks WHERE created_by = ? OR assigned_to = ?');
                         $stmt->execute([$user_id, $user_id]);
@@ -58,6 +66,34 @@ try {
                         // Delete user's documents
                         $stmt = $pdo->prepare('UPDATE documents SET is_deleted = 1 WHERE user_id = ?');
                         $stmt->execute([$user_id]);
+                        
+                        // Delete user from group memberships
+                        $stmt = $pdo->prepare('DELETE FROM user_group_members WHERE user_id = ?');
+                        $stmt->execute([$user_id]);
+                        
+                        // Delete user's finance entries if they exist
+                        try {
+                            $stmt = $pdo->prepare('DELETE FROM finance_entries WHERE user_id = ?');
+                            $stmt->execute([$user_id]);
+                        } catch (PDOException $e) {
+                            // Table might not exist, ignore
+                        }
+                        
+                        // Delete user's expense participations if they exist
+                        try {
+                            $stmt = $pdo->prepare('DELETE FROM expense_participants WHERE user_id = ?');
+                            $stmt->execute([$user_id]);
+                        } catch (PDOException $e) {
+                            // Table might not exist, ignore
+                        }
+                        
+                        // Update expenses where user is the payer to remove payer assignment
+                        try {
+                            $stmt = $pdo->prepare('DELETE FROM expenses WHERE payer_id = ?');
+                            $stmt->execute([$user_id]);
+                        } catch (PDOException $e) {
+                            // Table might not exist, ignore
+                        }
                         
                         // Delete the user
                         $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
