@@ -412,8 +412,8 @@
                                     </form>
                                 <?php endif; ?>
                                 
-                                <a href="taskboard.php" class="btn-secondary px-4 py-2 text-sm inline-block">
-                                    Zum Kanban Board
+                                <a href="inbox.php" class="btn-secondary px-4 py-2 text-sm inline-block">
+                                    Zur Inbox
                                 </a>
                             </div>
                         </div>

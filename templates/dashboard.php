@@ -735,10 +735,6 @@
               <i class="fas fa-upload text-2xl mb-2"></i>
               <div class="text-sm">Upload</div>
             </button>
-            <button onclick="window.location.href='taskboard.php'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-tasks text-2xl mb-2"></i>
-              <div class="text-sm">Kanban</div>
-            </button>
             <button onclick="window.location.href='admin/groups.php'" class="quick-action-btn p-4 text-center">
               <i class="fas fa-users text-2xl mb-2"></i>
               <div class="text-sm">Gruppen</div>

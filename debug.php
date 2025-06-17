@@ -79,6 +79,6 @@ echo "<p>DOCUMENT_ROOT: " . $_SERVER['DOCUMENT_ROOT'] . "</p>";
 <h2>Next Steps</h2>
 <ol>
     <li>Check the PHP error log located at: <?php echo ini_get('error_log'); ?></li>
-    <li>Test navigation: <a href="index.php">Home</a> | <a href="public/inbox.php">Inbox</a> | <a href="public/taskboard.php">Taskboard</a></li>
+    <li>Test navigation: <a href="index.php">Home</a> | <a href="public/inbox.php">Inbox</a></li>
     <li>Verify file paths in config.php</li>
 </ol>
