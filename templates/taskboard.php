@@ -1,5 +1,5 @@
 <?php
-// templates/taskboard.php - Modern Kanban Board
+// templates/taskboard.php - Functional Kanban Board
 require_once __DIR__ . '/../src/lib/auth.php';
 requireLogin();
 require_once __DIR__ . '/../src/lib/db.php';
@@ -278,7 +278,7 @@ function getCategoryColor($category) {
                          draggable="true"
                          ondragstart="dragStart(event, <?= $task['id'] ?>, '<?= $status ?>')"
                          ondragend="dragEnd(event)"
-                         onclick="openTaskDetail(<?= $task['id'] ?>)">
+                         data-task-id="<?= $task['id'] ?>">
                         
                         <!-- Priority Indicator -->
                         <div class="priority-indicator <?= getPriorityColor($task['priority'] ?? 'medium') ?>"></div>
@@ -286,17 +286,25 @@ function getCategoryColor($category) {
                         <div class="pt-2">
                             <!-- Task Header -->
                             <div class="flex justify-between items-start mb-3">
-                                <h4 class="font-semibold text-gray-900 flex-1 pr-2"><?= htmlspecialchars($task['title']) ?></h4>
-                                <?php if (!empty($task['estimated_budget'])): ?>
-                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                    €<?= number_format($task['estimated_budget'], 0) ?>
-                                </span>
-                                <?php endif; ?>
+                                <h4 class="font-semibold text-gray-900 flex-1 pr-2 cursor-pointer" 
+                                    onclick="openTaskDetail(<?= $task['id'] ?>)"><?= htmlspecialchars($task['title']) ?></h4>
+                                <div class="flex gap-1">
+                                    <button onclick="openTaskModal(null, <?= $task['id'] ?>)" 
+                                            class="text-blue-500 hover:text-blue-700 text-sm p-1" 
+                                            title="Bearbeiten">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <?php if (!empty($task['estimated_budget'])): ?>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                        €<?= number_format($task['estimated_budget'], 0) ?>
+                                    </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             
                             <!-- Description -->
                             <?php if (!empty($task['description'])): ?>
-                            <p class="text-sm text-gray-600 mb-3 line-clamp-2"><?= htmlspecialchars($task['description']) ?></p>
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2"><?= htmlspecialchars(substr($task['description'], 0, 100)) ?><?= strlen($task['description']) > 100 ? '...' : '' ?></p>
                             <?php endif; ?>
                             
                             <!-- Category -->
@@ -430,12 +438,16 @@ function getCategoryColor($category) {
         // Drag Enter
         function dragEnter(event) {
             event.preventDefault();
-            event.currentTarget.classList.add('drag-over');
+            if (event.currentTarget.classList.contains('kanban-column')) {
+                event.currentTarget.classList.add('drag-over');
+            }
         }
         
         // Drag Leave
         function dragLeave(event) {
-            event.currentTarget.classList.remove('drag-over');
+            if (event.currentTarget.classList.contains('kanban-column')) {
+                event.currentTarget.classList.remove('drag-over');
+            }
         }
         
         // Drop Task
@@ -495,14 +507,18 @@ function getCategoryColor($category) {
         }
         
         // Open Task Modal
-        function openTaskModal(status = 'todo') {
+        function openTaskModal(status = 'todo', taskId = null) {
             const modal = document.getElementById('taskModal');
             const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
             
+            modalTitle.textContent = taskId ? 'Aufgabe bearbeiten' : 'Neue Aufgabe';
             modal.classList.remove('hidden');
             modalContent.innerHTML = '<div class="animate-pulse"><div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div><div class="h-4 bg-gray-200 rounded w-1/2 mb-4"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>';
             
-            fetch(`/templates/task_modal.php?status=${status}`)
+            const url = taskId ? `/templates/task_modal.php?id=${taskId}` : `/templates/task_modal.php?status=${status}`;
+            
+            fetch(url)
                 .then(response => response.text())
                 .then(html => {
                     modalContent.innerHTML = html;
@@ -532,6 +548,13 @@ function getCategoryColor($category) {
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !document.getElementById('taskModal').classList.contains('hidden')) {
                 closeTaskModal();
+            }
+        });
+        
+        // Prevent card click when clicking edit button
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.task-card button')) {
+                e.stopPropagation();
             }
         });
     </script>
