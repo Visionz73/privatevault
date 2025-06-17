@@ -353,23 +353,15 @@ document.getElementById('taskForm').addEventListener('submit', function(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            closeTaskModal();
-            // Reload the page to show the new/updated task
             window.location.reload();
         } else {
-            alert(data.error || 'Es ist ein Fehler aufgetreten');
+            console.error('Error:', data.message || 'Unknown error');
+            alert('Es ist ein Fehler aufgetreten: ' + (data.message || 'Unknown error'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Es ist ein Fehler aufgetreten');
     });
-});
-
-// Handle close modal buttons
-document.addEventListener('click', function(e) {
-    if (e.target.hasAttribute('data-action') && e.target.getAttribute('data-action') === 'close-modal') {
-        closeTaskModal();
-    }
 });
 </script>

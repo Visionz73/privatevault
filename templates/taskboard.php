@@ -186,7 +186,7 @@ function getCategoryColor($category) {
                     <p class="text-sm text-gray-600 mt-1 line-clamp-2"><?= htmlspecialchars($task['description']) ?></p>
                   <?php endif; ?>
                   
-                  <!-- Subtasks progress -->
+                  <!-- Subtasks
                   <?php if ($task['subtask_count'] > 0): ?>
                     <div class="mt-2">
                       <div class="flex justify-between items-center text-xs text-gray-500 mb-1">
