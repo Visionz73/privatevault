@@ -1,543 +1,613 @@
 <?php
-/**
- * Modern Navbar with Theme Support for PrivateVault
- */
+// Adjusted Navbar with proper paths for all files
+require_once __DIR__ . '/../src/lib/auth.php';
+require_once __DIR__ . '/../src/lib/utils.php';
+$user = getUser();
 
-// Function to check if the current page matches a specific page
-function isCurrentPage($pageName) {
-    $currentPage = basename($_SERVER['PHP_SELF']);
-    return $currentPage == $pageName;
-}
+// Only groups.php is in the admin directory
+$isAdminPage = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false;
 
-// Define the navigation items
-$navItems = [
-    'index.php' => ['title' => 'Dashboard', 'icon' => 'fas fa-home'],
-    'inbox.php' => ['title' => 'Inbox', 'icon' => 'fas fa-inbox'],
-    'taskboard.php' => ['title' => 'Taskboard', 'icon' => 'fas fa-tasks'],
-    'calendar.php' => ['title' => 'Kalender', 'icon' => 'fas fa-calendar'],
-    'havetopay.php' => ['title' => 'HaveToPay', 'icon' => 'fas fa-money-bill-wave'],
-];
-
-// Optional: Add admin-only nav items
-if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
-    $navItems['admin.php'] = ['title' => 'Admin', 'icon' => 'fas fa-shield-alt'];
-    $navItems['admin/groups.php'] = ['title' => 'Gruppen', 'icon' => 'fas fa-users'];
-}
+// Determine if we're on the havetopay page to add specific styling
+$isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' || 
+                   basename($_SERVER['PHP_SELF']) === 'havetopay_add.php' ||
+                   basename($_SERVER['PHP_SELF']) === 'havetopay_detail.php';
 ?>
 
-<!-- Mobile Top Navbar -->
-<nav class="mobile-navbar">
-    <div class="navbar-brand">
-        <div class="brand-icon">
-            <i class="fas fa-vault"></i>
-        </div>
-        <span>PrivateVault</span>
-    </div>
-    
-    <button class="mobile-menu-toggle" onclick="toggleMobileSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-</nav>
-
-<!-- Sidebar -->
-<nav class="modern-sidebar" id="sidebar">
-    <!-- Brand -->
-    <a href="index.php" class="navbar-brand">
-        <div class="brand-icon">
-            <i class="fas fa-vault"></i>
-        </div>
-        <span>PrivateVault</span>
-    </a>
-    
-    <!-- Navigation Menu -->
-    <div class="nav-menu">
-        <?php foreach ($navItems as $url => $item): ?>
-            <div class="nav-item">
-                <a href="<?php echo $url; ?>" class="nav-link <?php echo isCurrentPage(basename($url)) ? 'active' : ''; ?>">
-                    <i class="<?php echo $item['icon']; ?> nav-icon"></i>
-                    <span><?php echo $item['title']; ?></span>
-                </a>
-            </div>
-        <?php endforeach; ?>
-    </div>
-    
-    <!-- User Menu -->
-    <?php if (isset($_SESSION['user_id'])): ?>
-    <div class="user-menu">
-        <div class="user-dropdown" id="userDropdown">
-            <a href="profile.php" class="dropdown-item">
-                <i class="fas fa-id-card nav-icon"></i>
-                <span>Profil</span>
-            </a>
-            <a href="settings.php" class="dropdown-item">
-                <i class="fas fa-cog nav-icon"></i>
-                <span>Einstellungen</span>
-            </a>
-            <hr style="border: none; border-top: 1px solid var(--navbar-border); margin: 0.5rem;">
-            <a href="logout.php" class="dropdown-item">
-                <i class="fas fa-sign-out-alt nav-icon"></i>
-                <span>Abmelden</span>
-            </a>
-        </div>
-        
-        <button class="user-toggle" onclick="toggleUserDropdown()">
-            <div class="user-avatar">
-                <?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 2)); ?>
-            </div>
-            <div style="flex: 1; text-align: left;">
-                <div style="font-weight: 500; font-size: 0.875rem;">
-                    <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
-                </div>
-                <div style="font-size: 0.75rem; opacity: 0.7;">
-                    <?php echo ucfirst($_SESSION['role'] ?? 'member'); ?>
-                </div>
-            </div>
-            <i class="fas fa-chevron-up" style="font-size: 0.75rem; transition: transform 0.3s ease;" id="userChevron"></i>
-        </button>
-    </div>
-    <?php else: ?>
-    <div class="user-menu">
-        <a href="login.php" class="nav-link">
-            <i class="fas fa-sign-in-alt nav-icon"></i>
-            <span>Anmelden</span>
-        </a>
-    </div>
-    <?php endif; ?>
-</nav>
-
-<!-- Theme Control Bar -->
-<div class="theme-control-bar">
-    <div class="theme-control-icon" onclick="openThemePicker()" title="Theme ändern">
-        <i class="fas fa-palette text-sm"></i>
-    </div>
-    <div class="theme-control-icon" onclick="toggleNavbarStyle()" title="Navbar-Stil ändern">
-        <i class="fas fa-layout text-sm"></i>
-    </div>
-    <div class="theme-control-icon" onclick="toggleCompactMode()" title="Kompakter Modus">
-        <i class="fas fa-compress text-sm"></i>
-    </div>
-    <div class="theme-control-icon" onclick="resetTheme()" title="Theme zurücksetzen">
-        <i class="fas fa-undo text-sm"></i>
-    </div>
-</div>
-
-<!-- Sidebar Overlay for Mobile -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
-
-<!-- Theme Picker Modal (will be added to each page) -->
-<div id="themePickerModal" class="theme-picker-modal">
-    <div class="theme-picker-content">
-        <div class="theme-picker-header">
-            <h3 class="text-lg font-semibold">Theme & Style auswählen</h3>
-            <button class="theme-picker-close" onclick="closeThemePicker()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="theme-picker-body">
-            <!-- Background Themes -->
-            <div class="theme-section">
-                <h4 class="theme-section-title">Hintergrund-Themes</h4>
-                <div class="theme-grid" id="themeGrid">
-                    <!-- Themes will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Navbar Styles -->
-            <div class="theme-section">
-                <h4 class="theme-section-title">Navbar-Stile</h4>
-                <div class="navbar-style-grid" id="navbarStyleGrid">
-                    <!-- Navbar styles will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// Global theme management
-const ThemeManager = {
-    themes: {
-        cosmic: {
-            name: 'Cosmic (Standard)',
-            background: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        ocean: {
-            name: 'Ocean Blue',
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        sunset: {
-            name: 'Sunset Fire',
-            background: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        forest: {
-            name: 'Forest Green',
-            background: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        purple: {
-            name: 'Royal Purple',
-            background: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        rose: {
-            name: 'Rose Garden',
-            background: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        cyber: {
-            name: 'Cyber Teal',
-            background: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        ember: {
-            name: 'Ember Glow',
-            background: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        midnight: {
-            name: 'Midnight Black',
-            background: 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        aurora: {
-            name: 'Aurora Borealis',
-            background: 'linear-gradient(135deg, #065f46 0%, #059669 25%, #0891b2 50%, #3b82f6 75%, #8b5cf6 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        neon: {
-            name: 'Neon Dreams',
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        },
-        volcanic: {
-            name: 'Volcanic Night',
-            background: 'linear-gradient(135deg, #2c1810 0%, #8b0000 50%, #ff4500 100%)',
-            navbar: 'rgba(255, 255, 255, 0.08)'
-        }
-    },
-    
-    navbarStyles: {
-        glass: {
-            name: 'Glassmorphism',
-            properties: {
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-            }
-        },
-        solid: {
-            name: 'Solid Dark',
-            properties: {
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'none',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-            }
-        },
-        gradient: {
-            name: 'Gradient',
-            properties: {
-                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8))',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
-            }
-        },
-        minimal: {
-            name: 'Minimal',
-            properties: {
-                background: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(30px)',
-                border: 'none'
-            }
-        },
-        neon: {
-            name: 'Neon Edge',
-            properties: {
-                background: 'rgba(0, 0, 0, 0.7)',
-                backdropFilter: 'blur(15px)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
-                boxShadow: '0 0 20px rgba(0, 255, 255, 0.1)'
-            }
-        },
-        metallic: {
-            name: 'Metallic',
-            properties: {
-                background: 'linear-gradient(135deg, rgba(55, 65, 81, 0.9), rgba(75, 85, 99, 0.9))',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(156, 163, 175, 0.3)'
-            }
-        }
-    },
-
-    init() {
-        this.loadSavedTheme();
-        this.createThemeModal();
-        this.bindEvents();
-    },
-
-    loadSavedTheme() {
-        const savedTheme = localStorage.getItem('privatevault_theme') || 'cosmic';
-        const savedNavbarStyle = localStorage.getItem('privatevault_navbar_style') || 'glass';
-        
-        this.applyTheme(savedTheme);
-        this.applyNavbarStyle(savedNavbarStyle);
-    },
-
-    applyTheme(themeName) {
-        const theme = this.themes[themeName];
-        if (theme) {
-            document.body.style.background = theme.background;
-            localStorage.setItem('privatevault_theme', themeName);
-            
-            // Trigger custom event for other components
-            window.dispatchEvent(new CustomEvent('themeChanged', { 
-                detail: { theme: themeName, background: theme.background } 
-            }));
-        }
-    },
-
-    applyNavbarStyle(styleName) {
-        const style = this.navbarStyles[styleName];
-        if (style) {
-            const sidebar = document.querySelector('.modern-sidebar');
-            const mobileNavbar = document.querySelector('.mobile-navbar');
-            const themeBar = document.querySelector('.theme-control-bar');
-            
-            if (sidebar) {
-                Object.assign(sidebar.style, style.properties);
-            }
-            if (mobileNavbar) {
-                Object.assign(mobileNavbar.style, style.properties);
-            }
-            if (themeBar) {
-                Object.assign(themeBar.style, style.properties);
-            }
-            
-            localStorage.setItem('privatevault_navbar_style', styleName);
-        }
-    },
-
-    createThemeModal() {
-        // Create theme picker modal if it doesn't exist
-        if (!document.getElementById('themePickerModal')) {
-            const modalHTML = `
-                <div id="themePickerModal" class="theme-picker-modal">
-                    <div class="theme-picker-content">
-                        <div class="theme-picker-header">
-                            <h3 class="text-lg font-semibold">Theme & Style auswählen</h3>
-                            <button class="theme-picker-close" onclick="closeThemePicker()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="theme-picker-body">
-                            <!-- Background Themes -->
-                            <div class="theme-section">
-                                <h4 class="theme-section-title">Hintergrund-Themes</h4>
-                                <div class="theme-grid" id="themeGrid">
-                                    <!-- Themes will be populated by JavaScript -->
-                                </div>
-                            </div>
-                            
-                            <!-- Navbar Styles -->
-                            <div class="theme-section">
-                                <h4 class="theme-section-title">Navbar-Stile</h4>
-                                <div class="navbar-style-grid" id="navbarStyleGrid">
-                                    <!-- Navbar styles will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-            this.populateThemeModal();
-        }
-    },
-
-    populateThemeModal() {
-        const themeGrid = document.getElementById('themeGrid');
-        const navbarGrid = document.getElementById('navbarStyleGrid');
-        
-        if (themeGrid) {
-            themeGrid.innerHTML = '';
-            Object.entries(this.themes).forEach(([key, theme]) => {
-                const themeOption = document.createElement('div');
-                themeOption.className = 'theme-option';
-                themeOption.innerHTML = `
-                    <div class="theme-preview" style="background: ${theme.background}" onclick="ThemeManager.applyTheme('${key}')"></div>
-                    <div class="theme-label">${theme.name}</div>
-                `;
-                themeGrid.appendChild(themeOption);
-            });
-        }
-        
-        if (navbarGrid) {
-            navbarGrid.innerHTML = '';
-            Object.entries(this.navbarStyles).forEach(([key, style]) => {
-                const styleOption = document.createElement('div');
-                styleOption.className = 'navbar-style-option';
-                styleOption.innerHTML = `
-                    <div class="navbar-preview" onclick="ThemeManager.applyNavbarStyle('${key}')">
-                        <div class="navbar-sample" style="background: ${style.properties.background}; backdrop-filter: ${style.properties.backdropFilter || 'none'}; border: ${style.properties.border || 'none'}"></div>
-                    </div>
-                    <div class="style-label">${style.name}</div>
-                `;
-                navbarGrid.appendChild(styleOption);
-            });
-        }
-    },
-
-    bindEvents() {
-        // Listen for theme changes from other components
-        window.addEventListener('themeChanged', (e) => {
-            // Update any theme-dependent elements
-        });
-    }
-};
-
-// Mobile sidebar functions
-function toggleMobileSidebar() {
-    const body = document.body;
-    const overlay = document.getElementById('sidebarOverlay');
-    
-    body.classList.toggle('sidebar-active');
-    overlay.classList.toggle('show');
-}
-
-// User dropdown functions
-function toggleUserDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    const chevron = document.getElementById('userChevron');
-    
-    dropdown.classList.toggle('show');
-    chevron.style.transform = dropdown.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
-}
-
-// Theme control functions
-function openThemePicker() {
-    const modal = document.getElementById('themePickerModal');
-    if (modal) {
-        modal.classList.add('active');
-    }
-}
-
-function closeThemePicker() {
-    const modal = document.getElementById('themePickerModal');
-    if (modal) {
-        modal.classList.remove('active');
-    }
-}
-
-function toggleNavbarStyle() {
-    const styles = Object.keys(ThemeManager.navbarStyles);
-    const current = localStorage.getItem('privatevault_navbar_style') || 'glass';
-    const currentIndex = styles.indexOf(current);
-    const nextIndex = (currentIndex + 1) % styles.length;
-    const nextStyle = styles[nextIndex];
-    
-    ThemeManager.applyNavbarStyle(nextStyle);
-    
-    // Show notification
-    showNotification(`Navbar-Stil: ${ThemeManager.navbarStyles[nextStyle].name}`);
-}
-
-function toggleCompactMode() {
-    const isCompact = localStorage.getItem('privatevault_compact_mode') === 'true';
-    const newMode = !isCompact;
-    
-    localStorage.setItem('privatevault_compact_mode', newMode.toString());
-    
-    if (newMode) {
-        document.documentElement.classList.add('compact-mode');
-    } else {
-        document.documentElement.classList.remove('compact-mode');
-    }
-    
-    showNotification(`Kompakter Modus: ${newMode ? 'Aktiviert' : 'Deaktiviert'}`);
-}
-
-function resetTheme() {
-    localStorage.removeItem('privatevault_theme');
-    localStorage.removeItem('privatevault_navbar_style');
-    localStorage.removeItem('privatevault_compact_mode');
-    
-    ThemeManager.applyTheme('cosmic');
-    ThemeManager.applyNavbarStyle('glass');
-    document.documentElement.classList.remove('compact-mode');
-    
-    showNotification('Theme zurückgesetzt');
-}
-
-function showNotification(message) {
-    // Create and show a temporary notification
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 1rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        z-index: 9999;
-        font-size: 0.875rem;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 2000);
-}
-
-// Initialize theme management when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    ThemeManager.init();
-    
-    // Load compact mode
-    if (localStorage.getItem('privatevault_compact_mode') === 'true') {
-        document.documentElement.classList.add('compact-mode');
-    }
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.user-menu')) {
-            const dropdown = document.getElementById('userDropdown');
-            const chevron = document.getElementById('userChevron');
-            
-            if (dropdown && dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
-                chevron.style.transform = 'rotate(0deg)';
-            }
-        }
-    });
-});
-</script>
-
 <style>
-/* Global theme variables */
-:root {
-    --navbar-bg: rgba(255, 255, 255, 0.08);
-    --navbar-border: rgba(255, 255, 255, 0.15);
-    --navbar-text: rgba(255, 255, 255, 0.9);
-    --navbar-text-hover: white;
-    --navbar-active: rgba(255, 255, 255, 0.2);
-    --navbar-backdrop: blur(20px);
-    --theme-primary: #667eea;
-    --theme-secondary: #764ba2;
-}
+  /* Modern dark gradient navbar styling */
+  @media (min-width: 769px) {
+    nav#sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 16rem; /* w-64 */
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 50;
+    }
+    .mobile-menu { display: none; }
+    .sidebar-content { display: block; }
+  }
 
-/* Theme Picker Modal Styles */
-.theme-picker-modal {
+  /* Mobile dark gradient styling */
+  @media (max-width: 768px) {
+    nav#sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4rem;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 50;
+      transform: none; /* Remove transform for header */
+    }
+    
+    .mobile-menu { 
+      display: flex; 
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+      padding: 0 1rem;
+    }
+    
+    .sidebar-content {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      backdrop-filter: saturate(180%) blur(20px);
+      z-index: 49;
+      padding: 1rem;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-content.active {
+      display: block;
+      transform: translateX(0);
+    }
+    
+    /* Mobile overlay */
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 48;
+    }
+    
+    .mobile-overlay.active {
+      display: block;
+    }
+  }
+
+  /* Logo styling for dark background */
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+  }
+
+  .logo-image {
+    max-height: 2.5rem;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+  }
+
+  .logo-container:hover .logo-image {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  /* Mobile logo adjustments */
+  @media (max-width: 768px) {
+    .logo-image {
+      max-height: 2rem;
+    }
+    
+    .mobile-header-content .logo-container {
+      padding: 0.25rem;
+    }
+    
+    .mobile-header-content .logo-image {
+      max-height: 1.75rem;
+    }
+  }
+
+  /* Rounded container for navigation items */
+  .nav-container {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Modern navigation links */
+  .nav-link-modern {
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 0.25rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+  .nav-link-modern:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    transform: translateX(3px);
+  }
+  .nav-link-modern.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    font-weight: 600;
+  }
+
+  .nav-link-modern svg {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* User Banner Styles for dark theme */
+  .user-banner {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    margin: 0 1rem 1rem;
+  }
+  .user-banner button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  .user-banner button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .user-banner .user-info {
+    flex: 1;
+    text-align: left;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+  .user-banner .user-info .user-name {
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.125rem;
+  }
+  .user-banner .user-info .user-role {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .user-banner svg {
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+  }
+  .user-banner button:hover svg {
+    color: rgba(255, 255, 255, 0.9);
+    transform: rotate(180deg);
+  }
+
+  /* Profile avatar styling for dark theme */
+  .profile-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  .user-banner button:hover .profile-avatar {
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Mobile header styling */
+  .mobile-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 1rem;
+    height: 100%;
+  }
+
+  .mobile-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+  }
+  .mobile-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Fix mobile user avatar */
+  .mobile-user-avatar {
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Profile Modal dark theme adjustments */
+  .profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999 !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  .profile-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .profile-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 10000;
+  }
+  .profile-modal.active .profile-modal-content {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .profile-modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .profile-modal-body {
+    padding: 1.5rem;
+  }
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .close-modal:hover {
+    color: #374151;
+  }
+  .modal-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #374151;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .modal-menu-item:hover {
+    background: #f3f4f6;
+    color: #667eea;
+    border-color: #e5e7eb;
+  }
+  .modal-menu-item svg {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* User Banner Styles */
+  .user-banner {
+    @apply border-t border-gray-200 p-4;
+  }
+  .user-banner button {
+    @apply w-full flex items-center p-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 transition-all duration-200;
+  }
+  .user-banner .user-info {
+    @apply flex-1 text-left;
+  }
+  .user-banner .user-info .user-name {
+    @apply font-medium text-gray-900;
+  }
+  .user-banner .user-info .user-role {
+    @apply text-xs text-gray-500 capitalize;
+  }
+  .user-banner svg {
+    @apply h-4 w-4 text-gray-400;
+  }
+
+  /* Sidebar styles */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16rem;
+    height: 100vh;
+    background: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    z-index: 40;
+    transition: transform 0.3s ease;
+  }
+  
+  @media (max-width: 768px) {
+    #sidebar {
+      transform: translateX(-100%);
+    }
+    
+    #sidebar.active {
+      transform: translateX(0);
+    }
+  }
+  
+  /* Profile modal styles */
+  .profile-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 50;
+  }
+  
+  .profile-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-modal-content {
+    background: white;
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 20rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+  }
+  
+  .profile-modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .profile-modal-body {
+    padding: 1rem 1.5rem;
+  }
+  
+  .profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(74, 144, 226, 0.1);
+    color: #4A90E2;
+    font-weight: 600;
+    border-radius: 9999px;
+  }
+  
+  .modal-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    color: #4b5563;
+    transition: all 0.2s;
+  }
+  
+  .modal-menu-item:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .modal-menu-item svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.75rem;
+  }
+  
+  .close-modal {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #9ca3af;
+    cursor: pointer;
+  }
+  
+  .close-modal:hover {
+    color: #6b7280;
+  }
+
+  /* Shortcuts Container */
+  .shortcuts-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    margin: 0 1rem 1rem;
+  }
+  
+  .shortcuts-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .shortcut-item {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 4rem;
+    justify-content: center;
+  }
+  
+  .shortcut-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .shortcut-item:hover::before {
+    left: 100%;
+  }
+  
+  .shortcut-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+  
+  .shortcut-item.predefined.create-task:hover {
+    background: rgba(34, 197, 94, 0.2);
+    border-color: rgba(34, 197, 94, 0.4);
+    color: #86efac;
+  }
+  
+  .shortcut-item.predefined.logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+  
+  .shortcut-item.empty {
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .shortcut-item.empty:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .shortcut-icon {
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .shortcut-item:hover .shortcut-icon {
+    transform: scale(1.1);
+  }
+  
+  .shortcut-label {
+    font-size: 0.625rem;
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: 0.9;
+  }
+  
+  .shortcut-item:hover .shortcut-label {
+    opacity: 1;
+  }
+
+  /* Custom Shortcut Modal */
+  .shortcuts-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -550,43 +620,40 @@ document.addEventListener('DOMContentLoaded', () => {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.theme-picker-modal.active {
+  }
+  
+  .shortcuts-modal.active {
     display: flex;
-    opacity: 1;
-}
-
-.theme-picker-content {
-    background: rgba(30, 30, 30, 0.95);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1.5rem;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-    max-width: 600px;
+  }
+  
+  .shortcuts-modal-content {
+    background: linear-gradient(135deg, #2d1b69 0%, #11101d 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
     width: 100%;
     max-height: 80vh;
     overflow-y: auto;
     color: white;
-    transform: scale(0.9) translateY(20px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.theme-picker-modal.active .theme-picker-content {
-    transform: scale(1) translateY(0);
-}
-
-.theme-picker-header {
+  }
+  
+  .shortcuts-modal-header {
     padding: 1.5rem 1.5rem 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.theme-picker-close {
+  }
+  
+  .shortcuts-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .shortcuts-modal-close {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.6);
@@ -599,451 +666,681 @@ document.addEventListener('DOMContentLoaded', () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.5rem;
-}
-
-.theme-picker-close:hover {
+  }
+  
+  .shortcuts-modal-close:hover {
     color: white;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.theme-picker-body {
+  }
+  
+  .shortcuts-modal-body {
     padding: 1.5rem;
-}
-
-.theme-section {
-    margin-bottom: 2rem;
-}
-
-.theme-section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
+  }
+  
+  .form-group {
     margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
-}
-
-.theme-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-}
-
-.theme-option {
-    text-align: center;
-}
-
-.theme-preview {
-    aspect-ratio: 16/9;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    position: relative;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.theme-preview:hover {
-    transform: scale(1.05);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.theme-label {
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-}
-
-.navbar-style-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-}
-
-.navbar-style-option {
-    text-align: center;
-}
-
-.navbar-preview {
-    height: 60px;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    position: relative;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    background: rgba(20, 20, 20, 0.8);
-}
-
-.navbar-preview:hover {
-    transform: scale(1.05);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.navbar-sample {
-    height: 100%;
-    border-radius: 0.5rem;
-    margin: 4px;
-    position: relative;
-}
-
-.style-label {
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-}
-
-/* Modern Sidebar Navigation */
-.modern-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 16rem;
-    height: 100vh;
-    background: var(--navbar-bg);
-    backdrop-filter: var(--navbar-backdrop);
-    border-right: 1px solid var(--navbar-border);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    transform: translateX(-100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--navbar-border) transparent;
-}
-
-.modern-sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modern-sidebar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.modern-sidebar::-webkit-scrollbar-thumb {
-    background: var(--navbar-border);
-    border-radius: 3px;
-}
-
-@media (min-width: 769px) {
-    .modern-sidebar {
-        transform: translateX(0);
-    }
-}
-
-/* Mobile top navbar */
-.mobile-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4rem;
-    background: var(--navbar-bg);
-    backdrop-filter: var(--navbar-backdrop);
-    border-bottom: 1px solid var(--navbar-border);
-    z-index: 1001;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1rem;
-}
-
-@media (min-width: 769px) {
-    .mobile-navbar {
-        display: none;
-    }
-}
-
-/* Brand/Logo */
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    padding: 1.5rem 1rem;
-    color: var(--navbar-text);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.25rem;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid var(--navbar-border);
-}
-
-.navbar-brand:hover {
-    color: var(--navbar-text-hover);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.brand-icon {
-    background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
-    color: white;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.75rem;
-    font-size: 1rem;
-}
-
-/* Navigation Links */
-.nav-menu {
-    padding: 1rem 0;
-    flex: 1;
-}
-
-.nav-item {
-    margin-bottom: 0.25rem;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--navbar-text);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border-radius: 0.5rem;
-    margin: 0 0.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.nav-link:hover::before {
-    left: 100%;
-}
-
-.nav-link:hover {
-    color: var(--navbar-text-hover);
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(4px);
-}
-
-.nav-link.active {
-    background: var(--navbar-active);
-    color: var(--navbar-text-hover);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.nav-icon {
-    width: 1.25rem;
-    margin-right: 0.75rem;
-    text-align: center;
-}
-
-/* User Menu */
-.user-menu {
-    padding: 1rem;
-    border-top: 1px solid var(--navbar-border);
-    position: relative;
-}
-
-.user-toggle {
-    display: flex;
-    align-items: center;
+  }
+  
+  .form-group input,
+  .form-group select {
     width: 100%;
     padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--navbar-border);
-    border-radius: 0.75rem;
-    color: var(--navbar-text);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.user-toggle:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.25);
-}
-
-.user-avatar {
-    width: 2rem;
-    height: 2rem;
-    background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
     color: white;
-    font-weight: 600;
-    margin-right: 0.75rem;
     font-size: 0.875rem;
-}
-
-.user-dropdown {
-    position: absolute;
-    bottom: 100%;
-    left: 1rem;
-    right: 1rem;
-    background: var(--navbar-bg);
-    backdrop-filter: var(--navbar-backdrop);
-    border: 1px solid var(--navbar-border);
-    border-radius: 0.75rem;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
     transition: all 0.3s ease;
-    margin-bottom: 0.5rem;
-}
-
-.user-dropdown.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.dropdown-item {
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+  
+  .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .form-actions {
     display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--navbar-text);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border-radius: 0.5rem;
-    margin: 0.25rem;
-}
-
-.dropdown-item:hover {
-    color: var(--navbar-text-hover);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* Theme Control Bar */
-.theme-control-bar {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1050;
-    background: var(--navbar-bg);
-    backdrop-filter: var(--navbar-backdrop);
-    border: 1px solid var(--navbar-border);
-    border-radius: 1rem;
-    padding: 0.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
     gap: 0.5rem;
-}
-
-@media (max-width: 768px) {
-    .theme-control-bar {
-        top: 5rem;
-        right: 0.5rem;
-    }
-}
-
-.theme-control-icon {
-    width: 2rem;
-    height: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 1.5rem;
+  }
+  
+  .btn-cancel,
+  .btn-delete,
+  .btn-save {
+    padding: 0.75rem 1rem;
+    border: none;
     border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+  }
+  
+  .btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.theme-control-icon::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.theme-control-icon:hover::before {
-    left: 100%;
-}
-
-.theme-control-icon:hover {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-cancel:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
     color: white;
+  }
+  
+  .btn-delete {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: white;
+  }
+  
+  .btn-save {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(34, 197, 94, 0.6) 100%);
+    color: white;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  .btn-save:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(34, 197, 94, 0.7) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+  }
 
-.theme-control-icon.active {
-    background: rgba(102, 126, 234, 0.3);
-    border-color: rgba(102, 126, 234, 0.5);
-    color: #93c5fd;
-}
-
-/* Mobile menu toggle */
-.mobile-menu-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--navbar-border);
-    border-radius: 0.5rem;
-    color: var(--navbar-text);
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.mobile-menu-toggle:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: var(--navbar-text-hover);
-}
-
-/* Mobile sidebar overlay */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.sidebar-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Show sidebar on mobile when active */
-.sidebar-active .modern-sidebar {
-    transform: translateX(0);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .modern-sidebar {
-        width: 18rem;
+  /* Mobile optimizations for shortcuts */
+  @media (max-width: 768px) {
+    .shortcuts-container {
+      padding: 0.75rem;
+      margin: 0 0.75rem 0.75rem;
     }
-}
-
-/* Print styles */
-@media print {
-    .modern-sidebar,
-    .mobile-navbar,
-    .theme-control-bar {
-        display: none !important;
+    
+    .shortcuts-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.375rem;
     }
-}
+    
+    .shortcut-item {
+      padding: 0.5rem;
+      min-height: 3.5rem;
+    }
+    
+    .shortcut-label {
+      font-size: 0.5rem;
+    }
+    
+    .shortcuts-modal-content {
+      margin: 0.5rem;
+      max-width: none;
+    }
+    
+    .shortcuts-modal-header,
+    .shortcuts-modal-body {
+      padding: 1rem;
+    }
+  }
 </style>
+
+<!-- Add the haveToPay-layout class to body if on HaveToPay page -->
+<script>
+  if (<?php echo $isHaveToPayPage ? 'true' : 'false'; ?>) {
+    document.body.classList.add('haveToPay-layout');
+  }
+</script>
+
+<nav id="sidebar">
+  <div class="sidebar-content flex flex-col h-full">
+    <!-- Navigation Links Container with Logo -->
+    <div class="flex-1">
+      <div class="nav-container">
+        <!-- Logo/Header inside container -->
+        <div class="mb-6 text-center">
+          <a href="/" class="logo-container">
+            <img src="/assets/logo.png" alt="Private Vault" class="logo-image" style="max-height: 10rem;">
+          </a>
+        </div>
+        
+        <ul class="space-y-1">
+          <li>
+            <a href="/dashboard.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/inbox.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              <span>Inbox</span>
+            </a>
+          </li>
+          <li>
+            <a href="/calendar.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Kalender</span>
+            </a>
+          </li>
+          <li>
+            <a href="/taskboard.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <span>Taskboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/havetopay.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
+              </svg>
+              <span>HaveToPay</span>
+            </a>
+          </li>
+          <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
+          <li>
+            <a href="/admin.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" />
+              </svg>
+              <span>Admin</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/groups.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m7-4a4 4 0 10-8 0 4 4 0 008 0z" />
+              </svg>
+              <span>Gruppen</span>
+            </a>
+          </li>
+          <?php endif; ?>
+        </ul>
+      </div>
+    </div>
+
+    <!-- User Banner at Bottom -->
+    <div class="user-banner">
+      <button onclick="openProfileModal()">
+        <div class="profile-avatar mr-3">
+          <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
+        </div>
+        <div class="flex-1 text-left">
+          <div class="user-name truncate"><?= isset($user) ? htmlspecialchars($user['username']) : 'Gast' ?></div>
+          <div class="user-role"><?= isset($user) ? ucfirst($user['role'] ?? 'user') : 'Nicht angemeldet' ?></div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Shortcuts Section -->
+    <div class="shortcuts-container">
+      <h3 class="shortcuts-title">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Shortcuts
+      </h3>
+      
+      <div class="shortcuts-grid">
+        <!-- Create Task Shortcut -->
+        <a href="/create_task.php" class="shortcut-item predefined create-task">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Task erstellen</span>
+        </a>
+
+        <!-- Logout Shortcut -->
+        <a href="/logout.php" class="shortcut-item predefined logout" onclick="return confirm('Möchten Sie sich wirklich abmelden?')">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Abmelden</span>
+        </a>
+
+        <!-- Custom Shortcut Slot 1 -->
+        <div class="shortcut-item empty" data-slot="custom1" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+
+        <!-- Custom Shortcut Slot 2 -->
+        <div class="shortcut-item empty" data-slot="custom2" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Add Shortcut</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile header -->
+<div class="md:hidden fixed top-0 left-0 right-0 h-16 z-30" style="background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);">
+  <div class="mobile-header-content">
+    <button id="mobileToggleBtn" class="mobile-toggle-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <a href="/" class="logo-container">
+      <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
+    </a>
+    <button onclick="openProfileModal()" class="mobile-toggle-btn">
+      <div class="mobile-user-avatar">
+        <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- Mobile overlay -->
+<div id="mobileOverlay" class="mobile-overlay md:hidden"></div>
+
+<!-- Profile Modal -->
+<?php if ($user): ?>
+<div id="profileModal" class="profile-modal">
+  <div class="profile-modal-content">
+    <div class="profile-modal-header">
+      <div class="flex items-center">
+        <div class="profile-avatar mr-3" style="width: 3rem; height: 3rem;">
+          <?= getUserInitials($user) ?>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
+          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
+        </div>
+      </div>
+      <button class="close-modal" onclick="closeProfileModal()">&times;</button>
+    </div>
+    <div class="profile-modal-body">
+      <nav class="space-y-1">
+        <a href="/profile.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          Profil bearbeiten
+        </a>
+        <a href="/settings.php" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Einstellungen
+        </a>
+        <a href="/profile.php?tab=notifications" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
+          </svg>
+          Benachrichtigungen
+        </a>
+        <a href="/profile.php?tab=security" class="modal-menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+          Sicherheit
+        </a>
+        <hr class="my-3">
+        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Abmelden
+        </a>
+      </nav>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
+<!-- Custom Shortcut Modal -->
+<div id="customShortcutModal" class="shortcuts-modal">
+  <div class="shortcuts-modal-content">
+    <div class="shortcuts-modal-header">
+      <h3 class="shortcuts-modal-title">Custom Shortcut erstellen</h3>
+      <button class="shortcuts-modal-close" onclick="closeCustomShortcutModal()">&times;</button>
+    </div>
+    <div class="shortcuts-modal-body">
+      <form id="customShortcutForm">
+        <div class="form-group">
+          <label for="shortcutName">Name</label>
+          <input type="text" id="shortcutName" name="name" required placeholder="z.B. Quick Notes">
+        </div>
+        <div class="form-group">
+          <label for="shortcutUrl">URL</label>
+          <input type="url" id="shortcutUrl" name="url" required placeholder="https://example.com oder /relative/path">
+        </div>
+        <div class="form-group">
+          <label for="shortcutIcon">Icon (optional)</label>
+          <select id="shortcutIcon" name="icon">
+            <option value="link">🔗 Link</option>
+            <option value="note">📝 Note</option>
+            <option value="calendar">📅 Calendar</option>
+            <option value="mail">📧 Mail</option>
+            <option value="folder">📁 Folder</option>
+            <option value="settings">⚙️ Settings</option>
+            <option value="star">⭐ Star</option>
+            <option value="bookmark">🔖 Bookmark</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeCustomShortcutModal()" class="btn-cancel">Abbrechen</button>
+          <button type="button" onclick="deleteCustomShortcut()" class="btn-delete" id="deleteShortcutBtn" style="display: none;">Löschen</button>
+          <button type="submit" class="btn-save">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced navigation scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggleBtn = document.getElementById('mobileToggleBtn');
+    const sidebar = document.querySelector('.sidebar-content');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    
+    function toggleMobileMenu() {
+      if (sidebar && mobileOverlay) {
+        const isActive = sidebar.classList.contains('active');
+        
+        if (isActive) {
+          sidebar.classList.remove('active');
+          mobileOverlay.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          sidebar.classList.add('active');
+          mobileOverlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    }
+    
+    function closeMobileMenu() {
+      if (sidebar && mobileOverlay) {
+        sidebar.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    if (mobileToggleBtn) {
+      mobileToggleBtn.addEventListener('click', toggleMobileMenu);
+    }
+    
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close menu when clicking on nav links
+    const navLinks = document.querySelectorAll('.sidebar-content .nav-link-modern');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+  });
+
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(e) {
+    const modal = document.getElementById('profileModal');
+    if (modal && modal.classList.contains('active') && !modal.contains(e.target) && !e.target.closest('button[onclick="openProfileModal()"]')) {
+      closeProfileModal();
+    }
+  });
+
+  let currentSlot = null;
+  let customShortcuts = JSON.parse(localStorage.getItem('customShortcuts') || '{}');
+  
+  // Load custom shortcuts on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCustomShortcuts();
+    
+    // ...existing code...
+  });
+  
+  function loadCustomShortcuts() {
+    Object.keys(customShortcuts).forEach(slot => {
+      const shortcut = customShortcuts[slot];
+      const slotElement = document.querySelector(`[data-slot="${slot}"]`);
+      if (slotElement && shortcut) {
+        updateShortcutSlot(slotElement, shortcut);
+      }
+    });
+  }
+  
+  function updateShortcutSlot(slotElement, shortcut) {
+    slotElement.classList.remove('empty');
+    slotElement.onclick = null; // Remove the old onclick handler
+    
+    // Create new click handler that opens shortcut in new tab
+    slotElement.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open(shortcut.url, '_blank');
+    });
+    
+    const iconElement = slotElement.querySelector('.shortcut-icon');
+    const labelElement = slotElement.querySelector('.shortcut-label');
+    
+    iconElement.innerHTML = getIconHtml(shortcut.icon);
+    labelElement.textContent = shortcut.name;
+    
+    // Add edit functionality on right click
+    slotElement.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      openCustomShortcutModal(slotElement, shortcut);
+    });
+    
+    // Add double-click for editing (more user-friendly)
+    slotElement.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCustomShortcutModal(slotElement, shortcut);
+    });
+  }
+  
+  function getIconHtml(iconType) {
+    const icons = {
+      link: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>',
+      note: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',
+      mail: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>',
+      folder: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>',
+      settings: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>',
+      bookmark: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>'
+    };
+    return icons[iconType] || icons.link;
+  }
+  
+  function openCustomShortcutModal(slotElement, existingShortcut = null) {
+    const modal = document.getElementById('customShortcutModal');
+    const form = document.getElementById('customShortcutForm');
+    const deleteBtn = document.getElementById('deleteShortcutBtn');
+    const modalTitle = document.querySelector('.shortcuts-modal-title');
+    
+    currentSlot = slotElement.dataset.slot;
+    
+    if (existingShortcut) {
+      document.getElementById('shortcutName').value = existingShortcut.name;
+      document.getElementById('shortcutUrl').value = existingShortcut.url;
+      document.getElementById('shortcutIcon').value = existingShortcut.icon;
+      deleteBtn.style.display = 'block';
+      modalTitle.textContent = 'Shortcut bearbeiten';
+    } else {
+      form.reset();
+      deleteBtn.style.display = 'none';
+      modalTitle.textContent = 'Custom Shortcut erstellen';
+    }
+    
+    modal.classList.add('active');
+    
+    // Focus on first input
+    setTimeout(() => {
+      document.getElementById('shortcutName').focus();
+    }, 100);
+  }
+  
+  function closeCustomShortcutModal() {
+    const modal = document.getElementById('customShortcutModal');
+    modal.classList.remove('active');
+    currentSlot = null;
+  }
+  
+  function deleteCustomShortcut() {
+    if (currentSlot !== null && customShortcuts[currentSlot]) {
+      if (confirm('Sind Sie sicher, dass Sie diesen Shortcut löschen möchten?')) {
+        delete customShortcuts[currentSlot];
+        localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+        
+        const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+        resetShortcutSlot(slotElement);
+        
+        closeCustomShortcutModal();
+      }
+    }
+  }
+  
+  function resetShortcutSlot(slotElement) {
+    slotElement.classList.add('empty');
+    
+    // Remove all event listeners
+    slotElement.replaceWith(slotElement.cloneNode(true));
+    
+    // Get the new element reference
+    const newSlotElement = document.querySelector(`[data-slot="${slotElement.dataset.slot}"]`);
+    
+    // Reset onclick handler for empty slot
+    newSlotElement.onclick = function() {
+      openCustomShortcutModal(newSlotElement);
+    };
+    
+    const iconElement = newSlotElement.querySelector('.shortcut-icon');
+    const labelElement = newSlotElement.querySelector('.shortcut-label');
+    
+    iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
+    labelElement.textContent = 'Add Shortcut';
+  }
+  
+  // Handle form submission
+  document.getElementById('customShortcutForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('shortcutName').value.trim();
+    const url = document.getElementById('shortcutUrl').value.trim();
+    const icon = document.getElementById('shortcutIcon').value;
+    
+    if (name && url && currentSlot !== null) {
+      // Validate URL format
+      let validUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+        validUrl = 'https://' + url;
+      }
+      
+      const shortcut = { name, url: validUrl, icon };
+      customShortcuts[currentSlot] = shortcut;
+      localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+      
+      const slotElement = document.querySelector(`[data-slot="${currentSlot}"]`);
+      updateShortcutSlot(slotElement, shortcut);
+      
+      closeCustomShortcutModal();
+      
+      // Show success message
+      showNotification('Shortcut erfolgreich gespeichert!', 'success');
+    }
+  });
+  
+  // Utility function to show notifications
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transform translate-x-full transition-transform duration-300`;
+    
+    switch(type) {
+      case 'success':
+        notification.classList.add('bg-green-500');
+        break;
+      case 'error':
+        notification.classList.add('bg-red-500');
+        break;
+      default:
+        notification.classList.add('bg-blue-500');
+    }
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+      notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('translate-x-full');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+  
+  // Close modal on background click
+  document.getElementById('customShortcutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCustomShortcutModal();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('customShortcutModal').classList.contains('active')) {
+      closeCustomShortcutModal();
+    }
+  });
+</script>
