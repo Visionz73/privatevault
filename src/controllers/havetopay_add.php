@@ -21,26 +21,33 @@ try {
     $hasFirstName = in_array('first_name', $userColumns);
     $hasLastName = in_array('last_name', $userColumns);
     
-    // Get all users for participant selection
+    // Get all users for participant selection (INCLUDING current user)
     if ($hasFirstName && $hasLastName) {
         $userStmt = $pdo->prepare("
-            SELECT id, username, first_name, last_name FROM users WHERE id != ? ORDER BY username
+            SELECT id, username, first_name, last_name FROM users ORDER BY username
         ");
     } else {
         $userStmt = $pdo->prepare("
-            SELECT id, username FROM users WHERE id != ? ORDER BY username
+            SELECT id, username FROM users ORDER BY username
         ");
     }
-    $userStmt->execute([$userId]);
+    $userStmt->execute();
     $allUsers = $userStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Add display name to users
-    foreach ($allUsers as &$user) {
+    // Add display name to all users (including current user)
+    $allUsersIncludingMe = [];
+    foreach ($allUsers as $user) {
         $user['display_name'] = $hasFirstName && $hasLastName && 
             !empty($user['first_name']) && !empty($user['last_name']) ? 
             $user['first_name'] . ' ' . $user['last_name'] : 
             $user['username'];
+        $allUsersIncludingMe[] = $user;
     }
+    
+    // Separate current user from others for reference
+    $allUsers = array_filter($allUsersIncludingMe, function($user) use ($userId) {
+        return $user['id'] != $userId;
+    });
     
     // Determine which groups table is in use
     $groupsTable = 'user_groups';
@@ -53,21 +60,39 @@ try {
         $groupMembersTable = 'group_members';
     }
     
-    // Get user groups
+    // Get user groups with member information
     try {
         $groupStmt = $pdo->prepare("
-            SELECT g.id, g.name
+            SELECT g.id, g.name, g.description,
+                   COUNT(DISTINCT m.user_id) as member_count
             FROM $groupsTable g
             JOIN $groupMembersTable m ON g.id = m.group_id
-            WHERE m.user_id = ?
+            WHERE m.user_id = ? OR g.id IN (
+                SELECT group_id FROM $groupMembersTable WHERE user_id = ?
+            )
+            GROUP BY g.id, g.name, g.description
             ORDER BY g.name
         ");
-        $groupStmt->execute([$userId]);
-        $allGroups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        // If there's an error, provide empty groups array
+        $groupStmt->execute([$userId, $userId]);
+        $groups = $groupStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get member details for each group
         $allGroups = [];
-        error_log('Error fetching groups: ' . $e->getMessage());
+        foreach ($groups as $group) {
+            $memberStmt = $pdo->prepare("
+                SELECT m.user_id 
+                FROM $groupMembersTable m 
+                WHERE m.group_id = ? AND m.user_id != ?
+            ");
+            $memberStmt->execute([$group['id'], $userId]);
+            $members = $memberStmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            $group['members'] = $members;
+            $allGroups[] = $group;
+        }
+    } catch (Exception $e) {
+        $allGroups = [];
+        error_log('Fehler beim Laden der Gruppen: ' . $e->getMessage());
     }
     
     // Get expense categories
@@ -77,9 +102,14 @@ try {
     } catch (Exception $e) {
         // Provide default categories if table doesn't exist
         $categories = [
-            ['id' => 1, 'name' => 'Food', 'icon' => 'fa-utensils'],
-            ['id' => 2, 'name' => 'Transportation', 'icon' => 'fa-car'],
-            ['id' => 9, 'name' => 'Other', 'icon' => 'fa-question-circle']
+            ['id' => 1, 'name' => 'Essen & Trinken', 'icon' => 'fa-utensils'],
+            ['id' => 2, 'name' => 'Transport', 'icon' => 'fa-car'],
+            ['id' => 3, 'name' => 'Wohnen', 'icon' => 'fa-home'],
+            ['id' => 4, 'name' => 'Unterhaltung', 'icon' => 'fa-film'],
+            ['id' => 5, 'name' => 'Einkaufen', 'icon' => 'fa-shopping-cart'],
+            ['id' => 6, 'name' => 'Reisen', 'icon' => 'fa-plane'],
+            ['id' => 7, 'name' => 'Gesundheit', 'icon' => 'fa-medkit'],
+            ['id' => 8, 'name' => 'Sonstiges', 'icon' => 'fa-question-circle']
         ];
     }
 
@@ -89,21 +119,39 @@ try {
         $description = trim($_POST['description'] ?? '');
         $amount = floatval($_POST['amount'] ?? 0);
         $expenseDate = $_POST['expense_date'] ?? date('Y-m-d');
-        $expenseCategory = $_POST['category'] ?? 'Other';
+        $expenseCategory = $_POST['category'] ?? 'Sonstiges';
         $participants = $_POST['participants'] ?? [];
         $groupId = !empty($_POST['group_id']) ? intval($_POST['group_id']) : null;
         
-        // Form validation
+        // Form validation with German messages
         if (empty($title)) {
-            $errors[] = 'Title is required';
+            $errors[] = 'Beschreibung ist erforderlich';
         }
         
         if ($amount <= 0) {
-            $errors[] = 'Amount must be greater than zero';
+            $errors[] = 'Betrag muss größer als null sein';
         }
         
         if (empty($participants)) {
-            $errors[] = 'Select at least one participant';
+            $errors[] = 'Wählen Sie mindestens einen Teilnehmer aus';
+        }
+        
+        // Ensure current user is always included as participant
+        if (!in_array($userId, $participants)) {
+            $participants[] = $userId;
+        }
+        
+        // Validate participants exist
+        if (!empty($participants)) {
+            $participantIds = array_map('intval', $participants);
+            $placeholders = str_repeat('?,', count($participantIds) - 1) . '?';
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE id IN ($placeholders)");
+            $checkStmt->execute($participantIds);
+            $validCount = $checkStmt->fetchColumn();
+            
+            if ($validCount != count($participantIds)) {
+                $errors[] = 'Einige ausgewählte Teilnehmer existieren nicht';
+            }
         }
         
         // Process if no errors
@@ -172,7 +220,7 @@ try {
                 }
                 
                 $pdo->commit();
-                $success = 'Expense added successfully';
+                $success = 'Ausgabe erfolgreich erstellt';
                 
                 // Redirect to the main HaveToPay page
                 header('Location: havetopay.php?success=added');
@@ -180,14 +228,14 @@ try {
                 
             } catch (PDOException $e) {
                 $pdo->rollBack();
-                $errors[] = 'Database error: ' . $e->getMessage();
-                error_log('HaveToPay add expense error: ' . $e->getMessage());
+                $errors[] = 'Datenbankfehler: ' . $e->getMessage();
+                error_log('HaveToPay Ausgabe hinzufügen Fehler: ' . $e->getMessage());
             }
         }
     }
 } catch (Exception $e) {
-    $errors[] = 'An error occurred: ' . $e->getMessage();
-    error_log('HaveToPay add page error: ' . $e->getMessage());
+    $errors[] = 'Ein Fehler ist aufgetreten: ' . $e->getMessage();
+    error_log('HaveToPay Seite hinzufügen Fehler: ' . $e->getMessage());
     
     // If data can't be loaded, provide empty arrays
     $allUsers = [];

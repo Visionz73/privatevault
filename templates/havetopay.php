@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HaveToPay | PrivateVault</title>
+    <title>Ausgaben verwalten | PrivateVault</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -38,25 +38,25 @@
                 <div class="p-4 md:p-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                         <div class="bg-green-500/10 border border-green-400/20 backdrop-blur-sm rounded-xl p-4">
-                            <div class="text-white/60 text-xs font-medium mb-1">You are owed</div>
+                            <div class="text-white/60 text-xs font-medium mb-1">Du bekommst</div>
                             <div class="text-2xl font-bold text-green-400"><?php echo number_format($totalOwed, 2); ?> €</div>
                         </div>
                         
                         <div class="bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl p-4">
-                            <div class="text-white/60 text-xs font-medium mb-1">Net balance</div>
+                            <div class="text-white/60 text-xs font-medium mb-1">Netto-Saldo</div>
                             <div class="text-2xl font-bold <?php echo $netBalance >= 0 ? 'text-green-400' : 'text-red-400'; ?>">
                                 <?php echo number_format($netBalance, 2); ?> €
                             </div>
                             <div class="mt-2">
                                 <span class="px-2 py-1 text-xs font-medium rounded-full <?php echo $netBalance >= 0 ? 'bg-green-500/20 border border-green-400/30 text-green-300' : 'bg-red-500/20 border border-red-400/30 text-red-300'; ?>">
                                     <i class="fas fa-arrow-<?php echo $netBalance >= 0 ? 'up' : 'down'; ?> mr-1"></i>
-                                    <?php echo $netBalance >= 0 ? 'Positive' : 'Negative'; ?>
+                                    <?php echo $netBalance >= 0 ? 'Guthaben' : 'Schulden'; ?>
                                 </span>
                             </div>
                         </div>
                         
                         <div class="bg-red-500/10 border border-red-400/20 backdrop-blur-sm rounded-xl p-4">
-                            <div class="text-white/60 text-xs font-medium mb-1">You owe</div>
+                            <div class="text-white/60 text-xs font-medium mb-1">Du schuldest</div>
                             <div class="text-2xl font-bold text-red-400"><?php echo number_format($totalOwing, 2); ?> €</div>
                         </div>
                     </div>
@@ -64,10 +64,10 @@
                     <!-- Quick Action Buttons -->
                     <div class="flex justify-center gap-3 mt-4">
                         <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white px-4 py-2 rounded-xl transition-all duration-200 flex items-center text-sm">
-                            <i class="fas fa-plus mr-2"></i>Add Expense
+                            <i class="fas fa-plus mr-2"></i>Neue Ausgabe
                         </a>
                         <a href="index.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/70 hover:text-white/90 px-4 py-2 rounded-xl transition-all duration-200 flex items-center text-sm">
-                            <i class="fas fa-home mr-2"></i>Dashboard
+                            <i class="fas fa-home mr-2"></i>Zur Übersicht
                         </a>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                 <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
                     <div class="bg-gradient-to-r from-green-600/30 via-green-700/40 to-green-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-sm font-semibold text-white/90">People Who Owe You</h3>
+                            <h3 class="text-sm font-semibold text-white/90">Personen die dir Geld schulden</h3>
                             <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                                 <?php echo count($balances['others_owe']); ?>
                             </span>
@@ -89,7 +89,7 @@
                         <?php if (empty($balances['others_owe'])): ?>
                             <div class="text-center py-8">
                                 <i class="fas fa-check-circle text-4xl text-white/20 mb-2"></i>
-                                <p class="text-white/50 text-sm">No one owes you money.</p>
+                                <p class="text-white/50 text-sm">Niemand schuldet dir Geld.</p>
                             </div>
                         <?php else: ?>
                             <div class="space-y-2">
@@ -118,7 +118,7 @@
                 <div class="bg-gradient-to-br from-purple-900/20 via-gray-900/30 to-red-900/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
                     <div class="bg-gradient-to-r from-red-600/30 via-red-700/40 to-red-800/30 backdrop-blur-sm px-4 py-3 border-b border-white/10">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-sm font-semibold text-white/90">People You Owe</h3>
+                            <h3 class="text-sm font-semibold text-white/90">Personen denen du Geld schuldest</h3>
                             <span class="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                                 <?php echo count($balances['user_owes']); ?>
                             </span>
@@ -128,7 +128,7 @@
                         <?php if (empty($balances['user_owes'])): ?>
                             <div class="text-center py-8">
                                 <i class="fas fa-smile text-4xl text-white/20 mb-2"></i>
-                                <p class="text-white/50 text-sm">You don't owe anyone money.</p>
+                                <p class="text-white/50 text-sm">Du schuldest niemandem Geld.</p>
                             </div>
                         <?php else: ?>
                             <div class="space-y-2">
@@ -165,13 +165,13 @@
                                 <option value="">Alle</option>
                                 <option value="pending" <?= ($_GET['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Ausstehend</option>
                                 <option value="settled" <?= ($_GET['status'] ?? '') === 'settled' ? 'selected' : '' ?>>Beglichen</option>
-                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Teilweise</option>
+                                <option value="partially_settled" <?= ($_GET['status'] ?? '') === 'partially_settled' ? 'selected' : '' ?>>Teilweise beglichen</option>
                             </select>
                         </div>
 
                         <!-- User Filter -->
                         <div class="flex items-center gap-2">
-                            <label class="text-sm text-white/80 whitespace-nowrap">User:</label>
+                            <label class="text-sm text-white/80 whitespace-nowrap">Benutzer:</label>
                             <select name="user" class="px-3 py-1.5 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none">
                                 <option value="">Alle</option>
                                 <option value="me" <?= ($_GET['user'] ?? '') === 'me' ? 'selected' : '' ?>>Meine Ausgaben</option>
@@ -201,10 +201,10 @@
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-2 ml-auto">
                             <button type="submit" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-all border border-white/20 hover:border-white/30">
-                                <i class="fas fa-search mr-1"></i>Filter
+                                <i class="fas fa-search mr-1"></i>Filtern
                             </button>
                             <a href="havetopay.php" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/60 hover:text-white/80 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border border-white/10 hover:border-white/20">
-                                <i class="fas fa-times mr-1"></i>Reset
+                                <i class="fas fa-times mr-1"></i>Zurücksetzen
                             </a>
                         </div>
                     </form>
@@ -233,7 +233,7 @@
                             <i class="fas fa-receipt text-4xl text-white/20 mb-3"></i>
                             <p class="text-white/50 mb-4 text-sm">Keine Ausgaben für die gewählten Filter gefunden.</p>
                             <a href="havetopay_add.php" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/10 hover:border-white/20 text-white/90 hover:text-white font-semibold py-2 px-4 rounded-xl inline-flex items-center transition-all text-sm">
-                                <i class="fas fa-plus mr-2"></i>Erste Ausgabe hinzufügen
+                                <i class="fas fa-plus mr-2"></i>Erste Ausgabe erstellen
                             </a>
                         </div>
                     <?php else: ?>
@@ -249,15 +249,15 @@
                                                 <!-- Settlement Status Badge -->
                                                 <?php if ($expense['settlement_status'] === 'fully_settled'): ?>
                                                     <span class="bg-green-500/20 border border-green-400/30 text-green-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <i class="fas fa-check-circle mr-1"></i>Settled
+                                                        <i class="fas fa-check-circle mr-1"></i>Beglichen
                                                     </span>
                                                 <?php elseif ($expense['settlement_status'] === 'partially_settled'): ?>
                                                     <span class="bg-yellow-500/20 border border-yellow-400/30 text-yellow-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <i class="fas fa-clock mr-1"></i>Partial
+                                                        <i class="fas fa-clock mr-1"></i>Teilweise
                                                     </span>
                                                 <?php else: ?>
                                                     <span class="bg-red-500/20 border border-red-400/30 text-red-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <i class="fas fa-exclamation-circle mr-1"></i>Pending
+                                                        <i class="fas fa-exclamation-circle mr-1"></i>Ausstehend
                                                     </span>
                                                 <?php endif; ?>
 
@@ -275,13 +275,13 @@
                                             
                                             <div class="flex items-center gap-3 mt-1 text-xs text-white/60">
                                                 <span><?php echo number_format($expense['amount'], 2); ?> €</span>
-                                                <span><?php echo date('d M', strtotime($expense['expense_date'])); ?></span>
-                                                <span><i class="fas fa-users mr-1"></i><?php echo $expense['participant_count']; ?></span>
+                                                <span><?php echo date('d.m.Y', strtotime($expense['expense_date'])); ?></span>
+                                                <span><i class="fas fa-users mr-1"></i><?php echo $expense['participant_count']; ?> Personen</span>
                                                 <span><i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($expense['payer_display_name']); ?></span>
                                                 
                                                 <!-- Settlement Progress -->
                                                 <span class="text-xs">
-                                                    <?= $expense['settled_count'] ?>/<?= $expense['participant_count'] ?> paid
+                                                    <?= $expense['settled_count'] ?>/<?= $expense['participant_count'] ?> bezahlt
                                                 </span>
                                             </div>
                                         </div>
@@ -315,18 +315,18 @@
                     <div class="w-10 h-10 bg-red-500/20 border border-red-400/30 text-red-400 rounded-xl flex items-center justify-center mr-3">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-white/90">Confirm Delete</h3>
+                    <h3 class="text-lg font-semibold text-white/90">Ausgabe löschen</h3>
                 </div>
-                <p class="text-white/70 mb-6 text-sm">Are you sure you want to delete "<span id="expenseTitle" class="font-medium text-white/90"></span>"? This action cannot be undone.</p>
+                <p class="text-white/70 mb-6 text-sm">Möchten Sie wirklich "<span id="expenseTitle" class="font-medium text-white/90"></span>" löschen? Diese Aktion kann nicht rückgängig gemacht werden.</p>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-white/70 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 font-medium transition-all backdrop-blur-sm text-sm">
-                        Cancel
+                        Abbrechen
                     </button>
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="action" value="delete_expense">
                         <input type="hidden" name="expense_id" id="deleteExpenseId" value="">
                         <button type="submit" class="px-4 py-2 bg-red-500/30 border border-red-400/40 text-red-300 rounded-xl hover:bg-red-500/40 font-medium transition-all backdrop-blur-sm text-sm">
-                            <i class="fas fa-trash mr-2"></i>Delete
+                            <i class="fas fa-trash mr-2"></i>Löschen
                         </button>
                     </form>
                 </div>

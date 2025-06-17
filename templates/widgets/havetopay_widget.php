@@ -16,7 +16,7 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
     
     <!-- Net Balance Display -->
     <div class="text-right">
-      <div class="text-xs text-white/60 mb-1">Netto Saldo</div>
+      <div class="text-xs text-white/60 mb-1">Netto-Saldo</div>
       <div class="text-lg font-bold <?= $widgetNetBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
         <?= $widgetNetBalance >= 0 ? '+' : '' ?><?= number_format($widgetNetBalance, 2) ?> €
       </div>
@@ -52,7 +52,7 @@ $widgetNetBalance = $widgetNetBalance ?? 0.00;
         <?php endforeach; ?>
       <?php else: ?>
         <div class="text-center py-6">
-          <div class="text-white/40 text-sm">Keine Ausgaben</div>
+          <div class="text-white/40 text-sm">Keine aktuellen Ausgaben</div>
         </div>
       <?php endif; ?>
     </div>
