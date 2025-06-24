@@ -663,6 +663,98 @@
       }
     }
 
+    /* Node View Styles */
+    .node-view-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .node-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .note-node {
+      position: absolute;
+      width: 120px;
+      height: 80px;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 2px solid transparent;
+    }
+
+    .note-node:hover {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      z-index: 10;
+    }
+
+    .note-node.pinned {
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3);
+    }
+
+    .node-title {
+      font-weight: 600;
+      color: white;
+      line-height: 1.2;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .node-preview {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.625rem;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .view-toggle-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .view-toggle-btn {
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.75rem;
+    }
+
+    .view-toggle-btn.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #93c5fd;
+    }
+
+    .view-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
@@ -1142,11 +1234,43 @@
             <i class="fas fa-archive mr-1"></i>Archiv
           </button>
         </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle-buttons mt-4">
+          <button class="view-toggle-btn active" id="gridViewBtn" onclick="switchNotesView('grid')">
+            <i class="fas fa-th mr-1"></i>Grid
+          </button>
+          <button class="view-toggle-btn" id="nodeViewBtn" onclick="switchNotesView('node')">
+            <i class="fas fa-project-diagram mr-1"></i>Knoten
+          </button>
+          <button class="view-toggle-btn" id="listViewBtn" onclick="switchNotesView('list')">
+            <i class="fas fa-list mr-1"></i>Liste
+          </button>
+        </div>
       </div>
       
       <div class="notes-app-body">
-        <div class="notes-grid" id="notesGrid">
+        <!-- Grid View -->
+        <div class="notes-grid" id="notesGrid" style="display: block;">
           <!-- Notes will be loaded here -->
+        </div>
+
+        <!-- Node View -->
+        <div class="node-view-container" id="nodeView" style="display: none;">
+          <div class="node-canvas" id="nodeCanvas">
+            <!-- Node visualization will be rendered here -->
+          </div>
+          <div class="absolute top-4 right-4 text-white/60 text-sm">
+            <i class="fas fa-info-circle mr-1"></i>
+            Ziehen Sie Notizen um sie zu verschieben
+          </div>
+        </div>
+
+        <!-- List View -->
+        <div id="listView" style="display: none;">
+          <div class="space-y-2" id="notesList">
+            <!-- List view will be populated here -->
+          </div>
         </div>
       </div>
     </div>
@@ -1286,23 +1410,33 @@
       showArchived: false,
       currentNote: null,
       notes: [],
-      selectedColor: '#fbbf24'
+      selectedColor: '#fbbf24',
+      currentView: 'grid' // grid, node, list
     };
 
     // Notes App Functions
     async function loadNotes() {
       try {
+        console.log('Loading notes...');
         const response = await fetch(`/src/api/notes.php?archived=${notesApp.showArchived}&limit=20`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Notes loaded:', data);
         
         if (data.notes) {
           notesApp.notes = data.notes;
           updateNotesDisplay();
           updateNotesCount();
+        } else if (data.error) {
+          throw new Error(data.error);
         }
       } catch (error) {
         console.error('Error loading notes:', error);
-        showNotification('Fehler beim Laden der Notizen', 'error');
+        showNotification('Fehler beim Laden der Notizen: ' + error.message, 'error');
       }
     }
 
@@ -1310,15 +1444,17 @@
       const notesList = document.getElementById('notesList');
       const notesGrid = document.getElementById('notesGrid');
       
-      // Update widget list
+      // Update widget list (always show recent notes)
       if (notesApp.notes.length === 0) {
         if (notesList) {
           notesList.innerHTML = '<div class="text-center py-6 text-white/60"><i class="fas fa-sticky-note text-2xl mb-2"></i><p class="text-sm">Keine Notizen vorhanden</p></div>';
         }
       } else {
         const widgetNotes = notesApp.notes.slice(0, 4);
-        if (notesList) {
-          notesList.innerHTML = widgetNotes.map(note => `
+        const widgetContainer = document.querySelector('#notesList');
+        if (widgetContainer && widgetContainer.closest('.dashboard-short')) {
+          // This is the widget list
+          widgetContainer.innerHTML = widgetNotes.map(note => `
             <div class="short-list-item p-3" onclick="editNote(${note.id})">
               <div class="flex items-start gap-3">
                 <div class="w-3 h-3 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
@@ -1336,31 +1472,180 @@
         }
       }
       
-      // Update full grid
-      if (notesGrid) {
-        if (notesApp.notes.length === 0) {
-          notesGrid.innerHTML = '<div class="col-span-full text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
-        } else {
-          notesGrid.innerHTML = notesApp.notes.map(note => `
-            <div class="note-card" style="border-left: 4px solid ${note.color}" data-note-id="${note.id}">
-              <div class="note-card-header">
-                <h3 class="note-title">${escapeHtml(note.title)}</h3>
-                <div class="note-actions">
-                  ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400"></i>' : ''}
-                  <button onclick="editNote(${note.id})" class="note-action-btn">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                </div>
-              </div>
-              ${note.content ? `<div class="note-content">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>` : ''}
-              <div class="note-footer">
-                <span class="note-date">${formatDate(note.updated_at)}</span>
-                ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+      // Update modal views based on current view
+      updateModalView();
+    }
+
+    function updateModalView() {
+      switch (notesApp.currentView) {
+        case 'grid':
+          updateGridView();
+          break;
+        case 'node':
+          updateNodeView();
+          break;
+        case 'list':
+          updateListView();
+          break;
+      }
+    }
+
+    function updateGridView() {
+      const notesGrid = document.getElementById('notesGrid');
+      if (!notesGrid) return;
+      
+      if (notesApp.notes.length === 0) {
+        notesGrid.innerHTML = '<div class="col-span-full text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
+      } else {
+        notesGrid.innerHTML = notesApp.notes.map(note => `
+          <div class="note-card" style="border-left: 4px solid ${note.color}" data-note-id="${note.id}">
+            <div class="note-card-header">
+              <h3 class="note-title">${escapeHtml(note.title)}</h3>
+              <div class="note-actions">
+                ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400"></i>' : ''}
+                <button onclick="editNote(${note.id})" class="note-action-btn">
+                  <i class="fas fa-edit"></i>
+                </button>
               </div>
             </div>
-          `).join('');
-        }
+            ${note.content ? `<div class="note-content">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>` : ''}
+            <div class="note-footer">
+              <span class="note-date">${formatDate(note.updated_at)}</span>
+              ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
       }
+    }
+
+    function updateNodeView() {
+      const nodeCanvas = document.getElementById('nodeCanvas');
+      if (!nodeCanvas) return;
+      
+      nodeCanvas.innerHTML = '';
+      
+      if (notesApp.notes.length === 0) {
+        nodeCanvas.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
+        return;
+      }
+      
+      // Create nodes with random positions (in real app, save positions)
+      notesApp.notes.forEach((note, index) => {
+        const node = document.createElement('div');
+        node.className = `note-node ${note.is_pinned ? 'pinned' : ''}`;
+        node.style.backgroundColor = note.color;
+        node.style.left = `${(index % 5) * 150 + 20}px`;
+        node.style.top = `${Math.floor(index / 5) * 100 + 20}px`;
+        node.setAttribute('data-note-id', note.id);
+        
+        node.innerHTML = `
+          <div class="node-title">${escapeHtml(note.title)}</div>
+          <div class="node-preview">${note.content ? escapeHtml(note.content.substring(0, 50)) + '...' : ''}</div>
+        `;
+        
+        // Add click event
+        node.addEventListener('click', () => editNote(note.id));
+        
+        // Add drag functionality
+        makeNodeDraggable(node);
+        
+        nodeCanvas.appendChild(node);
+      });
+    }
+
+    function updateListView() {
+      const listContainer = document.querySelector('#listView #notesList');
+      if (!listContainer) return;
+      
+      if (notesApp.notes.length === 0) {
+        listContainer.innerHTML = '<div class="text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
+      } else {
+        listContainer.innerHTML = notesApp.notes.map(note => `
+          <div class="short-list-item p-4" onclick="editNote(${note.id})">
+            <div class="flex items-start gap-3">
+              <div class="w-4 h-4 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <h4 class="text-white font-medium text-sm">${escapeHtml(note.title)}</h4>
+                  <div class="flex items-center gap-2">
+                    ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400 text-xs"></i>' : ''}
+                    <span class="text-white/50 text-xs">${formatDate(note.updated_at)}</span>
+                  </div>
+                </div>
+                ${note.content ? `<p class="text-white/60 text-xs line-clamp-2">${escapeHtml(note.content)}</p>` : ''}
+                ${note.tags && note.tags.length > 0 ? `<div class="flex gap-1 mt-2">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function makeNodeDraggable(node) {
+      let isDragging = false;
+      let startX, startY, initialX, initialY;
+      
+      node.addEventListener('mousedown', (e) => {
+        if (e.detail === 1) { // Single click
+          setTimeout(() => {
+            if (!isDragging) {
+              // This was a click, not a drag
+              return;
+            }
+          }, 200);
+        }
+        
+        isDragging = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialX = parseInt(node.style.left) || 0;
+        initialY = parseInt(node.style.top) || 0;
+        
+        const onMouseMove = (e) => {
+          isDragging = true;
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
+          
+          const newX = Math.max(0, Math.min(initialX + deltaX, nodeCanvas.offsetWidth - node.offsetWidth));
+          const newY = Math.max(0, Math.min(initialY + deltaY, nodeCanvas.offsetHeight - node.offsetHeight));
+          
+          node.style.left = newX + 'px';
+          node.style.top = newY + 'px';
+        };
+        
+        const onMouseUp = () => {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+          
+          // Reset dragging flag after a short delay
+          setTimeout(() => {
+            isDragging = false;
+          }, 100);
+        };
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+        
+        e.preventDefault();
+      });
+    }
+
+    function switchNotesView(viewType) {
+      notesApp.currentView = viewType;
+      
+      // Update button states
+      document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(viewType + 'ViewBtn').classList.add('active');
+      
+      // Show/hide views
+      document.getElementById('notesGrid').style.display = viewType === 'grid' ? 'block' : 'none';
+      document.getElementById('nodeView').style.display = viewType === 'node' ? 'block' : 'none';
+      document.getElementById('listView').style.display = viewType === 'list' ? 'block' : 'none';
+      
+      // Update the current view
+      updateModalView();
     }
 
     function updateNotesCount() {
@@ -1394,24 +1679,35 @@
       if (!title) return;
       
       try {
+        console.log('Creating quick note:', { title });
+        
         const response = await fetch('/src/api/notes.php', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content: '', color: '#fbbf24' })
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ 
+            title: title, 
+            content: '', 
+            color: '#fbbf24' 
+          })
         });
         
+        console.log('Response status:', response.status);
         const data = await response.json();
+        console.log('Response data:', data);
         
         if (data.success) {
           titleInput.value = '';
           await loadNotes();
-          showNotification('Notiz erstellt', 'success');
+          showNotification(data.message || 'Notiz erstellt', 'success');
         } else {
           showNotification(data.error || 'Fehler beim Erstellen der Notiz', 'error');
         }
       } catch (error) {
         console.error('Error creating note:', error);
-        showNotification('Fehler beim Erstellen der Notiz', 'error');
+        showNotification('Fehler beim Erstellen der Notiz: ' + error.message, 'error');
       }
     }
 
@@ -1512,24 +1808,31 @@
       }
       
       try {
+        console.log('Saving note:', noteData);
+        
         const response = await fetch('/src/api/notes.php', {
           method: notesApp.currentNote ? 'PUT' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json' 
+          },
           body: JSON.stringify(noteData)
         });
         
+        console.log('Save response status:', response.status);
         const data = await response.json();
+        console.log('Save response data:', data);
         
         if (data.success) {
           closeNoteEditor();
           await loadNotes();
-          showNotification('Notiz gespeichert', 'success');
+          showNotification(data.message || 'Notiz gespeichert', 'success');
         } else {
           showNotification(data.error || 'Fehler beim Speichern der Notiz', 'error');
         }
       } catch (error) {
         console.error('Error saving note:', error);
-        showNotification('Fehler beim Speichern der Notiz', 'error');
+        showNotification('Fehler beim Speichern der Notiz: ' + error.message, 'error');
       }
     }
 
@@ -1667,6 +1970,7 @@
       });
       
       // Initialize notes app
+      console.log('Initializing notes app...');
       loadNotes();
       
       // Setup color buttons
