@@ -195,7 +195,9 @@ try {
     echo "Notes system database tables created successfully!";
 
 } catch (PDOException $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     error_log('Error creating notes tables: ' . $e->getMessage());
     echo "Error creating notes tables: " . $e->getMessage();
 }

@@ -1411,14 +1411,13 @@
       currentNote: null,
       notes: [],
       selectedColor: '#fbbf24',
-      currentView: 'grid' // grid, node, list
-    };
+      currentView: 'grid' // grid, node, list    };
 
     // Notes App Functions
     async function loadNotes() {
       try {
         console.log('Loading notes...');
-        const response = await fetch(`/src/api/notes.php?archived=${notesApp.showArchived}&limit=20`);
+        const response = await fetch(`/api/notes.php?archived=${notesApp.showArchived}&limit=20`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -1677,18 +1676,17 @@
       const title = titleInput.value.trim();
       
       if (!title) return;
-      
-      try {
+        try {
         console.log('Creating quick note:', { title });
         
-        const response = await fetch('/src/api/notes.php', {
+        const response = await fetch('/api/notes.php', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
           body: JSON.stringify({ 
-            title: title, 
+            title: title,
             content: '', 
             color: '#fbbf24' 
           })
@@ -1808,9 +1806,8 @@
       }
       
       try {
-        console.log('Saving note:', noteData);
-        
-        const response = await fetch('/src/api/notes.php', {
+        console.log('Saving note:', noteData);        
+        const response = await fetch('/api/notes.php', {
           method: notesApp.currentNote ? 'PUT' : 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1839,10 +1836,9 @@
     async function toggleNotePin() {
       if (!notesApp.currentNote) return;
       
-      const newPinnedState = !notesApp.currentNote.is_pinned;
-      
+      const newPinnedState = !notesApp.currentNote.is_pinned;      
       try {
-        const response = await fetch('/src/api/notes.php', {
+        const response = await fetch('/api/notes.php', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1870,11 +1866,10 @@
 
     async function deleteCurrentNote() {
       if (!notesApp.currentNote) return;
-      
-      if (!confirm('Möchten Sie diese Notiz wirklich löschen?')) return;
+        if (!confirm('Möchten Sie diese Notiz wirklich löschen?')) return;
       
       try {
-        const response = await fetch(`/src/api/notes.php?id=${notesApp.currentNote.id}`, {
+        const response = await fetch(`/api/notes.php?id=${notesApp.currentNote.id}`, {
           method: 'DELETE'
         });
         

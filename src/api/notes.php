@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../lib/auth.php';
-require_once __DIR__ . '/../lib/database.php';
+require_once __DIR__ . '/../lib/db.php';
 
 header('Content-Type: application/json');
 
@@ -15,7 +15,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
 try {
-    $pdo = getDBConnection();
+    global $pdo;
     
     switch ($method) {
         case 'GET':
@@ -156,8 +156,7 @@ function handleUpdateNote($pdo, $userId, $input) {
         echo json_encode(['success' => true, 'message' => 'Notiz gespeichert']);
     } catch (Exception $e) {
         $pdo->rollBack();
-        throw $e;
-    }
+        throw $e;    }
 }
 
 function handleDeleteNote($pdo, $userId, $noteId) {
@@ -173,93 +172,6 @@ function handleDeleteNote($pdo, $userId, $noteId) {
     
     if ($stmt->rowCount() > 0) {
         echo json_encode(['success' => true, 'message' => 'Notiz gelöscht']);
-    } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'Note not found']);
-    }
-}
-?>
-        return;
-    }
-    
-    $noteId = $input['id'] ?? null;
-    $title = trim($input['title'] ?? '');
-    $content = trim($input['content'] ?? '');
-    $color = $input['color'] ?? '#fbbf24';
-    $isPinned = $input['is_pinned'] ?? false;
-    $tags = $input['tags'] ?? [];
-    
-    if (empty($noteId) || empty($title)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'ID and title are required']);
-        return;
-    }
-    
-    // Validate color format
-    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
-        $color = '#fbbf24';
-    }
-    
-    $pdo->beginTransaction();
-    
-    try {
-        // Check ownership
-        $checkSql = "SELECT id FROM notes WHERE id = ? AND user_id = ?";
-        $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->execute([$noteId, $userId]);
-        if (!$checkStmt->fetch()) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Note not found or access denied']);
-            return;
-        }
-        
-        // Update note
-        $sql = "UPDATE notes SET title = ?, content = ?, color = ?, is_pinned = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$title, $content, $color, $isPinned ? 1 : 0, $noteId, $userId]);
-        
-        // Update tags
-        $pdo->prepare("DELETE FROM note_tags WHERE note_id = ?")->execute([$noteId]);
-        if (!empty($tags) && is_array($tags)) {
-            $tagSql = "INSERT INTO note_tags (note_id, tag_name) VALUES (?, ?)";
-            $tagStmt = $pdo->prepare($tagSql);
-            foreach ($tags as $tag) {
-                $tag = trim($tag);
-                if (!empty($tag)) {
-                    try {
-                        $tagStmt->execute([$noteId, $tag]);
-                    } catch (PDOException $e) {
-                        // Ignore duplicate tag errors
-                        if ($e->getCode() !== '23000') {
-                            throw $e;
-                        }
-                    }
-                }
-            }
-        }
-        
-        $pdo->commit();
-        echo json_encode(['success' => true, 'message' => 'Note updated successfully']);
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        error_log("Error updating note: " . $e->getMessage());
-        throw $e;
-    }
-}
-
-function handleDeleteNote($pdo, $userId, $noteId) {
-    if (empty($noteId)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Note ID is required']);
-        return;
-    }
-    
-    $sql = "DELETE FROM notes WHERE id = ? AND user_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$noteId, $userId]);
-    
-    if ($stmt->rowCount() > 0) {
-        echo json_encode(['success' => true, 'message' => 'Note deleted successfully']);
     } else {
         http_response_code(404);
         echo json_encode(['error' => 'Note not found']);

@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# API Routing
+RewriteRule ^api/(.*)$ src/api/$1 [L]
+
+# Statische Dateien direkt bedienen
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Standardrouting für alles andere
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
