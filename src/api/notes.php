@@ -1,18 +1,40 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/db.php';
 
 header('Content-Type: application/json');
 
+// Check if session is started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
+    echo json_encode(['error' => 'Unauthorized - not logged in']);
     exit;
 }
 
 $user = getUser();
+if (!$user) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized - user not found']);
+    exit;
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
+
+// Verify database connection
+if (!isset($pdo) || !$pdo) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database connection failed']);
+    exit;
+}
 
 try {
     global $pdo;
@@ -44,27 +66,60 @@ try {
 }
 
 function handleGetNotes($pdo, $userId) {
-    $archived = $_GET['archived'] ?? 'false';
-    $limit = min(intval($_GET['limit'] ?? 50), 100);
-    
-    $sql = "SELECT n.*, GROUP_CONCAT(nt.tag_name) as tags 
-            FROM notes n 
-            LEFT JOIN note_tags nt ON n.id = nt.note_id 
-            WHERE n.user_id = ? AND n.is_archived = ?
-            GROUP BY n.id 
-            ORDER BY n.is_pinned DESC, n.updated_at DESC 
-            LIMIT ?";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
-    $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Format tags as array
-    foreach ($notes as &$note) {
-        $note['tags'] = $note['tags'] ? explode(',', $note['tags']) : [];
+    try {
+        $archived = $_GET['archived'] ?? 'false';
+        $limit = min(intval($_GET['limit'] ?? 50), 100);
+        
+        // First check if tables exist
+        $stmt = $pdo->query("SHOW TABLES LIKE 'notes'");
+        if (!$stmt->fetch()) {
+            // Create notes table if it doesn't exist
+            $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                content TEXT,
+                color VARCHAR(7) DEFAULT '#fbbf24',
+                is_pinned BOOLEAN DEFAULT FALSE,
+                is_archived BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )");
+        }
+        
+        $stmt = $pdo->query("SHOW TABLES LIKE 'note_tags'");
+        if (!$stmt->fetch()) {
+            // Create note_tags table if it doesn't exist
+            $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                note_id INT NOT NULL,
+                tag_name VARCHAR(100) NOT NULL,
+                FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
+            )");
+        }
+        
+        $sql = "SELECT n.*, GROUP_CONCAT(nt.tag_name) as tags 
+                FROM notes n 
+                LEFT JOIN note_tags nt ON n.id = nt.note_id 
+                WHERE n.user_id = ? AND n.is_archived = ?
+                GROUP BY n.id 
+                ORDER BY n.is_pinned DESC, n.updated_at DESC 
+                LIMIT ?";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
+        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format tags as array
+        foreach ($notes as &$note) {
+            $note['tags'] = $note['tags'] ? explode(',', $note['tags']) : [];
+        }
+        
+        echo json_encode(['success' => true, 'notes' => $notes]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error loading notes: ' . $e->getMessage()]);
     }
-    
-    echo json_encode(['notes' => $notes]);
 }
 
 function handleCreateNote($pdo, $userId, $input) {
@@ -151,12 +206,12 @@ function handleUpdateNote($pdo, $userId, $input) {
                 }
             }
         }
-        
-        $pdo->commit();
+          $pdo->commit();
         echo json_encode(['success' => true, 'message' => 'Notiz gespeichert']);
     } catch (Exception $e) {
         $pdo->rollBack();
-        throw $e;    }
+        throw $e;
+    }
 }
 
 function handleDeleteNote($pdo, $userId, $noteId) {
