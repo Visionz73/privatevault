@@ -755,6 +755,182 @@
       color: white;
     }
 
+    /* Enhanced Graph Controls */
+    .graph-control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .graph-control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    .graph-control-btn.active {
+      background: rgba(59, 130, 246, 0.5);
+      border-color: rgba(59, 130, 246, 0.8);
+    }
+
+    /* Enhanced Node Types */
+    .note-node.daily-node {
+      border-left: 4px solid #22c55e;
+    }
+
+    .note-node.idea-node {
+      border-left: 4px solid #8b5cf6;
+    }
+
+    .note-node.documentation-node {
+      border-left: 4px solid #3b82f6;
+    }
+
+    .note-node.knowledge-node {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .note-node.selected {
+      border-color: #60a5fa !important;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+      z-index: 20;
+    }
+
+    .note-node.connected {
+      border-color: #34d399 !important;
+      box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+    }
+
+    /* Filter Tags */
+    .filter-tag-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tag-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-tag-btn.active {
+      background: rgba(59, 130, 246, 0.5);
+      border-color: rgba(59, 130, 246, 0.8);
+    }
+
+    /* Node Links/Connections */
+    .node-link {
+      stroke: rgba(255, 255, 255, 0.3);
+      stroke-width: 2;
+      fill: none;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .node-link.highlighted {
+      stroke: #60a5fa;
+      stroke-width: 3;
+      stroke-dasharray: 5,5;
+      animation: dash 1s linear infinite;
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -10;
+      }
+    }
+
+    /* Node Tooltip Enhanced */
+    .note-node-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 200px;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .note-node:hover .note-node-tooltip {
+      opacity: 1;
+    }
+
+    /* Node Count Info */
+    .node-info {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      display: flex;
+      gap: 2px;
+    }
+
+    .node-info-badge {
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 1px 4px;
+      border-radius: 8px;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    .link-count { background: rgba(34, 197, 94, 0.7); }
+    .tag-count { background: rgba(59, 130, 246, 0.7); }
+
+    /* Graph Zoom Controls */
+    .graph-zoom-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Node Connection Lines */
+    .node-connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Node Canvas Enhanced */
+    .node-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .node-canvas:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -1253,16 +1429,86 @@
         <!-- Grid View -->
         <div class="notes-grid" id="notesGrid" style="display: block;">
           <!-- Notes will be loaded here -->
-        </div>
-
-        <!-- Node View -->
+        </div>        <!-- Node View - Enhanced Second Brain Graph -->
         <div class="node-view-container" id="nodeView" style="display: none;">
+          <!-- Graph Controls -->
+          <div class="absolute top-4 left-4 z-10">
+            <div class="bg-black/20 backdrop-blur-sm rounded-lg p-3 space-y-2">
+              <div class="flex items-center space-x-2">
+                <button id="graph-layout-btn" class="graph-control-btn" title="Re-layout nodes">
+                  <i class="fas fa-sitemap"></i>
+                </button>
+                <button id="graph-center-btn" class="graph-control-btn" title="Center graph">
+                  <i class="fas fa-crosshairs"></i>
+                </button>
+                <button id="graph-zoom-fit" class="graph-control-btn" title="Fit to screen">
+                  <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+              </div>
+              
+              <!-- Node Size Control -->
+              <div class="flex items-center space-x-2 text-white/70 text-xs">
+                <span>Size:</span>
+                <input type="range" id="node-size-slider" min="0.5" max="2" step="0.1" value="1" 
+                       class="w-16 h-1 bg-white/20 rounded-lg">
+              </div>
+              
+              <!-- Link Strength Control -->
+              <div class="flex items-center space-x-2 text-white/70 text-xs">
+                <span>Links:</span>
+                <input type="range" id="link-strength-slider" min="0.2" max="2" step="0.1" value="1" 
+                       class="w-16 h-1 bg-white/20 rounded-lg">
+              </div>
+              
+              <!-- Toggle Labels -->
+              <button id="toggle-labels-btn" class="graph-control-btn w-full text-xs" title="Toggle labels">
+                <i class="fas fa-tag mr-1"></i>Labels
+              </button>
+            </div>
+          </div>
+          
+          <!-- Graph Canvas -->
           <div class="node-canvas" id="nodeCanvas">
             <!-- Node visualization will be rendered here -->
           </div>
-          <div class="absolute top-4 right-4 text-white/60 text-sm">
-            <i class="fas fa-info-circle mr-1"></i>
-            Ziehen Sie Notizen um sie zu verschieben
+          
+          <!-- Graph Info Panel -->
+          <div class="absolute top-4 right-4 z-10">
+            <div class="bg-black/20 backdrop-blur-sm rounded-lg p-3 text-white/70 text-sm">
+              <div class="flex items-center space-x-4">
+                <div class="text-center">
+                  <div class="text-lg font-bold text-white" id="graph-nodes-count">0</div>
+                  <div class="text-xs">Notizen</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg font-bold text-white" id="graph-links-count">0</div>
+                  <div class="text-xs">Links</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Selected Node Panel -->
+          <div id="selected-node-panel" class="absolute bottom-4 left-4 z-10 hidden">
+            <div class="bg-black/40 backdrop-blur-sm rounded-lg p-4 max-w-xs">
+              <div id="node-details-content">
+                <!-- Node details will be shown here -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Filter Panel -->
+          <div class="absolute bottom-4 right-4 z-10">
+            <div class="bg-black/20 backdrop-blur-sm rounded-lg p-3">
+              <div class="text-white/70 text-xs mb-2">Filter:</div>
+              <div class="flex flex-wrap gap-1">
+                <button class="filter-tag-btn active" data-filter="all">All</button>
+                <button class="filter-tag-btn" data-filter="daily">Daily</button>
+                <button class="filter-tag-btn" data-filter="ideas">Ideas</button>
+                <button class="filter-tag-btn" data-filter="docs">Docs</button>
+                <button class="filter-tag-btn" data-filter="knowledge">Knowledge</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1352,13 +1598,13 @@
     // Gradient management
     const gradients = {
       cosmic: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
-      ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
-      sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
-      forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
-      purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
-      rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
-      cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
-      ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)'
+      ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%',
+      sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%',
+      forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%',
+      purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%',
+      rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%',
+      cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%',
+      ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%'
     };
 
     let currentGradient = localStorage.getItem('dashboardGradient') || 'cosmic';
@@ -1513,127 +1759,645 @@
             </div>
           </div>
         `).join('');
-      }
-    }    function updateNodeView() {
+      }    }    
+    
+    // Enhanced Second Brain Node View
+    function updateNodeView() {
       const nodeCanvas = document.getElementById('nodeCanvas');
       if (!nodeCanvas) return;
       
       nodeCanvas.innerHTML = '';
       
       if (notesApp.notes.length === 0) {
-        nodeCanvas.innerHTML = '<div class="absolute inset-0 flex items-center justify-content text-white/60"><div class="text-center"><i class="fas fa-project-diagram text-4xl mb-4"></i><p>Keine Notizen für Graph-Ansicht vorhanden</p><p class="text-sm mt-2">Erstelle Notizen und verknüpfe sie miteinander</p></div></div>';
+        nodeCanvas.innerHTML = `
+          <div class="absolute inset-0 flex items-center justify-center text-white/60">
+            <div class="text-center">
+              <i class="fas fa-brain text-6xl mb-4 text-purple-400"></i>
+              <h3 class="text-xl mb-2">Dein Second Brain wartet</h3>
+              <p class="mb-4">Erstelle Notizen und verknüpfe sie miteinander</p>
+              <button onclick="openNoteEditor()" class="notes-btn-primary">
+                <i class="fas fa-plus mr-2"></i>Erste Notiz erstellen
+              </button>
+            </div>
+          </div>
+        `;
         return;
       }
       
-      // Create SVG for links
+      // Update graph stats
+      updateGraphStats();
+      
+      // Create SVG for connections
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.className = 'node-links';
+      svg.className = 'node-connections';
       svg.style.position = 'absolute';
       svg.style.top = '0';
       svg.style.left = '0';
       svg.style.width = '100%';
       svg.style.height = '100%';
       svg.style.pointerEvents = 'none';
+      svg.style.zIndex = '1';
       nodeCanvas.appendChild(svg);
       
-      // Create nodes with smarter positioning
+      // Create nodes with enhanced positioning
       const canvasWidth = nodeCanvas.clientWidth || 800;
-      const canvasHeight = nodeCanvas.clientHeight || 400;
-      const margin = 40;
+      const canvasHeight = nodeCanvas.clientHeight || 500;
+      const margin = 80;
+      
+      // Generate node layout based on connections and importance
+      const nodeLayout = generateSmartLayout(notesApp.notes, canvasWidth, canvasHeight, margin);
       
       notesApp.notes.forEach((note, index) => {
-        const node = document.createElement('div');
-        
-        // Determine node type based on content/tags
-        let nodeClass = 'note-node';
-        let nodeType = 'default';
-        
-        if (note.tags) {
-          if (note.tags.includes('DailyThoughts') || note.tags.includes('daily')) {
-            nodeType = 'daily';
-            nodeClass += ' daily-node';
-          } else if (note.tags.includes('Ideen') || note.tags.includes('ideas')) {
-            nodeType = 'idea';
-            nodeClass += ' idea-node';
-          } else if (note.tags.includes('Dokumentation') || note.tags.includes('docs')) {
-            nodeType = 'documentation';
-            nodeClass += ' documentation-node';
-          } else if (note.tags.includes('Wissen') || note.tags.includes('knowledge')) {
-            nodeType = 'knowledge';
-            nodeClass += ' knowledge-node';
-          }
-        }
-        
-        if (note.is_pinned) {
-          nodeClass += ' pinned';
-        }
-        
-        // Use saved position or calculate new one
-        let x, y;
-        if (note.node_position_x && note.node_position_y) {
-          x = note.node_position_x;
-          y = note.node_position_y;
-        } else {
-          // Smart positioning: circle layout for better visibility
-          const angle = (index / notesApp.notes.length) * 2 * Math.PI;
-          const radius = Math.min(canvasWidth, canvasHeight) * 0.3;
-          const centerX = canvasWidth / 2;
-          const centerY = canvasHeight / 2;
-          
-          x = centerX + Math.cos(angle) * radius;
-          y = centerY + Math.sin(angle) * radius;
-          
-          // Keep within bounds
-          x = Math.max(margin, Math.min(canvasWidth - margin, x));
-          y = Math.max(margin, Math.min(canvasHeight - margin, y));
-        }
-        
-        node.className = nodeClass;
-        node.style.left = `${x}px`;
-        node.style.top = `${y}px`;
-        node.style.backgroundColor = note.color;
-        node.setAttribute('data-note-id', note.id);
-        node.setAttribute('data-note-type', nodeType);
-        
-        // Create tooltip
-        const tooltip = document.createElement('div');
-        tooltip.className = 'note-node-tooltip';
-        tooltip.innerHTML = `
-          <div class="font-medium">${escapeHtml(note.title)}</div>
-          ${note.content ? `<div class="text-xs opacity-75 mt-1">${escapeHtml(note.content.substring(0, 60))}${note.content.length > 60 ? '...' : ''}</div>` : ''}
-          ${note.tags && note.tags.length > 0 ? `<div class="text-xs mt-1">${note.tags.map(tag => `#${tag}`).join(' ')}</div>` : ''}
-          <div class="text-xs opacity-50 mt-1">${formatDate(note.updated_at)}</div>
-        `;
-        node.appendChild(tooltip);
-        
-        // Add click event
-        node.addEventListener('click', (e) => {
-          e.stopPropagation();
-          editNote(note.id);
-        });
-        
-        // Add hover effects
-        node.addEventListener('mouseenter', () => {
-          // Highlight connected nodes
-          highlightConnectedNodes(note.id);
-        });
-        
-        node.addEventListener('mouseleave', () => {
-          // Remove highlights
-          clearNodeHighlights();
-        });
-        
-        // Add drag functionality
-        makeNodeDraggable(node, note.id);
-        
+        const node = createEnhancedNoteNode(note, index, nodeLayout);
         nodeCanvas.appendChild(node);
       });
       
-      // Draw connections (simulated for now - in real app, load from note_links table)
-      drawNodeConnections(svg);
+      // Draw connections between linked notes
+      drawNoteConnections(svg, notesApp.notes, nodeLayout);
       
-      // Add graph controls
-      addGraphControls(nodeCanvas);
+      // Setup node interactions
+      setupNodeInteractions();
+      
+      // Setup graph controls
+      setupGraphControls();
+    }
+    
+    function generateSmartLayout(notes, width, height, margin) {
+      const layout = new Map();
+      
+      // For now, use circle layout but we'll enhance this
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) * 0.35;
+      
+      notes.forEach((note, index) => {
+        let x, y;
+        
+        // Use saved position if available
+        if (note.node_position_x && note.node_position_y) {
+          x = Math.max(margin, Math.min(width - margin, note.node_position_x));
+          y = Math.max(margin, Math.min(height - margin, note.node_position_y));
+        } else {
+          // Smart circle layout with some randomness
+          const angle = (index / notes.length) * 2 * Math.PI;
+          const radiusVariation = radius * (0.8 + Math.random() * 0.4);
+          
+          x = centerX + Math.cos(angle) * radiusVariation;
+          y = centerY + Math.sin(angle) * radiusVariation;
+          
+          // Add some clustering based on tags
+          if (note.tags && note.tags.length > 0) {
+            const tagHash = note.tags[0].split('').reduce((a, b) => {
+              a = ((a << 5) - a) + b.charCodeAt(0);
+              return a & a;
+            }, 0);
+            const clusterAngle = (tagHash % 8) * (Math.PI / 4);
+            const clusterOffset = 30;
+            x += Math.cos(clusterAngle) * clusterOffset;
+            y += Math.sin(clusterAngle) * clusterOffset;
+          }
+          
+          // Keep within bounds
+          x = Math.max(margin, Math.min(width - margin, x));
+          y = Math.max(margin, Math.min(height - margin, y));
+        }
+        
+        layout.set(note.id, { x, y });
+      });
+      
+      return layout;
+    }
+    
+    function createEnhancedNoteNode(note, index, layout) {
+      const node = document.createElement('div');
+      const position = layout.get(note.id);
+      
+      // Determine node type and styling
+      let nodeClass = 'note-node';
+      let nodeType = 'default';
+      let nodeIcon = 'fas fa-sticky-note';
+      
+      if (note.tags && note.tags.length > 0) {
+        const tagStr = note.tags.join(' ').toLowerCase();
+        if (tagStr.includes('daily') || tagStr.includes('dailythoughts')) {
+          nodeType = 'daily';
+          nodeClass += ' daily-node';
+          nodeIcon = 'fas fa-calendar-day';
+        } else if (tagStr.includes('idea') || tagStr.includes('ideen')) {
+          nodeType = 'idea';
+          nodeClass += ' idea-node';
+          nodeIcon = 'fas fa-lightbulb';
+        } else if (tagStr.includes('doc') || tagStr.includes('dokumentation')) {
+          nodeType = 'documentation';
+          nodeClass += ' documentation-node';
+          nodeIcon = 'fas fa-file-alt';
+        } else if (tagStr.includes('wissen') || tagStr.includes('knowledge')) {
+          nodeType = 'knowledge';
+          nodeClass += ' knowledge-node';
+          nodeIcon = 'fas fa-brain';
+        }
+      }
+      
+      if (note.is_pinned) {
+        nodeClass += ' pinned';
+      }
+      
+      // Calculate connections count (simulate for now)
+      const connectionsCount = Math.floor(Math.random() * 5);
+      const tagsCount = note.tags ? note.tags.length : 0;
+      
+      node.className = nodeClass;
+      node.style.left = `${position.x}px`;
+      node.style.top = `${position.y}px`;
+      node.style.backgroundColor = note.color;
+      node.setAttribute('data-note-id', note.id);
+      node.setAttribute('data-note-type', nodeType);
+      
+      node.innerHTML = `
+        <div class="node-header">
+          <i class="${nodeIcon}" style="font-size: 0.8rem; opacity: 0.8;"></i>
+          ${note.is_pinned ? '<i class="fas fa-thumbtack" style="font-size: 0.6rem; color: #fbbf24; margin-left: auto;"></i>' : ''}
+        </div>
+        <div class="node-title">${escapeHtml(note.title)}</div>
+        <div class="node-info">
+          ${connectionsCount > 0 ? `<span class="node-info-badge link-count">${connectionsCount}</span>` : ''}
+          ${tagsCount > 0 ? `<span class="node-info-badge tag-count">${tagsCount}</span>` : ''}
+        </div>
+        <div class="note-node-tooltip">
+          <strong>${escapeHtml(note.title)}</strong><br>
+          <small>${note.content ? escapeHtml(note.content.substring(0, 100)) + '...' : 'Keine Inhalte'}</small><br>
+          <small style="color: #9ca3af;">
+            ${note.tags && note.tags.length > 0 ? note.tags.map(tag => `#${tag}`).join(' ') : 'Keine Tags'}
+          </small>
+        </div>
+      `;
+      
+      return node;
+    }
+    
+    function drawNoteConnections(svg, notes, layout) {
+      // For now, create some random connections to demonstrate
+      // In a real implementation, you'd load actual note links from the database
+      const connections = generateSampleConnections(notes);
+      
+      connections.forEach(connection => {
+        const sourcePos = layout.get(connection.source);
+        const targetPos = layout.get(connection.target);
+        
+        if (sourcePos && targetPos) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.className = 'node-link';
+          line.setAttribute('x1', sourcePos.x + 60); // Center of node
+          line.setAttribute('y1', sourcePos.y + 40);
+          line.setAttribute('x2', targetPos.x + 60);
+          line.setAttribute('y2', targetPos.y + 40);
+          line.setAttribute('data-source', connection.source);
+          line.setAttribute('data-target', connection.target);
+          
+          svg.appendChild(line);
+        }
+      });
+    }
+    
+    function generateSampleConnections(notes) {
+      const connections = [];
+      
+      // Create some sample connections based on similar tags or titles
+      for (let i = 0; i < notes.length; i++) {
+        for (let j = i + 1; j < notes.length; j++) {
+          const note1 = notes[i];
+          const note2 = notes[j];
+          
+          // Connect notes with similar tags
+          const commonTags = note1.tags && note2.tags ? 
+            note1.tags.filter(tag => note2.tags.includes(tag)) : [];
+          
+          if (commonTags.length > 0 || Math.random() < 0.3) {
+            connections.push({
+              source: note1.id,
+              target: note2.id,
+              type: commonTags.length > 0 ? 'tag_similarity' : 'semantic'
+            });
+          }
+        }
+      }
+      
+      return connections.slice(0, Math.min(connections.length, notes.length * 2));
+    }
+    
+    function setupNodeInteractions() {
+      const nodes = document.querySelectorAll('.note-node');
+      let selectedNode = null;
+      let isDragging = false;
+      let dragStart = { x: 0, y: 0 };
+      
+      nodes.forEach(node => {
+        // Click to select/edit
+        node.addEventListener('click', (e) => {
+          if (!isDragging) {
+            const noteId = parseInt(node.getAttribute('data-note-id'));
+            
+            // Deselect previous
+            if (selectedNode) {
+              selectedNode.classList.remove('selected');
+            }
+            
+            // Select current
+            node.classList.add('selected');
+            selectedNode = node;
+            
+            // Show node details
+            showNodeDetails(noteId);
+            
+            // Highlight connected nodes
+            highlightConnectedNodes(noteId);
+          }
+        });
+        
+        // Double-click to edit
+        node.addEventListener('dblclick', (e) => {
+          const noteId = parseInt(node.getAttribute('data-note-id'));
+          editNote(noteId);
+        });
+        
+        // Drag functionality
+        node.addEventListener('mousedown', (e) => {
+          isDragging = false;
+          dragStart = { x: e.clientX, y: e.clientY };
+          
+          const onMouseMove = (e) => {
+            const deltaX = e.clientX - dragStart.x;
+            const deltaY = e.clientY - dragStart.y;
+            
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+              isDragging = true;
+              
+              const rect = node.getBoundingClientRect();
+              const canvas = document.getElementById('nodeCanvas');
+              const canvasRect = canvas.getBoundingClientRect();
+              
+              const newX = rect.left - canvasRect.left + deltaX;
+              const newY = rect.top - canvasRect.top + deltaY;
+              
+              node.style.left = `${Math.max(0, Math.min(canvasRect.width - 120, newX))}px`;
+              node.style.top = `${Math.max(0, Math.min(canvasRect.height - 80, newY))}px`;
+              
+              // Update connections
+              updateConnectionsForNode(node);
+            }
+          };
+          
+          const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            
+            if (isDragging) {
+              // Save new position
+              const noteId = parseInt(node.getAttribute('data-note-id'));
+              const x = parseInt(node.style.left);
+              const y = parseInt(node.style.top);
+              saveNodePosition(noteId, x, y);
+            }
+            
+            setTimeout(() => { isDragging = false; }, 100);
+          };
+          
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      });
+    }
+    
+    function updateConnectionsForNode(node) {
+      const nodeId = node.getAttribute('data-note-id');
+      const svg = document.querySelector('.node-connections');
+      const connections = svg.querySelectorAll(`[data-source="${nodeId}"], [data-target="${nodeId}"]`);
+      
+      const nodeRect = node.getBoundingClientRect();
+      const canvasRect = document.getElementById('nodeCanvas').getBoundingClientRect();
+      const centerX = nodeRect.left - canvasRect.left + 60;
+      const centerY = nodeRect.top - canvasRect.top + 40;
+      
+      connections.forEach(line => {
+        if (line.getAttribute('data-source') === nodeId) {
+          line.setAttribute('x1', centerX);
+          line.setAttribute('y1', centerY);
+        } else {
+          line.setAttribute('x2', centerX);
+          line.setAttribute('y2', centerY);
+        }
+      });
+    }
+    
+    function showNodeDetails(noteId) {
+      const note = notesApp.notes.find(n => n.id === noteId);
+      if (!note) return;
+      
+      const panel = document.getElementById('selected-node-panel');
+      const content = document.getElementById('node-details-content');
+      
+      content.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-lg font-semibold text-white">${escapeHtml(note.title)}</h5>
+            <button onclick="editNote(${note.id})" class="notes-btn-primary px-3 py-1 text-sm">
+              <i class="fas fa-edit mr-1"></i>Edit
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-400">Created:</span>
+              <span class="text-white">${formatDate(note.created_at)}</span>
+            </div>
+            <div>
+              <span class="text-gray-400">Updated:</span>
+              <span class="text-white">${formatDate(note.updated_at)}</span>
+            </div>
+          </div>
+          
+          ${note.tags && note.tags.length > 0 ? `
+            <div>
+              <span class="text-gray-400 text-sm">Tags:</span>
+              <div class="flex flex-wrap gap-1 mt-1">
+                ${note.tags.map(tag => `<span class="filter-tag-btn text-xs">#${tag}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          ${note.content ? `
+            <div>
+              <span class="text-gray-400 text-sm">Preview:</span>
+              <p class="text-white text-sm mt-1 line-clamp-3">${escapeHtml(note.content.substring(0, 150))}...</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      panel.classList.remove('hidden');
+    }
+    
+    function highlightConnectedNodes(nodeId) {
+      // Clear previous highlights
+      document.querySelectorAll('.note-node.connected').forEach(node => {
+        node.classList.remove('connected');
+      });
+      
+      document.querySelectorAll('.node-link.highlighted').forEach(link => {
+        link.classList.remove('highlighted');
+      });
+      
+      // Highlight connections
+      const connections = document.querySelectorAll(`[data-source="${nodeId}"], [data-target="${nodeId}"]`);
+      connections.forEach(link => {
+        link.classList.add('highlighted');
+        
+        const sourceId = link.getAttribute('data-source');
+        const targetId = link.getAttribute('data-target');
+        const connectedId = sourceId === nodeId.toString() ? targetId : sourceId;
+        
+        const connectedNode = document.querySelector(`[data-note-id="${connectedId}"]`);
+        if (connectedNode) {
+          connectedNode.classList.add('connected');
+        }
+      });
+    }
+    
+    function setupGraphControls() {
+      // Layout button
+      document.getElementById('graph-layout-btn')?.addEventListener('click', () => {
+        relayoutGraph();
+      });
+      
+      // Center button
+      document.getElementById('graph-center-btn')?.addEventListener('click', () => {
+        centerGraph();
+      });
+      
+      // Zoom fit button
+      document.getElementById('graph-zoom-fit')?.addEventListener('click', () => {
+        fitGraphToScreen();
+      });
+      
+      // Node size slider
+      document.getElementById('node-size-slider')?.addEventListener('input', (e) => {
+        updateNodeSize(parseFloat(e.target.value));
+      });
+      
+      // Link strength slider
+      document.getElementById('link-strength-slider')?.addEventListener('input', (e) => {
+        updateLinkStrength(parseFloat(e.target.value));
+      });
+      
+      // Toggle labels
+      document.getElementById('toggle-labels-btn')?.addEventListener('click', () => {
+        toggleNodeLabels();
+      });
+      
+      // Filter buttons
+      document.querySelectorAll('.filter-tag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const filter = btn.getAttribute('data-filter');
+          filterGraphByType(filter);
+          
+          // Update active state
+          document.querySelectorAll('.filter-tag-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+    }
+    
+    function updateGraphStats() {
+      const nodeCount = notesApp.notes.length;
+      const linkCount = document.querySelectorAll('.node-link').length;
+      
+      document.getElementById('graph-nodes-count').textContent = nodeCount;
+      document.getElementById('graph-links-count').textContent = linkCount;
+    }
+    
+    function relayoutGraph() {
+      // Re-generate layout and update positions
+      const canvas = document.getElementById('nodeCanvas');
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const newLayout = generateSmartLayout(notesApp.notes, width, height, 80);
+      
+      const nodes = document.querySelectorAll('.note-node');
+      nodes.forEach(node => {
+        const noteId = parseInt(node.getAttribute('data-note-id'));
+        const position = newLayout.get(noteId);
+        
+        // Animate to new position
+        node.style.transition = 'all 0.5s ease';
+        node.style.left = `${position.x}px`;
+        node.style.top = `${position.y}px`;
+        
+        // Update connections
+        setTimeout(() => {
+          updateConnectionsForNode(node);
+          node.style.transition = '';
+        }, 500);
+      });
+    }
+    
+    function centerGraph() {
+      const canvas = document.getElementById('nodeCanvas');
+      const nodes = document.querySelectorAll('.note-node');
+      
+      if (nodes.length === 0) return;
+      
+      // Calculate center of all nodes
+      let totalX = 0, totalY = 0;
+      nodes.forEach(node => {
+        totalX += parseInt(node.style.left);
+        totalY += parseInt(node.style.top);
+      });
+      
+      const avgX = totalX / nodes.length;
+      const avgY = totalY / nodes.length;
+      
+      const canvasWidth = canvas.clientWidth;
+      const canvasHeight = canvas.clientHeight;
+      const offsetX = (canvasWidth / 2) - avgX - 60; // 60 is half node width
+      const offsetY = (canvasHeight / 2) - avgY - 40; // 40 is half node height
+      
+      // Move all nodes
+      nodes.forEach(node => {
+        const currentX = parseInt(node.style.left);
+        const currentY = parseInt(node.style.top);
+        
+        node.style.transition = 'all 0.5s ease';
+        node.style.left = `${Math.max(0, Math.min(canvasWidth - 120, currentX + offsetX))}px`;
+        node.style.top = `${Math.max(0, Math.min(canvasHeight - 80, currentY + offsetY))}px`;
+        
+        setTimeout(() => {
+          updateConnectionsForNode(node);
+          node.style.transition = '';
+        }, 500);
+      });
+    }
+    
+    function fitGraphToScreen() {
+      const canvas = document.getElementById('nodeCanvas');
+      const nodes = document.querySelectorAll('.note-node');
+      
+      if (nodes.length === 0) return;
+      
+      // Find bounds of all nodes
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      
+      nodes.forEach(node => {
+        const x = parseInt(node.style.left);
+        const y = parseInt(node.style.top);
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x + 120);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y + 80);
+      });
+      
+      const graphWidth = maxX - minX;
+      const graphHeight = maxY - minY;
+      const canvasWidth = canvas.clientWidth;
+      const canvasHeight = canvas.clientHeight;
+      
+      // Calculate scale to fit
+      const scaleX = (canvasWidth - 160) / graphWidth;
+      const scaleY = (canvasHeight - 160) / graphHeight;
+      const scale = Math.min(scaleX, scaleY, 2); // Don't scale too much
+      
+      // Calculate offset to center
+      const scaledWidth = graphWidth * scale;
+      const scaledHeight = graphHeight * scale;
+      const offsetX = (canvasWidth - scaledWidth) / 2 - (minX * scale);
+      const offsetY = (canvasHeight - scaledHeight) / 2 - (minY * scale);
+      
+      // Apply transformation
+      nodes.forEach(node => {
+        const currentX = parseInt(node.style.left);
+        const currentY = parseInt(node.style.top);
+        
+        const newX = (currentX * scale) + offsetX;
+        const newY = (currentY * scale) + offsetY;
+        
+        node.style.transition = 'all 0.5s ease';
+        node.style.left = `${newX}px`;
+        node.style.top = `${newY}px`;
+        node.style.transform = `scale(${scale})`;
+        
+        setTimeout(() => {
+          updateConnectionsForNode(node);
+          node.style.transition = '';
+        }, 500);
+      });
+    }
+    
+    function updateNodeSize(scale) {
+      const nodes = document.querySelectorAll('.note-node');
+      nodes.forEach(node => {
+        node.style.transform = `scale(${scale})`;
+      });
+    }
+    
+    function updateLinkStrength(strength) {
+      const links = document.querySelectorAll('.node-link');
+      links.forEach(link => {
+        link.style.strokeWidth = strength * 2;
+        link.style.opacity = strength * 0.5;
+      });
+    }
+    
+    function toggleNodeLabels() {
+      const nodes = document.querySelectorAll('.note-node .node-title');
+      const button = document.getElementById('toggle-labels-btn');
+      const isHidden = nodes[0]?.style.display === 'none';
+      
+      nodes.forEach(title => {
+        title.style.display = isHidden ? 'block' : 'none';
+      });
+      
+      button.classList.toggle('active', !isHidden);
+    }
+    
+    function filterGraphByType(type) {
+      const nodes = document.querySelectorAll('.note-node');
+      
+      nodes.forEach(node => {
+        const nodeType = node.getAttribute('data-note-type');
+        const shouldShow = type === 'all' || nodeType === type;
+        
+        node.style.display = shouldShow ? 'block' : 'none';
+        node.style.opacity = shouldShow ? '1' : '0.3';
+      });
+      
+      // Update connections visibility
+      const links = document.querySelectorAll('.node-link');
+      links.forEach(link => {
+        const sourceNode = document.querySelector(`[data-note-id="${link.getAttribute('data-source')}"]`);
+        const targetNode = document.querySelector(`[data-note-id="${link.getAttribute('data-target')}"]`);
+        
+        const shouldShow = sourceNode?.style.display !== 'none' && targetNode?.style.display !== 'none';
+        link.style.display = shouldShow ? 'block' : 'none';
+      });
+    }
+    
+    async function saveNodePosition(noteId, x, y) {
+      try {
+        const response = await fetch('/api/notes.php?action=position', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            note_id: noteId,
+            x: x,
+            y: y
+          })
+        });
+        
+        if (!response.ok) {
+          console.warn('Failed to save node position');
+        }
+      } catch (error) {
+        console.warn('Error saving node position:', error);      }
     }
 
     function updateListView() {
@@ -1682,31 +2446,19 @@
           const deltaX = e.clientX - startX;
           const deltaY = e.clientY - startY;
           
-          const newX = initialX + deltaX;
-          const newY = initialY + deltaY;
+          const nodeCanvas = document.getElementById('nodeCanvas');
+          const newX = Math.max(0, Math.min(initialX + deltaX, nodeCanvas.offsetWidth - node.offsetWidth));
+          const newY = Math.max(0, Math.min(initialY + deltaY, nodeCanvas.offsetHeight - node.offsetHeight));
           
-          // Keep within canvas bounds
-          const canvas = node.parentElement;
-          const margin = 20;
-          const constrainedX = Math.max(margin, Math.min(canvas.clientWidth - margin, newX));
-          const constrainedY = Math.max(margin, Math.min(canvas.clientHeight - margin, newY));
-          
-          node.style.left = `${constrainedX}px`;
-          node.style.top = `${constrainedY}px`;
-          
-          // Update any connections
-          updateNodeConnections();
+          node.style.left = newX + 'px';
+          node.style.top = newY + 'px';
         };
         
         const onMouseUp = () => {
           document.removeEventListener('mousemove', onMouseMove);
           document.removeEventListener('mouseup', onMouseUp);
           
-          if (isDragging) {
-            // Save position to server
-            saveNodePosition(noteId, parseInt(node.style.left), parseInt(node.style.top));
-          }
-          
+          // Reset dragging flag after a short delay
           setTimeout(() => {
             isDragging = false;
           }, 100);
@@ -1714,14 +2466,8 @@
         
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
-      });
-      
-      // Prevent click event when dragging
-      node.addEventListener('click', (e) => {
-        if (isDragging) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+        
+        e.preventDefault();
       });
     }
 
@@ -2017,30 +2763,6 @@
     }
 
     function switchNotesView(viewType) {
-      notesApp.currentView = viewType;
-      
-      // Update button states
-      document.querySelectorAll('.view-toggle-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      document.getElementById(`${viewType}ViewBtn`).classList.add('active');
-      
-      // Show/hide views
-      document.getElementById('notesGrid').style.display = viewType === 'grid' ? 'block' : 'none';
-      document.getElementById('nodeView').style.display = viewType === 'node' ? 'block' : 'none';
-      document.getElementById('listView').style.display = viewType === 'list' ? 'block' : 'none';
-      
-      // Update the view content
-      updateModalView();
-      
-      // Special handling for node view
-      if (viewType === 'node') {
-        // Slight delay to ensure the container is visible before calculating positions
-        setTimeout(() => {
-          updateNodeView();
-        }, 100);
-      }
-    }
       notesApp.currentView = viewType;
       
       // Update button states

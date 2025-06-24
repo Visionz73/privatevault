@@ -39,11 +39,7 @@ if (!isset($pdo) || !$pdo) {
 }
 
 try {
-    // Ensure tables exist (silently)
-    // Note: We need to ensure tables exist but without outputting text
-    // The enhanced_notes_tables.php outputs text, so we'll create tables manually here
-    
-    // Create basic notes table if it doesn't exist
+    // Ensure basic notes table exists (silently)
     $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
