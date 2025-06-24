@@ -37,21 +37,68 @@ if (!isset($pdo) || !$pdo) {
 }
 
 try {
+    // Include enhanced tables
+    require_once __DIR__ . '/../../database/enhanced_notes_tables.php';
+    
+    $action = $_GET['action'] ?? '';
+    
     switch ($method) {
         case 'GET':
-            handleGetNotes($pdo, $user['id']);
+            switch ($action) {
+                case 'graph':
+                    handleGetGraphData($pdo, $user['id']);
+                    break;
+                case 'links':
+                    handleGetNoteLinks($pdo, $user['id'], $_GET['id'] ?? null);
+                    break;
+                case 'search':
+                    handleSearchNotes($pdo, $user['id'], $_GET['q'] ?? '');
+                    break;
+                case 'clusters':
+                    handleGetClusters($pdo, $user['id']);
+                    break;
+                case 'stats':
+                    handleGetStats($pdo, $user['id']);
+                    break;
+                default:
+                    handleGetNotes($pdo, $user['id']);
+            }
             break;
             
         case 'POST':
-            handleCreateNote($pdo, $user['id'], $input);
+            switch ($action) {
+                case 'link':
+                    handleCreateLink($pdo, $user['id'], $input);
+                    break;
+                case 'cluster':
+                    handleCreateCluster($pdo, $user['id'], $input);
+                    break;
+                case 'reminder':
+                    handleCreateReminder($pdo, $user['id'], $input);
+                    break;
+                default:
+                    handleCreateNote($pdo, $user['id'], $input);
+            }
             break;
             
         case 'PUT':
-            handleUpdateNote($pdo, $user['id'], $input);
+            switch ($action) {
+                case 'position':
+                    handleUpdateNodePosition($pdo, $user['id'], $input);
+                    break;
+                default:
+                    handleUpdateNote($pdo, $user['id'], $input);
+            }
             break;
             
         case 'DELETE':
-            handleDeleteNote($pdo, $user['id'], $_GET['id'] ?? null);
+            switch ($action) {
+                case 'link':
+                    handleDeleteLink($pdo, $user['id'], $_GET['id'] ?? null);
+                    break;
+                default:
+                    handleDeleteNote($pdo, $user['id'], $_GET['id'] ?? null);
+            }
             break;
             
         default:
@@ -261,6 +308,301 @@ function handleDeleteNote($pdo, $userId, $noteId) {
     } else {
         http_response_code(404);
         echo json_encode(['error' => 'Note not found']);
+    }
+}
+
+// New Second Brain API Functions
+
+function handleGetGraphData($pdo, $userId) {
+    try {
+        // Get all notes with their positions and connections
+        $sql = "SELECT n.id, n.title, n.color, n.is_pinned, n.node_position_x, n.node_position_y,
+                   n.created_at, n.updated_at,
+                   GROUP_CONCAT(DISTINCT nt.tag_name) as tags,
+                   COUNT(DISTINCT CASE WHEN nl1.source_note_id = n.id THEN nl1.target_note_id END) as outgoing_links,
+                   COUNT(DISTINCT CASE WHEN nl1.target_note_id = n.id THEN nl1.source_note_id END) as incoming_links
+            FROM notes n 
+            LEFT JOIN note_tags nt ON n.id = nt.note_id 
+            LEFT JOIN note_links nl1 ON (n.id = nl1.source_note_id OR n.id = nl1.target_note_id)
+            WHERE n.user_id = ? AND n.is_archived = 0
+            GROUP BY n.id
+            ORDER BY n.updated_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        $nodes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get all links between notes
+        $linkSql = "SELECT nl.source_note_id, nl.target_note_id, nl.link_type,
+                       n1.title as source_title, n2.title as target_title
+                FROM note_links nl
+                JOIN notes n1 ON nl.source_note_id = n1.id
+                JOIN notes n2 ON nl.target_note_id = n2.id
+                WHERE n1.user_id = ? AND n2.user_id = ?";
+        
+        $linkStmt = $pdo->prepare($linkSql);
+        $linkStmt->execute([$userId, $userId]);
+        $links = $linkStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format nodes
+        foreach ($nodes as &$node) {
+            $node['tags'] = $node['tags'] ? explode(',', $node['tags']) : [];
+            $node['id'] = (int)$node['id'];
+            $node['is_pinned'] = (bool)$node['is_pinned'];
+            $node['outgoing_links'] = (int)$node['outgoing_links'];
+            $node['incoming_links'] = (int)$node['incoming_links'];
+            $node['node_position_x'] = $node['node_position_x'] ? (float)$node['node_position_x'] : null;
+            $node['node_position_y'] = $node['node_position_y'] ? (float)$node['node_position_y'] : null;
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'nodes' => $nodes,
+            'links' => $links,
+            'stats' => [
+                'total_nodes' => count($nodes),
+                'total_links' => count($links)
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error loading graph data: ' . $e->getMessage()]);
+    }
+}
+
+function handleGetNoteLinks($pdo, $userId, $noteId) {
+    if (!$noteId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Note ID required']);
+        return;
+    }
+    
+    try {
+        // Get outgoing links
+        $outgoingSql = "SELECT nl.target_note_id as note_id, n.title, nl.link_type, nl.created_at
+                       FROM note_links nl
+                       JOIN notes n ON nl.target_note_id = n.id
+                       WHERE nl.source_note_id = ? AND n.user_id = ?";
+        
+        $stmt = $pdo->prepare($outgoingSql);
+        $stmt->execute([$noteId, $userId]);
+        $outgoing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get incoming links (backlinks)
+        $incomingSql = "SELECT nl.source_note_id as note_id, n.title, nl.link_type, nl.created_at
+                       FROM note_links nl
+                       JOIN notes n ON nl.source_note_id = n.id
+                       WHERE nl.target_note_id = ? AND n.user_id = ?";
+        
+        $stmt = $pdo->prepare($incomingSql);
+        $stmt->execute([$noteId, $userId]);
+        $incoming = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'outgoing_links' => $outgoing,
+            'incoming_links' => $incoming
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error loading note links: ' . $e->getMessage()]);
+    }
+}
+
+function handleSearchNotes($pdo, $userId, $query) {
+    if (empty($query)) {
+        echo json_encode(['success' => true, 'notes' => []]);
+        return;
+    }
+    
+    try {
+        $sql = "SELECT n.id, n.title, n.content, n.color, n.created_at,
+                   GROUP_CONCAT(DISTINCT nt.tag_name) as tags,
+                   MATCH(n.title, n.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+            FROM notes n
+            LEFT JOIN note_tags nt ON n.id = nt.note_id
+            WHERE n.user_id = ? AND n.is_archived = 0
+            AND (n.title LIKE ? OR n.content LIKE ? OR nt.tag_name LIKE ?)
+            GROUP BY n.id
+            ORDER BY relevance DESC, n.updated_at DESC
+            LIMIT 20";
+        
+        $searchTerm = "%{$query}%";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$query, $userId, $searchTerm, $searchTerm, $searchTerm]);
+        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($notes as &$note) {
+            $note['tags'] = $note['tags'] ? explode(',', $note['tags']) : [];
+            $note['id'] = (int)$note['id'];
+            $note['relevance'] = (float)($note['relevance'] ?? 0);
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'notes' => $notes,
+            'query' => $query
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error searching notes: ' . $e->getMessage()]);
+    }
+}
+
+function handleCreateLink($pdo, $userId, $input) {
+    $sourceId = $input['source_note_id'] ?? null;
+    $targetId = $input['target_note_id'] ?? null;
+    $linkType = $input['link_type'] ?? 'reference';
+    
+    if (!$sourceId || !$targetId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Source and target note IDs required']);
+        return;
+    }
+    
+    try {
+        // Verify both notes belong to the user
+        $checkSql = "SELECT COUNT(*) as count FROM notes WHERE id IN (?, ?) AND user_id = ?";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute([$sourceId, $targetId, $userId]);
+        $result = $checkStmt->fetch();
+        
+        if ($result['count'] != 2) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Notes not found or access denied']);
+            return;
+        }
+        
+        // Create the link
+        $sql = "INSERT INTO note_links (source_note_id, target_note_id, link_type, created_by) 
+                VALUES (?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE link_type = VALUES(link_type)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$sourceId, $targetId, $linkType, $userId]);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Link created successfully'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error creating link: ' . $e->getMessage()]);
+    }
+}
+
+function handleUpdateNodePosition($pdo, $userId, $input) {
+    $noteId = $input['note_id'] ?? null;
+    $x = $input['x'] ?? null;
+    $y = $input['y'] ?? null;
+    
+    if (!$noteId || $x === null || $y === null) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Note ID and coordinates required']);
+        return;
+    }
+    
+    try {
+        $sql = "UPDATE notes SET node_position_x = ?, node_position_y = ? 
+                WHERE id = ? AND user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$x, $y, $noteId, $userId]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Note not found']);
+        }
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error updating position: ' . $e->getMessage()]);
+    }
+}
+
+function handleGetStats($pdo, $userId) {
+    try {
+        // Notes statistics
+        $noteStats = $pdo->prepare("
+            SELECT 
+                COUNT(*) as total_notes,
+                COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as notes_today,
+                COUNT(CASE WHEN YEARWEEK(created_at) = YEARWEEK(NOW()) THEN 1 END) as notes_this_week,
+                COUNT(CASE WHEN MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW()) THEN 1 END) as notes_this_month
+            FROM notes 
+            WHERE user_id = ? AND is_archived = 0
+        ");
+        $noteStats->execute([$userId]);
+        $notes = $noteStats->fetch(PDO::FETCH_ASSOC);
+        
+        // Tags statistics
+        $tagStats = $pdo->prepare("
+            SELECT nt.tag_name, COUNT(*) as usage_count
+            FROM note_tags nt
+            JOIN notes n ON nt.note_id = n.id
+            WHERE n.user_id = ? AND n.is_archived = 0
+            GROUP BY nt.tag_name
+            ORDER BY usage_count DESC
+            LIMIT 10
+        ");
+        $tagStats->execute([$userId]);
+        $topTags = $tagStats->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Links statistics
+        $linkStats = $pdo->prepare("
+            SELECT COUNT(*) as total_links
+            FROM note_links nl
+            JOIN notes n1 ON nl.source_note_id = n1.id
+            JOIN notes n2 ON nl.target_note_id = n2.id
+            WHERE n1.user_id = ? AND n2.user_id = ?
+        ");
+        $linkStats->execute([$userId, $userId]);
+        $links = $linkStats->fetch(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'stats' => [
+                'notes' => $notes,
+                'links' => $links,
+                'top_tags' => $topTags
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error loading statistics: ' . $e->getMessage()]);
+    }
+}
+
+function handleDeleteLink($pdo, $userId, $linkId) {
+    if (!$linkId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Link ID required']);
+        return;
+    }
+    
+    try {
+        $sql = "DELETE nl FROM note_links nl
+                JOIN notes n1 ON nl.source_note_id = n1.id
+                JOIN notes n2 ON nl.target_note_id = n2.id
+                WHERE nl.id = ? AND n1.user_id = ? AND n2.user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$linkId, $userId, $userId]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true, 'message' => 'Link deleted']);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Link not found']);
+        }
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error deleting link: ' . $e->getMessage()]);
     }
 }
 ?>
