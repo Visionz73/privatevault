@@ -30,6 +30,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
 // Verify database connection
+require_once __DIR__ . '/../../config.php';
+
 if (!isset($pdo) || !$pdo) {
     http_response_code(500);
     echo json_encode(['error' => 'Database connection failed']);
@@ -37,8 +39,6 @@ if (!isset($pdo) || !$pdo) {
 }
 
 try {
-    global $pdo;
-    
     switch ($method) {
         case 'GET':
             handleGetNotes($pdo, $user['id']);
@@ -70,10 +70,11 @@ function handleGetNotes($pdo, $userId) {
         $archived = $_GET['archived'] ?? 'false';
         $limit = min(intval($_GET['limit'] ?? 50), 100);
         
-        // First check if tables exist
-        $stmt = $pdo->query("SHOW TABLES LIKE 'notes'");
-        if (!$stmt->fetch()) {
-            // Create notes table if it doesn't exist
+        // Check if tables exist and create them if needed
+        $result = $pdo->query("SHOW TABLES LIKE 'notes'");
+        $notesTableExists = $result->rowCount() > 0;
+        
+        if (!$notesTableExists) {
             $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
@@ -87,28 +88,34 @@ function handleGetNotes($pdo, $userId) {
             )");
         }
         
-        $stmt = $pdo->query("SHOW TABLES LIKE 'note_tags'");
-        if (!$stmt->fetch()) {
-            // Create note_tags table if it doesn't exist
+        $result = $pdo->query("SHOW TABLES LIKE 'note_tags'");
+        $tagsTableExists = $result->rowCount() > 0;
+        
+        if (!$tagsTableExists) {
             $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 note_id INT NOT NULL,
                 tag_name VARCHAR(100) NOT NULL,
                 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
             )");
+        }        
+        // Try to get notes, if tables don't exist yet, return empty array
+        try {
+            $sql = "SELECT n.*, GROUP_CONCAT(nt.tag_name) as tags 
+                    FROM notes n 
+                    LEFT JOIN note_tags nt ON n.id = nt.note_id 
+                    WHERE n.user_id = ? AND n.is_archived = ?
+                    GROUP BY n.id 
+                    ORDER BY n.is_pinned DESC, n.updated_at DESC 
+                    LIMIT ?";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
+            $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            // If tables don't exist or there's an error, return empty array
+            $notes = [];
         }
-        
-        $sql = "SELECT n.*, GROUP_CONCAT(nt.tag_name) as tags 
-                FROM notes n 
-                LEFT JOIN note_tags nt ON n.id = nt.note_id 
-                WHERE n.user_id = ? AND n.is_archived = ?
-                GROUP BY n.id 
-                ORDER BY n.is_pinned DESC, n.updated_at DESC 
-                LIMIT ?";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
-        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Format tags as array
         foreach ($notes as &$note) {
