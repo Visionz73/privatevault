@@ -68,51 +68,20 @@ function handleGetNotes($pdo, $userId) {
         $archived = $_GET['archived'] ?? 'false';
         $limit = min(intval($_GET['limit'] ?? 50), 100);
         
-        // Check if tables exist and create them if needed
-        $result = $pdo->query("SHOW TABLES LIKE 'notes'");
-        $notesTableExists = $result->rowCount() > 0;
-        
-        if (!$notesTableExists) {
-            // Create notes table
-            $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                title VARCHAR(255) NOT NULL,
-                content TEXT,
-                color VARCHAR(7) DEFAULT '#fbbf24',
-                is_pinned BOOLEAN DEFAULT FALSE,
-                is_archived BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_user_archived (user_id, is_archived)
-            )");
-        }
-        
-        $result = $pdo->query("SHOW TABLES LIKE 'note_tags'");
-        $tagsTableExists = $result->rowCount() > 0;
-        
-        if (!$tagsTableExists) {
-            // Create note_tags table
-            $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                note_id INT NOT NULL,
-                tag_name VARCHAR(100) NOT NULL,
-                INDEX idx_note_id (note_id)
-            )");
-        }        
-        
         // Get notes with error handling
+        // Note: Cannot parameterize LIMIT in MySQL prepared statements, embed it directly
         $sql = "SELECT n.id, n.user_id, n.title, n.content, n.color, n.is_pinned, n.is_archived, n.created_at, n.updated_at,
-                       GROUP_CONCAT(nt.tag_name) as tags 
-                FROM notes n 
-                LEFT JOIN note_tags nt ON n.id = nt.note_id 
-                WHERE n.user_id = ? AND n.is_archived = ?
-                GROUP BY n.id, n.user_id, n.title, n.content, n.color, n.is_pinned, n.is_archived, n.created_at, n.updated_at
-                ORDER BY n.is_pinned DESC, n.updated_at DESC 
-                LIMIT ?";
+                   GROUP_CONCAT(nt.tag_name) as tags 
+            FROM notes n 
+            LEFT JOIN note_tags nt ON n.id = nt.note_id 
+            WHERE n.user_id = ? AND n.is_archived = ?
+            GROUP BY n.id, n.user_id, n.title, n.content, n.color, n.is_pinned, n.is_archived, n.created_at, n.updated_at
+            ORDER BY n.is_pinned DESC, n.updated_at DESC 
+            LIMIT " . $limit;
         
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
+        // Execute with only user_id and archived flag
+        $stmt->execute([$userId, $archived === 'true' ? 1 : 0]);
         $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Format tags as array and ensure all fields are present
