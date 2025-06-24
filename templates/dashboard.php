@@ -1402,16 +1402,15 @@
       setTimeout(() => {
         closeGradientPicker();
       }, 600);
-    }
-
-    // Notes App Variables
+    }    // Notes App Variables
     let notesApp = {
       isOpen: false,
       showArchived: false,
       currentNote: null,
       notes: [],
       selectedColor: '#fbbf24',
-      currentView: 'grid' // grid, node, list    };
+      currentView: 'grid' // grid, node, list
+    };
 
     // Notes App Functions
     async function loadNotes() {
@@ -1449,7 +1448,8 @@
           notesList.innerHTML = '<div class="text-center py-6 text-white/60"><i class="fas fa-sticky-note text-2xl mb-2"></i><p class="text-sm">Keine Notizen vorhanden</p></div>';
         }
       } else {
-        const widgetNotes = notesApp.notes.slice(0, 4);        const widgetContainer = document.querySelector('#notesList');
+        const widgetNotes = notesApp.notes.slice(0, 4);
+        const widgetContainer = document.querySelector('#notesList');
         if (widgetContainer && widgetContainer.closest('.dashboard-short')) {
           // This is the widget list
           widgetContainer.innerHTML = widgetNotes.map(note => `
@@ -1552,12 +1552,13 @@
     }
 
     function updateListView() {
-      const listContainer = document.querySelector('#listView #notesList');
+      const listContainer = document.querySelector('#listView .space-y-2');
       if (!listContainer) return;
       
       if (notesApp.notes.length === 0) {
         listContainer.innerHTML = '<div class="text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
-      } else {        listContainer.innerHTML = notesApp.notes.map(note => `
+      } else {
+        listContainer.innerHTML = notesApp.notes.map(note => `
           <div class="short-list-item p-4" onclick="editNote(${note.id}); return false;" data-note-id="${note.id}">
             <div class="flex items-start gap-3">
               <div class="w-4 h-4 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
@@ -1603,6 +1604,7 @@
           const deltaX = e.clientX - startX;
           const deltaY = e.clientY - startY;
           
+          const nodeCanvas = document.getElementById('nodeCanvas');
           const newX = Math.max(0, Math.min(initialX + deltaX, nodeCanvas.offsetWidth - node.offsetWidth));
           const newY = Math.max(0, Math.min(initialY + deltaY, nodeCanvas.offsetHeight - node.offsetHeight));
           
@@ -1651,7 +1653,9 @@
       if (notesCountElement) {
         notesCountElement.textContent = count;
       }
-    }    function toggleNotesApp() {
+    }
+
+    function toggleNotesApp() {
       console.log('toggleNotesApp called');
       const modal = document.getElementById('notesAppModal');
       if (!modal) {
@@ -1668,7 +1672,22 @@
       } else {
         modal.classList.remove('active');
       }
-    }    async function addQuickNote() {
+    }
+
+    function closeNoteEditor() {
+      const modal = document.getElementById('noteEditorModal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+      notesApp.currentNote = null;
+    }
+
+    function editNote(noteId) {
+      console.log('editNote called with ID:', noteId);
+      openNoteEditor(noteId);
+    }
+
+    async function addQuickNote() {
       console.log('addQuickNote called');
       const titleInput = document.getElementById('quickNoteTitle');
       if (!titleInput) {
@@ -1680,8 +1699,11 @@
       console.log('Quick note title:', title);
       
       if (!title) return;
-        try {        console.log('Creating quick note:', { title });
-          const response = await fetch('/api/notes.php', {
+      
+      try {
+        console.log('Creating quick note:', { title });
+        
+        const response = await fetch('/api/notes.php', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1712,13 +1734,18 @@
     }
 
     function openNoteEditor(noteId = null) {
+      console.log('openNoteEditor called with:', noteId);
       const modal = document.getElementById('noteEditorModal');
       const form = document.getElementById('noteForm');
-      if (!modal || !form) return;
+      if (!modal || !form) {
+        console.error('Modal or form not found:', { modal, form });
+        return;
+      }
       
       if (noteId) {
         const note = notesApp.notes.find(n => n.id == noteId);
         if (note) {
+          console.log('Found note:', note);
           notesApp.currentNote = note;
           document.getElementById('noteId').value = note.id;
           document.getElementById('noteTitle').value = note.title;
@@ -1726,6 +1753,8 @@
           notesApp.selectedColor = note.color;
           updateColorSelection();
           updatePinButton(note.is_pinned);
+        } else {
+          console.error('Note not found:', noteId);
         }
       } else {
         form.reset();
@@ -1736,21 +1765,12 @@
       }
       
       modal.classList.add('active');
+      
+      // Focus title input after a short delay
       setTimeout(() => {
         const titleInput = document.getElementById('noteTitle');
         if (titleInput) titleInput.focus();
       }, 100);
-    }
-
-    function closeNoteEditor() {
-      const modal = document.getElementById('noteEditorModal');
-      if (modal) {
-        modal.classList.remove('active');
-      }
-      notesApp.currentNote = null;
-    }    function editNote(noteId) {
-      console.log('editNote called with ID:', noteId);
-      openNoteEditor(noteId);
     }
 
     function toggleArchived() {
@@ -1806,7 +1826,10 @@
         noteData.id = notesApp.currentNote.id;
       }
       
-      try {        console.log('Saving note:', noteData);          const response = await fetch('/api/notes.php', {
+      try {
+        console.log('Saving note:', noteData);
+        
+        const response = await fetch('/api/notes.php', {
           method: notesApp.currentNote ? 'PUT' : 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1835,7 +1858,10 @@
     async function toggleNotePin() {
       if (!notesApp.currentNote) return;
       
-      const newPinnedState = !notesApp.currentNote.is_pinned;        try {        const response = await fetch('/api/notes.php', {
+      const newPinnedState = !notesApp.currentNote.is_pinned;
+      
+      try {
+        const response = await fetch('/api/notes.php', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1863,8 +1889,11 @@
 
     async function deleteCurrentNote() {
       if (!notesApp.currentNote) return;
-        if (!confirm('Möchten Sie diese Notiz wirklich löschen?')) return;
-        try {        const response = await fetch(`/api/notes.php?id=${notesApp.currentNote.id}`, {
+      
+      if (!confirm('Möchten Sie diese Notiz wirklich löschen?')) return;
+      
+      try {
+        const response = await fetch(`/api/notes.php?id=${notesApp.currentNote.id}`, {
           method: 'DELETE'
         });
         
@@ -1958,7 +1987,8 @@
           card.style.opacity = '1';
         }, index * 50);
       });
-        // Initialize notes app
+      
+      // Initialize notes app
       console.log('Initializing notes app...');
       loadNotes();
       
@@ -2045,27 +2075,6 @@
         }
       }
     });
-
-    // Placeholder functions for future features
-    function toggleTheme() {
-      console.log('Theme toggle - coming soon');
-    }
-
-    function toggleCompactMode() {
-      console.log('Compact mode toggle - coming soon');
-    }
-
-    function openNotificationSettings() {
-      console.log('Notification settings - coming soon');
-    }
-
-    function openLayoutSettings() {
-      console.log('Layout settings - coming soon');
-    }
-
-    function openSystemSettings() {
-      console.log('System settings - coming soon');
-    }
   </script>
 </body>
 </html>
