@@ -1449,12 +1449,11 @@
           notesList.innerHTML = '<div class="text-center py-6 text-white/60"><i class="fas fa-sticky-note text-2xl mb-2"></i><p class="text-sm">Keine Notizen vorhanden</p></div>';
         }
       } else {
-        const widgetNotes = notesApp.notes.slice(0, 4);
-        const widgetContainer = document.querySelector('#notesList');
+        const widgetNotes = notesApp.notes.slice(0, 4);        const widgetContainer = document.querySelector('#notesList');
         if (widgetContainer && widgetContainer.closest('.dashboard-short')) {
           // This is the widget list
           widgetContainer.innerHTML = widgetNotes.map(note => `
-            <div class="short-list-item p-3" onclick="editNote(${note.id})">
+            <div class="short-list-item p-3" onclick="editNote(${note.id}); return false;" data-note-id="${note.id}">
               <div class="flex items-start gap-3">
                 <div class="w-3 h-3 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
                 <div class="flex-1 min-w-0">
@@ -1558,9 +1557,8 @@
       
       if (notesApp.notes.length === 0) {
         listContainer.innerHTML = '<div class="text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
-      } else {
-        listContainer.innerHTML = notesApp.notes.map(note => `
-          <div class="short-list-item p-4" onclick="editNote(${note.id})">
+      } else {        listContainer.innerHTML = notesApp.notes.map(note => `
+          <div class="short-list-item p-4" onclick="editNote(${note.id}); return false;" data-note-id="${note.id}">
             <div class="flex items-start gap-3">
               <div class="w-4 h-4 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
               <div class="flex-1 min-w-0">
@@ -1653,13 +1651,16 @@
       if (notesCountElement) {
         notesCountElement.textContent = count;
       }
-    }
-
-    function toggleNotesApp() {
+    }    function toggleNotesApp() {
+      console.log('toggleNotesApp called');
       const modal = document.getElementById('notesAppModal');
-      if (!modal) return;
+      if (!modal) {
+        console.error('notesAppModal not found');
+        return;
+      }
       
       notesApp.isOpen = !notesApp.isOpen;
+      console.log('notesApp.isOpen:', notesApp.isOpen);
       
       if (notesApp.isOpen) {
         modal.classList.add('active');
@@ -1667,19 +1668,20 @@
       } else {
         modal.classList.remove('active');
       }
-    }
-
-    async function addQuickNote() {
+    }    async function addQuickNote() {
+      console.log('addQuickNote called');
       const titleInput = document.getElementById('quickNoteTitle');
-      if (!titleInput) return;
+      if (!titleInput) {
+        console.error('quickNoteTitle input not found');
+        return;
+      }
       
       const title = titleInput.value.trim();
+      console.log('Quick note title:', title);
       
       if (!title) return;
-        try {
-        console.log('Creating quick note:', { title });
-        
-        const response = await fetch('/api/notes.php', {
+        try {        console.log('Creating quick note:', { title });
+          const response = await fetch('/api/notes.php', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1746,9 +1748,8 @@
         modal.classList.remove('active');
       }
       notesApp.currentNote = null;
-    }
-
-    function editNote(noteId) {
+    }    function editNote(noteId) {
+      console.log('editNote called with ID:', noteId);
       openNoteEditor(noteId);
     }
 
@@ -1805,9 +1806,7 @@
         noteData.id = notesApp.currentNote.id;
       }
       
-      try {
-        console.log('Saving note:', noteData);        
-        const response = await fetch('/api/notes.php', {
+      try {        console.log('Saving note:', noteData);          const response = await fetch('/api/notes.php', {
           method: notesApp.currentNote ? 'PUT' : 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1836,9 +1835,7 @@
     async function toggleNotePin() {
       if (!notesApp.currentNote) return;
       
-      const newPinnedState = !notesApp.currentNote.is_pinned;      
-      try {
-        const response = await fetch('/api/notes.php', {
+      const newPinnedState = !notesApp.currentNote.is_pinned;        try {        const response = await fetch('/api/notes.php', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1867,9 +1864,7 @@
     async function deleteCurrentNote() {
       if (!notesApp.currentNote) return;
         if (!confirm('Möchten Sie diese Notiz wirklich löschen?')) return;
-      
-      try {
-        const response = await fetch(`/api/notes.php?id=${notesApp.currentNote.id}`, {
+        try {        const response = await fetch(`/api/notes.php?id=${notesApp.currentNote.id}`, {
           method: 'DELETE'
         });
         
@@ -1963,10 +1958,21 @@
           card.style.opacity = '1';
         }, index * 50);
       });
-      
-      // Initialize notes app
+        // Initialize notes app
       console.log('Initializing notes app...');
       loadNotes();
+      
+      // Add event delegation for note clicks
+      document.addEventListener('click', function(e) {
+        const noteItem = e.target.closest('[data-note-id]');
+        if (noteItem) {
+          const noteId = noteItem.getAttribute('data-note-id');
+          console.log('Note clicked via delegation:', noteId);
+          editNote(parseInt(noteId));
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
       
       // Setup color buttons
       document.querySelectorAll('.note-color-btn').forEach(btn => {
