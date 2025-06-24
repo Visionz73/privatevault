@@ -29,9 +29,7 @@ if (!$user) {
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Verify database connection
-require_once __DIR__ . '/../../config.php';
-
+// $pdo is already available from db.php which includes config.php
 if (!isset($pdo) || !$pdo) {
     http_response_code(500);
     echo json_encode(['error' => 'Database connection failed']);
@@ -75,6 +73,7 @@ function handleGetNotes($pdo, $userId) {
         $notesTableExists = $result->rowCount() > 0;
         
         if (!$notesTableExists) {
+            // Create notes table
             $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
@@ -84,7 +83,8 @@ function handleGetNotes($pdo, $userId) {
                 is_pinned BOOLEAN DEFAULT FALSE,
                 is_archived BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_user_archived (user_id, is_archived)
             )");
         }
         
@@ -92,58 +92,99 @@ function handleGetNotes($pdo, $userId) {
         $tagsTableExists = $result->rowCount() > 0;
         
         if (!$tagsTableExists) {
+            // Create note_tags table
             $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 note_id INT NOT NULL,
                 tag_name VARCHAR(100) NOT NULL,
-                FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
+                INDEX idx_note_id (note_id)
             )");
         }        
-        // Try to get notes, if tables don't exist yet, return empty array
-        try {
-            $sql = "SELECT n.*, GROUP_CONCAT(nt.tag_name) as tags 
-                    FROM notes n 
-                    LEFT JOIN note_tags nt ON n.id = nt.note_id 
-                    WHERE n.user_id = ? AND n.is_archived = ?
-                    GROUP BY n.id 
-                    ORDER BY n.is_pinned DESC, n.updated_at DESC 
-                    LIMIT ?";
-            
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
-            $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            // If tables don't exist or there's an error, return empty array
-            $notes = [];
-        }
         
-        // Format tags as array
+        // Get notes with error handling
+        $sql = "SELECT n.id, n.user_id, n.title, n.content, n.color, n.is_pinned, n.is_archived, n.created_at, n.updated_at,
+                       GROUP_CONCAT(nt.tag_name) as tags 
+                FROM notes n 
+                LEFT JOIN note_tags nt ON n.id = nt.note_id 
+                WHERE n.user_id = ? AND n.is_archived = ?
+                GROUP BY n.id, n.user_id, n.title, n.content, n.color, n.is_pinned, n.is_archived, n.created_at, n.updated_at
+                ORDER BY n.is_pinned DESC, n.updated_at DESC 
+                LIMIT ?";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId, $archived === 'true' ? 1 : 0, $limit]);
+        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format tags as array and ensure all fields are present
         foreach ($notes as &$note) {
             $note['tags'] = $note['tags'] ? explode(',', $note['tags']) : [];
+            $note['is_pinned'] = (bool)$note['is_pinned'];
+            $note['is_archived'] = (bool)$note['is_archived'];
+            $note['id'] = (int)$note['id'];
+            $note['user_id'] = (int)$note['user_id'];
         }
         
-        echo json_encode(['success' => true, 'notes' => $notes]);
+        echo json_encode([
+            'success' => true, 
+            'notes' => $notes,
+            'count' => count($notes),
+            'debug' => [
+                'userId' => $userId,
+                'archived' => $archived,
+                'limit' => $limit
+            ]
+        ]);
+        
     } catch (Exception $e) {
+        error_log("Error in handleGetNotes: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['error' => 'Error loading notes: ' . $e->getMessage()]);
+        echo json_encode([
+            'error' => 'Error loading notes: ' . $e->getMessage(),
+            'debug' => [
+                'userId' => $userId ?? 'unknown',
+                'file' => __FILE__,
+                'line' => __LINE__
+            ]
+        ]);
     }
 }
 
 function handleCreateNote($pdo, $userId, $input) {
-    $title = trim($input['title'] ?? '');
-    $content = trim($input['content'] ?? '');
-    $color = $input['color'] ?? '#fbbf24';
-    $tags = $input['tags'] ?? [];
-    
-    if (empty($title)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Title is required']);
-        return;
-    }
-    
-    $pdo->beginTransaction();
-    
     try {
+        $title = trim($input['title'] ?? '');
+        $content = trim($input['content'] ?? '');
+        $color = $input['color'] ?? '#fbbf24';
+        $tags = $input['tags'] ?? [];
+        
+        if (empty($title)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Title is required']);
+            return;
+        }
+        
+        // Ensure tables exist
+        $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            content TEXT,
+            color VARCHAR(7) DEFAULT '#fbbf24',
+            is_pinned BOOLEAN DEFAULT FALSE,
+            is_archived BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_user_archived (user_id, is_archived)
+        )");
+        
+        $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            note_id INT NOT NULL,
+            tag_name VARCHAR(100) NOT NULL,
+            INDEX idx_note_id (note_id)
+        )");
+        
+        $pdo->beginTransaction();
+        
         $sql = "INSERT INTO notes (user_id, title, content, color) VALUES (?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$userId, $title, $content, $color]);
@@ -162,10 +203,24 @@ function handleCreateNote($pdo, $userId, $input) {
         }
         
         $pdo->commit();
-        echo json_encode(['success' => true, 'id' => $noteId, 'message' => 'Notiz erstellt']);
+        echo json_encode([
+            'success' => true, 
+            'id' => $noteId, 
+            'message' => 'Notiz erstellt',
+            'debug' => [
+                'title' => $title,
+                'userId' => $userId,
+                'noteId' => $noteId
+            ]
+        ]);
+        
     } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log("Error creating note: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Error creating note: ' . $e->getMessage()]);
     }
 }
 
