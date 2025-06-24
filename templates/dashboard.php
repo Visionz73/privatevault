@@ -376,6 +376,293 @@
       background: rgba(255, 255, 255, 0.2);
       border-radius: 3px;
     }
+
+    /* Notes App Styles */
+    .notes-app-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .notes-app-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .notes-app-content {
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 1200px;
+      max-height: 90vh;
+      overflow: hidden;
+      color: white;
+      transform: scale(0.9) translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .notes-app-modal.active .notes-app-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .notes-app-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .notes-app-body {
+      padding: 1.5rem;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .note-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .note-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .note-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .note-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .note-card:hover .note-actions {
+      opacity: 1;
+    }
+
+    .note-content {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+      max-height: 120px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+    }
+
+    .note-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .note-tags {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .note-tag {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.625rem;
+    }
+
+    /* Note Editor Modal */
+    .note-editor-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .note-editor-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .note-editor-content {
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: hidden;
+      color: white;
+      transform: scale(0.9) translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .note-editor-modal.active .note-editor-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .note-editor-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .note-editor-body {
+      padding: 1.5rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .note-action-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .note-action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .note-action-btn.active {
+      background: rgba(251, 191, 36, 0.3);
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+
+    .note-color-btn {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .note-color-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .note-color-btn.active {
+      border-color: white;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    }
+
+    .notes-btn-primary {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.8) 100%);
+      color: white;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .notes-btn-primary:hover {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .notes-btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .notes-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    /* Line clamp utility */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .notes-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .notes-app-content {
+        margin: 0.5rem;
+        max-width: none;
+      }
+      
+      .note-editor-content {
+        margin: 0.5rem;
+        max-width: none;
+      }
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
@@ -771,6 +1058,119 @@
 
   </main>
   
+  <!-- Notes App Modal -->
+  <div id="notesAppModal" class="notes-app-modal">
+    <div class="notes-app-content">
+      <div class="notes-app-header">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold text-white">Quick Notes</h2>
+          <div class="flex items-center gap-3">
+            <button onclick="openNoteEditor()" class="notes-btn-primary">
+              <i class="fas fa-plus mr-2"></i>Neue Notiz
+            </button>
+            <button onclick="toggleNotesApp()" class="notes-btn-secondary">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Search and Filter -->
+        <div class="flex gap-3 mt-4">
+          <div class="flex-1 relative">
+            <i class="fas fa-search absolute left-3 top-3 text-white/40"></i>
+            <input 
+              type="text" 
+              id="notesSearch" 
+              placeholder="Notizen durchsuchen..." 
+              class="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:bg-white/15 focus:border-white/30 focus:outline-none"
+            >
+          </div>
+          <button onclick="toggleArchived()" class="notes-btn-secondary" id="archiveToggle">
+            <i class="fas fa-archive mr-1"></i>Archiv
+          </button>
+        </div>
+      </div>
+      
+      <div class="notes-app-body">
+        <div class="notes-grid" id="notesGrid">
+          <!-- Notes will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Editor Modal -->
+  <div id="noteEditorModal" class="note-editor-modal">
+    <div class="note-editor-content">
+      <div class="note-editor-header">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-white">Notiz bearbeiten</h3>
+          <div class="flex items-center gap-2">
+            <button onclick="toggleNotePin()" class="note-action-btn" id="pinBtn" title="Anheften">
+              <i class="fas fa-thumbtack"></i>
+            </button>
+            <button onclick="deleteCurrentNote()" class="note-action-btn text-red-400" id="deleteBtn" title="Löschen">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button onclick="closeNoteEditor()" class="note-action-btn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="note-editor-body">
+        <form id="noteForm">
+          <input type="hidden" id="noteId" name="id">
+          
+          <div class="mb-4">
+            <input 
+              type="text" 
+              id="noteTitle" 
+              name="title" 
+              placeholder="Titel der Notiz..." 
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-lg font-medium placeholder-white/50 focus:bg-white/15 focus:border-white/30 focus:outline-none"
+              required
+            >
+          </div>
+          
+          <div class="mb-4">
+            <textarea 
+              id="noteContent" 
+              name="content" 
+              placeholder="Inhalt der Notiz..." 
+              rows="10"
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:bg-white/15 focus:border-white/30 focus:outline-none resize-none"
+            ></textarea>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <label class="text-white/80 text-sm">Farbe:</label>
+              <div class="flex gap-2">
+                <button type="button" class="note-color-btn" data-color="#fbbf24" style="background: #fbbf24"></button>
+                <button type="button" class="note-color-btn" data-color="#3b82f6" style="background: #3b82f6"></button>
+                <button type="button" class="note-color-btn" data-color="#10b981" style="background: #10b981"></button>
+                <button type="button" class="note-color-btn" data-color="#f59e0b" style="background: #f59e0b"></button>
+                <button type="button" class="note-color-btn" data-color="#8b5cf6" style="background: #8b5cf6"></button>
+                <button type="button" class="note-color-btn" data-color="#ec4899" style="background: #ec4899"></button>
+              </div>
+            </div>
+            
+            <div class="flex gap-3">
+              <button type="button" onclick="closeNoteEditor()" class="notes-btn-secondary">
+                Abbrechen
+              </button>
+              <button type="submit" class="notes-btn-primary">
+                Speichern
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
   <script>
     // Gradient management
     const gradients = {
@@ -878,6 +1278,345 @@
       console.log('System settings - coming soon');
       // TODO: Implement system-wide settings modal
     }
-  </script>
-</body>
-</html>
+
+    // Notes App Variables
+    let notesApp = {
+      isOpen: false,
+      showArchived: false,
+      currentNote: null,
+      notes: [],
+      selectedColor: '#fbbf24'
+    };
+
+    // Notes App Functions
+    async function loadNotes() {
+      try {
+        const response = await fetch(`/src/api/notes.php?archived=${notesApp.showArchived}&limit=20`);
+        const data = await response.json();
+        
+        if (data.notes) {
+          notesApp.notes = data.notes;
+          updateNotesDisplay();
+          updateNotesCount();
+        }
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        showNotification('Fehler beim Laden der Notizen', 'error');
+      }
+    }
+
+    function updateNotesDisplay() {
+      const notesList = document.getElementById('notesList');
+      const notesGrid = document.getElementById('notesGrid');
+      const emptyState = document.getElementById('notesEmptyState');
+      
+      // Update widget list
+      if (notesApp.notes.length === 0) {
+        notesList.innerHTML = '<div class="text-center py-6 text-white/60"><i class="fas fa-sticky-note text-2xl mb-2"></i><p class="text-sm">Keine Notizen vorhanden</p></div>';
+      } else {
+        const widgetNotes = notesApp.notes.slice(0, 4);
+        notesList.innerHTML = widgetNotes.map(note => `
+          <div class="short-list-item p-3" onclick="editNote(${note.id})">
+            <div class="flex items-start gap-3">
+              <div class="w-3 h-3 rounded-full flex-shrink-0 mt-1" style="background: ${note.color}"></div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-white font-medium text-sm truncate">${escapeHtml(note.title)}</h4>
+                ${note.content ? `<p class="text-white/60 text-xs mt-1 line-clamp-2">${escapeHtml(note.content)}</p>` : ''}
+                <div class="flex items-center gap-2 mt-2">
+                  ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400 text-xs"></i>' : ''}
+                  <span class="text-white/50 text-xs">${formatDate(note.updated_at)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Update full grid
+      if (notesGrid) {
+        if (notesApp.notes.length === 0) {
+          notesGrid.innerHTML = '<div class="col-span-full text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen vorhanden</p></div>';
+        } else {
+          notesGrid.innerHTML = notesApp.notes.map(note => `
+            <div class="note-card" style="border-left: 4px solid ${note.color}" data-note-id="${note.id}">
+              <div class="note-card-header">
+                <h3 class="note-title">${escapeHtml(note.title)}</h3>
+                <div class="note-actions">
+                  ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400"></i>' : ''}
+                  <button onclick="editNote(${note.id})" class="note-action-btn">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+              </div>
+              ${note.content ? `<div class="note-content">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>` : ''}
+              <div class="note-footer">
+                <span class="note-date">${formatDate(note.updated_at)}</span>
+                ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function updateNotesCount() {
+      const count = notesApp.notes.length;
+      document.getElementById('notesCount').textContent = count;
+    }
+
+    function toggleNotesApp() {
+      const modal = document.getElementById('notesAppModal');
+      notesApp.isOpen = !notesApp.isOpen;
+      
+      if (notesApp.isOpen) {
+        modal.classList.add('active');
+        loadNotes();
+      } else {
+        modal.classList.remove('active');
+      }
+    }
+
+    async function addQuickNote() {
+      const titleInput = document.getElementById('quickNoteTitle');
+      const title = titleInput.value.trim();
+      
+      if (!title) return;
+      
+      try {
+        const response = await fetch('/src/api/notes.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content: '', color: '#fbbf24' })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          titleInput.value = '';
+          await loadNotes();
+          showNotification('Notiz erstellt', 'success');
+        } else {
+          showNotification(data.error || 'Fehler beim Erstellen der Notiz', 'error');
+        }
+      } catch (error) {
+        console.error('Error creating note:', error);
+        showNotification('Fehler beim Erstellen der Notiz', 'error');
+      }
+    }
+
+    function openNoteEditor(noteId = null) {
+      const modal = document.getElementById('noteEditorModal');
+      const form = document.getElementById('noteForm');
+      
+      if (noteId) {
+        const note = notesApp.notes.find(n => n.id == noteId);
+        if (note) {
+          notesApp.currentNote = note;
+          document.getElementById('noteId').value = note.id;
+          document.getElementById('noteTitle').value = note.title;
+          document.getElementById('noteContent').value = note.content || '';
+          notesApp.selectedColor = note.color;
+          updateColorSelection();
+          updatePinButton(note.is_pinned);
+        }
+      } else {
+        form.reset();
+        notesApp.currentNote = null;
+        notesApp.selectedColor = '#fbbf24';
+        updateColorSelection();
+        updatePinButton(false);
+      }
+      
+      modal.classList.add('active');
+      setTimeout(() => document.getElementById('noteTitle').focus(), 100);
+    }
+
+    function closeNoteEditor() {
+      document.getElementById('noteEditorModal').classList.remove('active');
+      notesApp.currentNote = null;
+    }
+
+    function editNote(noteId) {
+      openNoteEditor(noteId);
+    }
+
+    // Initialize notes app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Apply saved gradient
+      if (gradients[currentGradient]) {
+        document.body.style.background = gradients[currentGradient];
+      }
+      
+      // Simple fade-in animation only
+      const cards = document.querySelectorAll('.dashboard-short');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.4s ease';
+          card.style.opacity = '1';
+        }, index * 50);
+      });
+      
+      loadNotes();
+      
+      // Setup color buttons
+      document.querySelectorAll('.note-color-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          notesApp.selectedColor = this.dataset.color;
+          updateColorSelection();
+        });
+      });
+      
+      // Setup note form
+      document.getElementById('noteForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await saveNote();
+      });
+      
+      // Setup search
+      document.getElementById('notesSearch')?.addEventListener('input', function() {
+        searchNotes(this.value);
+      });
+      
+      // Setup quick note enter key
+      document.getElementById('quickNoteTitle').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          addQuickNote();
+        }
+      });
+    });
+
+    // Helper functions
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) return 'Heute';
+      if (diffDays === 2) return 'Gestern';
+      if (diffDays <= 7) return `vor ${diffDays} Tagen`;
+      
+      return date.toLocaleDateString('de-DE');
+    }
+
+    function updateColorSelection() {
+      document.querySelectorAll('.note-color-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.color === notesApp.selectedColor);
+      });
+    }
+
+    function updatePinButton(isPinned) {
+      const pinBtn = document.getElementById('pinBtn');
+      pinBtn.classList.toggle('active', isPinned);
+    }
+
+    async function saveNote() {
+      const formData = new FormData(document.getElementById('noteForm'));
+      const noteData = {
+        title: formData.get('title'),
+        content: formData.get('content'),
+        color: notesApp.selectedColor,
+        is_pinned: notesApp.currentNote?.is_pinned || false
+      };
+      
+      if (notesApp.currentNote) {
+        noteData.id = notesApp.currentNote.id;
+      }
+      
+      try {
+        const response = await fetch('/src/api/notes.php', {
+          method: notesApp.currentNote ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(noteData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          closeNoteEditor();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html></body>  </script>    }      }, 3000);        }, 300);          document.body.removeChild(notification);        setTimeout(() => {                notification.style.transform = 'translateY(-10px)';        notification.style.opacity = '0';      setTimeout(() => {            }, 100);        notification.style.transform = 'translateY(0)';        notification.style.opacity = '1';      setTimeout(() => {            document.body.appendChild(notification);            notification.innerHTML = message;      notification.style.pointerEvents = 'none';      notification.style.opacity = '0';      notification.className = `fixed top-20 right-4 bg-${type}-500 text-white p-4 rounded-lg shadow-lg transition-all transform`;      const notification = document.createElement('div');      // Simple notification function    function showNotification(message, type = 'info') {    }      loadNotes();      document.getElementById('archiveToggle').classList.toggle('active', notesApp.showArchived);      notesApp.showArchived = !notesApp.showArchived;    function toggleArchived() {    }        '<div class="col-span-full text-center py-12 text-white/60"><i class="fas fa-sticky-note text-4xl mb-4"></i><p>Keine Notizen gefunden</p></div>';        `).join('') :           </div>            </div>              ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}              <span class="note-date">${formatDate(note.updated_at)}</span>            <div class="note-footer">            ${note.content ? `<div class="note-content">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>` : ''}            </div>              </div>                </button>                  <i class="fas fa-edit"></i>                <button onclick="editNote(${note.id})" class="note-action-btn">                ${note.is_pinned ? '<i class="fas fa-thumbtack text-yellow-400"></i>' : ''}              <div class="note-actions">              <h3 class="note-title">${escapeHtml(note.title)}</h3>            <div class="note-card-header">          <div class="note-card" style="border-left: 4px solid ${note.color}" data-note-id="${note.id}">        filteredNotes.map(note => `      notesGrid.innerHTML = filteredNotes.length > 0 ?       const notesGrid = document.getElementById('notesGrid');            });               (note.content && note.content.toLowerCase().includes(query.toLowerCase()));        return note.title.toLowerCase().includes(query.toLowerCase()) ||       const filteredNotes = notesApp.notes.filter(note => {    function searchNotes(query) {    }      }        showNotification('Fehler beim Speichern der Notiz', 'error');        console.error('Error saving note:', error);      } catch (error) {        }          showNotification(data.error || 'Fehler beim Speichern der Notiz', 'error');        } else {          showNotification('Notiz gespeichert', 'success');          await loadNotes();          body: JSON.stringify(noteData)
+        });
+        
+        const data = await response.json();
+        
+        if
