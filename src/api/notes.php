@@ -37,8 +37,50 @@ if (!isset($pdo) || !$pdo) {
 }
 
 try {
-    // Include enhanced tables
-    require_once __DIR__ . '/../../database/enhanced_notes_tables.php';
+    // Ensure tables exist (silently)
+    // Note: We need to ensure tables exist but without outputting text
+    // The enhanced_notes_tables.php outputs text, so we'll create tables manually here
+    
+    // Create basic notes table if it doesn't exist
+    $pdo->exec("CREATE TABLE IF NOT EXISTS notes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        color VARCHAR(7) DEFAULT '#fbbf24',
+        is_pinned BOOLEAN DEFAULT FALSE,
+        is_archived BOOLEAN DEFAULT FALSE,
+        node_position_x FLOAT DEFAULT NULL,
+        node_position_y FLOAT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_user_id (user_id),
+        INDEX idx_created_at (created_at),
+        INDEX idx_pinned (is_pinned),
+        INDEX idx_archived (is_archived)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Create note_tags table if it doesn't exist  
+    $pdo->exec("CREATE TABLE IF NOT EXISTS note_tags (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        note_id INT NOT NULL,
+        tag_name VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_note_id (note_id),
+        INDEX idx_tag_name (tag_name)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Create note_links table if it doesn't exist
+    $pdo->exec("CREATE TABLE IF NOT EXISTS note_links (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        source_note_id INT NOT NULL,
+        target_note_id INT NOT NULL,
+        link_type ENUM('reference', 'mention', 'relates_to', 'follows_from') DEFAULT 'reference',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_by INT NOT NULL,
+        INDEX idx_source_note (source_note_id),
+        INDEX idx_target_note (target_note_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     
     $action = $_GET['action'] ?? '';
     

@@ -118,12 +118,17 @@ try {
             UNIQUE KEY unique_cluster_member (cluster_id, note_id),
             INDEX idx_cluster_id (cluster_id),
             INDEX idx_note_id (note_id)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci    ");
 
-    echo "Enhanced notes tables created successfully!\n";
+    // Only output if run directly (not included)
+    if (basename($_SERVER['PHP_SELF']) === 'enhanced_notes_tables.php') {
+        echo "Enhanced notes tables created successfully!\n";
+    }
 
 } catch (PDOException $e) {
-    echo "Error creating enhanced tables: " . $e->getMessage() . "\n";
+    // Only output if run directly (not included)
+    if (basename($_SERVER['PHP_SELF']) === 'enhanced_notes_tables.php') {
+        echo "Error creating enhanced tables: " . $e->getMessage() . "\n";
+    }
 }
 ?>
