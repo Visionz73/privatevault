@@ -1,11 +1,13 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Notes API - Second Brain functionality
+// Silence any output before JSON
+ob_start();
 
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/db.php';
 
+// Clean any output buffer and start fresh
+ob_end_clean();
 header('Content-Type: application/json');
 
 // Check if session is started
