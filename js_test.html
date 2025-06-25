@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Syntax Test</title>
+</head>
+<body>
+    <h1>JavaScript Syntax Test</h1>
+    <button onclick="testToggleNotesApp()">Test toggleNotesApp</button>
+    <button onclick="testOpenNoteEditor()">Test openNoteEditor</button>
+    <div id="results"></div>
+
+    <script>
+        // Test if functions would work in isolation
+        function testToggleNotesApp() {
+            try {
+                console.log('Testing toggleNotesApp function definition...');
+                if (typeof toggleNotesApp === 'function') {
+                    document.getElementById('results').innerHTML += '<p>✓ toggleNotesApp is defined as function</p>';
+                } else {
+                    document.getElementById('results').innerHTML += '<p>✗ toggleNotesApp is not defined</p>';
+                }
+            } catch (e) {
+                document.getElementById('results').innerHTML += '<p>✗ Error: ' + e.message + '</p>';
+            }
+        }
+
+        function testOpenNoteEditor() {
+            try {
+                console.log('Testing openNoteEditor function definition...');
+                if (typeof openNoteEditor === 'function') {
+                    document.getElementById('results').innerHTML += '<p>✓ openNoteEditor is defined as function</p>';
+                } else {
+                    document.getElementById('results').innerHTML += '<p>✗ openNoteEditor is not defined</p>';
+                }
+            } catch (e) {
+                document.getElementById('results').innerHTML += '<p>✗ Error: ' + e.message + '</p>';
+            }
+        }
+
+        // Mock the functions to test
+        function toggleNotesApp() {
+            console.log('toggleNotesApp called successfully');
+            document.getElementById('results').innerHTML += '<p>✓ toggleNotesApp executed</p>';
+        }
+
+        function openNoteEditor(noteId = null) {
+            console.log('openNoteEditor called successfully with:', noteId);
+            document.getElementById('results').innerHTML += '<p>✓ openNoteEditor executed</p>';
+        }
+
+        // Test on load
+        window.addEventListener('load', function() {
+            document.getElementById('results').innerHTML = '<h2>Test Results:</h2>';
+            testToggleNotesApp();
+            testOpenNoteEditor();
+        });
+    </script>
+</body>
+</html>

@@ -1671,13 +1671,13 @@
         const data = await response.json();
         console.log('Notes loaded:', data);
         
-        if (data.notes) {
-          notesApp.notes = data.notes;
+        if (data.notes) {          notesApp.notes = data.notes;
           updateNotesDisplay();
           updateNotesCount();
         } else if (data.error) {
           throw new Error(data.error);
-        }      } catch (error) {
+        }
+      } catch (error) {
         console.error('Error loading notes:', error);
         
         // Fallback to sample data for testing the Second Brain graph view
@@ -2436,12 +2436,12 @@
             note_id: noteId,
             x: x,
             y: y
-          })
-        });
+          })        });
         
         if (!response.ok) {
           console.warn('Failed to save node position');
-        }      } catch (error) {
+        }
+      } catch (error) {
         console.warn('Error saving node position:', error);
       }
     }
