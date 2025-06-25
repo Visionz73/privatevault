@@ -101,18 +101,41 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 // Load HaveToPay widget data
 require_once __DIR__.'/widgets/havetopay_widget.php';
 
-// Get upcoming events for calendar short
-$stmt = $pdo->prepare("
-    SELECT e.*, u.username AS creator_name
-    FROM events e
-    LEFT JOIN users u ON u.id = e.created_by
-    WHERE (e.assigned_to = ? OR e.created_by = ?)
-    AND e.event_date >= CURDATE()
-    ORDER BY e.event_date ASC
-    LIMIT 5
-");
-$stmt->execute([$userId, $userId]);
-$upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get events for the current week for calendar widget
+$today = new DateTimeImmutable('today');
+$dayOfWeek = (int)$today->format('N'); // 1 (Mon) - 7 (Sun)
+$startOfWeek = $today->modify('-' . ($dayOfWeek - 1) . ' days');
+$endOfWeek = $startOfWeek->modify('+6 days');
+
+$stmt = $pdo->prepare(
+    "SELECT e.*, u.username AS creator_name
+     FROM events e
+     LEFT JOIN users u ON u.id = e.created_by
+     WHERE (e.assigned_to = ? OR e.created_by = ?)
+       AND e.event_date BETWEEN ? AND ?
+     ORDER BY e.event_date ASC, IFNULL(e.start_time, '') ASC"
+);
+$stmt->execute([
+    $userId,
+    $userId,
+    $startOfWeek->format('Y-m-d'),
+    $endOfWeek->format('Y-m-d')
+]);
+$weeklyEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Group events by date for easier rendering in the widget
+$eventsByDate = [];
+foreach ($weeklyEvents as $event) {
+    $date = $event['event_date'];
+    if (!isset($eventsByDate[$date])) {
+        $eventsByDate[$date] = [];
+    }
+    $eventsByDate[$date][] = $event;
+}
+
+// Today's events count for header stats
+$todayEvents = $eventsByDate[$today->format('Y-m-d')] ?? [];
+$totalWeekEvents = count($weeklyEvents);
 
 // Get recent documents for documents short
 $stmt = $pdo->prepare("
