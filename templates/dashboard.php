@@ -2421,29 +2421,9 @@
       links.forEach(link => {
         const sourceNode = document.querySelector(`[data-note-id="${link.getAttribute('data-source')}"]`);
         const targetNode = document.querySelector(`[data-note-id="${link.getAttribute('data-target')}"]`);
-        
-        const shouldShow = sourceNode?.style.display !== 'none' && targetNode?.style.display !== 'none';
+          const shouldShow = sourceNode?.style.display !== 'none' && targetNode?.style.display !== 'none';
         link.style.display = shouldShow ? 'block' : 'none';
       });
-    }
-    
-    async function saveNodePosition(noteId, x, y) {
-      try {
-        const response = await fetch('/api/notes.php?action=position', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            note_id: noteId,
-            x: x,
-            y: y
-          })        });
-        
-        if (!response.ok) {
-          console.warn('Failed to save node position');
-        }
-      } catch (error) {
-        console.warn('Error saving node position:', error);
-      }
     }
 
     function updateListView() {
@@ -3149,10 +3129,23 @@
           }
         }, 300);
       }, 3000);
-    }
-
-    // Initialize on page load
+    }    // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('Dashboard script initialized');
+      
+      // Test function availability
+      if (typeof toggleNotesApp === 'function') {
+        console.log('✓ toggleNotesApp function is available');
+      } else {
+        console.error('✗ toggleNotesApp function is not available');
+      }
+      
+      if (typeof openNoteEditor === 'function') {
+        console.log('✓ openNoteEditor function is available');
+      } else {
+        console.error('✗ openNoteEditor function is not available');
+      }
+      
       // Apply saved gradient
       if (gradients[currentGradient]) {
         document.body.style.background = gradients[currentGradient];
