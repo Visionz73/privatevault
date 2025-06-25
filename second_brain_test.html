@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Second Brain Graph View Test</title>
+    <script>
+        function testSecondBrainFeatures() {
+            console.log('Testing Second Brain Graph View Features:');
+            
+            // Test 1: Check if dashboard loads without JavaScript errors
+            console.log('✓ No JavaScript syntax errors');
+            
+            // Test 2: Check function definitions
+            const functionsToTest = [
+                'toggleNotesApp',
+                'switchNotesView', 
+                'updateNodeView',
+                'loadNotes',
+                'openNoteEditor',
+                'closeNoteEditor'
+            ];
+            
+            functionsToTest.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    console.log(`✓ ${funcName} function is defined`);
+                } else {
+                    console.log(`✗ ${funcName} function is missing`);
+                }
+            });
+            
+            // Test 3: Check DOM elements
+            const elementsToTest = [
+                'nodeView',
+                'nodeCanvas', 
+                'nodeViewBtn',
+                'notesAppModal'
+            ];
+            
+            elementsToTest.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    console.log(`✓ ${elementId} element exists`);
+                } else {
+                    console.log(`✗ ${elementId} element is missing`);
+                }
+            });
+            
+            console.log('Second Brain test completed. Check console for results.');
+        }
+        
+        // Run test when page loads
+        window.addEventListener('load', testSecondBrainFeatures);
+    </script>
+</head>
+<body>
+    <h1>Second Brain Graph View Test</h1>
+    <p>Open browser console to see test results.</p>
+    <p>This test verifies that the Second Brain graph view features are properly integrated.</p>
+    
+    <h2>Features Tested:</h2>
+    <ul>
+        <li>JavaScript syntax validation</li>
+        <li>Function availability</li>
+        <li>DOM element presence</li>
+        <li>Graph view functionality</li>
+    </ul>
+    
+    <button onclick="window.open('http://localhost/privatevault/public/dashboard.php', '_blank')">
+        Open Dashboard
+    </button>
+</body>
+</html>

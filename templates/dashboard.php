@@ -1595,16 +1595,15 @@
   </div>
   
   <script>
-    // Gradient management
-    const gradients = {
+    // Gradient management    const gradients = {
       cosmic: 'linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%)',
-      ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%',
-      sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%',
-      forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%',
-      purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%',
-      rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%',
-      cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%',
-      ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%'
+      ocean: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%)',
+      sunset: 'linear-gradient(135deg, #f59e0b 0%, #dc2626 50%, #7c2d12 100%)',
+      forest: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
+      purple: 'linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #3730a3 100%)',
+      rose: 'linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #881337 100%)',
+      cyber: 'linear-gradient(135deg, #065f46 0%, #0891b2 50%, #1e40af 100%)',
+      ember: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #92400e 100%)'
     };
 
     let currentGradient = localStorage.getItem('dashboardGradient') || 'cosmic';
@@ -1642,13 +1641,14 @@
       const selectedOption = document.querySelector(`[data-gradient="${gradientName}"]`);
       if (selectedOption) {
         selectedOption.classList.add('selected');
-      }
-      
+      }      
       // Close modal after short delay
       setTimeout(() => {
         closeGradientPicker();
       }, 600);
-    }    // Notes App Variables
+    }
+    
+    // Notes App Variables
     let notesApp = {
       isOpen: false,
       showArchived: false,
@@ -1677,9 +1677,56 @@
           updateNotesCount();
         } else if (data.error) {
           throw new Error(data.error);
-        }
-      } catch (error) {
+        }      } catch (error) {
         console.error('Error loading notes:', error);
+        
+        // Fallback to sample data for testing the Second Brain graph view
+        console.log('Using sample data for Second Brain testing...');
+        notesApp.notes = [
+          {
+            id: 1,
+            title: 'Second Brain Concept',
+            content: 'Building a second brain helps capture and organize knowledge for creative thinking.',
+            color: '#8b5cf6',
+            tags: ['knowledge', 'learning'],
+            created_at: new Date().toISOString(),
+            x: 150,
+            y: 100
+          },
+          {
+            id: 2,
+            title: 'Knowledge Management',
+            content: 'Systematic approach to capturing, organizing, and retrieving information.',
+            color: '#fbbf24',
+            tags: ['productivity', 'system'],
+            created_at: new Date().toISOString(),
+            x: 400,
+            y: 180
+          },
+          {
+            id: 3,
+            title: 'Creative Connections',
+            content: 'Linking ideas across domains creates unexpected insights and innovations.',
+            color: '#ef4444',
+            tags: ['creativity', 'innovation'],
+            created_at: new Date().toISOString(),
+            x: 250,
+            y: 320
+          },
+          {
+            id: 4,
+            title: 'Visual Thinking',
+            content: 'Graph-based visualization helps understand relationships between concepts.',
+            color: '#10b981',
+            tags: ['visualization', 'graph'],
+            created_at: new Date().toISOString(),
+            x: 500,
+            y: 280
+          }
+        ];
+        updateNotesDisplay();
+        updateNotesCount();
+        
         showNotification('Fehler beim Laden der Notizen: ' + error.message, 'error');
       }
     }
@@ -1756,10 +1803,9 @@
             <div class="note-footer">
               <span class="note-date">${formatDate(note.updated_at)}</span>
               ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-            </div>
-          </div>
+            </div>          </div>
         `).join('');
-      }    }    
+      }
     
     // Enhanced Second Brain Node View
     function updateNodeView() {
@@ -2395,9 +2441,9 @@
         
         if (!response.ok) {
           console.warn('Failed to save node position');
-        }
-      } catch (error) {
-        console.warn('Error saving node position:', error);      }
+        }      } catch (error) {
+        console.warn('Error saving node position:', error);
+      }
     }
 
     function updateListView() {
@@ -2423,10 +2469,11 @@
                 ${note.tags && note.tags.length > 0 ? `<div class="flex gap-1 mt-2">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
               </div>
             </div>
-          </div>
-        `).join('');
+          </div>        `).join('');
       }
-    }    function makeNodeDraggable(node, noteId) {
+    }
+    
+    function makeNodeDraggable(node, noteId) {
       let isDragging = false;
       let startX, startY, initialX, initialY;
       
