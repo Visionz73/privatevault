@@ -3,18 +3,34 @@ require_once __DIR__.'/../../src/lib/auth.php';
 requireLogin();
 require_once __DIR__.'/../../src/lib/db.php';
 
-// Fetch upcoming events for the current user
-$stmt = $pdo->prepare("
-    SELECT e.*, u.username AS creator_name
-    FROM events e
-    LEFT JOIN users u ON u.id = e.created_by
-    WHERE (e.assigned_to = ? OR e.created_by = ?)
-    AND e.event_date >= CURDATE()
-    ORDER BY e.event_date ASC
-    LIMIT 5
-");
-$stmt->execute([$user['id'], $user['id']]);
+// Fetch upcoming events starting today
+$today = new DateTimeImmutable('today');
+$stmt = $pdo->prepare(
+    "SELECT e.*, u.username AS creator_name
+     FROM events e
+     LEFT JOIN users u ON u.id = e.created_by
+     WHERE (e.assigned_to = ? OR e.created_by = ?)
+       AND e.event_date >= ?
+     ORDER BY e.event_date ASC, IFNULL(e.start_time, '') ASC
+     LIMIT 10"
+);
+$stmt->execute([
+    $user['id'],
+    $user['id'],
+    $today->format('Y-m-d')
+]);
 $upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Group events by date
+$eventsByDate = [];
+foreach ($upcomingEvents as $event) {
+    $date = $event['event_date'];
+    if (!isset($eventsByDate[$date])) {
+        $eventsByDate[$date] = [];
+    }
+    $eventsByDate[$date][] = $event;
+}
+$todayEvents = $eventsByDate[$today->format('Y-m-d')] ?? [];
 
 // Get total event count for current month
 $stmt = $pdo->prepare("
@@ -43,29 +59,36 @@ $monthlyEvents = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
   </div>
 
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-white/90 text-xl font-semibold">Kalender</h2>
+    <h2 class="text-white/90 text-xl font-semibold">
+      <?= date('l, d.m.') ?>
+    </h2>
     <div class="text-right">
-      <div class="text-xs text-white/60 mb-1">Termine</div>
-      <div class="text-lg font-bold text-white/90"><?= count($upcomingEvents ?? []) ?></div>
+      <div class="text-xs text-white/60 mb-1">heute</div>
+      <div class="text-lg font-bold text-white/90"><?= count($todayEvents) ?></div>
     </div>
   </div>
 
   <div class="widget-scroll-container flex-1">
     <div id="dashboardEventList" class="widget-scroll-content space-y-2">
       <?php if (!empty($upcomingEvents)): ?>
+        <?php $currentDate = ''; ?>
         <?php foreach ($upcomingEvents as $event): ?>
+          <?php if ($currentDate !== $event['event_date']): ?>
+            <?php $currentDate = $event['event_date']; ?>
+            <div class="text-white/60 text-xs mt-3">
+              <?= date('D d.m', strtotime($currentDate)) ?>
+            </div>
+          <?php endif; ?>
           <div class="widget-list-item p-3 bg-white/5 border border-white/10 rounded-lg transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:transform hover:translateX-1 cursor-pointer" onclick="window.location.href='calendar.php'">
-            <div class="flex justify-between items-start">
-              <div class="flex-1 min-w-0">
-                <div class="task-title text-sm truncate text-white/90">
-                  <?= htmlspecialchars($event['title']) ?>
-                </div>
-                <?php if (!empty($event['description'])): ?>
-                  <div class="task-description text-xs truncate text-white/60">
-                    <?= htmlspecialchars($event['description']) ?>
-                  </div>
-                <?php endif; ?>
-              </div>
+            <div class="flex justify-between items-center">
+              <span class="truncate flex-1 text-white text-sm">
+                <?= htmlspecialchars($event['title']) ?>
+              </span>
+              <?php if (!empty($event['start_time'])): ?>
+                <span class="text-blue-400 text-xs ml-2">
+                  <?= substr($event['start_time'],0,5) ?>
+                </span>
+              <?php endif; ?>
             </div>
           </div>
         <?php endforeach; ?>

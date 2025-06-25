@@ -911,28 +911,37 @@
       <div class="dashboard-short">
         <div class="short-header p-6" onclick="window.location.href='calendar.php'">
           <div class="flex items-center justify-between">
-            <h3 class="text-white font-semibold text-xl">Kalender</h3>
+            <h3 class="text-white font-semibold text-xl">
+              <?= date('l, d.m.') ?>
+            </h3>
             <div class="text-right">
-              <div class="stats-number text-3xl"><?= count($upcomingEvents ?? []) ?></div>
+              <div class="stats-number text-3xl"><?= count($todayEvents) ?></div>
               <div class="text-white/60 text-sm">heute</div>
             </div>
           </div>
         </div>
-        
+
         <div class="p-6">
-          <div class="short-scroll space-y-3">
+          <div class="short-scroll space-y-2">
             <?php if (!empty($upcomingEvents)): ?>
-              <?php foreach(array_slice($upcomingEvents, 0, 4) as $event): ?>
-                <div class="short-list-item p-4" onclick="window.location.href='calendar.php'">
-                  <div class="flex justify-between items-start mb-2">
-                    <h4 class="text-white font-medium text-sm truncate flex-1"><?= htmlspecialchars($event['title']) ?></h4>
-                    <span class="text-blue-400 text-xs ml-2"><?= date('H:i', strtotime($event['event_date'])) ?></span>
+              <?php $currentDate = ''; ?>
+              <?php foreach ($upcomingEvents as $event): ?>
+                <?php if ($currentDate !== $event['event_date']): ?>
+                  <?php $currentDate = $event['event_date']; ?>
+                  <div class="text-white/60 text-xs mt-2">
+                    <?= date('D d.m', strtotime($currentDate)) ?>
                   </div>
-                  <?php if(!empty($event['description'])): ?>
-                    <p class="text-white/60 text-xs truncate"><?= htmlspecialchars($event['description']) ?></p>
-                  <?php endif; ?>
-                  <div class="text-xs text-white/50 mt-2">
-                    <span><?= date('d.m.Y', strtotime($event['event_date'])) ?></span>
+                <?php endif; ?>
+                <div class="short-list-item p-3" onclick="window.location.href='calendar.php'">
+                  <div class="flex justify-between items-center">
+                    <span class="truncate flex-1 text-white text-sm">
+                      <?= htmlspecialchars($event['title']) ?>
+                    </span>
+                    <?php if (!empty($event['start_time'])): ?>
+                      <span class="text-blue-400 text-xs ml-2">
+                        <?= substr($event['start_time'], 0, 5) ?>
+                      </span>
+                    <?php endif; ?>
                   </div>
                 </div>
               <?php endforeach; ?>
@@ -942,7 +951,7 @@
               </div>
             <?php endif; ?>
           </div>
-          
+
           <div class="mt-6">
             <button onclick="window.location.href='calendar.php'" class="quick-action-btn w-full px-4 py-2">
               Neuer Termin
@@ -1129,10 +1138,10 @@
           
           <div class="flex justify-between items-center">
             <span class="text-white/80 text-sm">Termine</span>
-            <span class="text-white font-semibold"><?= count($upcomingEvents ?? []) ?></span>
+            <span class="text-white font-semibold"><?= count($upcomingEvents) ?></span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width: <?= min(100, count($upcomingEvents ?? []) * 20) ?>%"></div>
+            <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width: <?= min(100, count($upcomingEvents) * 20) ?>%"></div>
           </div>
           
           <div class="mt-6">

@@ -101,18 +101,36 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 // Load HaveToPay widget data
 require_once __DIR__.'/widgets/havetopay_widget.php';
 
-// Get upcoming events for calendar short
-$stmt = $pdo->prepare("
-    SELECT e.*, u.username AS creator_name
-    FROM events e
-    LEFT JOIN users u ON u.id = e.created_by
-    WHERE (e.assigned_to = ? OR e.created_by = ?)
-    AND e.event_date >= CURDATE()
-    ORDER BY e.event_date ASC
-    LIMIT 5
-");
-$stmt->execute([$userId, $userId]);
+// Get upcoming events for calendar widget (today onwards)
+$today = new DateTimeImmutable('today');
+$stmt = $pdo->prepare(
+    "SELECT e.*, u.username AS creator_name
+     FROM events e
+     LEFT JOIN users u ON u.id = e.created_by
+     WHERE (e.assigned_to = ? OR e.created_by = ?)
+       AND e.event_date >= ?
+     ORDER BY e.event_date ASC, IFNULL(e.start_time, '') ASC
+     LIMIT 10"
+);
+$stmt->execute([
+    $userId,
+    $userId,
+    $today->format('Y-m-d')
+]);
 $upcomingEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Group events by date for easier rendering
+$eventsByDate = [];
+foreach ($upcomingEvents as $event) {
+    $date = $event['event_date'];
+    if (!isset($eventsByDate[$date])) {
+        $eventsByDate[$date] = [];
+    }
+    $eventsByDate[$date][] = $event;
+}
+
+// Today's events for header stats
+$todayEvents = $eventsByDate[$today->format('Y-m-d')] ?? [];
 
 // Get recent documents for documents short
 $stmt = $pdo->prepare("
