@@ -5,10 +5,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Enhanced Zettelkasten Styles -->
-  <link rel="stylesheet" href="/css/zettelkasten.css">
+  <link rel="stylesheet" href="../css/zettelkasten.css">
   <!-- D3.js for graph visualization -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
@@ -1635,8 +1634,15 @@
       currentNote: null,
       notes: [],
       selectedColor: '#fbbf24',
-      currentView: 'grid' // grid, node, list
-    };
+      currentView: 'grid' // grid, node, list    };
+
+    // Utility Functions
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
     // Notes App Functions
     async function loadNotes() {
@@ -2549,10 +2555,9 @@
           closeNoteEditor();
         }
       }    });
-  </script>
-  
+  </script>  
   <!-- Load Enhanced Zettelkasten Manager -->
-  <script src="/js/enhanced-zettelkasten.js"></script>
+  <script src="../js/enhanced-zettelkasten.js"></script>
   
   <script>
     // Initialize enhanced Zettelkasten when DOM is ready
