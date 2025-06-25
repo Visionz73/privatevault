@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Private Vault</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Enhanced Zettelkasten Styles -->
+  <link rel="stylesheet" href="/css/zettelkasten.css">
+  <!-- D3.js for graph visualization -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body { 
       font-family: 'Inter', sans-serif;
@@ -661,16 +664,15 @@
         margin: 0.5rem;
         max-width: none;
       }
-    }
-
-    /* Node View Styles */
+    }    /* Enhanced Node View Styles */
     .node-view-container {
       position: relative;
       width: 100%;
-      height: 400px;
+      height: 500px;
       overflow: hidden;
       border-radius: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(30, 30, 60, 0.2) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .node-canvas {
@@ -681,6 +683,76 @@
       height: 100%;
     }
 
+    .node-canvas svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* D3.js Graph Styles */
+    .graph-node {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .graph-node:hover {
+      filter: brightness(1.2);
+    }
+
+    .graph-node circle {
+      transition: all 0.3s ease;
+    }
+
+    .graph-node text {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      pointer-events: none;
+    }
+
+    /* Graph Link Styles */
+    .links line {
+      transition: all 0.3s ease;
+    }
+
+    .links line:hover {
+      stroke-width: 4 !important;
+      stroke-opacity: 1 !important;
+    }
+
+    /* Tooltip Styles */
+    .graph-tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .graph-tooltip.visible {
+      opacity: 1;
+    }
+
+    /* Node Info Panel Styles */
+    #nodeInfoPanel {
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      transform: translateX(100%);
+    }
+
+    #nodeInfoPanel.visible {
+      transform: translateX(0);
+    }
+
+    /* Legacy Node Styles (fallback) */
     .note-node {
       position: absolute;
       width: 120px;
@@ -1233,17 +1305,15 @@
           <button onclick="toggleArchived()" class="notes-btn-secondary" id="archiveToggle">
             <i class="fas fa-archive mr-1"></i>Archiv
           </button>
-        </div>
-
-        <!-- View Toggle -->
+        </div>        <!-- View Toggle -->
         <div class="view-toggle-buttons mt-4">
-          <button class="view-toggle-btn active" id="gridViewBtn" onclick="switchNotesView('grid')">
+          <button class="view-toggle-btn active" data-view="grid" onclick="zettelkasten.switchView('grid')">
             <i class="fas fa-th mr-1"></i>Grid
           </button>
-          <button class="view-toggle-btn" id="nodeViewBtn" onclick="switchNotesView('node')">
+          <button class="view-toggle-btn" data-view="node" onclick="zettelkasten.switchView('node')">
             <i class="fas fa-project-diagram mr-1"></i>Knoten
           </button>
-          <button class="view-toggle-btn" id="listViewBtn" onclick="switchNotesView('list')">
+          <button class="view-toggle-btn" data-view="list" onclick="zettelkasten.switchView('list')">
             <i class="fas fa-list mr-1"></i>Liste
           </button>
         </div>
@@ -1255,14 +1325,59 @@
           <!-- Notes will be loaded here -->
         </div>
 
-        <!-- Node View -->
+        <!-- Enhanced Node View with D3.js -->
         <div class="node-view-container" id="nodeView" style="display: none;">
           <div class="node-canvas" id="nodeCanvas">
-            <!-- Node visualization will be rendered here -->
+            <!-- SVG graph will be rendered here by D3.js -->
           </div>
-          <div class="absolute top-4 right-4 text-white/60 text-sm">
-            <i class="fas fa-info-circle mr-1"></i>
-            Ziehen Sie Notizen um sie zu verschieben
+          
+          <!-- Graph Controls -->
+          <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3">
+            <div class="flex flex-col gap-2 text-white/80 text-sm">
+              <button onclick="zettelkasten.centerGraph()" class="text-left hover:text-white">
+                <i class="fas fa-compress-arrows-alt mr-2"></i>Zentrieren
+              </button>
+              <button onclick="zettelkasten.togglePhysics()" class="text-left hover:text-white">
+                <i class="fas fa-play mr-2"></i>Physik an/aus
+              </button>
+              <button onclick="zettelkasten.resetLayout()" class="text-left hover:text-white">
+                <i class="fas fa-undo mr-2"></i>Layout zurücksetzen
+              </button>
+            </div>
+          </div>
+          
+          <!-- Legend -->
+          <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3">
+            <div class="text-white/80 text-xs space-y-1">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span>Normale Verknüpfung</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <span>Angeheftete Notiz</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-0.5 bg-gray-400" style="border-style: dashed;"></div>
+                <span>Rückverweis</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Node Info Panel -->
+          <div id="nodeInfoPanel" class="absolute top-4 right-4 bg-black/70 backdrop-blur-sm rounded-lg p-4 max-w-xs hidden">
+            <h4 class="text-white font-semibold mb-2" id="nodeInfoTitle">Notiz-Details</h4>
+            <div class="text-white/80 text-sm space-y-2" id="nodeInfoContent">
+              <!-- Dynamic content -->
+            </div>
+            <div class="flex gap-2 mt-3">
+              <button onclick="zettelkasten.editSelectedNote()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">
+                Bearbeiten
+              </button>
+              <button onclick="zettelkasten.showNoteLinks()" class="px-3 py-1 bg-purple-600 text-white rounded text-xs">
+                Verknüpfungen
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1276,13 +1391,19 @@
     </div>
   </div>
 
-  <!-- Note Editor Modal -->
+  <!-- Enhanced Note Editor Modal -->
   <div id="noteEditorModal" class="note-editor-modal">
     <div class="note-editor-content">
       <div class="note-editor-header">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold text-white">Notiz bearbeiten</h3>
           <div class="flex items-center gap-2">
+            <button onclick="showLinkedNotes()" class="note-action-btn" title="Verknüpfungen anzeigen">
+              <i class="fas fa-link"></i>
+            </button>
+            <button onclick="showShareDialog()" class="note-action-btn" title="Teilen">
+              <i class="fas fa-share-alt"></i>
+            </button>
             <button onclick="toggleNotePin()" class="note-action-btn" id="pinBtn" title="Anheften">
               <i class="fas fa-thumbtack"></i>
             </button>
@@ -1345,6 +1466,111 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+  
+  <!-- Share Note Dialog -->
+  <div id="shareNoteModal" class="note-editor-modal" style="display: none;">
+    <div class="note-editor-content max-w-md">
+      <div class="note-editor-header">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-white">Notiz teilen</h3>
+          <button onclick="closeShareDialog()" class="note-action-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="note-editor-body">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-white/80 text-sm mb-2">Mit Benutzer teilen:</label>
+            <select id="shareUserSelect" class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white">
+              <option value="">Benutzer auswählen...</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-white/80 text-sm mb-2">Berechtigungsebene:</label>
+            <select id="sharePermissionSelect" class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white">
+              <option value="read">Nur lesen</option>
+              <option value="edit">Bearbeiten</option>
+              <option value="comment">Kommentieren</option>
+            </select>
+          </div>
+          
+          <div class="flex gap-3">
+            <button onclick="shareCurrentNote()" class="notes-btn-primary">
+              Teilen
+            </button>
+            <button onclick="closeShareDialog()" class="notes-btn-secondary">
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link Notes Dialog -->
+  <div id="linkNotesModal" class="note-editor-modal" style="display: none;">
+    <div class="note-editor-content max-w-2xl">
+      <div class="note-editor-header">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-white">Notizen verknüpfen</h3>
+          <button onclick="closeLinkDialog()" class="note-action-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="note-editor-body">
+        <div class="space-y-4">
+          <!-- Current Links -->
+          <div>
+            <h4 class="text-white font-medium mb-3">Bestehende Verknüpfungen:</h4>
+            <div id="existingLinks" class="space-y-2 max-h-40 overflow-y-auto">
+              <!-- Dynamic content -->
+            </div>
+          </div>
+          
+          <!-- Create New Link -->
+          <div class="border-t border-white/20 pt-4">
+            <h4 class="text-white font-medium mb-3">Neue Verknüpfung erstellen:</h4>
+            <div class="space-y-3">
+              <div>
+                <input 
+                  type="text" 
+                  id="linkSearchInput" 
+                  placeholder="Notiz suchen..." 
+                  class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50"
+                >
+              </div>
+              
+              <div id="linkSearchResults" class="space-y-2 max-h-40 overflow-y-auto">
+                <!-- Search results will appear here -->
+              </div>
+              
+              <div class="flex gap-3">
+                <button onclick="createSelectedLink()" class="notes-btn-primary" disabled id="createLinkBtn">
+                  Verknüpfung erstellen
+                </button>
+                <button onclick="closeLinkDialog()" class="notes-btn-secondary">
+                  Schließen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wiki Link Suggestion Tooltip -->
+  <div id="wikiLinkTooltip" class="graph-tooltip">
+    <div class="text-xs">
+      <strong>Wiki-Link Tipp:</strong><br>
+      Verwenden Sie [[Notiz-Titel]] um automatische Verknüpfungen zu erstellen
     </div>
   </div>
   
@@ -1507,6 +1733,8 @@
               </div>
             </div>
             ${note.content ? `<div class="note-content">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>` : ''}
+           
+
             <div class="note-footer">
               <span class="note-date">${formatDate(note.updated_at)}</span>
               ${note.tags && note.tags.length > 0 ? `<div class="note-tags">${note.tags.map(tag => `<span class="note-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
@@ -1912,65 +2140,294 @@
       }
     }
 
-    // Helper functions
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text || '';
-      return div.innerHTML;
-    }
-
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffTime = Math.abs(now - date);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Enhanced Zettelkasten Functions
+    
+    function showLinkedNotes() {
+      if (!notesApp.currentNote) return;
       
-      if (diffDays === 1) return 'Heute';
-      if (diffDays === 2) return 'Gestern';
-      if (diffDays <= 7) return `vor ${diffDays} Tagen`;
-      
-      return date.toLocaleDateString('de-DE');
-    }
-
-    function updateColorSelection() {
-      document.querySelectorAll('.note-color-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.color === notesApp.selectedColor);
-      });
-    }
-
-    function updatePinButton(isPinned) {
-      const pinBtn = document.getElementById('pinBtn');
-      if (pinBtn) {
-        pinBtn.classList.toggle('active', isPinned);
+      const modal = document.getElementById('linkNotesModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        loadExistingLinks();
+        setupLinkSearch();
       }
     }
-
-    // Simple notification function
-    function showNotification(message, type = 'info') {
-      const notification = document.createElement('div');
-      notification.className = `fixed top-20 right-4 bg-${type}-500 text-white p-4 rounded-lg shadow-lg transition-all transform`;
-      notification.style.pointerEvents = 'none';
-      notification.style.opacity = '0';
-      notification.innerHTML = message;
+    
+    function showShareDialog() {
+      if (!notesApp.currentNote) return;
       
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateY(0)';
-      }, 100);
-      
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-          if (notification.parentNode) {
-            document.body.removeChild(notification);
-          }
-        }, 300);
-      }, 3000);
+      const modal = document.getElementById('shareNoteModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        loadAvailableUsers();
+      }
     }
-
+    
+    function closeShareDialog() {
+      const modal = document.getElementById('shareNoteModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+    
+    function closeLinkDialog() {
+      const modal = document.getElementById('linkNotesModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+    
+    async function loadAvailableUsers() {
+      try {
+        const response = await fetch('/api/users.php?action=list');
+        const data = await response.json();
+        
+        if (data.success) {
+          const select = document.getElementById('shareUserSelect');
+          select.innerHTML = '<option value="">Benutzer auswählen...</option>';
+          
+          data.users.forEach(user => {
+            if (user.id !== notesApp.currentNote.user_id) { // Don't include the note owner
+              const option = document.createElement('option');
+              option.value = user.id;
+              option.textContent = user.username;
+              select.appendChild(option);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+      }
+    }
+    
+    async function loadExistingLinks() {
+      if (!notesApp.currentNote) return;
+      
+      try {
+        const response = await fetch(`/api/notes.php?action=links&note_id=${notesApp.currentNote.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          const container = document.getElementById('existingLinks');
+          
+          if (data.links.length === 0) {
+            container.innerHTML = '<p class="text-white/60 text-sm">Keine Verknüpfungen vorhanden</p>';
+            return;
+          }
+          
+          container.innerHTML = data.links.map(link => {
+            const isSource = link.source_note_id === notesApp.currentNote.id;
+            const targetTitle = isSource ? link.target_title : link.source_title;
+            const targetColor = isSource ? link.target_color : link.source_color;
+            const linkTypeIcon = link.link_type === 'bidirectional' ? 'fa-exchange-alt' : 
+                                 link.link_type === 'backlink' ? 'fa-arrow-left' : 'fa-arrow-right';
+            
+            return `
+              <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background: ${targetColor}"></div>
+                  <span class="text-white text-sm">${escapeHtml(targetTitle)}</span>
+                  <i class="fas ${linkTypeIcon} text-white/60 text-xs"></i>
+                </div>
+                <button onclick="deleteLink(${link.id})" class="text-red-400 hover:text-red-300 text-xs">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (error) {
+        console.error('Error loading links:', error);
+      }
+    }
+    
+    function setupLinkSearch() {
+      const searchInput = document.getElementById('linkSearchInput');
+      const resultsContainer = document.getElementById('linkSearchResults');
+      let selectedNoteId = null;
+      
+      searchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim();
+        
+        if (query.length < 2) {
+          resultsContainer.innerHTML = '';
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/api/notes.php?search=${encodeURIComponent(query)}&limit=10`);
+          const data = await response.json();
+          
+          if (data.success) {
+            const filteredNotes = data.notes.filter(note => 
+              note.id !== notesApp.currentNote.id && // Don't show current note
+              !notesApp.currentNote.linked_notes?.some(link => 
+                link.target_note_id === note.id || link.source_note_id === note.id
+              ) // Don't show already linked notes
+            );
+            
+            resultsContainer.innerHTML = filteredNotes.map(note => `
+              <div class="p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10 transition-colors" 
+                   onclick="selectNoteForLink(${note.id}, '${escapeHtml(note.title)}')">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background: ${note.color}"></div>
+                  <span class="text-white text-sm">${escapeHtml(note.title)}</span>
+                </div>
+                ${note.content ? `<p class="text-white/60 text-xs mt-1 line-clamp-1">${escapeHtml(note.content.substring(0, 100))}...</p>` : ''}
+              </div>
+            `).join('');
+          }
+        } catch (error) {
+          console.error('Error searching notes:', error);
+        }
+      });
+    }
+    
+    function selectNoteForLink(noteId, title) {
+      window.selectedLinkNoteId = noteId;
+      document.getElementById('createLinkBtn').disabled = false;
+      
+      // Highlight selected note
+      document.querySelectorAll('#linkSearchResults > div').forEach(div => {
+        div.classList.remove('bg-blue-600/30');
+      });
+      event.target.closest('div').classList.add('bg-blue-600/30');
+    }
+    
+    async function createSelectedLink() {
+      if (!window.selectedLinkNoteId || !notesApp.currentNote) return;
+      
+      try {
+        const response = await fetch('/api/notes.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'link',
+            source_note_id: notesApp.currentNote.id,
+            target_note_id: window.selectedLinkNoteId,
+            link_type: 'reference'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Verknüpfung erstellt', 'success');
+          loadExistingLinks();
+          
+          // Clear selection
+          document.getElementById('linkSearchInput').value = '';
+          document.getElementById('linkSearchResults').innerHTML = '';
+          document.getElementById('createLinkBtn').disabled = true;
+          window.selectedLinkNoteId = null;
+          
+          // Reload notes to update link counts
+          await loadNotes();
+        }
+      } catch (error) {
+        console.error('Error creating link:', error);
+        showNotification('Fehler beim Erstellen der Verknüpfung', 'error');
+      }
+    }
+    
+    async function deleteLink(linkId) {
+      if (!confirm('Verknüpfung wirklich löschen?')) return;
+      
+      try {
+        const response = await fetch(`/api/notes.php?link_id=${linkId}`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Verknüpfung gelöscht', 'success');
+          loadExistingLinks();
+          await loadNotes();
+        }
+      } catch (error) {
+        console.error('Error deleting link:', error);
+      }
+    }
+    
+    async function shareCurrentNote() {
+      const userId = document.getElementById('shareUserSelect').value;
+      const permission = document.getElementById('sharePermissionSelect').value;
+      
+      if (!userId || !notesApp.currentNote) {
+        showNotification('Bitte wählen Sie einen Benutzer aus', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/notes.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'share',
+            note_id: notesApp.currentNote.id,
+            share_with_user_id: parseInt(userId),
+            permission_level: permission
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Notiz erfolgreich geteilt', 'success');
+          closeShareDialog();
+        } else {
+          showNotification(data.error || 'Fehler beim Teilen', 'error');
+        }
+      } catch (error) {
+        console.error('Error sharing note:', error);
+        showNotification('Fehler beim Teilen der Notiz', 'error');
+      }
+    }
+    
+    // Enhanced content processing for wiki-links
+    function processNoteContent(textarea) {
+      const content = textarea.value;
+      const tooltip = document.getElementById('wikiLinkTooltip');
+      
+      // Show tooltip if user types [[ 
+      if (content.includes('[[') && !content.includes(']]')) {
+        showWikiLinkTooltip(textarea);
+      } else {
+        hideWikiLinkTooltip();
+      }
+      
+      // Auto-complete wiki links (optional enhancement)
+      const matches = content.match(/\[\[([^\]]*)/g);
+      if (matches) {
+        // Could implement auto-complete dropdown here
+      }
+    }
+    
+    function showWikiLinkTooltip(element) {
+      const tooltip = document.getElementById('wikiLinkTooltip');
+      const rect = element.getBoundingClientRect();
+      
+      tooltip.style.left = rect.left + 'px';
+      tooltip.style.top = (rect.bottom + 10) + 'px';
+      tooltip.classList.add('visible');
+    }
+    
+    function hideWikiLinkTooltip() {
+      const tooltip = document.getElementById('wikiLinkTooltip');
+      tooltip.classList.remove('visible');
+    }
+    
+    // Enhanced note editor setup
+    function setupEnhancedNoteEditor() {
+      const contentTextarea = document.getElementById('noteContent');
+      if (contentTextarea) {
+        contentTextarea.addEventListener('input', () => {
+          processNoteContent(contentTextarea);
+        });
+      }
+    }
+    
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       // Apply saved gradient
@@ -1990,7 +2447,19 @@
       
       // Initialize notes app
       console.log('Initializing notes app...');
-      loadNotes();
+      loadNotes();      
+      // Initialize Zettelkasten manager if D3.js is available
+      if (typeof d3 !== 'undefined') {
+        // Load our enhanced notes manager
+        const script = document.createElement('script');
+        script.src = '/js/zettelkasten-manager.js';
+        script.onload = () => {
+          console.log('Zettelkasten manager loaded');
+        };
+        document.head.appendChild(script);
+      } else {
+        console.warn('D3.js not available - falling back to basic notes functionality');
+      }
       
       // Add event delegation for note clicks
       document.addEventListener('click', function(e) {
@@ -2021,6 +2490,9 @@
         });
       }
       
+      // Setup enhanced note editor
+      setupEnhancedNoteEditor();
+      
       // Setup search
       const notesSearch = document.getElementById('notesSearch');
       if (notesSearch) {
@@ -2038,6 +2510,9 @@
           }
         });
       }
+      
+      // Setup enhanced note editor
+      setupEnhancedNoteEditor();
     });
 
     // Close modal on background click
@@ -2073,6 +2548,19 @@
         if (editorModal && editorModal.classList.contains('active')) {
           closeNoteEditor();
         }
+      }    });
+  </script>
+  
+  <!-- Load Enhanced Zettelkasten Manager -->
+  <script src="/js/enhanced-zettelkasten.js"></script>
+  
+  <script>
+    // Initialize enhanced Zettelkasten when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Overwrite the basic zettelkasten with enhanced version if available
+      if (typeof EnhancedZettelkasten !== 'undefined') {
+        window.zettelkasten = new EnhancedZettelkasten();
+        console.log('Enhanced Zettelkasten initialized');
       }
     });
   </script>

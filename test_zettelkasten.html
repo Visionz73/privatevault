@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zettelkasten Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="/css/zettelkasten.css">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-6">Enhanced Zettelkasten Test</h1>
+        
+        <!-- Test Controls -->
+        <div class="mb-8 p-4 bg-gray-800 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Test Funktionen</h2>
+            <div class="flex gap-4 flex-wrap">
+                <button onclick="testLoadNotes()" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">
+                    Notizen laden
+                </button>
+                <button onclick="testCreateNote()" class="px-4 py-2 bg-green-600 rounded hover:bg-green-700">
+                    Test-Notiz erstellen
+                </button>
+                <button onclick="testCreateLink()" class="px-4 py-2 bg-purple-600 rounded hover:bg-purple-700">
+                    Test-Link erstellen
+                </button>
+                <button onclick="testGraphView()" class="px-4 py-2 bg-orange-600 rounded hover:bg-orange-700">
+                    Graph-Ansicht testen
+                </button>
+            </div>
+        </div>
+        
+        <!-- View Toggle -->
+        <div class="view-toggle-buttons mb-6">
+            <button class="view-toggle-btn active" data-view="grid" onclick="switchTestView('grid')">
+                <i class="fas fa-th mr-1"></i>Grid
+            </button>
+            <button class="view-toggle-btn" data-view="node" onclick="switchTestView('node')">
+                <i class="fas fa-project-diagram mr-1"></i>Knoten
+            </button>
+            <button class="view-toggle-btn" data-view="list" onclick="switchTestView('list')">
+                <i class="fas fa-list mr-1"></i>Liste
+            </button>
+        </div>
+        
+        <!-- Test Views -->
+        <div id="testGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: block;">
+            <!-- Grid view content -->
+        </div>
+        
+        <div id="testNode" class="node-view-container" style="display: none;">
+            <div class="node-canvas" id="testNodeCanvas">
+                <!-- Node view content -->
+            </div>
+            
+            <!-- Graph Controls -->
+            <div class="graph-controls">
+                <button onclick="centerTestGraph()" class="graph-control-btn">
+                    <i class="fas fa-crosshairs mr-2"></i>Zentrieren
+                </button>
+                <button onclick="resetTestGraph()" class="graph-control-btn">
+                    <i class="fas fa-sync-alt mr-2"></i>Zurücksetzen
+                </button>
+            </div>
+        </div>
+        
+        <div id="testList" class="space-y-4" style="display: none;">
+            <!-- List view content -->
+        </div>
+        
+        <!-- Test Output -->
+        <div class="mt-8 p-4 bg-gray-800 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Test Output</h2>
+            <pre id="testOutput" class="bg-gray-900 p-4 rounded text-sm overflow-auto h-64"></pre>
+        </div>
+    </div>
+    
+    <script>
+        let testData = {
+            notes: [],
+            links: [],
+            currentView: 'grid'
+        };
+        
+        function log(message) {
+            const output = document.getElementById('testOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            output.textContent += `[${timestamp}] ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+            console.log(message);
+        }
+        
+        async function testLoadNotes() {
+            log('Testing note loading...');
+            try {
+                const response = await fetch('/api/notes.php?include_links=true&limit=50');
+                const data = await response.json();
+                
+                if (data.success) {
+                    testData.notes = data.notes || [];
+                    testData.links = data.links || [];
+                    log(`Loaded ${testData.notes.length} notes and ${testData.links.length} links`);
+                    
+                    updateTestDisplay();
+                } else {
+                    log(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                log(`Error loading notes: ${error.message}`);
+            }
+        }
+        
+        async function testCreateNote() {
+            log('Creating test note...');
+            try {
+                const testNote = {
+                    title: `Test Note ${Date.now()}`,
+                    content: 'Dies ist eine Test-Notiz für das Zettelkasten-System. [[Andere Notiz]] wird verlinkt.',
+                    color: '#' + Math.floor(Math.random()*16777215).toString(16)
+                };
+                
+                const response = await fetch('/api/notes.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testNote)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`Created note with ID: ${data.id}`);
+                    await testLoadNotes(); // Reload to see the new note
+                } else {
+                    log(`Error creating note: ${data.error}`);
+                }
+            } catch (error) {
+                log(`Error creating note: ${error.message}`);
+            }
+        }
+        
+        async function testCreateLink() {
+            log('Testing link creation...');
+            
+            if (testData.notes.length < 2) {
+                log('Need at least 2 notes to create a link');
+                return;
+            }
+            
+            try {
+                const linkData = {
+                    action: 'link',
+                    source_note_id: testData.notes[0].id,
+                    target_note_id: testData.notes[1].id,
+                    link_type: 'reference'
+                };
+                
+                const response = await fetch('/api/notes.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(linkData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`Created link with ID: ${data.link_id}`);
+                    await testLoadNotes(); // Reload to see the new link
+                } else {
+                    log(`Error creating link: ${data.error}`);
+                }
+            } catch (error) {
+                log(`Error creating link: ${error.message}`);
+            }
+        }
+        
+        function testGraphView() {
+            log('Testing graph view...');
+            switchTestView('node');
+            
+            if (testData.notes.length === 0) {
+                log('No notes available for graph view');
+                return;
+            }
+            
+            const container = document.getElementById('testNodeCanvas');
+            container.innerHTML = '';
+            
+            if (typeof d3 === 'undefined') {
+                log('D3.js not available, using simple view');
+                renderSimpleTestGraph(container);
+            } else {
+                log('Rendering D3 graph view');
+                renderD3TestGraph(container);
+            }
+        }
+        
+        function renderSimpleTestGraph(container) {
+            testData.notes.forEach((note, index) => {
+                const node = document.createElement('div');
+                node.className = 'note-node';
+                node.style.cssText = `
+                    position: absolute;
+                    left: ${(index % 5) * 140 + 20}px;
+                    top: ${Math.floor(index / 5) * 120 + 20}px;
+                    width: 120px;
+                    height: 90px;
+                    background: ${note.color};
+                    border-radius: 12px;
+                    padding: 10px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+                `;
+                
+                node.innerHTML = `
+                    <div class="node-content text-white">
+                        <div class="node-title font-bold text-xs mb-2">${escapeHtml(note.title)}</div>
+                        <div class="node-meta flex justify-between text-xs opacity-80">
+                            <span>${note.links_count || 0} Links</span>
+                            ${note.is_pinned ? '<i class="fas fa-thumbtack"></i>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                node.addEventListener('click', () => {
+                    log(`Clicked note: ${note.title}`);
+                });
+                
+                container.appendChild(node);
+            });
+            
+            log(`Rendered ${testData.notes.length} nodes in simple graph view`);
+        }
+        
+        function renderD3TestGraph(container) {
+            const width = container.clientWidth;
+            const height = container.clientHeight || 400;
+            
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            const simulation = d3.forceSimulation(testData.notes)
+                .force('link', d3.forceLink(testData.links).id(d => d.id).distance(150))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2));
+            
+            const link = svg.append('g')
+                .selectAll('line')
+                .data(testData.links)
+                .join('line')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2);
+            
+            const node = svg.append('g')
+                .selectAll('g')
+                .data(testData.notes)
+                .join('g');
+            
+            node.append('circle')
+                .attr('r', d => 20 + (d.links_count || 0) * 2)
+                .attr('fill', d => d.color)
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2);
+            
+            node.append('text')
+                .text(d => d.title.length > 10 ? d.title.substring(0, 10) + '...' : d.title)
+                .attr('text-anchor', 'middle')
+                .attr('dy', 4)
+                .attr('font-size', '10px')
+                .attr('fill', 'white');
+            
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+            
+            log(`Rendered D3 graph with ${testData.notes.length} nodes and ${testData.links.length} links`);
+        }
+        
+        function switchTestView(view) {
+            testData.currentView = view;
+            
+            // Update buttons
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-view="${view}"]`).classList.add('active');
+            
+            // Update views
+            document.getElementById('testGrid').style.display = view === 'grid' ? 'block' : 'none';
+            document.getElementById('testNode').style.display = view === 'node' ? 'block' : 'none';
+            document.getElementById('testList').style.display = view === 'list' ? 'block' : 'none';
+            
+            updateTestDisplay();
+            log(`Switched to ${view} view`);
+        }
+        
+        function updateTestDisplay() {
+            switch (testData.currentView) {
+                case 'grid':
+                    updateTestGrid();
+                    break;
+                case 'node':
+                    // Graph view is updated manually via testGraphView()
+                    break;
+                case 'list':
+                    updateTestList();
+                    break;
+            }
+        }
+        
+        function updateTestGrid() {
+            const container = document.getElementById('testGrid');
+            
+            if (testData.notes.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Keine Notizen vorhanden</div>';
+                return;
+            }
+            
+            container.innerHTML = testData.notes.map(note => `
+                <div class="note-card bg-gray-800 p-4 rounded-lg" style="border-left: 4px solid ${note.color}">
+                    <h3 class="font-semibold mb-2">${escapeHtml(note.title)}</h3>
+                    ${note.content ? `<p class="text-gray-300 text-sm mb-2">${escapeHtml(note.content.substring(0, 100))}...</p>` : ''}
+                    <div class="flex justify-between items-center text-xs text-gray-400">
+                        <span>${note.links_count || 0} Links</span>
+                        <span>${new Date(note.updated_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateTestList() {
+            const container = document.getElementById('testList');
+            
+            if (testData.notes.length === 0) {
+                container.innerHTML = '<div class="text-center py-12 text-gray-400">Keine Notizen vorhanden</div>';
+                return;
+            }
+            
+            container.innerHTML = testData.notes.map(note => `
+                <div class="note-list-item bg-gray-800 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-4 h-4 rounded-full" style="background: ${note.color}"></div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">${escapeHtml(note.title)}</h3>
+                        ${note.content ? `<p class="text-gray-300 text-sm">${escapeHtml(note.content.substring(0, 150))}...</p>` : ''}
+                    </div>
+                    <div class="text-right text-xs text-gray-400">
+                        <div>${note.links_count || 0} Links</div>
+                        <div>${new Date(note.updated_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function centerTestGraph() {
+            log('Centering test graph...');
+        }
+        
+        function resetTestGraph() {
+            log('Resetting test graph...');
+            testGraphView();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Zettelkasten Test initialized');
+            testLoadNotes();
+        });
+    </script>
+</body>
+</html>
