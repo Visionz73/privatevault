@@ -181,10 +181,9 @@ $currentView = $_GET['view'] ?? 'grid'; // Default to grid view
                   </div>
                 </div>
                 
-                <!-- Card Actions -->
-                <div class="p-6 pt-0">
+                <!-- Card Actions -->                <div class="p-6 pt-0">
                   <div class="flex gap-2">
-                    <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
+                    <a href="/download.php?id=<?= $doc['id'] ?>" 
                        download 
                        class="flex-1 liquid-glass-btn-secondary text-center py-2 text-sm">
                       Download
@@ -269,10 +268,9 @@ $currentView = $_GET['view'] ?? 'grid'; // Default to grid view
                     <td class="py-4 px-6 text-white/70 text-sm"><?= date('d.m.Y', strtotime($doc['upload_date'] ?? 'now')) ?></td>
                     <td class="py-4 px-6 text-white/70 text-sm">
                       <?= isset($doc['file_size']) ? number_format($doc['file_size'] / 1024, 1) . ' KB' : 'N/A' ?>
-                    </td>
-                    <td class="py-4 px-6 text-right">
+                    </td>                    <td class="py-4 px-6 text-right">
                       <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
+                        <a href="/download.php?id=<?= $doc['id'] ?>" 
                            download 
                            class="liquid-glass-btn-secondary px-3 py-1 text-sm">
                           Download

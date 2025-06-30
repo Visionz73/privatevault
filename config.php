@@ -78,4 +78,19 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Secure URL generation function
+function getSecureUrl($path) {
+    $protocol = 'https';
+    $host = $_SERVER['HTTP_HOST'] ?? 'omni.local';
+    
+    // Remove leading slash if present
+    $path = ltrim($path, '/');
+    
+    return $protocol . '://' . $host . '/' . $path;
+}
+
+// Alternative: Force HTTPS for file URLs
+function getFileUrl($filename) {
+    return getSecureUrl('uploads/' . urlencode($filename));
+}
 ?>

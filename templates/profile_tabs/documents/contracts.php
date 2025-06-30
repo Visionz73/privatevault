@@ -117,8 +117,7 @@ $contractDocs = array_filter($docs, function($doc) {
               
               <!-- Card Actions -->
               <div class="p-6 pt-0">
-                <div class="flex gap-2">
-                  <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
+                <div class="flex gap-2">                  <a href="<?= getFileUrl($doc['filename'] ?? '') ?>" 
                      download 
                      class="flex-1 liquid-glass-btn-secondary text-center py-2 text-sm">
                     Download
@@ -189,8 +188,7 @@ $contractDocs = array_filter($docs, function($doc) {
                     <?= isset($doc['end_date']) && $doc['end_date'] ? date('d.m.Y', strtotime($doc['end_date'])) : 'Unbefristet' ?>
                   </td>
                   <td class="py-4 px-6 text-right">
-                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">                      <a href="<?= getFileUrl($doc['filename'] ?? '') ?>" 
                          download 
                          class="liquid-glass-btn-secondary px-3 py-1 text-sm">
                         Download
