@@ -266,6 +266,30 @@
       color: white;
       font-weight: 800;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }    /* Dashboard Widget Layout - Buttons bündig am unteren Rand */
+    .dashboard-short {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 350px; /* Mindesthöhe für einheitliches Erscheinungsbild */
+    }
+
+    .widget-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget-buttons {
+      margin-top: auto; /* Buttons automatisch nach unten drücken */
+      padding: 1.5rem;
+      padding-top: 0;
     }
 
     /* Quick Action Buttons */
@@ -836,26 +860,23 @@
     </div>
   </div>
 
-  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 space-y-8" style="padding-top: 6rem;">
-    <!-- Dynamic Greeting -->
-    <div class="text-center mb-12">
+  <main class="ml-0 mt-14 md:ml-64 md:mt-0 flex-1 p-6 space-y-8" style="padding-top: 6rem;">    <!-- Dynamic Greeting -->
+    <div class="text-left mb-12">
       <h1 class="text-4xl md:text-6xl font-bold greeting-text mb-4">
         <?php
         $hour = date('H');
         $greeting = $hour < 12 ? 'Guten Morgen' : ($hour < 18 ? 'Guten Tag' : 'Guten Abend');
         echo $greeting;
-        ?>,
-        <?= htmlspecialchars($user['first_name'] ?? $user['username']) ?>
+        ?> <?= htmlspecialchars($user['first_name'] ?? $user['username']) ?>
       </h1>
       <p class="text-xl text-white/70">
-        <?= date('l, d. F Y') ?> • Willkommen in deinem Dashboard
+        <?= date('l, d. F Y') ?>
       </p>
     </div>
 
     <!-- Dashboard Shorts Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
-      
-      <!-- Tasks Short -->
+        <!-- Tasks Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6" onclick="window.location.href='inbox.php'">
           <div class="flex items-center justify-between">
@@ -867,47 +888,49 @@
           </div>
         </div>
         
-        <div class="p-6">
-          <div class="short-scroll space-y-3">
-            <?php if (!empty($tasks)): ?>
-              <?php foreach(array_slice($tasks, 0, 5) as $task): ?>
-                <div class="short-list-item p-4" onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
-                  <div class="flex justify-between items-start mb-2">
-                    <h4 class="text-white font-medium text-sm truncate flex-1"><?= htmlspecialchars($task['title']) ?></h4>
-                    <?php if(isset($task['due_date']) && $task['due_date']): ?>
-                      <span class="status-badge <?= strtotime($task['due_date']) < time() ? 'badge-overdue' : 'badge-pending' ?> ml-2">
-                        <?= date('d.m.', strtotime($task['due_date'])) ?>
-                      </span>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1">
+            <div class="short-scroll space-y-3">
+              <?php if (!empty($tasks)): ?>
+                <?php foreach(array_slice($tasks, 0, 5) as $task): ?>
+                  <div class="short-list-item p-4" onclick="window.location.href='task_detail.php?id=<?= $task['id'] ?>'">
+                    <div class="flex justify-between items-start mb-2">
+                      <h4 class="text-white font-medium text-sm truncate flex-1"><?= htmlspecialchars($task['title']) ?></h4>
+                      <?php if(isset($task['due_date']) && $task['due_date']): ?>
+                        <span class="status-badge <?= strtotime($task['due_date']) < time() ? 'badge-overdue' : 'badge-pending' ?> ml-2">
+                          <?= date('d.m.', strtotime($task['due_date'])) ?>
+                        </span>
+                      <?php endif; ?>
+                    </div>
+                    <?php if(!empty($task['description'])): ?>
+                      <p class="text-white/60 text-xs truncate"><?= htmlspecialchars($task['description']) ?></p>
                     <?php endif; ?>
+                    <div class="flex justify-between text-xs text-white/50 mt-2">
+                      <span>Von: <?= htmlspecialchars($task['creator_name'] ?? 'Unbekannt') ?></span>
+                      <span><?= $task['assigned_group_id'] ? 'Gruppe' : 'Persönlich' ?></span>
+                    </div>
                   </div>
-                  <?php if(!empty($task['description'])): ?>
-                    <p class="text-white/60 text-xs truncate"><?= htmlspecialchars($task['description']) ?></p>
-                  <?php endif; ?>
-                  <div class="flex justify-between text-xs text-white/50 mt-2">
-                    <span>Von: <?= htmlspecialchars($task['creator_name'] ?? 'Unbekannt') ?></span>
-                    <span><?= $task['assigned_group_id'] ? 'Gruppe' : 'Persönlich' ?></span>
-                  </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <div class="text-center py-8">
+                  <p class="text-white/60">Keine offenen Aufgaben</p>
                 </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="text-center py-8">
-                <p class="text-white/60">Keine offenen Aufgaben</p>
-              </div>
-            <?php endif; ?>
+              <?php endif; ?>
+            </div>
           </div>
           
-          <div class="mt-6 grid grid-cols-2 gap-3">
-            <button onclick="window.location.href='inbox.php'" class="quick-action-btn px-4 py-2">
-              Inbox
-            </button>
-            <button onclick="window.location.href='create_task.php'" class="quick-action-btn px-4 py-2">
-              Neue Aufgabe
-            </button>
+          <div class="widget-buttons">
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="window.location.href='inbox.php'" class="quick-action-btn px-4 py-2">
+                Inbox
+              </button>
+              <button onclick="window.location.href='create_task.php'" class="quick-action-btn px-4 py-2">
+                Neue Aufgabe
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Calendar Short -->
+      </div>      <!-- Calendar Short -->
       <div class="dashboard-short">
         <div class="short-header p-6" onclick="window.location.href='calendar.php?view=week'">
           <div class="flex items-center justify-between">
@@ -919,47 +942,47 @@
           </div>
         </div>
 
-        <div class="p-6">
-          <div class="short-scroll space-y-2">
-            <?php
-              $weekStart = new DateTimeImmutable('monday this week');
-              for ($i = 0; $i < 7; $i++):
-                $day = $weekStart->modify("+{$i} days");
-                $isToday = $day->format('Y-m-d') === date('Y-m-d');
-                $dayEvents = $eventsByDate[$day->format('Y-m-d')] ?? [];
-            ?>
-              <div class="short-list-item p-3 <?= $isToday ? 'bg-purple-600/30' : '' ?>" onclick="window.location.href='calendar.php?view=day&year=<?= $day->format('Y') ?>&month=<?= $day->format('m') ?>&day=<?= $day->format('d') ?>'">
-                <div class="flex justify-between items-center">
-                  <span class="text-white text-sm font-medium">
-                    <?= $day->format('D d.m') ?>
-                  </span>
-                  <span class="text-white/60 text-xs"><?= count($dayEvents) ?></span>
-                </div>
-                <?php foreach(array_slice($dayEvents, 0, 2) as $event): ?>
-                  <div class="flex justify-between text-xs text-white/80 mt-1">
-                    <span class="truncate flex-1">
-                      <?= htmlspecialchars($event['title']) ?>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1">
+            <div class="short-scroll space-y-2">
+              <?php
+                $weekStart = new DateTimeImmutable('monday this week');
+                for ($i = 0; $i < 7; $i++):
+                  $day = $weekStart->modify("+{$i} days");
+                  $isToday = $day->format('Y-m-d') === date('Y-m-d');
+                  $dayEvents = $eventsByDate[$day->format('Y-m-d')] ?? [];
+              ?>
+                <div class="short-list-item p-3 <?= $isToday ? 'bg-purple-600/30' : '' ?>" onclick="window.location.href='calendar.php?view=day&year=<?= $day->format('Y') ?>&month=<?= $day->format('m') ?>&day=<?= $day->format('d') ?>'">
+                  <div class="flex justify-between items-center">
+                    <span class="text-white text-sm font-medium">
+                      <?= $day->format('D d.m') ?>
                     </span>
-                    <?php if (!empty($event['start_time'])): ?>
-                      <span class="text-blue-400 ml-2">
-                        <?= substr($event['start_time'], 0, 5) ?>
-                      </span>
-                    <?php endif; ?>
+                    <span class="text-white/60 text-xs"><?= count($dayEvents) ?></span>
                   </div>
-                <?php endforeach; ?>
-              </div>
-            <?php endfor; ?>
+                  <?php foreach(array_slice($dayEvents, 0, 2) as $event): ?>
+                    <div class="flex justify-between text-xs text-white/80 mt-1">
+                      <span class="truncate flex-1">
+                        <?= htmlspecialchars($event['title']) ?>
+                      </span>
+                      <?php if (!empty($event['start_time'])): ?>
+                        <span class="text-blue-400 ml-2">
+                          <?= substr($event['start_time'], 0, 5) ?>
+                        </span>
+                      <?php endif; ?>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+              <?php endfor; ?>
+            </div>
           </div>
 
-          <div class="mt-6">
+          <div class="widget-buttons">
             <button onclick="window.location.href='calendar.php'" class="quick-action-btn w-full px-4 py-2">
               Neuer Termin
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Documents Short -->
+      </div>      <!-- Documents Short -->
       <div class="dashboard-short">
         <div class="short-header p-6" onclick="window.location.href='profile.php?tab=documents'">
           <div class="flex items-center justify-between">
@@ -971,38 +994,38 @@
           </div>
         </div>
         
-        <div class="p-6">
-          <div class="short-scroll space-y-3">
-            <?php if (!empty($recentDocuments)): ?>
-              <?php foreach(array_slice($recentDocuments, 0, 4) as $doc): ?>
-                <div class="short-list-item p-4" onclick="window.location.href='profile.php?tab=documents'">
-                  <div class="flex items-center space-x-3">
-                    <div class="icon-gradient-green p-2 rounded-lg">
-                      <i class="fas fa-file text-white text-sm"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($doc['filename']) ?></h4>
-                      <p class="text-white/60 text-xs"><?= date('d.m.Y', strtotime($doc['upload_date'])) ?></p>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1">
+            <div class="short-scroll space-y-3">
+              <?php if (!empty($recentDocuments)): ?>
+                <?php foreach(array_slice($recentDocuments, 0, 4) as $doc): ?>
+                  <div class="short-list-item p-4" onclick="window.location.href='profile.php?tab=documents'">
+                    <div class="flex items-center space-x-3">
+                      <div class="icon-gradient-green p-2 rounded-lg">
+                        <i class="fas fa-file text-white text-sm"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($doc['filename']) ?></h4>
+                        <p class="text-white/60 text-xs"><?= date('d.m.Y', strtotime($doc['upload_date'])) ?></p>
+                      </div>
                     </div>
                   </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <div class="text-center py-6">
+                  <p class="text-white/60 text-sm">Keine Dokumente hochgeladen</p>
                 </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="text-center py-6">
-                <p class="text-white/60 text-sm">Keine Dokumente hochgeladen</p>
-              </div>
-            <?php endif; ?>
+              <?php endif; ?>
+            </div>
           </div>
           
-          <div class="mt-6">
+          <div class="widget-buttons">
             <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn w-full px-4 py-2">
               Hochladen
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Notes Widget - Add this new widget after Documents Short -->
+      </div>      <!-- Notes Widget - Add this new widget after Documents Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6" onclick="toggleNotesApp()">
           <div class="flex items-center justify-between">
@@ -1014,48 +1037,50 @@
           </div>
         </div>
         
-        <div class="p-6">
-          <!-- Quick Add Form -->
-          <div class="mb-4" id="quickNoteForm">
-            <div class="flex gap-2">
-              <input 
-                type="text" 
-                id="quickNoteTitle" 
-                placeholder="Schnelle Notiz..." 
-                class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/50 focus:bg-white/15 focus:border-white/30 focus:outline-none"
-              >
-              <button 
-                onclick="addQuickNote()" 
-                class="quick-action-btn px-3 py-2 text-sm"
-                title="Notiz hinzufügen"
-              >
-                <i class="fas fa-plus"></i>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1">
+            <!-- Quick Add Form -->
+            <div class="mb-4" id="quickNoteForm">
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="quickNoteTitle" 
+                  placeholder="Schnelle Notiz..." 
+                  class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/50 focus:bg-white/15 focus:border-white/30 focus:outline-none"
+                >
+                <button 
+                  onclick="addQuickNote()" 
+                  class="quick-action-btn px-3 py-2 text-sm"
+                  title="Notiz hinzufügen"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Notes List -->
+            <div class="short-scroll space-y-2" id="notesList">
+              <div class="text-center py-6 text-white/60" id="notesEmptyState">
+                <i class="fas fa-sticky-note text-2xl mb-2"></i>
+                <p class="text-sm">Keine Notizen vorhanden</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="widget-buttons">
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="toggleNotesApp()" class="quick-action-btn px-4 py-2">
+                <i class="fas fa-expand-alt mr-1"></i>
+                Alle Notizen
+              </button>
+              <button onclick="openNoteEditor()" class="quick-action-btn px-4 py-2">
+                <i class="fas fa-edit mr-1"></i>
+                Neue Notiz
               </button>
             </div>
           </div>
-          
-          <!-- Notes List -->
-          <div class="short-scroll space-y-2" id="notesList">
-            <div class="text-center py-6 text-white/60" id="notesEmptyState">
-              <i class="fas fa-sticky-note text-2xl mb-2"></i>
-              <p class="text-sm">Keine Notizen vorhanden</p>
-            </div>
-          </div>
-          
-          <div class="mt-6 grid grid-cols-2 gap-3">
-            <button onclick="toggleNotesApp()" class="quick-action-btn px-4 py-2">
-              <i class="fas fa-expand-alt mr-1"></i>
-              Alle Notizen
-            </button>
-            <button onclick="openNoteEditor()" class="quick-action-btn px-4 py-2">
-              <i class="fas fa-edit mr-1"></i>
-              Neue Notiz
-            </button>
-          </div>
         </div>
-      </div>
-
-      <!-- HaveToPay Short - Keep existing balance layout -->
+      </div>      <!-- HaveToPay Short - Keep existing balance layout -->
       <div class="dashboard-short">
         <div class="finance-header p-6">
           <div class="flex items-center justify-between">
@@ -1071,140 +1096,108 @@
           </div>
         </div>
         
-        <div class="p-6">
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center p-3 bg-green-500/10 border border-green-400/20 rounded-xl backdrop-filter blur-10">
-              <div class="text-green-400 font-bold text-lg">+<?= number_format($widgetTotalOwed, 0) ?>€</div>
-              <div class="text-white/60 text-xs">Du bekommst</div>
-            </div>
-            <div class="text-center p-3 bg-red-500/10 border border-red-400/20 rounded-xl backdrop-filter blur-10">
-              <div class="text-red-400 font-bold text-lg">-<?= number_format($widgetTotalOwing, 0) ?>€</div>
-              <div class="text-white/60 text-xs">Du schuldest</div>
-            </div>
-          </div>
-          
-          <div class="short-scroll space-y-2">
-            <?php if (!empty($recentExpenses)): ?>
-              <?php foreach(array_slice($recentExpenses, 0, 3) as $expense): ?>
-                <div class="short-list-item p-3" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
-                  <div class="flex justify-between items-center">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($expense['title']) ?></h4>
-                      <p class="text-white/60 text-xs">€<?= number_format($expense['amount'], 2) ?></p>
-                    </div>
-                    <span class="status-badge badge-pending"><?= date('d.m.', strtotime($expense['expense_date'])) ?></span>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="text-center py-4">
-                <i class="fas fa-coins text-white/30 text-2xl mb-2"></i>
-                <p class="text-white/60 text-sm">Keine Ausgaben</p>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="text-center p-3 bg-green-500/10 border border-green-400/20 rounded-xl backdrop-filter blur-10">
+                <div class="text-green-400 font-bold text-lg">+<?= number_format($widgetTotalOwed, 0) ?>€</div>
+                <div class="text-white/60 text-xs">Du bekommst</div>
               </div>
-            <?php endif; ?>
+              <div class="text-center p-3 bg-red-500/10 border border-red-400/20 rounded-xl backdrop-filter blur-10">
+                <div class="text-red-400 font-bold text-lg">-<?= number_format($widgetTotalOwing, 0) ?>€</div>
+                <div class="text-white/60 text-xs">Du schuldest</div>
+              </div>
+            </div>
+            
+            <div class="short-scroll space-y-2">
+              <?php if (!empty($recentExpenses)): ?>
+                <?php foreach(array_slice($recentExpenses, 0, 3) as $expense): ?>
+                  <div class="short-list-item p-3" onclick="window.location.href='havetopay_detail.php?id=<?= $expense['id'] ?>'">
+                    <div class="flex justify-between items-center">
+                      <div class="flex-1 min-w-0">
+                        <h4 class="text-white font-medium text-sm truncate"><?= htmlspecialchars($expense['title']) ?></h4>
+                        <p class="text-white/60 text-xs">€<?= number_format($expense['amount'], 2) ?></p>
+                      </div>
+                      <span class="status-badge badge-pending"><?= date('d.m.', strtotime($expense['expense_date'])) ?></span>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <div class="text-center py-4">
+                  <i class="fas fa-coins text-white/30 text-2xl mb-2"></i>
+                  <p class="text-white/60 text-sm">Keine Ausgaben</p>
+                </div>
+              <?php endif; ?>
+            </div>
           </div>
           
-          <div class="mt-6">
+          <div class="widget-buttons">
             <button onclick="window.location.href='havetopay.php'" class="quick-action-btn w-full px-4 py-2">
               Ausgabe hinzufügen
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- System Stats Short -->
+      </div>      <!-- System Stats Short -->
       <div class="dashboard-short">
         <div class="short-header p-6" onclick="window.location.href='profile.php'">
           <h3 class="text-white font-semibold text-xl">Statistiken</h3>
         </div>
         
-        <div class="p-6 space-y-4">
-          <div class="flex justify-between items-center">
-            <span class="text-white/80 text-sm">Aufgaben erledigt</span>
-            <span class="text-white font-semibold"><?= $completedTasksCount ?? 0 ?></span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: <?= min(100, ($completedTasksCount ?? 0) * 10) ?>%"></div>
+        <div class="widget-content">
+          <div class="p-6 pb-0 flex-1 space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-white/80 text-sm">Aufgaben erledigt</span>
+              <span class="text-white font-semibold"><?= $completedTasksCount ?? 0 ?></span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: <?= min(100, ($completedTasksCount ?? 0) * 10) ?>%"></div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <span class="text-white/80 text-sm">Dokumente</span>
+              <span class="text-white font-semibold"><?= $docCount ?></span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill bg-gradient-to-r from-green-500 to-green-400" style="width: <?= min(100, $docCount * 5) ?>%"></div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <span class="text-white/80 text-sm">Termine</span>
+              <span class="text-white font-semibold"><?= $totalWeekEvents ?></span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width: <?= min(100, $totalWeekEvents * 20) ?>%"></div>
+            </div>
           </div>
           
-          <div class="flex justify-between items-center">
-            <span class="text-white/80 text-sm">Dokumente</span>
-            <span class="text-white font-semibold"><?= $docCount ?></span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill bg-gradient-to-r from-green-500 to-green-400" style="width: <?= min(100, $docCount * 5) ?>%"></div>
-          </div>
-          
-          <div class="flex justify-between items-center">
-            <span class="text-white/80 text-sm">Termine</span>
-            <span class="text-white font-semibold"><?= $totalWeekEvents ?></span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width: <?= min(100, $totalWeekEvents * 20) ?>%"></div>
-          </div>
-          
-          <div class="mt-6">
+          <div class="widget-buttons">
             <button onclick="window.location.href='profile.php'" class="quick-action-btn w-full px-4 py-2">
               <i class="fas fa-user mr-2"></i>Profil
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Quick Actions Short -->
-      <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
-        <div class="short-header p-6">
-          <h3 class="text-white font-semibold text-xl">Schnellaktionen</h3>
-        </div>
-        
-        <div class="p-6">
-          <div class="grid grid-cols-2 gap-4">
-            <button onclick="window.location.href='create_task.php'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-plus text-2xl mb-2"></i>
-              <div class="text-sm">Neue Aufgabe</div>
-            </button>
-            <button onclick="window.location.href='calendar.php'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-calendar-plus text-2xl mb-2"></i>
-              <div class="text-sm">Termin</div>
-            </button>
-            <button onclick="window.location.href='havetopay_add.php'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-receipt text-2xl mb-2"></i>
-              <div class="text-sm">Ausgabe</div>
-            </button>
-            <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-upload text-2xl mb-2"></i>
-              <div class="text-sm">Upload</div>
-            </button>
-            <button onclick="window.location.href='admin/groups.php'" class="quick-action-btn p-4 text-center">
-              <i class="fas fa-users text-2xl mb-2"></i>
-              <div class="text-sm">Gruppen</div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Recent Activity -->
+      </div>    </div>    <!-- Recent Activity -->
     <div class="dashboard-short mt-8">
       <div class="short-header p-6">
         <h3 class="text-white font-semibold text-xl">Letzte Aktivität</h3>
       </div>
       
-      <div class="p-6">
-        <div class="short-scroll space-y-3 max-h-48">
-          <div class="short-list-item p-4">
-            <div class="flex items-center space-x-3">
-              <div class="icon-gradient-green p-2 rounded-full w-8 h-8 flex items-center justify-center">
-                <i class="fas fa-check text-white text-xs"></i>
-              </div>
-              <div>
-                <p class="text-white text-sm">Dashboard wurde geladen</p>
-                <p class="text-white/60 text-xs">vor wenigen Sekunden</p>
+      <div class="widget-content">
+        <div class="p-6 pb-0 flex-1">
+          <div class="short-scroll space-y-3 max-h-48">
+            <div class="short-list-item p-4">
+              <div class="flex items-center space-x-3">
+                <div class="icon-gradient-green p-2 rounded-full w-8 h-8 flex items-center justify-center">
+                  <i class="fas fa-check text-white text-xs"></i>
+                </div>
+                <div>
+                  <p class="text-white text-sm">Dashboard wurde geladen</p>
+                  <p class="text-white/60 text-xs">vor wenigen Sekunden</p>
+                </div>
               </div>
             </div>
+            <!-- Add more activities dynamically here -->
           </div>
-          <!-- Add more activities dynamically here -->
         </div>
       </div>
     </div>
