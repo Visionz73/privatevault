@@ -984,7 +984,7 @@
         </div>
       </div>      <!-- Documents Short -->
       <div class="dashboard-short">
-        <div class="short-header p-6" onclick="window.location.href='profile.php?tab=documents'">
+        <div class="short-header p-6" onclick="window.location.href='/file-explorer.php'">
           <div class="flex items-center justify-between">
             <h3 class="text-white font-semibold text-xl">Dokumente</h3>
             <div class="text-right">
@@ -996,10 +996,9 @@
         
         <div class="widget-content">
           <div class="p-6 pb-0 flex-1">
-            <div class="short-scroll space-y-3">
-              <?php if (!empty($recentDocuments)): ?>
+            <div class="short-scroll space-y-3">              <?php if (!empty($recentDocuments)): ?>
                 <?php foreach(array_slice($recentDocuments, 0, 4) as $doc): ?>
-                  <div class="short-list-item p-4" onclick="window.location.href='profile.php?tab=documents'">
+                  <div class="short-list-item p-4" onclick="window.location.href='/file-explorer.php'">
                     <div class="flex items-center space-x-3">
                       <div class="icon-gradient-green p-2 rounded-lg">
                         <i class="fas fa-file text-white text-sm"></i>
@@ -1018,9 +1017,8 @@
               <?php endif; ?>
             </div>
           </div>
-          
-          <div class="widget-buttons">
-            <button onclick="window.location.href='profile.php?tab=documents'" class="quick-action-btn w-full px-4 py-2">
+            <div class="widget-buttons">
+            <button onclick="window.location.href='/file-explorer.php'" class="quick-action-btn w-full px-4 py-2">
               Hochladen
             </button>
           </div>

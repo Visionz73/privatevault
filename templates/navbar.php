@@ -986,13 +986,23 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
               </svg>
               <span>Inbox</span>
             </a>
-          </li>
-          <li>
+          </li>          <li>
             <a href="/calendar.php" class="nav-link-modern">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>Kalender</span>
+            </a>
+          </li>          <li>
+            <a href="/file-explorer.php" class="nav-link-modern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0l7-3 7 3m-6 4h.01"/>
+              </svg>
+              <span>Datei-Explorer</span>
+            </a>
+          </li>
+              </svg>
+              <span>Datei-Explorer</span>
             </a>
           </li>
           <li>
