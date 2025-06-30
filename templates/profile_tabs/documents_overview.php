@@ -123,8 +123,9 @@ $totalDocs = $stmt->fetchColumn();
                   <span class="uppercase"><?= $ext ?></span>
                 </div>
               </div>
-                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <a href="/download.php?id=<?= $doc['id'] ?>" 
+              
+              <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <a href="/uploads/<?= urlencode($doc['filename']) ?>" 
                    download 
                    class="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
                    title="Download">

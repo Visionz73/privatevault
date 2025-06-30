@@ -140,7 +140,8 @@ $otherDocs = array_filter($docs, function($doc) {
               
               <!-- Card Actions -->
               <div class="p-6 pt-0">
-                <div class="flex gap-2">                  <a href="<?= getFileUrl($doc['filename'] ?? '') ?>" 
+                <div class="flex gap-2">
+                  <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
                      download 
                      class="flex-1 liquid-glass-btn-secondary text-center py-2 text-sm">
                     Download
@@ -225,7 +226,8 @@ $otherDocs = array_filter($docs, function($doc) {
                     <?= isset($doc['file_size']) ? number_format($doc['file_size'] / 1024, 1) . ' KB' : 'N/A' ?>
                   </td>
                   <td class="py-4 px-6 text-right">
-                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">                      <a href="<?= getFileUrl($doc['filename'] ?? '') ?>" 
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <a href="/uploads/<?= urlencode($doc['filename'] ?? '') ?>" 
                          download 
                          class="liquid-glass-btn-secondary px-3 py-1 text-sm">
                         Download
@@ -266,7 +268,8 @@ $otherDocs = array_filter($docs, function($doc) {
         <a href="download.php?id=<?= $d['id'] ?>" target="_blank"
            class="group relative block w-full aspect-square rounded-lg overflow-hidden shadow">
 
-          <?php if (isImg($d['filename'])): ?>            <div style="background-image:url('<?= getFileUrl($d['filename']) ?>')"
+          <?php if (isImg($d['filename'])): ?>
+            <div style="background-image:url('../uploads/<?= urlencode($d['filename']) ?>')"
                  class="absolute inset-0 bg-cover bg-center"></div>
           <?php else: ?>
             <div class="absolute inset-0 bg-gray-300 flex items-center justify-center

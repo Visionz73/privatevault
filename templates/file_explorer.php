@@ -508,8 +508,9 @@
                   <div class="p-6 h-full flex flex-col">
                     <!-- File Preview/Icon -->
                     <div class="mb-4 flex-shrink-0">
-                      <?php if ($file['file_type'] === 'images'): ?>                        <div class="image-preview">
-                          <img src="<?= getFileUrl($file['filename']) ?>" 
+                      <?php if ($file['file_type'] === 'images'): ?>
+                        <div class="image-preview">
+                          <img src="/uploads/<?= urlencode($file['filename']) ?>" 
                                alt="<?= htmlspecialchars($file['title'] ?? $file['filename']) ?>"
                                onerror="this.parentElement.innerHTML='<div class=\"file-icon file-type-images\"><svg class=\"w-8 h-8\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\"/></svg></div>'"
                                loading="lazy">
@@ -557,9 +558,11 @@
                           </svg>
                           <?= $file['formatted_size'] ?>
                         </div>
-                      </div>                      <!-- Actions -->
+                      </div>
+
+                      <!-- Actions -->
                       <div class="flex gap-2">
-                        <a href="/download.php?id=<?= $file['id'] ?>" 
+                        <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                            download 
                            class="flex-1 liquid-glass-btn-secondary text-center py-2 text-sm">
                           Download
@@ -587,8 +590,9 @@
                     <div class="file-list-item p-4 group">
                       <div class="flex items-center gap-4">
                         <!-- File Icon -->
-                        <div class="file-icon-small file-type-<?= $file['file_type'] ?> w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">                          <?php if ($file['file_type'] === 'images'): ?>
-                            <img src="<?= getFileUrl($file['filename']) ?>" 
+                        <div class="file-icon-small file-type-<?= $file['file_type'] ?> w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <?php if ($file['file_type'] === 'images'): ?>
+                            <img src="/uploads/<?= urlencode($file['filename']) ?>" 
                                  alt="<?= htmlspecialchars($file['title'] ?? $file['filename']) ?>"
                                  class="w-full h-full object-cover rounded-lg"
                                  onerror="this.parentElement.innerHTML='<svg class=\"w-6 h-6 file-type-images\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\"/></svg>'"
@@ -619,9 +623,11 @@
                             <span><?= $file['formatted_size'] ?></span>
                             <span><?= date('d.m.Y', strtotime($file['upload_date'])) ?></span>
                           </div>
-                        </div>                        <!-- Actions -->
+                        </div>
+
+                        <!-- Actions -->
                         <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <a href="/download.php?id=<?= $file['id'] ?>" 
+                          <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                              download 
                              class="liquid-glass-btn-secondary px-3 py-2 text-sm">
                             Download

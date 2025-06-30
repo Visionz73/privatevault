@@ -493,9 +493,11 @@
                       </h3>
                       <p class="text-white/60 text-xs mb-1"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></p>
                       <p class="text-white/40 text-xs"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></p>
-                    </div>                    <!-- Actions -->
+                    </div>
+
+                    <!-- Actions -->
                     <div class="mt-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <a href="/download.php?id=<?= $file['id'] ?>" 
+                      <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                          download 
                          class="flex-1 text-center py-1.5 px-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                         <i class="fas fa-download mr-1"></i>
@@ -553,9 +555,10 @@
                       </td>
                       <td class="py-3 px-4 text-white/70 text-sm"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></td>
                       <td class="py-3 px-4 text-white/70 text-sm"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></td>
-                      <td class="py-3 px-4 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>                      <td class="py-3 px-4 text-right">
+                      <td class="py-3 px-4 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>
+                      <td class="py-3 px-4 text-right">
                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <a href="/download.php?id=<?= $file['id'] ?>" 
+                          <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                              download 
                              class="py-1 px-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                             Download

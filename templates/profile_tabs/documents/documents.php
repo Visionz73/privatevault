@@ -67,8 +67,9 @@
             <td class="px-4 py-3 text-secondary"><?= htmlspecialchars($d['title'] ?? '') ?></td>
             <td class="px-4 py-3 text-secondary"><?= htmlspecialchars($d['doc_type'] ?? '') ?></td>
             <td class="px-4 py-3 text-secondary"><?= htmlspecialchars($d['category_name'] ?? 'N/A') ?></td>
-            <td class="px-4 py-3 text-secondary"><?= ($d['is_deleted'] ?? false) ? 'Gelöscht' : 'Aktiv' ?></td>            <td class="px-4 py-3 text-right space-x-2">
-              <a href="/download.php?id=<?= $d['id'] ?>" download class="text-blue-300 hover:text-blue-200 hover:underline">Download</a>
+            <td class="px-4 py-3 text-secondary"><?= ($d['is_deleted'] ?? false) ? 'Gelöscht' : 'Aktiv' ?></td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <a href="/uploads/<?= urlencode($d['filename'] ?? '') ?>" download class="text-blue-300 hover:text-blue-200 hover:underline">Download</a>
               <?php
               // Preserve category filter and subtab when deleting
               $deleteParams = ['tab' => 'documents', 'delete' => $d['id']];
