@@ -683,8 +683,13 @@ function confirmDelete(documentId) {
   // Remove modal
   document.querySelector('.fixed.inset-0').remove();
   
-  // Redirect to delete URL
-  window.location.href = `?tab=documents&delete=${documentId}`;
+  // Get current subtab and view to maintain state after deletion
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentSubtab = urlParams.get('subtab') || 'documents';
+  const currentView = urlParams.get('view') || 'grid';
+  
+  // Redirect to delete URL with current state
+  window.location.href = `?tab=documents&subtab=${currentSubtab}&view=${currentView}&delete=${documentId}`;
 }
 
 // Initialize view based on URL parameter
@@ -699,4 +704,9 @@ document.addEventListener('DOMContentLoaded', function() {
     card.style.animationDelay = `${index * 0.1}s`;
   });
 });
+
+// Make functions globally available for all document views
+window.switchDocumentView = switchDocumentView;
+window.deleteDocument = deleteDocument;
+window.confirmDelete = confirmDelete;
 </script>
