@@ -1411,19 +1411,33 @@
       notes: [],
       selectedColor: '#fbbf24',
       currentView: 'grid' // grid, node, list
-    };
-
-    // Notes App Functions
+    };    // Notes App Functions
     async function loadNotes() {
       try {
         console.log('Loading notes...');
         const response = await fetch(`/api/notes.php?archived=${notesApp.showArchived}&limit=20`);
         
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers.get('content-type'));
+        
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
         
-        const data = await response.json();
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          console.error('Response that failed to parse:', responseText);
+          throw new Error(`JSON Parse Error: ${parseError.message}. Response: ${responseText.substring(0, 200)}`);
+        }
+        
         console.log('Notes loaded:', data);
         
         if (data.notes) {

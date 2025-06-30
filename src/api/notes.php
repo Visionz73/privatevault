@@ -5,11 +5,123 @@
  * Version 2.0 - Optimized and Extended
  */
 
+// Immediately start output buffering to catch any unwanted output
+ob_start();
+
+// Global error handling - ensure all errors are returned as JSON
+function handleError($errno, $errstr, $errfile, $errline) {
+    // Clean any output buffer that might contain HTML
+    if (ob_get_level()) {
+        ob_clean();
+    }
+    
+    $error = [
+        'error' => 'PHP Error',
+        'message' => $errstr,
+        'file' => basename($errfile),
+        'line' => $errline,
+        'type' => $errno
+    ];
+    
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+    }
+    
+    echo json_encode($error);
+    exit;
+}
+
+function handleException($exception) {
+    // Clean any output buffer that might contain HTML
+    if (ob_get_level()) {
+        ob_clean();
+    }
+    
+    $error = [
+        'error' => 'Exception',
+        'message' => $exception->getMessage(),
+        'file' => basename($exception->getFile()),
+        'line' => $exception->getLine()
+    ];
+    
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+    }
+    
+    echo json_encode($error);
+    exit;
+}
+
+function handleFatalError() {
+    $error = error_get_last();
+    if ($error !== NULL && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        // Clean any output buffer that might contain HTML
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        
+        $errorResponse = [
+            'error' => 'Fatal Error',
+            'message' => $error['message'],
+            'file' => basename($error['file']),
+            'line' => $error['line']
+        ];
+        
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+        }
+        
+        echo json_encode($errorResponse);
+    }
+}
+
+// Set error handlers
+set_error_handler('handleError');
+set_exception_handler('handleException');
+register_shutdown_function('handleFatalError');
+
+// Disable HTML error display
+ini_set('display_errors', 0);
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+// Buffer output to catch any unexpected HTML
+ob_start();
 
 require_once __DIR__ . '/../lib/auth.php';
-require_once __DIR__ . '/../lib/db.php';
+
+// Handle database connection with proper error handling
+try {
+    // Include config to get database connection
+    require_once __DIR__ . '/../../config.php';
+    
+    // Check if PDO connection was successful
+    if (!isset($pdo) || !$pdo instanceof PDO) {
+        throw new Exception('Database connection failed - PDO not available');
+    }
+    
+    // Test the connection
+    $pdo->query('SELECT 1');
+    
+} catch (Exception $e) {
+    // Clean any output buffer that might contain HTML
+    if (ob_get_level()) {
+        ob_clean();
+    }
+    
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+    }
+    
+    echo json_encode([
+        'error' => 'Database connection failed',
+        'message' => $e->getMessage()
+    ]);
+    exit;
+}
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -22,32 +134,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-if (!isLoggedIn()) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized - not logged in']);
+// Start session safely
+try {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Session initialization failed', 'message' => $e->getMessage()]);
     exit;
 }
 
-$user = getUser();
-if (!$user) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized - user not found']);
+// Check authentication
+try {
+    if (!function_exists('isLoggedIn') || !isLoggedIn()) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized - not logged in']);
+        exit;
+    }
+
+    $user = getUser();
+    if (!$user) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized - user not found']);
+        exit;
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Authentication check failed', 'message' => $e->getMessage()]);
     exit;
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 $action = $_GET['action'] ?? null;
-
-if (!isset($pdo) || !$pdo) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed']);
-    exit;
-}
 
 // Initialize enhanced tables
 initializeEnhancedTables($pdo);
@@ -1845,3 +1965,26 @@ function createNoteInternal($pdo, $userId, $noteData) {
     
     return getNoteById($pdo, $noteId, $userId);
 }
+
+// Final safety check - clean any remaining output buffer
+if (ob_get_level()) {
+    $bufferContent = ob_get_contents();
+    if (trim($bufferContent) !== '') {
+        ob_clean();
+        
+        // If there was unexpected output, return it as an error
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+        }
+        
+        echo json_encode([
+            'error' => 'Unexpected output detected',
+            'debug_output' => $bufferContent
+        ]);
+        exit;
+    }
+    ob_end_clean();
+}
+
+?>
