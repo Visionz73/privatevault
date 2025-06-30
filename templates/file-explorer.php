@@ -4,10 +4,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Datei-Explorer | Private Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>    body { 
+  <link rel="stylesheet" href="/assets/css/file-explorer.css"><style>
+    body { 
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
@@ -24,17 +24,13 @@
         margin-left: 16rem; /* Desktop navbar width */
         padding-top: 0;
       }
-    }
-
-    /* Enhanced Liquid Glass Effects */
+    }    /* Enhanced Liquid Glass Effects - Dashboard Style */
     .liquid-glass {
       background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
-      box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       position: relative;
       overflow: hidden;
     }
@@ -46,35 +42,34 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       z-index: 1;
     }
 
     .liquid-glass-header {
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.12) 0%, 
-        rgba(255, 255, 255, 0.08) 100%);
-      backdrop-filter: blur(25px) saturate(200%);
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(25px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem 1.5rem 0 0;
     }
 
+    /* File Cards - Dashboard Widget Style */
     .file-card {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(15px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1.2rem;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .file-card:hover {
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
 
     .file-card::before {
@@ -85,17 +80,151 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.6s ease;
+      transition: left 0.5s ease;
     }
 
     .file-card:hover::before {
       left: 100%;
     }
 
+    /* Draggable styles */
+    .file-card.dragging {
+      opacity: 0.5;
+      transform: rotate(5deg);
+      z-index: 1000;
+    }
+
+    .drop-zone {
+      border: 2px dashed rgba(59, 130, 246, 0.5);
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 1rem;
+    }
+
+    /* Folder styles */
+    .folder-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .folder-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .folder-card.drop-target {
+      border-color: rgba(34, 197, 94, 0.5);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    /* Sidebar - Dashboard Style */
     .sidebar-glass {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(25px) saturate(200%);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(25px);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Action buttons */
+    .action-btn {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.5rem;
+      color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .action-btn:hover::before {
+      left: 100%;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn.primary {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #93c5fd;
+    }
+
+    .action-btn.primary:hover {
+      background: rgba(59, 130, 246, 0.4);
+      border-color: rgba(59, 130, 246, 0.6);
+      color: white;
+    }
+
+    .action-btn.success {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
+    .action-btn.success:hover {
+      background: rgba(34, 197, 94, 0.3);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: white;
+    }
+
+    .action-btn.danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .action-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: white;
+    }
+
+    /* Download button animation */
+    .download-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-btn.downloading {
+      background: rgba(34, 197, 94, 0.3);
+      border-color: rgba(34, 197, 94, 0.5);
+    }
+
+    .download-btn.downloading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: downloadProgress 1.5s ease-in-out;
+    }
+
+    @keyframes downloadProgress {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
     .nav-item {
@@ -262,11 +391,12 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
       background-size: 200% 100%;
       animation: shimmer 2s infinite;
+    }    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
 
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }    /* Mobile responsive */
+    /* Mobile responsive */
     @media (max-width: 768px) {
       .liquid-glass { border-radius: 1rem; }
       .file-card { border-radius: 0.75rem; }
@@ -477,9 +607,37 @@
               Erste Datei hochladen
             </a>
           </div>
-        <?php else: ?>
-          <!-- Grid View -->
+        <?php else: ?>          <!-- Grid View -->
           <div id="gridView" class="<?= $currentView === 'grid' ? 'block' : 'hidden' ?>">
+            <!-- Folders Section -->
+            <?php if (!empty($folders)): ?>
+            <div class="mb-8">
+              <h3 class="text-white/80 text-sm font-medium mb-4 flex items-center gap-2">
+                <i class="fas fa-folder text-yellow-400"></i>
+                Ordner
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mb-6">
+                <?php foreach ($folders as $folder): ?>
+                  <div class="folder-card p-4 cursor-pointer" 
+                       data-folder-id="<?= $folder['id'] ?>"
+                       ondrop="dropFile(event)" 
+                       ondragover="allowDrop(event)"
+                       ondragenter="dragEnter(event)"
+                       ondragleave="dragLeave(event)">
+                    <div class="text-center">
+                      <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-folder text-yellow-400 text-xl"></i>
+                      </div>
+                      <h4 class="text-white text-sm font-medium truncate"><?= htmlspecialchars($folder['name']) ?></h4>
+                      <p class="text-white/60 text-xs mt-1"><?= $folder['file_count'] ?> Dateien</p>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Files Section -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               <?php foreach ($files as $file): ?>
                 <?php 
@@ -492,8 +650,10 @@
                     break;
                   }
                 }
-                ?>
-                <div class="file-card file-type-<?= $fileType ?> p-6 group">
+                ?>                <div class="file-card file-type-<?= $fileType ?> p-6 group" 
+                     draggable="true" 
+                     data-file-id="<?= $file['id'] ?>" 
+                     data-filename="<?= htmlspecialchars($file['filename']) ?>">
                   <div class="flex flex-col h-full">
                     <!-- File Icon -->
                     <div class="file-icon-container mx-auto mb-4">
@@ -513,17 +673,15 @@
 
                     <!-- Actions -->
                     <div class="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <a href="/uploads/<?= urlencode($file['filename']) ?>" 
-                         download 
-                         class="flex-1 text-center py-2 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
+                      <button onclick="downloadFile('<?= urlencode($file['filename']) ?>', this)" 
+                              class="download-btn action-btn success flex-1 text-center py-2 px-3 text-xs transition-all">
                         <i class="fas fa-download mr-1"></i>
-                        Download
-                      </a>
-                      <button onclick="deleteFile(<?= $file['id'] ?>)" 
-                              class="py-2 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
-                        <i class="fas fa-trash"></i>
+                        <span class="download-text">Download</span>
                       </button>
-                    </div>
+                      <button onclick="deleteFile(<?= $file['id'] ?>)" 
+                              class="action-btn danger py-2 px-3 text-xs transition-all">
+                        <i class="fas fa-trash"></i>
+                      </button>                    </div>
                   </div>
                 </div>
               <?php endforeach; ?>
@@ -571,16 +729,14 @@
                       </td>
                       <td class="py-4 px-6 text-white/70 text-sm"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></td>
                       <td class="py-4 px-6 text-white/70 text-sm"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></td>
-                      <td class="py-4 px-6 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>
-                      <td class="py-4 px-6 text-right">
+                      <td class="py-4 px-6 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>                      <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <a href="/uploads/<?= urlencode($file['filename']) ?>" 
-                             download 
-                             class="py-1 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
-                            Download
-                          </a>
+                          <button onclick="downloadFile('<?= urlencode($file['filename']) ?>', this)" 
+                                  class="download-btn action-btn success py-1 px-3 text-xs transition-all">
+                            <span class="download-text">Download</span>
+                          </button>
                           <button onclick="deleteFile(<?= $file['id'] ?>)" 
-                                  class="py-1 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                                  class="action-btn danger py-1 px-3 text-xs transition-all">
                             Löschen
                           </button>
                         </div>
@@ -595,8 +751,186 @@
     </div>
   </div>
 </div>
-
   <script>
+    // Download functionality with animation
+    function downloadFile(filename, button) {
+      const downloadText = button.querySelector('.download-text');
+      const originalText = downloadText.textContent;
+      
+      // Add downloading animation
+      button.classList.add('downloading');
+      downloadText.textContent = 'Laden...';
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = `/uploads/${filename}`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset button after delay
+      setTimeout(() => {
+        button.classList.remove('downloading');
+        downloadText.textContent = originalText;
+      }, 1500);
+    }
+
+    // Drag and Drop functionality
+    let draggedElement = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDragAndDrop();
+      initializeAnimations();
+      setupKeyboardShortcuts();
+    });
+
+    function initializeDragAndDrop() {
+      // Add drag event listeners to file cards
+      const fileCards = document.querySelectorAll('.file-card[draggable]');
+      
+      fileCards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+      });
+
+      // Add drop event listeners to folders
+      const folderCards = document.querySelectorAll('.folder-card');
+      folderCards.forEach(folder => {
+        folder.addEventListener('dragover', allowDrop);
+        folder.addEventListener('dragenter', dragEnter);
+        folder.addEventListener('dragleave', dragLeave);
+        folder.addEventListener('drop', dropFile);
+      });
+    }
+
+    function handleDragStart(e) {
+      draggedElement = this;
+      this.classList.add('dragging');
+      
+      // Set drag data
+      const fileId = this.dataset.fileId;
+      const filename = this.dataset.filename;
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        fileId: fileId,
+        filename: filename
+      }));
+      
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      draggedElement = null;
+      
+      // Clean up all drop zones
+      document.querySelectorAll('.folder-card').forEach(folder => {
+        folder.classList.remove('drop-target');
+      });
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function dragEnter(e) {
+      e.preventDefault();
+      this.classList.add('drop-target');
+    }
+
+    function dragLeave(e) {
+      e.preventDefault();
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drop-target');
+      }
+    }
+
+    function dropFile(e) {
+      e.preventDefault();
+      this.classList.remove('drop-target');
+      
+      if (!draggedElement) return;
+      
+      const folderId = this.dataset.folderId;
+      const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+      
+      // Move file to folder
+      moveFileToFolder(dragData.fileId, folderId, dragData.filename);
+    }
+
+    function moveFileToFolder(fileId, folderId, filename) {
+      // Show loading state
+      showNotification('Datei wird verschoben...', 'info');
+      
+      // Send request to backend
+      fetch('/api/move-file.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fileId: fileId,
+          folderId: folderId
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showNotification(`${filename} wurde erfolgreich verschoben`, 'success');
+          // Optionally reload or update the view
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          showNotification('Fehler beim Verschieben der Datei', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Verschieben der Datei', 'error');
+      });
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg backdrop-blur-20 border transition-all transform translate-x-full opacity-0`;
+      
+      switch(type) {
+        case 'success':
+          notification.className += ' bg-green-500/20 border-green-500/50 text-green-300';
+          break;
+        case 'error':
+          notification.className += ' bg-red-500/20 border-red-500/50 text-red-300';
+          break;
+        default:
+          notification.className += ' bg-blue-500/20 border-blue-500/50 text-blue-300';
+      }
+      
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info'}-circle"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full', 'opacity-0');
+      }, 100);
+      
+      // Remove after delay
+      setTimeout(() => {
+        notification.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
     function switchView(view) {
       const gridView = document.getElementById('gridView');
       const listView = document.getElementById('listView');
@@ -629,15 +963,14 @@
       }
     }
 
-    // Initialize animations
-    document.addEventListener('DOMContentLoaded', function() {
+    function initializeAnimations() {
       // Stagger animation for file cards
-      const cards = document.querySelectorAll('.file-card');
+      const cards = document.querySelectorAll('.file-card, .folder-card');
       cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         setTimeout(() => {
-          card.style.transition = 'all 0.4s ease';
+          card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
           card.style.opacity = '1';
           card.style.transform = 'translateY(0)';
         }, index * 50);
@@ -654,18 +987,28 @@
           }, 500);
         });
       }
-    });
+    }
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.key === 'k') {
-        e.preventDefault();
-        document.querySelector('input[name="search"]').focus();
-      }
-      if (e.key === 'Escape') {
-        document.querySelector('input[name="search"]').blur();
-      }
-    });
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'k') {
+          e.preventDefault();
+          document.querySelector('input[name="search"]').focus();
+        }
+        if (e.key === 'Escape') {
+          document.querySelector('input[name="search"]').blur();
+        }
+        // Grid/List view toggle with 'v' key
+        if (e.key === 'v' && !e.ctrlKey && !e.altKey) {
+          const currentView = document.getElementById('gridView').classList.contains('hidden') ? 'list' : 'grid';
+          const newView = currentView === 'grid' ? 'list' : 'grid';
+          const targetButton = document.querySelector(`[onclick="switchView('${newView}')"]`);
+          if (targetButton) {
+            targetButton.click();
+          }
+        }
+      });
+    }
   </script>
 </body>
 </html>

@@ -31,6 +31,16 @@ $fileTypes = [
     'code' => ['js', 'php', 'css', 'html', 'py', 'java', 'cpp', 'c'],
 ];
 
+// Create demo folders (in a real app, these would come from database)
+$folders = [
+    ['id' => 1, 'name' => 'Verträge', 'file_count' => 5],
+    ['id' => 2, 'name' => 'Rechnungen', 'file_count' => 12],
+    ['id' => 3, 'name' => 'Fotos', 'file_count' => 28],
+    ['id' => 4, 'name' => 'Backups', 'file_count' => 3],
+    ['id' => 5, 'name' => 'Dokumente', 'file_count' => 15],
+    ['id' => 6, 'name' => 'Musik', 'file_count' => 7]
+];
+
 // Build SQL query based on filters
 $whereClauses = ["user_id = ?", "is_deleted = 0"];
 $params = [$userId];
