@@ -7,23 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>    body { 
+  <style>
+    body { 
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
-      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Layout adjustments for navbar */
-    .file-explorer-container {
-      padding-top: 4rem; /* Mobile navbar height */
-    }
-    
-    @media (min-width: 769px) {
-      .file-explorer-container {
-        margin-left: 16rem; /* Desktop navbar width */
-        padding-top: 0;
-      }
     }
 
     /* Enhanced Liquid Glass Effects */
@@ -37,17 +25,6 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
       position: relative;
       overflow: hidden;
-    }
-
-    .liquid-glass::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      z-index: 1;
     }
 
     .liquid-glass-header {
@@ -105,12 +82,14 @@
       border-radius: 0.75rem;
       transition: all 0.3s ease;
       cursor: pointer;
+      text-decoration: none;
     }
 
     .nav-item:hover {
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(4px);
+      transform: translateX(2px);
+      text-decoration: none;
     }
 
     .nav-item.active {
@@ -139,12 +118,14 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      text-decoration: none;
     }
 
     .gradient-button:hover {
       background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(79, 70, 229, 0.9));
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4);
+      text-decoration: none;
     }
 
     .gradient-button::before {
@@ -193,8 +174,8 @@
     }
 
     .file-icon-container {
-      width: 3rem;
-      height: 3rem;
+      width: 2.5rem;
+      height: 2.5rem;
       border-radius: 0.75rem;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -257,61 +238,58 @@
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
     }
 
+    /* Navbar integration */
+    .file-explorer-container {
+      margin-left: 0;
+      margin-top: 4rem; /* Space for mobile navbar */
+      height: calc(100vh - 4rem);
+    }
+
+    @media (min-width: 768px) {
+      .file-explorer-container {
+        margin-left: 16rem; /* 256px = w-64 navbar width */
+        margin-top: 0;
+        height: 100vh;
+      }
+    }
+
     /* Loading animation */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
     .loading-shimmer {
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
       background-size: 200% 100%;
       animation: shimmer 2s infinite;
     }
-
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }    /* Mobile responsive */
-    @media (max-width: 768px) {
-      .liquid-glass { border-radius: 1rem; }
-      .file-card { border-radius: 0.75rem; }
-    }
   </style>
 </head>
-<body class="h-full overflow-hidden">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
   <?php require_once __DIR__.'/../templates/navbar.php'; ?>
 
-  <div class="file-explorer-container">
-    <div class="flex h-full">
-      <!-- Sidebar -->
-      <div class="sidebar-glass w-80 flex-shrink-0 p-6 overflow-y-auto custom-scrollbar">
-        <!-- Header -->
-        <div class="mb-8">
-          <h1 class="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            Datei-Explorer
-          </h1>
-          <p class="text-white/60 text-sm">Verwalten Sie alle Ihre Dateien</p>
-        </div>        <!-- Quick Stats -->
-        <div class="mb-8 space-y-4">
-          <div class="stats-card p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-white/60 text-sm">Dateien gesamt</p>
-                <p class="text-white text-xl font-bold"><?= $totalFiles ?></p>
-              </div>
-              <div class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
-                <i class="fas fa-file text-blue-400"></i>
-              </div>
+  <div class="file-explorer-container flex h-full">
+    <!-- Sidebar -->
+    <div class="sidebar-glass w-72 flex-shrink-0 p-4 overflow-y-auto custom-scrollbar">
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          Datei-Explorer
+        </h1>
+        <p class="text-white/60 text-xs">Verwalten Sie alle Ihre Dateien</p>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="mb-6 space-y-3">
+        <div class="stats-card p-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/60 text-xs">Dateien gesamt</p>
+              <p class="text-white text-lg font-bold"><?= $totalFiles ?></p>
             </div>
-          </div>
-          
-          <div class="stats-card p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-white/60 text-sm">Speicher belegt</p>
-                <p class="text-white text-lg font-bold"><?= formatFileSize($totalSize) ?></p>
-              </div>
-              <div class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center">
-                <i class="fas fa-hdd text-green-400"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+              <i class="fas fa-file text-blue-400 text-sm"></i>
             </div>
           </div>
         </div>
@@ -327,7 +305,9 @@
             </div>
           </div>
         </div>
-      </div>      <!-- File Type Navigation -->
+      </div>
+
+      <!-- File Type Navigation -->
       <div class="space-y-2">
         <h3 class="text-white font-medium text-xs uppercase tracking-wide mb-3">Dateitypen</h3>
         
@@ -336,7 +316,9 @@
           <i class="fas fa-th w-4 text-xs"></i>
           <span>Alle Dateien</span>
           <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full"><?= $totalFiles ?></span>
-        </a>        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'documents'])) ?>" 
+        </a>
+
+        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'documents'])) ?>" 
            class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'documents' ? 'active' : '' ?>">
           <i class="fas fa-file-alt text-blue-400 w-4 text-xs"></i>
           <span>Dokumente</span>
@@ -389,31 +371,33 @@
             <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['code']))) ?>
           </span>
         </a>
-      </div>        <!-- Quick Actions -->
-        <div class="mt-8 space-y-3">
-          <h3 class="text-white font-medium text-sm uppercase tracking-wide mb-4">Aktionen</h3>
-          
-          <a href="/upload.php" class="gradient-button block w-full p-3 rounded-lg text-white text-center font-medium">
-            <i class="fas fa-plus mr-2"></i>
-            Datei hochladen
-          </a>
-          
-          <button onclick="window.print()" class="nav-item p-3 w-full text-left text-white/80 hover:text-white">
-            <i class="fas fa-print mr-3"></i>
-            Liste drucken
-          </button>
-        </div>
       </div>
 
-      <!-- Main Content -->
-      <div class="main-content flex-1 flex flex-col min-w-0">
+      <!-- Quick Actions -->
+      <div class="mt-6 space-y-2">
+        <h3 class="text-white font-medium text-xs uppercase tracking-wide mb-3">Aktionen</h3>
+        
+        <a href="/upload.php" class="gradient-button block w-full p-2 rounded-lg text-white text-center font-medium text-sm">
+          <i class="fas fa-plus mr-2"></i>
+          Datei hochladen
+        </a>
+        
+        <button onclick="window.print()" class="nav-item p-2 w-full text-left text-white/80 hover:text-white text-sm">
+          <i class="fas fa-print mr-2"></i>
+          Liste drucken
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0">
       <!-- Header Bar -->
-      <div class="liquid-glass-header p-6">
+      <div class="liquid-glass-header p-4">
         <div class="flex items-center justify-between">
           <!-- Breadcrumb & Search -->
           <div class="flex items-center gap-4 flex-1">
             <div class="breadcrumb">
-              <div class="flex items-center gap-2 text-white/80">
+              <div class="flex items-center gap-2 text-white/80 text-sm">
                 <i class="fas fa-home"></i>
                 <span>Datei-Explorer</span>
                 <?php if ($filterType): ?>
@@ -459,7 +443,7 @@
       </div>
 
       <!-- File Content -->
-      <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+      <div class="flex-1 p-4 overflow-y-auto custom-scrollbar">
         <?php if (empty($files)): ?>
           <!-- Empty State -->
           <div class="liquid-glass p-12 text-center">
@@ -480,7 +464,7 @@
         <?php else: ?>
           <!-- Grid View -->
           <div id="gridView" class="<?= $currentView === 'grid' ? 'block' : 'hidden' ?>">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
               <?php foreach ($files as $file): ?>
                 <?php 
                 $fileInfo = getFileIcon($file['filename']);
@@ -493,11 +477,11 @@
                   }
                 }
                 ?>
-                <div class="file-card file-type-<?= $fileType ?> p-6 group">
+                <div class="file-card file-type-<?= $fileType ?> p-4 group">
                   <div class="flex flex-col h-full">
                     <!-- File Icon -->
-                    <div class="file-icon-container mx-auto mb-4">
-                      <svg class="w-6 h-6 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="file-icon-container mx-auto mb-3">
+                      <svg class="w-5 h-5 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $fileInfo['icon'] ?>"/>
                       </svg>
                     </div>
@@ -507,20 +491,20 @@
                       <h3 class="text-white font-medium text-sm mb-1 truncate" title="<?= htmlspecialchars($file['title'] ?? $file['original_name'] ?? $file['filename']) ?>">
                         <?= htmlspecialchars($file['title'] ?? $file['original_name'] ?? $file['filename']) ?>
                       </h3>
-                      <p class="text-white/60 text-xs mb-2"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></p>
+                      <p class="text-white/60 text-xs mb-1"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></p>
                       <p class="text-white/40 text-xs"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></p>
                     </div>
 
                     <!-- Actions -->
-                    <div class="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="mt-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                          download 
-                         class="flex-1 text-center py-2 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
+                         class="flex-1 text-center py-1.5 px-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                         <i class="fas fa-download mr-1"></i>
                         Download
                       </a>
                       <button onclick="deleteFile(<?= $file['id'] ?>)" 
-                              class="py-2 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                              class="py-1.5 px-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
                         <i class="fas fa-trash"></i>
                       </button>
                     </div>
@@ -536,12 +520,12 @@
               <table class="w-full">
                 <thead>
                   <tr class="border-b border-white/10">
-                    <th class="text-left py-4 px-6 font-medium text-white/80">Name</th>
-                    <th class="text-left py-4 px-6 font-medium text-white/80">Typ</th>
-                    <th class="text-left py-4 px-6 font-medium text-white/80">Kategorie</th>
-                    <th class="text-left py-4 px-6 font-medium text-white/80">Datum</th>
-                    <th class="text-left py-4 px-6 font-medium text-white/80">Größe</th>
-                    <th class="text-right py-4 px-6 font-medium text-white/80">Aktionen</th>
+                    <th class="text-left py-3 px-4 font-medium text-white/80 text-sm">Name</th>
+                    <th class="text-left py-3 px-4 font-medium text-white/80 text-sm">Typ</th>
+                    <th class="text-left py-3 px-4 font-medium text-white/80 text-sm">Kategorie</th>
+                    <th class="text-left py-3 px-4 font-medium text-white/80 text-sm">Datum</th>
+                    <th class="text-left py-3 px-4 font-medium text-white/80 text-sm">Größe</th>
+                    <th class="text-right py-3 px-4 font-medium text-white/80 text-sm">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -553,10 +537,10 @@
                     $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
                     ?>
                     <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                      <td class="py-4 px-6">
+                      <td class="py-3 px-4">
                         <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div class="w-6 h-6 bg-white/10 rounded-lg flex items-center justify-center">
+                            <svg class="w-3 h-3 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $fileInfo['icon'] ?>"/>
                             </svg>
                           </div>
@@ -566,21 +550,21 @@
                           </div>
                         </div>
                       </td>
-                      <td class="py-4 px-6">
+                      <td class="py-3 px-4">
                         <span class="text-white/70 text-sm uppercase"><?= $ext ?></span>
                       </td>
-                      <td class="py-4 px-6 text-white/70 text-sm"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></td>
-                      <td class="py-4 px-6 text-white/70 text-sm"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></td>
-                      <td class="py-4 px-6 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>
-                      <td class="py-4 px-6 text-right">
+                      <td class="py-3 px-4 text-white/70 text-sm"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></td>
+                      <td class="py-3 px-4 text-white/70 text-sm"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></td>
+                      <td class="py-3 px-4 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>
+                      <td class="py-3 px-4 text-right">
                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                              download 
-                             class="py-1 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
+                             class="py-1 px-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                             Download
                           </a>
                           <button onclick="deleteFile(<?= $file['id'] ?>)" 
-                                  class="py-1 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                                  class="py-1 px-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
                             Löschen
                           </button>
                         </div>
@@ -590,11 +574,11 @@
                 </tbody>
               </table>
             </div>
-          </div>        <?php endif; ?>
+          </div>
+        <?php endif; ?>
       </div>
     </div>
   </div>
-</div>
 
   <script>
     function switchView(view) {
