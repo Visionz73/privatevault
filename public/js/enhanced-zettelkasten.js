@@ -88,8 +88,7 @@ class EnhancedZettelkasten {
         if (activeBtn) {
             activeBtn.classList.add('active');
         }
-        
-        // Show/hide views
+          // Show/hide views
         const notesGrid = document.getElementById('notesGrid');
         const nodeView = document.getElementById('nodeView');
         const listView = document.getElementById('listView');

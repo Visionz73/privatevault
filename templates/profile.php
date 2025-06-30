@@ -211,9 +211,20 @@ $initials = getUserInitials($user);
     }
     
     /* Text Colors */
-    .text-primary { color: #c084fc !important; }
-    .text-secondary { color: rgba(255, 255, 255, 0.8) !important; }
-    .text-muted { color: rgba(255, 255, 255, 0.5) !important; }
+    .text-primary {
+      background: linear-gradient(135deg, #a855f7, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .text-secondary {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .text-muted {
+      color: rgba(255, 255, 255, 0.6);
+    }
     
     /* Labels */
     label {
