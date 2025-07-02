@@ -1,0 +1,56 @@
+/* Grundhintergrund */
+.macos-bg { background: #f2f2f5; color: #1c1c1e; }
+
+/* Sidebar */
+.macos-sidebar { width: 200px; background: #fff; border-right: 1px solid #ddd; }
+.macos-btn {
+  display: block; padding: 0.5rem 1rem; border-radius: 8px;
+  background: transparent; border: none; text-align: left;
+  font-size: 0.95rem; color: #1c1c1e; transition: background .2s;
+}
+.macos-btn:hover { background: #e5e5ea; }
+
+/* Toolbar */
+.macos-toolbar { background: #fff; border-bottom: 1px solid #ddd; }
+.macos-link { color: #007aff; text-decoration: none; font-size: .9rem; }
+.macos-link:hover { text-decoration: underline; }
+
+/* Grid */
+.macos-grid { grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); }
+.macos-grid .file-card {
+  background: #fff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  overflow: hidden; transition: transform .2s;
+}
+.macos-grid .file-card:hover { transform: translateY(-4px); }
+
+/* Icon-Buttons */
+.macos-icon-btn {
+  width: 32px; height: 32px; border-radius: 6px; border: none;
+  background: transparent; color: #1c1c1e; transition: background .2s;
+}
+.macos-icon-btn:hover, .macos-icon-btn.active { background: #e5e5ea; }
+
+/* Modal */
+.macos-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.macos-modal-content {
+  background: #fff; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,.2);
+  position: relative; max-width: 90%; max-height: 90%; overflow: auto;
+  padding: 1rem;
+}
+.macos-modal-close {
+  position: absolute; top: .5rem; right: .5rem; background: none; border: none;
+  font-size: 1.5rem; color: #666; cursor: pointer;
+}
+.macos-img-preview { max-width: 100%; max-height: 80vh; }
+
+/* Liste */
+.list-table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; }
+.list-table th, .list-table td { padding: .75rem 1rem; text-align: left; }
+
+/* Scrollbar (macOS-like) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.3); }

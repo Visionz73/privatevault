@@ -6,96 +6,96 @@
   <title>Datei-Explorer | Private Vault</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/assets/css/file-explorer.css"><style>
-    body { 
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
-      min-height: 100vh;
-      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+  <link rel="stylesheet" href="/assets/css/file-explorer.css">
+  <script src="/assets/js/pdf.min.js"></script> <!-- PDF.js -->
+</head>
+<body class="h-full overflow-hidden macos-bg">
+  <?php require_once __DIR__.'/navbar.php'; ?>
 
-    /* Layout adjustments for navbar */
-    .file-explorer-container {
-      padding-top: 4rem; /* Mobile navbar height */
-    }
-    
-    @media (min-width: 769px) {
-      .file-explorer-container {
-        margin-left: 16rem; /* Desktop navbar width */
-        padding-top: 0;
+  <div class="file-explorer-container flex h-full">
+    <!-- Sidebar -->
+    <aside class="macos-sidebar p-4">
+      <ul class="space-y-2">
+        <li><button class="macos-btn w-full text-left" data-filter="all">Alle Dateien</button></li>
+        <li><button class="macos-btn w-full text-left" data-filter="documents">Dokumente</button></li>
+        <li><button class="macos-btn w-full text-left" data-filter="images">Bilder</button></li>
+        <li><button class="macos-btn w-full text-left" data-filter="downloads">Downloads</button></li>
+        <!-- ...weitere Items nach Bedarf... -->
+      </ul>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0">
+      <!-- Breadcrumb + View-Toggle -->
+      <div class="macos-toolbar flex items-center justify-between p-4">
+        <nav aria-label="Breadcrumb" class="flex items-center space-x-2">
+          <a href="#" class="macos-link">Home</a>
+          <span>›</span>
+          <span class="text-gray-400 capitalize"><?= $filterType ?: 'Alle' ?></span>
+        </nav>
+        <div class="flex items-center space-x-2">
+          <button id="gridViewBtn" class="macos-icon-btn active"><i class="fas fa-th"></i></button>
+          <button id="listViewBtn" class="macos-icon-btn"><i class="fas fa-list"></i></button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <div id="gridView" class="grid gap-4 macos-grid <?= $currentView==='grid'?'':'hidden' ?>">
+          <!-- ...Grid-Cards... -->
+        </div>
+        <div id="listView" class="<?= $currentView==='list'?'':'hidden' ?>">
+          <!-- ...List-Table... -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="macos-modal hidden">
+    <div class="macos-modal-content">
+      <button class="macos-modal-close" onclick="closePreview()">&times;</button>
+      <div id="previewContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    // Grid/List-Toggle
+    document.getElementById('gridViewBtn').onclick = () => {
+      document.getElementById('gridView').classList.remove('hidden');
+      document.getElementById('listView').classList.add('hidden');
+      gridViewBtn.classList.add('active'); listViewBtn.classList.remove('active');
+    };
+    document.getElementById('listViewBtn').onclick = () => {
+      document.getElementById('listView').classList.remove('hidden');
+      document.getElementById('gridView').classList.add('hidden');
+      listViewBtn.classList.add('active'); gridViewBtn.classList.remove('active');
+    };
+
+    // PDF-Vorschau (Beispiel)
+    function openPreview(fileUrl, type) {
+      const container = document.getElementById('previewContainer');
+      container.innerHTML = type==='pdf'
+        ? `<canvas id="pdfCanvas"></canvas>`
+        : `<img src="${fileUrl}" class="macos-img-preview">`;
+      document.getElementById('previewModal').classList.remove('hidden');
+      if(type==='pdf') {
+        pdfjsLib.getDocument(fileUrl).promise.then(pdf=>{
+          pdf.getPage(1).then(page=>{
+            const viewport=page.getViewport({scale:1.2});
+            const canvas=document.getElementById('pdfCanvas');
+            canvas.height=viewport.height; canvas.width=viewport.width;
+            page.render({canvasContext:canvas.getContext('2d'),viewport});
+          });
+        });
       }
-    }    /* Enhanced Liquid Glass Effects - Dashboard Style */
-    .liquid-glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      position: relative;
-      overflow: hidden;
     }
-
-    .liquid-glass::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      z-index: 1;
+    function closePreview(){
+      document.getElementById('previewModal').classList.add('hidden');
+      document.getElementById('previewContainer').innerHTML='';
     }
-
-    .liquid-glass-header {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(25px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1.5rem 1.5rem 0 0;
-    }
-
-    /* File Cards - Dashboard Widget Style */
-    .file-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .file-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    .file-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .file-card:hover::before {
-      left: 100%;
-    }
-
-    /* Draggable styles */
-    .file-card.dragging {
-      opacity: 0.5;
-      transform: rotate(5deg);
-      z-index: 1000;
-    }
-
-    .drop-zone {
-      border: 2px dashed rgba(59, 130, 246, 0.5);
+  </script>
+</body>
+</html>
       background: rgba(59, 130, 246, 0.1);
       border-radius: 1rem;
     }
