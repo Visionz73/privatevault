@@ -1001,10 +1001,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
               <span>Datei-Explorer</span>
             </a>
           </li>
-              </svg>
-              <span>Datei-Explorer</span>
-            </a>
-          </li>
           <li>
             <a href="/havetopay.php" class="nav-link-modern">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -12,49 +12,161 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
+      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* Enhanced Liquid Glass Effects */
+    /* Animated gradient background similar to dashboard */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+      animation: gradientShift 15s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }    /* Enhanced Liquid Glass Effects - Improved */
     .liquid-glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1.5rem;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(25px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 2rem;
       box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 15px 35px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
       position: relative;
       overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-3px);
+      box-shadow: 
+        0 20px 45px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .liquid-glass-header {
       background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.12) 0%, 
-        rgba(255, 255, 255, 0.08) 100%);
-      backdrop-filter: blur(25px) saturate(200%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        rgba(255, 255, 255, 0.15) 0%, 
+        rgba(255, 255, 255, 0.10) 100%);
+      backdrop-filter: blur(30px) saturate(250%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2.5rem;
+      border-radius: 2rem 2rem 0 0;
+      position: relative;
     }
 
-    .file-card {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(15px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1.2rem;
+    .liquid-glass-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }    .file-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.8rem;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      margin: 0.75rem;
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .file-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .file-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .file-card:hover::before {
+      left: 100%;
+    }    /* Folder cards with enhanced liquid glass */
+    .folder-card {
+      background: linear-gradient(135deg, 
+        rgba(147, 51, 234, 0.18) 0%, 
+        rgba(79, 70, 229, 0.12) 100%);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      border-radius: 1.8rem;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      margin: 0.75rem;
+      box-shadow: 
+        0 8px 25px rgba(147, 51, 234, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .folder-card:hover {
+      background: linear-gradient(135deg, 
+        rgba(147, 51, 234, 0.28) 0%, 
+        rgba(79, 70, 229, 0.22) 100%);
+      border-color: rgba(147, 51, 234, 0.6);
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 
+        0 25px 50px rgba(147, 51, 234, 0.3),
+        0 0 0 1px rgba(147, 51, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }    .sidebar-glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(30px) saturate(220%);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
       position: relative;
       overflow: hidden;
     }
 
-    .file-card:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-
-    .file-card::before {
+    .nav-item::before {
       content: '';
       position: absolute;
       top: 0;
@@ -65,36 +177,22 @@
       transition: left 0.6s ease;
     }
 
-    .file-card:hover::before {
+    .nav-item:hover::before {
       left: 100%;
     }
 
-    .sidebar-glass {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(25px) saturate(200%);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-item {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(2px);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateX(4px);
       text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(79, 70, 229, 0.3));
-      border-color: rgba(147, 51, 234, 0.5);
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.35), rgba(79, 70, 229, 0.35));
+      border-color: rgba(147, 51, 234, 0.6);
+      transform: translateX(6px);
     }
 
     .search-bar {
@@ -162,32 +260,47 @@
 
     .view-toggle-btn:hover {
       background: rgba(255, 255, 255, 0.1);
+    }    .stats-card {
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.12) 0%, 
+        rgba(255, 255, 255, 0.08) 100%);
+      backdrop-filter: blur(25px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1.5rem;
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .stats-card {
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.1) 0%, 
-        rgba(255, 255, 255, 0.05) 100%);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1rem;
+    .stats-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .file-icon-container {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+      width: 3rem;
+      height: 3rem;
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .file-card:hover .file-icon-container {
-      transform: scale(1.1);
-      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.15) rotateY(5deg);
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .breadcrumb {
@@ -236,13 +349,12 @@
 
     .file-type-archive .file-icon-container {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
-    }
-
-    /* Navbar integration */
+    }    /* Layout adjustments for navbar - improved margins and positioning */
     .file-explorer-container {
       margin-left: 0;
       margin-top: 4rem; /* Space for mobile navbar */
       height: calc(100vh - 4rem);
+      padding: 3rem 2rem; /* Increased outer padding for better spacing */
     }
 
     @media (min-width: 768px) {
@@ -250,7 +362,35 @@
         margin-left: 16rem; /* 256px = w-64 navbar width */
         margin-top: 0;
         height: 100vh;
+        padding: 3rem 2.5rem; /* Increased padding for desktop */
       }
+    }
+
+    /* Main content area with enhanced liquid glass effect */
+    .main-content-area {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 2.5rem;
+      padding: 3rem;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      position: relative;
+    }
+
+    .main-content-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     }
 
     /* Loading animation */
@@ -263,208 +403,99 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
       background-size: 200% 100%;
       animation: shimmer 2s infinite;
-    }
-  </style>
+    }  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+<body class="min-h-screen">
   <?php require_once __DIR__.'/../templates/navbar.php'; ?>
 
-  <div class="file-explorer-container flex h-full">
-    <!-- Sidebar -->
-    <div class="sidebar-glass w-72 flex-shrink-0 p-4 overflow-y-auto custom-scrollbar">
-      <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Datei-Explorer
-        </h1>
-        <p class="text-white/60 text-xs">Verwalten Sie alle Ihre Dateien</p>
-      </div>
-
-      <!-- Quick Stats -->
-      <div class="mb-6 space-y-3">
-        <div class="stats-card p-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/60 text-xs">Dateien gesamt</p>
-              <p class="text-white text-lg font-bold"><?= $totalFiles ?></p>
-            </div>
-            <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
-              <i class="fas fa-file text-blue-400 text-sm"></i>
-            </div>
+  <div class="file-explorer-container">
+    <div class="main-content-area">
+      <!-- Header Section -->
+      <div class="liquid-glass-header mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div>
+            <h1 class="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              Datei-Explorer
+            </h1>
+            <p class="text-white/70 text-lg">Verwalten Sie alle Ihre Dateien an einem Ort</p>
           </div>
-        </div>
-        
-        <div class="stats-card p-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/60 text-xs">Speicher belegt</p>
-              <p class="text-white text-sm font-bold"><?= formatFileSize($totalSize) ?></p>
-            </div>
-            <div class="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center">
-              <i class="fas fa-hdd text-green-400 text-sm"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- File Type Navigation -->
-      <div class="space-y-2">
-        <h3 class="text-white font-medium text-xs uppercase tracking-wide mb-3">Dateitypen</h3>
-        
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => ''])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === '' ? 'active' : '' ?>">
-          <i class="fas fa-th w-4 text-xs"></i>
-          <span>Alle Dateien</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full"><?= $totalFiles ?></span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'documents'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'documents' ? 'active' : '' ?>">
-          <i class="fas fa-file-alt text-blue-400 w-4 text-xs"></i>
-          <span>Dokumente</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['documents']))) ?>
-          </span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'images'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'images' ? 'active' : '' ?>">
-          <i class="fas fa-image text-green-400 w-4 text-xs"></i>
-          <span>Bilder</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['images']))) ?>
-          </span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'videos'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'videos' ? 'active' : '' ?>">
-          <i class="fas fa-video text-pink-400 w-4 text-xs"></i>
-          <span>Videos</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['videos']))) ?>
-          </span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'audio'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'audio' ? 'active' : '' ?>">
-          <i class="fas fa-music text-purple-400 w-4 text-xs"></i>
-          <span>Audio</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['audio']))) ?>
-          </span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'archives'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'archives' ? 'active' : '' ?>">
-          <i class="fas fa-archive text-yellow-400 w-4 text-xs"></i>
-          <span>Archive</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['archives']))) ?>
-          </span>
-        </a>
-
-        <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'code'])) ?>" 
-           class="nav-item p-2 flex items-center gap-2 text-white/80 hover:text-white text-sm <?= $filterType === 'code' ? 'active' : '' ?>">
-          <i class="fas fa-code text-cyan-400 w-4 text-xs"></i>
-          <span>Code</span>
-          <span class="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded-full">
-            <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['code']))) ?>
-          </span>
-        </a>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="mt-6 space-y-2">
-        <h3 class="text-white font-medium text-xs uppercase tracking-wide mb-3">Aktionen</h3>
-        
-        <a href="/upload.php" class="gradient-button block w-full p-2 rounded-lg text-white text-center font-medium text-sm">
-          <i class="fas fa-plus mr-2"></i>
-          Datei hochladen
-        </a>
-        
-        <button onclick="window.print()" class="nav-item p-2 w-full text-left text-white/80 hover:text-white text-sm">
-          <i class="fas fa-print mr-2"></i>
-          Liste drucken
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-w-0">
-      <!-- Header Bar -->
-      <div class="liquid-glass-header p-4">
-        <div class="flex items-center justify-between">
-          <!-- Breadcrumb & Search -->
-          <div class="flex items-center gap-4 flex-1">
-            <div class="breadcrumb">
-              <div class="flex items-center gap-2 text-white/80 text-sm">
-                <i class="fas fa-home"></i>
-                <span>Datei-Explorer</span>
-                <?php if ($filterType): ?>
-                  <i class="fas fa-chevron-right text-xs"></i>
-                  <span class="capitalize"><?= ucfirst($filterType) ?></span>
-                <?php endif; ?>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <div class="stats-card p-4 min-w-[120px]">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-white"><?= $totalFiles ?></div>
+                <div class="text-sm text-white/60">Dateien</div>
               </div>
             </div>
+            <div class="stats-card p-4 min-w-[120px]">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-white"><?= formatFileSize($totalSize) ?></div>
+                <div class="text-sm text-white/60">Speicher</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="search-bar flex-1 max-w-md">
-              <form method="GET" class="flex items-center">
-                <?php foreach ($_GET as $key => $value): ?>
-                  <?php if ($key !== 'search'): ?>
-                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-                  <?php endif; ?>
-                <?php endforeach; ?>
-                <div class="relative w-full">
-                  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"></i>
-                  <input 
-                    type="text" 
-                    name="search" 
-                    value="<?= htmlspecialchars($searchQuery) ?>"
-                    placeholder="Dateien durchsuchen..." 
-                    class="w-full pl-10 pr-4 py-2 bg-transparent text-white placeholder-white/50 focus:outline-none"
-                  >
-                </div>
-              </form>
+      <!-- Control Bar -->
+      <div class="liquid-glass p-6 mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <!-- Search and Upload -->
+          <div class="flex flex-col sm:flex-row gap-4 flex-1">
+            <a href="/upload.php" class="gradient-button px-6 py-3 font-medium inline-flex items-center gap-2 group">
+              <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+              Datei hochladen
+            </a>
+            
+            <div class="search-bar flex-1 relative">
+              <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" placeholder="Dateien durchsuchen..." 
+                     value="<?= htmlspecialchars($searchQuery) ?>"
+                     class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all">
             </div>
           </div>
 
           <!-- View Toggle -->
-          <div class="view-toggle p-1 flex gap-1">
-            <button onclick="switchView('grid')" 
-                    class="view-toggle-btn px-3 py-2 text-white/60 hover:text-white <?= $currentView === 'grid' ? 'active' : '' ?>">
-              <i class="fas fa-th"></i>
+          <div class="view-toggle flex bg-white/5 border border-white/10 rounded-lg p-1">
+            <button class="view-toggle-btn px-3 py-2 text-white/70 <?= $currentView === 'grid' ? 'active' : '' ?>">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
             </button>
-            <button onclick="switchView('list')" 
-                    class="view-toggle-btn px-3 py-2 text-white/60 hover:text-white <?= $currentView === 'list' ? 'active' : '' ?>">
-              <i class="fas fa-list"></i>
+            <button class="view-toggle-btn px-3 py-2 text-white/70 <?= $currentView === 'list' ? 'active' : '' ?>">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+              </svg>
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- File Content -->
-      <div class="flex-1 p-4 overflow-y-auto custom-scrollbar">
-        <?php if (empty($files)): ?>
-          <!-- Empty State -->
-          <div class="liquid-glass p-12 text-center">
-            <div class="w-24 h-24 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-              <i class="fas fa-folder-open text-4xl text-white/40"></i>
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              <?= $searchQuery ? 'Keine Suchergebnisse gefunden' : 'Keine Dateien vorhanden' ?>
-            </h3>
-            <p class="text-white/60 mb-6">
-              <?= $searchQuery ? 'Versuchen Sie es mit anderen Suchbegriffen' : 'Laden Sie Ihre erste Datei hoch, um loszulegen' ?>
-            </p>
-            <a href="/upload.php" class="gradient-button inline-block px-6 py-3 rounded-lg text-white font-medium">
-              <i class="fas fa-plus mr-2"></i>
-              Erste Datei hochladen
-            </a>
-          </div>
-        <?php else: ?>
+      </div>      <!-- Files Grid -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar">
+        <div class="p-4">
+          <?php if (empty($files)): ?>
+            <!-- Empty State -->
+            <div class="liquid-glass p-16 text-center">
+              <div class="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-8">
+                <i class="fas fa-folder-open text-5xl text-white/40"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-white mb-4">
+                <?= $searchQuery ? 'Keine Suchergebnisse gefunden' : 'Keine Dateien vorhanden' ?>
+              </h3>
+              <p class="text-white/60 mb-8 text-lg">
+                <?= $searchQuery ? 'Versuchen Sie es mit anderen Suchbegriffen' : 'Laden Sie Ihre erste Datei hoch, um loszulegen' ?>
+              </p>
+              <a href="/upload.php" class="gradient-button inline-block px-8 py-4 rounded-xl text-white font-medium text-lg">
+                <i class="fas fa-plus mr-3"></i>
+                Erste Datei hochladen
+              </a>
+            </div>        <?php else: ?>
           <!-- Grid View -->
           <div id="gridView" class="<?= $currentView === 'grid' ? 'block' : 'hidden' ?>">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               <?php foreach ($files as $file): ?>
                 <?php 
                 $fileInfo = getFileIcon($file['filename']);
@@ -477,11 +508,10 @@
                   }
                 }
                 ?>
-                <div class="file-card file-type-<?= $fileType ?> p-4 group">
-                  <div class="flex flex-col h-full">
-                    <!-- File Icon -->
-                    <div class="file-icon-container mx-auto mb-3">
-                      <svg class="w-5 h-5 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="file-card file-type-<?= $fileType ?> group">
+                  <div class="flex flex-col h-full">                    <!-- File Icon -->
+                    <div class="file-icon-container mx-auto mb-4">
+                      <svg class="w-6 h-6 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $fileInfo['icon'] ?>"/>
                       </svg>
                     </div>
@@ -493,18 +523,16 @@
                       </h3>
                       <p class="text-white/60 text-xs mb-1"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></p>
                       <p class="text-white/40 text-xs"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></p>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="mt-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>                    <!-- Actions -->
+                    <div class="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <a href="/uploads/<?= urlencode($file['filename']) ?>" 
                          download 
-                         class="flex-1 text-center py-1.5 px-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
+                         class="flex-1 text-center py-2 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                         <i class="fas fa-download mr-1"></i>
                         Download
                       </a>
                       <button onclick="deleteFile(<?= $file['id'] ?>)" 
-                              class="py-1.5 px-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                              class="py-2 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
                         <i class="fas fa-trash"></i>
                       </button>
                     </div>
