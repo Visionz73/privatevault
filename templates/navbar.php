@@ -1002,7 +1002,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
             </a>
           </li>
               </svg>
-              <span>Datei-Explorer</span>
             </a>
           </li>
           <li>
