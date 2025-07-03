@@ -1,132 +1,144 @@
 <?php
 // public/file-explorer.php
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../src/lib/auth.php';
+
+session_start();
 requireLogin();
 
-$userId = $_SESSION['user_id'];
+$userId = (int)$_SESSION['user_id'];
 
-// Handle file deletion
-if (isset($_GET['delete'])) {
-    $deleteId = (int)$_GET['delete'];
-    $stmt = $pdo->prepare("DELETE FROM documents WHERE id = ? AND user_id = ?");
-    $stmt->execute([$deleteId, $userId]);
-    header('Location: /file-explorer.php' . ($_GET['path'] ? '?path=' . urlencode($_GET['path']) : ''));
+// --- Input validieren und säubern ---
+$deleteId    = filter_input(INPUT_GET, 'delete', FILTER_VALIDATE_INT);
+$currentPath = filter_input(INPUT_GET, 'path',   FILTER_SANITIZE_STRING) ?: '';
+$currentView = filter_input(INPUT_GET, 'view',   FILTER_SANITIZE_STRING) ?: 'grid';
+$searchQuery = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_STRING) ?: '';
+$filterType  = filter_input(INPUT_GET, 'type',   FILTER_SANITIZE_STRING) ?: '';
+
+// --- Datei löschen (hard delete) ---
+if ($deleteId !== false && $deleteId !== null) {
+    $stmt = $pdo->prepare("
+        DELETE FROM documents 
+         WHERE id = :id
+           AND user_id = :uid
+    ");
+    $stmt->execute([
+        ':id'  => $deleteId,
+        ':uid' => $userId,
+    ]);
+
+    // Redirect zurück (Pfad erhalten)
+    $qs = $currentPath !== '' 
+        ? '?path=' . urlencode($currentPath) 
+        : '';
+    header('Location: /file-explorer.php' . $qs);
     exit;
 }
 
-// Get current path and view settings
-$currentPath = $_GET['path'] ?? '';
-$currentView = $_GET['view'] ?? 'grid';
-$searchQuery = $_GET['search'] ?? '';
-$filterType = $_GET['type'] ?? '';
-
-// Define file type categories
+// --- Dateityp-Kategorien ---
 $fileTypes = [
-    'documents' => ['pdf', 'doc', 'docx', 'txt', 'rtf'],
-    'images' => ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'],
-    'videos' => ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'],
-    'audio' => ['mp3', 'wav', 'flac', 'aac', 'ogg', 'wma'],
-    'archives' => ['zip', 'rar', '7z', 'tar', 'gz'],
-    'code' => ['js', 'php', 'css', 'html', 'py', 'java', 'cpp', 'c'],
+    'documents' => ['pdf','doc','docx','txt','rtf'],
+    'images'    => ['jpg','jpeg','png','gif','bmp','svg','webp'],
+    'videos'    => ['mp4','avi','mov','wmv','flv','webm','mkv'],
+    'audio'     => ['mp3','wav','flac','aac','ogg','wma'],
+    'archives'  => ['zip','rar','7z','tar','gz'],
+    'code'      => ['js','php','css','html','py','java','cpp','c'],
 ];
 
-// Create demo folders (in a real app, these would come from database)
-$folders = [
-    ['id' => 1, 'name' => 'Verträge', 'file_count' => 5],
-    ['id' => 2, 'name' => 'Rechnungen', 'file_count' => 12],
-    ['id' => 3, 'name' => 'Fotos', 'file_count' => 28],
-    ['id' => 4, 'name' => 'Backups', 'file_count' => 3],
-    ['id' => 5, 'name' => 'Dokumente', 'file_count' => 15],
-    ['id' => 6, 'name' => 'Musik', 'file_count' => 7]
-];
+// --- WHERE-Klauseln zusammensetzen ---
+$where = ['d.user_id = :uid', 'd.is_deleted = 0'];
+$params = [':uid' => $userId];
 
-// Build SQL query based on filters
-$whereClauses = ["user_id = ?", "is_deleted = 0"];
-$params = [$userId];
-
-if ($searchQuery) {
-    $whereClauses[] = "(title LIKE ? OR filename LIKE ? OR original_name LIKE ?)";
-    $searchTerm = '%' . $searchQuery . '%';
-    $params[] = $searchTerm;
-    $params[] = $searchTerm;
-    $params[] = $searchTerm;
+if ($searchQuery !== '') {
+    $where[] = '(d.title    LIKE :term
+               OR d.filename LIKE :term
+               OR d.original_name LIKE :term)';
+    $params[':term'] = '%' . $searchQuery . '%';
 }
 
-if ($filterType && isset($fileTypes[$filterType])) {
-    $extensions = $fileTypes[$filterType];
-    $placeholders = implode(',', array_fill(0, count($extensions), '?'));
-    $whereClauses[] = "LOWER(SUBSTRING_INDEX(filename, '.', -1)) IN ($placeholders)";
-    $params = array_merge($params, $extensions);
-}
-
-$whereClause = implode(' AND ', $whereClauses);
-
-// Get files
-$stmt = $pdo->prepare("
-    SELECT d.*, dc.name as category_name, 
-           CHAR_LENGTH(d.filename) - CHAR_LENGTH(REPLACE(d.filename, '.', '')) as file_size_calc
-    FROM documents d 
-    LEFT JOIN document_categories dc ON d.category_id = dc.id 
-    WHERE $whereClause
-    ORDER BY d.upload_date DESC
-");
-$stmt->execute($params);
-$files = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Calculate file statistics
-$totalFiles = count($files);
-$totalSize = 0;
-$typeCounts = [];
-
-foreach ($files as $file) {
-    $ext = strtolower(pathinfo($file['filename'], PATHINFO_EXTENSION));
-    $typeCounts[$ext] = ($typeCounts[$ext] ?? 0) + 1;
-    
-    // Try to get file size from filesystem
-    $filePath = __DIR__ . '/../uploads/' . $file['filename'];
-    if (file_exists($filePath)) {
-        $totalSize += filesize($filePath);
+if ($filterType !== '' && isset($fileTypes[$filterType])) {
+    $exts = $fileTypes[$filterType];
+    // Platzhalter für IN-Liste
+    $ph = implode(',', array_map(fn($i) => ":ext{$i}", array_keys($exts)));
+    $where[] = "LOWER(SUBSTRING_INDEX(d.filename, '.', -1)) IN ($ph)";
+    foreach ($exts as $i => $ext) {
+        $params[":ext{$i}"] = strtolower($ext);
     }
 }
 
-// Helper function to format file size
-function formatFileSize($bytes) {
-    if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . ' GB';
-    if ($bytes >= 1048576) return number_format($bytes / 1048576, 2) . ' MB';
-    if ($bytes >= 1024) return number_format($bytes / 1024, 2) . ' KB';
-    return $bytes . ' B';
+$whereSql = implode(' AND ', $where);
+
+// --- Dateien aus DB laden ---
+$sql = "
+    SELECT 
+        d.*,
+        dc.name AS category_name,
+        -- Anzahl der Punkte im Filename als Platzhalter für Dateigröße?
+        CHAR_LENGTH(d.filename) - CHAR_LENGTH(REPLACE(d.filename, '.', '')) AS dot_count
+    FROM documents d
+    LEFT JOIN document_categories dc
+      ON d.category_id = dc.id
+    WHERE $whereSql
+    ORDER BY d.upload_date DESC
+";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// --- Statistiken berechnen ---
+$totalFiles = count($files);
+$totalSize  = 0;
+$typeCounts = [];
+
+foreach ($files as $f) {
+    $ext = strtolower(pathinfo($f['filename'], PATHINFO_EXTENSION));
+    $typeCounts[$ext] = ($typeCounts[$ext] ?? 0) + 1;
+
+    $path = __DIR__ . '/../uploads/' . $f['filename'];
+    if (is_file($path)) {
+        $totalSize += filesize($path);
+    }
 }
 
-// Helper function to get file icon and color
-function getFileIcon($filename) {
-    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    
-    $iconMap = [
-        // Documents
-        'pdf' => ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-red-400'],
-        'doc' => ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-blue-400'],
-        'docx' => ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-blue-400'],
-        
-        // Images
-        'jpg' => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        'jpeg' => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        'png' => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        
-        // Audio
-        'mp3' => ['icon' => 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', 'color' => 'text-purple-400'],
-        'wav' => ['icon' => 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', 'color' => 'text-purple-400'],
-        
-        // Video
-        'mp4' => ['icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', 'color' => 'text-pink-400'],
-        'avi' => ['icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', 'color' => 'text-pink-400'],
-        
-        // Archives
-        'zip' => ['icon' => 'M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4', 'color' => 'text-yellow-400'],
-        'rar' => ['icon' => 'M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4', 'color' => 'text-yellow-400'],
-    ];
-    
-    return $iconMap[$ext] ?? ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-gray-400'];
+// --- Hilfsfunktionen ---
+function formatFileSize(int $bytes): string
+{
+    return match (true) {
+        $bytes >= 1<<30 => number_format($bytes / (1<<30), 2) . ' GB',
+        $bytes >= 1<<20 => number_format($bytes / (1<<20), 2) . ' MB',
+        $bytes >= 1<<10 => number_format($bytes / (1<<10), 2) . ' KB',
+        default         => $bytes . ' B',
+    };
 }
+
+function getFileIcon(string $filename): array
+{
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    static $map = null;
+
+    if ($map === null) {
+        $map = [
+            // Beispiele, später erweitern…
+            'pdf'  => ['icon'=>'M9 12h6…','color'=>'text-red-400'],
+            'jpg'  => ['icon'=>'M4 16l4.586…','color'=>'text-green-400'],
+            'mp3'  => ['icon'=>'M9 19V6…','color'=>'text-purple-400'],
+            'mp4'  => ['icon'=>'M15 10l4.553…','color'=>'text-pink-400'],
+            'zip'  => ['icon'=>'M20 13V6…','color'=>'text-yellow-400'],
+        ];
+    }
+
+    return $map[$ext] ?? ['icon'=>'M9 12h6…','color'=>'text-gray-400'];
+}
+
+// --- Template laden und Variablen übergeben ---
+$viewData = compact(
+    'files', 'folders', 'totalFiles', 'totalSize',
+    'typeCounts', 'currentPath', 'currentView',
+    'searchQuery', 'filterType'
+);
 
 require_once __DIR__ . '/../templates/file-explorer-fixed.php';
