@@ -43,6 +43,12 @@
       padding-left: 1rem;
       padding-right: 1rem;
       padding-bottom: 1rem;
+      /* Liquid glass effect */
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(25px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     }
     
     @media (min-width: 769px) {
@@ -323,10 +329,10 @@
 <body class="h-full overflow-hidden">
   <?php require_once __DIR__.'/../templates/navbar.php'; ?>
 
-  <div class="file-explorer-container">
-    <div class="flex h-full">
+  <div class="file-explorer-container liquid-glass">
+    <div class="flex h-full gap-4">
       <!-- Sidebar -->
-      <div id="sidebar" class="sidebar-glass flex-shrink-0 overflow-y-auto custom-scrollbar p-4">
+      <div id="sidebar" class="liquid-glass flex-shrink-0 overflow-y-auto custom-scrollbar p-4">
         <input id="searchInput" type="text" placeholder="Suche..." class="search-bar w-full mb-4 p-2 text-white bg-transparent focus:outline-none" />
         <div id="categoryList" class="space-y-2"></div>
         <select id="sortSelect" class="action-btn w-full mt-4 bg-transparent">
@@ -339,7 +345,7 @@
         </select>
       </div>
       <!-- Main Content -->
-      <div class="flex-1 overflow-y-auto p-4">
+      <div class="flex-1 overflow-y-auto p-4 liquid-glass">
         <div class="flex justify-between items-center mb-4">
           <div>
             <button id="gridViewBtn" class="action-btn active"><i class="fas fa-th"></i></button>
