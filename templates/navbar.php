@@ -966,68 +966,65 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
         <!-- Logo/Header inside container -->
         <div class="mb-6 text-center">
           <a href="/" class="logo-container">
-            <img src="/assets/logo.png" alt="Private Vault" class="logo-image" style="max-height: 10rem;">
+            <img src="/assets/logo.png" alt="Private Vault" class="logo-image">
           </a>
         </div>
         
         <ul class="space-y-1">
           <li>
-            <a href="/dashboard.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            <a href="/" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21l4-4 4 4" />
               </svg>
-              <span>Dashboard</span>
+              Dashboard
             </a>
           </li>
+
           <li>
-            <a href="/inbox.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            <a href="/taskboard.php" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'taskboard.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
-              <span>Inbox</span>
-            </a>
-          </li>          <li>
-            <a href="/calendar.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Kalender</span>
-            </a>
-          </li>          <li>
-            <a href="/file-explorer.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0l7-3 7 3m-6 4h.01"/>
-              </svg>
-              <span>Datei-Explorer</span>
+              Taskboard
             </a>
           </li>
-              </svg>
-              <span>Datei-Explorer</span>
-            </a>
-          </li>
+
           <li>
-            <a href="/havetopay.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 12v4" />
+            <a href="/file-explorer.php" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'file-explorer.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21l4-4 4 4" />
               </svg>
-              <span>HaveToPay</span>
+              Datei-Explorer
             </a>
           </li>
-          <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
+
           <li>
-            <a href="/admin.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 2c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z" />
+            <a href="/havetopay.php" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'havetopay.php' || basename($_SERVER['PHP_SELF']) === 'havetopay_add.php' || basename($_SERVER['PHP_SELF']) === 'havetopay_detail.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span>Admin</span>
+              HaveToPay
             </a>
           </li>
+
           <li>
-            <a href="/admin/groups.php" class="nav-link-modern">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m7-4a4 4 0 10-8 0 4 4 0 008 0z" />
+            <a href="/upload.php" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'upload.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <span>Gruppen</span>
+              Upload
+            </a>
+          </li>
+
+          <?php if ($user && $user['role'] === 'admin'): ?>
+          <li>
+            <a href="/admin/groups.php" class="nav-link-modern <?= basename($_SERVER['PHP_SELF']) === 'groups.php' ? 'active' : '' ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Admin
             </a>
           </li>
           <?php endif; ?>
@@ -1039,11 +1036,11 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     <div class="user-banner">
       <button onclick="openProfileModal()">
         <div class="profile-avatar mr-3">
-          <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
+          <?= $user ? strtoupper(substr($user['username'], 0, 1)) : 'G' ?>
         </div>
         <div class="flex-1 text-left">
-          <div class="user-name truncate"><?= isset($user) ? htmlspecialchars($user['username']) : 'Gast' ?></div>
-          <div class="user-role"><?= isset($user) ? ucfirst($user['role'] ?? 'user') : 'Nicht angemeldet' ?></div>
+          <div class="user-name"><?= $user ? htmlspecialchars($user['username']) : 'Guest' ?></div>
+          <div class="user-role"><?= $user ? htmlspecialchars($user['role'] ?? 'user') : 'guest' ?></div>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -1068,11 +1065,30 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <span class="shortcut-label">Task erstellen</span>
+          <span class="shortcut-label">Neue Aufgabe</span>
         </a>
 
+        <!-- Custom Shortcut Slots -->
+        <div class="shortcut-item empty" data-slot="1" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Hinzufügen</span>
+        </div>
+
+        <div class="shortcut-item empty" data-slot="2" onclick="openCustomShortcutModal(this)">
+          <div class="shortcut-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="shortcut-label">Hinzufügen</span>
+        </div>
+
         <!-- Logout Shortcut -->
-        <a href="/logout.php" class="shortcut-item predefined logout" onclick="return confirm('Möchten Sie sich wirklich abmelden?')">
+        <a href="/logout.php" class="shortcut-item predefined logout">
           <div class="shortcut-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -1080,25 +1096,6 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
           </div>
           <span class="shortcut-label">Abmelden</span>
         </a>
-
-        <!-- Custom Shortcut Slots -->
-        <div class="shortcut-item empty" data-slot="custom1" onclick="openCustomShortcutModal(this)">
-          <div class="shortcut-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <span class="shortcut-label">Add Shortcut</span>
-        </div>
-
-        <div class="shortcut-item empty" data-slot="custom2" onclick="openCustomShortcutModal(this)">
-          <div class="shortcut-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <span class="shortcut-label">Add Shortcut</span>
-        </div>
       </div>
     </div>
 
@@ -1112,55 +1109,51 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       </h3>
       
       <div class="stats-grid">
-        <!-- CPU Usage -->
-        <div class="stat-item">
+        <div class="stat-item cpu">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
             </svg>
           </div>
           <div class="stat-content">
-            <span class="stat-value" id="cpuUsage">--</span>
-            <span class="stat-label">CPU</span>
+            <div class="stat-value" id="cpuUsage">15%</div>
+            <div class="stat-label">CPU</div>
           </div>
         </div>
 
-        <!-- Memory Usage -->
-        <div class="stat-item">
+        <div class="stat-item memory">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2M7 7h10" />
             </svg>
           </div>
           <div class="stat-content">
-            <span class="stat-value" id="memoryUsage">--</span>
-            <span class="stat-label">RAM</span>
+            <div class="stat-value" id="memoryUsage">45%</div>
+            <div class="stat-label">RAM</div>
           </div>
         </div>
 
-        <!-- Storage -->
-        <div class="stat-item">
+        <div class="stat-item storage">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 3v13a1 1 0 001 1h8a1 1 0 001-1V7M9 11h6M9 15h6" />
             </svg>
           </div>
           <div class="stat-content">
-            <span class="stat-value" id="storageUsage">--</span>
-            <span class="stat-label">Storage</span>
+            <div class="stat-value" id="storageUsage">68%</div>
+            <div class="stat-label">Speicher</div>
           </div>
         </div>
 
-        <!-- Network Status -->
-        <div class="stat-item">
+        <div class="stat-item network">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
             </svg>
           </div>
           <div class="stat-content">
-            <span class="stat-value" id="networkStatus">Online</span>
-            <span class="stat-label">Netzwerk</span>
+            <div class="stat-value" id="networkStatus">Online</div>
+            <div class="stat-label">Netzwerk</div>
           </div>
         </div>
       </div>
@@ -1181,7 +1174,7 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     </a>
     <button onclick="openProfileModal()" class="mobile-toggle-btn">
       <div class="mobile-user-avatar">
-        <?= isset($user) ? strtoupper(substr($user['username'], 0, 2)) : 'GU' ?>
+        <?= $user ? strtoupper(substr($user['username'], 0, 1)) : 'G' ?>
       </div>
     </button>
   </div>
@@ -1196,12 +1189,12 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
   <div class="profile-modal-content">
     <div class="profile-modal-header">
       <div class="flex items-center">
-        <div class="profile-avatar mr-3" style="width: 3rem; height: 3rem;">
-          <?= getUserInitials($user) ?>
+        <div class="profile-avatar mr-3">
+          <?= strtoupper(substr($user['username'], 0, 1)) ?>
         </div>
         <div>
-          <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
-          <p class="text-sm text-gray-500"><?= ucfirst($user['role']) ?></p>
+          <h3 class="text-lg font-semibold text-gray-900"><?= htmlspecialchars($user['username']) ?></h3>
+          <p class="text-sm text-gray-500"><?= htmlspecialchars($user['role'] ?? 'user') ?></p>
         </div>
       </div>
       <button class="close-modal" onclick="closeProfileModal()">&times;</button>
@@ -1209,32 +1202,19 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
     <div class="profile-modal-body">
       <nav class="space-y-1">
         <a href="/profile.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          Profil bearbeiten
+          Profil anzeigen
         </a>
         <a href="/settings.php" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
           Einstellungen
         </a>
-        <a href="/profile.php?tab=notifications" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM9 7v10m6-10v10"></path>
-          </svg>
-          Benachrichtigungen
-        </a>
-        <a href="/profile.php?tab=security" class="modal-menu-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-          </svg>
-          Sicherheit
-        </a>
-        <hr class="my-3">
-        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-700 hover:bg-red-50">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="/logout.php" class="modal-menu-item text-red-600 hover:text-red-500 hover:bg-red-50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
           </svg>
           Abmelden
@@ -1256,37 +1236,39 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       <form id="customShortcutForm">
         <div class="form-group">
           <label for="shortcutName">Name</label>
-          <input type="text" id="shortcutName" name="name" required placeholder="z.B. Meine Notizen, Quick Access">
+          <input type="text" id="shortcutName" placeholder="Shortcut Name" required>
+          <small class="form-help">Der Name, der unter dem Shortcut angezeigt wird</small>
         </div>
+        
         <div class="form-group">
-          <label for="shortcutUrl">URL oder Seite</label>
-          <input type="text" id="shortcutUrl" name="url" required placeholder="/meine-seite.php oder https://example.com">
-          <small class="form-help">Interne Seiten: /seite.php | Externe: https://example.com</small>
+          <label for="shortcutUrl">URL</label>
+          <input type="text" id="shortcutUrl" placeholder="https://example.com oder /local-page.php" required>
+          <small class="form-help">Externe URL oder lokale Seite</small>
         </div>
+        
         <div class="form-group">
-          <label for="shortcutIcon">Icon auswählen</label>
-          <select id="shortcutIcon" name="icon">
+          <label for="shortcutIcon">Icon</label>
+          <select id="shortcutIcon">
             <option value="link">🔗 Link</option>
-            <option value="note">📝 Notizen</option>
+            <option value="note">📝 Notiz</option>
             <option value="calendar">📅 Kalender</option>
-            <option value="mail">📧 E-Mail</option>
+            <option value="mail">📧 Mail</option>
             <option value="folder">📁 Ordner</option>
             <option value="settings">⚙️ Einstellungen</option>
             <option value="star">⭐ Favorit</option>
             <option value="bookmark">🔖 Lesezeichen</option>
-            <option value="dashboard">📊 Dashboard</option>
-            <option value="chart">📈 Diagramm</option>
-            <option value="tool">🔧 Tool</option>
-            <option value="globe">🌐 Website</option>
           </select>
         </div>
+        
         <div class="form-group">
-          <label for="shortcutTarget">Link-Verhalten</label>
-          <select id="shortcutTarget" name="target">
-            <option value="_self">Gleiche Seite</option>
+          <label for="shortcutTarget">Öffnen in</label>
+          <select id="shortcutTarget">
+            <option value="_self">Gleicher Tab</option>
             <option value="_blank">Neuer Tab</option>
           </select>
+          <small class="form-help">Wo soll der Link geöffnet werden</small>
         </div>
+        
         <div class="form-actions">
           <button type="button" onclick="closeCustomShortcutModal()" class="btn-cancel">Abbrechen</button>
           <button type="button" onclick="deleteCustomShortcut()" class="btn-delete" id="deleteShortcutBtn" style="display: none;">Löschen</button>
@@ -1587,6 +1569,24 @@ $isHaveToPayPage = basename($_SERVER['PHP_SELF']) === 'havetopay.php' ||
       notification.classList.add('translate-x-full');
       setTimeout(() => {
         document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+  
+  // Close modal on background click
+  document.getElementById('customShortcutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCustomShortcutModal();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('customShortcutModal').classList.contains('active')) {
+      closeCustomShortcutModal();
+    }
+  });
+</script>
       }, 300);
     }, 3000);
   }
