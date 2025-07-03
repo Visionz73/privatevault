@@ -53,6 +53,9 @@
       overflow: hidden;
       position: relative;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 1 / 1;
     }
 
     .file-card::before {
@@ -502,7 +505,7 @@
           
           <!-- Grid View -->
           <div id="gridView" class="<?= $currentView === 'grid' ? 'block' : 'hidden' ?>">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="grid gap-6" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
               <?php foreach ($files as $file): ?>
                 <div class="file-card group" data-file-type="<?= $file['file_type'] ?>">
                   <div class="p-6 h-full flex flex-col">
@@ -562,8 +565,7 @@
 
                       <!-- Actions -->
                       <div class="flex gap-2">
-                        <a href="/uploads/<?= urlencode($file['filename']) ?>" 
-                           download 
+                        <a href="/download.php?id=<?= $file['id'] ?>"
                            class="flex-1 liquid-glass-btn-secondary text-center py-2 text-sm">
                           Download
                         </a>
@@ -627,8 +629,7 @@
 
                         <!-- Actions -->
                         <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <a href="/uploads/<?= urlencode($file['filename']) ?>" 
-                             download 
+                          <a href="/download.php?id=<?= $file['id'] ?>"
                              class="liquid-glass-btn-secondary px-3 py-2 text-sm">
                             Download
                           </a>
