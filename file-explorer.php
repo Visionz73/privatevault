@@ -1,7 +1,5 @@
 <?php
-// file-explorer.php
 // Enhanced File Explorer with comprehensive features
-
 declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
@@ -18,6 +16,7 @@ $deleteId = filter_input(INPUT_GET, 'delete', FILTER_VALIDATE_INT);
 $currentView = filter_input(INPUT_GET, 'view', FILTER_SANITIZE_STRING) ?: 'grid';
 $searchQuery = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_STRING) ?: '';
 $filterType = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING) ?: '';
+$sortBy = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING) ?: 'upload_date';
 
 // File deletion with proper error handling
 if ($deleteId !== false && $deleteId !== null) {
@@ -87,7 +86,7 @@ $sql = "
     FROM documents d
     LEFT JOIN document_categories dc ON d.category_id = dc.id
     WHERE {$whereSql}
-    ORDER BY d.upload_date DESC
+    ORDER BY d.{$sortBy} DESC
     LIMIT 1000
 ";
 
@@ -104,7 +103,6 @@ try {
 $totalFiles = count($files);
 $totalSize = 0;
 $typeCounts = [];
-$categoryStats = [];
 
 foreach ($files as $file) {
     $ext = strtolower(pathinfo($file['filename'], PATHINFO_EXTENSION));
@@ -114,9 +112,6 @@ foreach ($files as $file) {
     if (is_file($filePath)) {
         $totalSize += filesize($filePath);
     }
-    
-    $category = $file['category_name'] ?? 'Uncategorized';
-    $categoryStats[$category] = ($categoryStats[$category] ?? 0) + 1;
 }
 
 // Get categories for dropdown
@@ -163,6 +158,11 @@ function getFileIcon(string $filename): array {
     ];
     
     return $iconMap[$ext] ?? ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-gray-400'];
+}
+
+// Include the template
+require_once __DIR__ . '/templates/file-explorer.php';
+?>
 }
 
 // Include the enhanced template
