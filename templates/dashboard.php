@@ -1019,8 +1019,7 @@
           </div>
             <div class="widget-buttons">
             <button onclick="window.location.href='/file-explorer.php'" class="quick-action-btn w-full px-4 py-2">
-              <i class="fas fa-folder-open mr-2"></i>
-              Datei-Explorer
+              Hochladen
             </button>
           </div>
         </div>

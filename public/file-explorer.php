@@ -76,6 +76,7 @@ $sql = "
     SELECT 
         d.*,
         dc.name AS category_name,
+        -- Anzahl der Punkte im Filename als Platzhalter für Dateigröße?
         CHAR_LENGTH(d.filename) - CHAR_LENGTH(REPLACE(d.filename, '.', '')) AS dot_count
     FROM documents d
     LEFT JOIN document_categories dc
@@ -87,11 +88,6 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// --- Kategorien für Dropdown ---
-$stmt = $pdo->prepare("SELECT * FROM document_categories WHERE user_id = :uid ORDER BY name");
-$stmt->execute([':uid' => $userId]);
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // --- Statistiken berechnen ---
 $totalFiles = count($files);
@@ -122,22 +118,26 @@ function formatFileSize(int $bytes): string
 function getFileIcon(string $filename): array
 {
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    
-    $iconMap = [
-        'pdf'  => ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-red-400'],
-        'jpg'  => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        'jpeg' => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        'png'  => ['icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', 'color' => 'text-green-400'],
-        'mp3'  => ['icon' => 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', 'color' => 'text-purple-400'],
-        'mp4'  => ['icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', 'color' => 'text-pink-400'],
-        'zip'  => ['icon' => 'M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7h2V8h8v5h6z', 'color' => 'text-yellow-400'],
-    ];
+    static $map = null;
 
-    return $iconMap[$ext] ?? ['icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'text-gray-400'];
+    if ($map === null) {
+        $map = [
+            // Beispiele, später erweitern…
+            'pdf'  => ['icon'=>'M9 12h6…','color'=>'text-red-400'],
+            'jpg'  => ['icon'=>'M4 16l4.586…','color'=>'text-green-400'],
+            'mp3'  => ['icon'=>'M9 19V6…','color'=>'text-purple-400'],
+            'mp4'  => ['icon'=>'M15 10l4.553…','color'=>'text-pink-400'],
+            'zip'  => ['icon'=>'M20 13V6…','color'=>'text-yellow-400'],
+        ];
+    }
+
+    return $map[$ext] ?? ['icon'=>'M9 12h6…','color'=>'text-gray-400'];
 }
 
-// --- Template laden ---
-require_once __DIR__ . '/../templates/file-explorer-fixed.php';
+// --- Template laden und Variablen übergeben ---
+$viewData = compact(
+    'files', 'folders', 'totalFiles', 'totalSize',
+    'typeCounts', 'currentPath', 'currentView',
     'searchQuery', 'filterType'
 );
 
