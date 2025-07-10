@@ -1,5 +1,5 @@
 <?php
-// file-explorer.php
-// Hauptseite für den Datei-Explorer
-require_once __DIR__ . '/src/controllers/file_explorer.php';
+// file-explorer.php - Haupteinsprungspunkt
+require_once __DIR__ . '/public/file-explorer.php';
+?>
 ?>

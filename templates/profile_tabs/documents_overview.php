@@ -18,37 +18,73 @@ $recentDocs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM documents WHERE user_id = ? AND is_deleted = 0");
 $stmt->execute([$userId]);
 $totalDocs = $stmt->fetchColumn();
+
+// Get document type counts
+$stmt = $pdo->prepare("
+    SELECT 
+        SUM(CASE WHEN file_extension IN ('pdf') THEN 1 ELSE 0 END) as pdfCount,
+        SUM(CASE WHEN file_extension IN ('jpg', 'jpeg', 'png') THEN 1 ELSE 0 END) as imageCount,
+        SUM(CASE WHEN file_extension IN ('doc', 'docx') THEN 1 ELSE 0 END) as wordCount,
+        COUNT(*) as docCount
+    FROM documents
+    WHERE user_id = ? AND is_deleted = 0
+");
+$stmt->execute([$userId]);
+[$pdfCount, $imageCount, $wordCount, $docCount] = $stmt->fetch(PDO::FETCH_NUM);
 ?>
 
 <div class="space-y-6">
-  <!-- Header -->
   <div class="glass-card p-8">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Dokumente Übersicht
-        </h2>
-        <p class="text-white/70">Schnellzugriff auf Ihre wichtigsten Dateien</p>
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-white">Dokumente Übersicht</h2>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <div class="text-3xl font-bold text-white"><?= $docCount ?? 0 ?></div>
+          <div class="text-white/60 text-sm">Gesamt</div>
+        </div>
       </div>
-      <div class="text-right">
-        <div class="text-sm text-white/60 mb-1">Gesamt</div>
-        <div class="text-2xl font-bold text-white"><?= $totalDocs ?></div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white/5 p-4 rounded-lg">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-file-pdf text-red-400 text-xl"></i>
+          <div>
+            <div class="text-white font-semibold">PDFs</div>
+            <div class="text-white/60 text-sm"><?= $pdfCount ?? 0 ?> Dateien</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/5 p-4 rounded-lg">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-image text-green-400 text-xl"></i>
+          <div>
+            <div class="text-white font-semibold">Bilder</div>
+            <div class="text-white/60 text-sm"><?= $imageCount ?? 0 ?> Dateien</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/5 p-4 rounded-lg">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-file-word text-blue-400 text-xl"></i>
+          <div>
+            <div class="text-white font-semibold">Dokumente</div>
+            <div class="text-white/60 text-sm"><?= $docCount ?? 0 ?> Dateien</div>
+          </div>
+        </div>
       </div>
     </div>
     
     <div class="mt-6 flex gap-4">
       <a href="/file-explorer.php" class="liquid-glass-btn-primary px-6 py-3 font-medium inline-flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0l7-3 7 3"/>
-        </svg>
-        Datei-Explorer öffnen
+        <i class="fas fa-folder-open"></i>
+        Alle Dateien anzeigen
       </a>
-      
       <a href="/upload.php" class="liquid-glass-btn-secondary px-6 py-3 font-medium inline-flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-        </svg>
-        Datei hochladen
+        <i class="fas fa-plus"></i>
+        Neue Datei hochladen
       </a>
     </div>
   </div>
