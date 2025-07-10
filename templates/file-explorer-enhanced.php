@@ -7,88 +7,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>    body { 
+  <style>
+    body { 
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
       min-height: 100vh;
-      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow-x: hidden;
     }
 
-    /* Animated gradient background similar to dashboard */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-      animation: gradientShift 15s ease-in-out infinite;
-      z-index: -1;
-    }
-
-    @keyframes gradientShift {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
-    /* Layout adjustments for navbar */
-    .file-explorer-container {
-      padding-top: 4rem; /* Mobile navbar height */
-    }
-    
-    @media (min-width: 769px) {
-      .file-explorer-container {
-        margin-left: 16rem; /* Desktop navbar width */
-        padding-top: 0;
-      }
-    }
-
-    /* Enhanced Liquid Glass Effects - Same as Dashboard */
-    .glass-card {
+    /* Enhanced Liquid Glass Effects */
+    .liquid-glass {
       background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
       box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    .glass-card:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.18);
+
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
-    .sidebar-glass {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(15px);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    .main-content-glass {
-      background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 2rem;
-      box-shadow: 
-        0 16px 48px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-
-    /* File Cards - Enhanced Liquid Glass */
+    /* File Cards */
     .file-card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
@@ -115,100 +59,45 @@
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-4px) scale(1.02);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
 
     .file-card:hover::before {
       left: 100%;
     }
 
-    .file-card.dragging {
-      opacity: 0.5;
-      transform: rotate(5deg) scale(1.05);
-      z-index: 1000;
-    }
-
-    .file-card.drop-target {
+    .file-card.selected {
       background: rgba(147, 51, 234, 0.2);
       border-color: rgba(147, 51, 234, 0.5);
-      transform: scale(1.05);
+      transform: scale(1.02);
     }
 
-    /* Navigation Items */
+    /* Navigation Sidebar */
+    .sidebar-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(25px) saturate(200%);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     .nav-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
+      transition: all 0.3s ease;
       cursor: pointer;
-    }
-    
-    .nav-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .nav-item:hover::before {
-      left: 100%;
+      text-decoration: none;
     }
 
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateX(4px);
+      text-decoration: none;
     }
 
     .nav-item.active {
       background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(79, 70, 229, 0.3));
       border-color: rgba(147, 51, 234, 0.5);
-      transform: translateX(8px);
-    }
-
-    /* Folder Navigation */
-    .folder-item {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .folder-item:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .folder-item.drop-zone {
-      background: rgba(34, 197, 94, 0.2);
-      border-color: rgba(34, 197, 94, 0.5);
-      transform: scale(1.05);
-    }
-
-    /* Search Bar */
-    .search-bar {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .search-bar:focus-within {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(147, 51, 234, 0.5);
-      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
     }
 
     /* Buttons */
@@ -229,105 +118,19 @@
       box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4);
     }
 
-    .liquid-glass-btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .liquid-glass-btn-primary:hover::before {
-      left: 100%;
-    }
-
-    .liquid-glass-btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-    }
-
-    .liquid-glass-btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .liquid-glass-btn-danger {
-      background: rgba(239, 68, 68, 0.2);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      border-radius: 0.75rem;
-      transition: all 0.3s ease;
-    }
-
-    .liquid-glass-btn-danger:hover {
-      background: rgba(239, 68, 68, 0.3);
-      border-color: rgba(239, 68, 68, 0.5);
-      transform: translateY(-1px);
-    }
-
-    /* Stats Cards */
-    .stats-card {
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.1) 0%, 
-        rgba(255, 255, 255, 0.05) 100%);
-      backdrop-filter: blur(20px);
+    /* Search and Input */
+    .search-bar {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1rem;
       transition: all 0.3s ease;
     }
 
-    .stats-card:hover {
+    .search-bar:focus-within {
       background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-    }
-
-    /* File Icons */
-    .file-icon-container {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-
-    .file-card:hover .file-icon-container {
-      transform: scale(1.1);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    /* File Type Specific Colors */
-    .file-type-image .file-icon-container {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
-    }
-
-    .file-type-video .file-icon-container {
-      background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(219, 39, 119, 0.1));
-    }
-
-    .file-type-audio .file-icon-container {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(126, 34, 206, 0.1));
-    }
-
-    .file-type-document .file-icon-container {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
-    }
-
-    .file-type-archive .file-icon-container {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+      border-color: rgba(147, 51, 234, 0.5);
+      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
     }
 
     /* View Toggle */
@@ -341,6 +144,10 @@
     .view-toggle-btn {
       transition: all 0.3s ease;
       border-radius: 0.5rem;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
     }
 
     .view-toggle-btn.active {
@@ -350,17 +157,10 @@
 
     .view-toggle-btn:hover {
       background: rgba(255, 255, 255, 0.1);
+      color: white;
     }
 
-    /* Breadcrumb */
-    .breadcrumb {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.75rem;
-    }
-
-    /* Custom Scrollbar */
+    /* Custom scrollbar */
     .custom-scrollbar::-webkit-scrollbar {
       width: 8px;
     }
@@ -375,55 +175,6 @@
       border-radius: 4px;
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Table Styles */
-    .liquid-glass-table {
-      background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 1.5rem;
-    }
-
-    .liquid-glass-table table {
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-
-    .liquid-glass-table thead tr {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .liquid-glass-table tbody tr:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    /* Loading Animation */
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    .loading-shimmer {
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite;
-    }
-
-    /* Drag and Drop Feedback */
-    .drag-over {
-      background: rgba(34, 197, 94, 0.2);
-      border-color: rgba(34, 197, 94, 0.5);
-    }
-
-    .drag-placeholder {
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px dashed rgba(255, 255, 255, 0.3);
-      border-radius: 1rem;
-    }
-
     /* Context Menu */
     .context-menu {
       background: rgba(255, 255, 255, 0.1);
@@ -436,28 +187,37 @@
 
     .context-menu-item {
       transition: all 0.2s ease;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
     }
 
     .context-menu-item:hover {
       background: rgba(255, 255, 255, 0.1);
+      color: white;
     }
 
-    /* Mobile Responsiveness */
+    /* Mobile responsiveness */
     @media (max-width: 768px) {
-      .glass-card, .file-card { 
-        border-radius: 1rem; 
+      .file-explorer-container {
+        margin-top: 4rem;
+        margin-left: 0;
       }
-      .nav-item { 
-        border-radius: 0.75rem; 
+    }
+
+    @media (min-width: 769px) {
+      .file-explorer-container {
+        margin-left: 16rem;
       }
     }
   </style>
 </head>
-<body class="h-full overflow-hidden">
-  <?php require_once __DIR__.'/../templates/navbar.php'; ?>
+<body class="min-h-screen">
+  <?php require_once __DIR__.'/navbar.php'; ?>
 
   <div class="file-explorer-container">
-    <div class="flex h-full">
+    <div class="flex h-screen">
       <!-- Sidebar -->
       <div class="sidebar-glass w-80 flex-shrink-0 p-6 overflow-y-auto custom-scrollbar">
         <!-- Header -->
@@ -470,7 +230,7 @@
 
         <!-- Quick Stats -->
         <div class="mb-8 space-y-4">
-          <div class="stats-card p-4">
+          <div class="liquid-glass p-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-white/60 text-sm">Dateien gesamt</p>
@@ -482,7 +242,7 @@
             </div>
           </div>
           
-          <div class="stats-card p-4">
+          <div class="liquid-glass p-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-white/60 text-sm">Speicher belegt</p>
@@ -490,52 +250,6 @@
               </div>
               <div class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center">
                 <i class="fas fa-hdd text-green-400"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Folder Navigation -->
-        <div class="mb-8">
-          <h3 class="text-white font-medium text-sm uppercase tracking-wide mb-4">Ordner</h3>
-          <div class="space-y-3">
-            <div class="folder-item p-3 drop-zone" data-category="all">
-              <div class="flex items-center gap-3 text-white/80 hover:text-white">
-                <i class="fas fa-home text-blue-400 w-4"></i>
-                <span>Alle Dateien</span>
-                <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full"><?= $totalFiles ?></span>
-              </div>
-            </div>
-
-            <div class="folder-item p-3 drop-zone" data-category="1">
-              <div class="flex items-center gap-3 text-white/80 hover:text-white">
-                <i class="fas fa-file-contract text-green-400 w-4"></i>
-                <span>Verträge</span>
-                <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full" id="contracts-count">0</span>
-              </div>
-            </div>
-
-            <div class="folder-item p-3 drop-zone" data-category="2">
-              <div class="flex items-center gap-3 text-white/80 hover:text-white">
-                <i class="fas fa-receipt text-yellow-400 w-4"></i>
-                <span>Rechnungen</span>
-                <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full" id="invoices-count">0</span>
-              </div>
-            </div>
-
-            <div class="folder-item p-3 drop-zone" data-category="3">
-              <div class="flex items-center gap-3 text-white/80 hover:text-white">
-                <i class="fas fa-shield-alt text-purple-400 w-4"></i>
-                <span>Versicherungen</span>
-                <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full" id="insurance-count">0</span>
-              </div>
-            </div>
-
-            <div class="folder-item p-3 drop-zone" data-category="4">
-              <div class="flex items-center gap-3 text-white/80 hover:text-white">
-                <i class="fas fa-folder text-gray-400 w-4"></i>
-                <span>Sonstige</span>
-                <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full" id="other-count">0</span>
               </div>
             </div>
           </div>
@@ -552,59 +266,15 @@
             <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full"><?= $totalFiles ?></span>
           </a>
 
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'documents'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'documents' ? 'active' : '' ?>">
-            <i class="fas fa-file-alt text-blue-400 w-4"></i>
-            <span>Dokumente</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['documents']))) ?>
-            </span>
-          </a>
-
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'images'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'images' ? 'active' : '' ?>">
-            <i class="fas fa-image text-green-400 w-4"></i>
-            <span>Bilder</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['images']))) ?>
-            </span>
-          </a>
-
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'videos'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'videos' ? 'active' : '' ?>">
-            <i class="fas fa-video text-pink-400 w-4"></i>
-            <span>Videos</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['videos']))) ?>
-            </span>
-          </a>
-
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'audio'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'audio' ? 'active' : '' ?>">
-            <i class="fas fa-music text-purple-400 w-4"></i>
-            <span>Audio</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['audio']))) ?>
-            </span>
-          </a>
-
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'archives'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'archives' ? 'active' : '' ?>">
-            <i class="fas fa-archive text-yellow-400 w-4"></i>
-            <span>Archive</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['archives']))) ?>
-            </span>
-          </a>
-
-          <a href="?<?= http_build_query(array_merge($_GET, ['type' => 'code'])) ?>" 
-             class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === 'code' ? 'active' : '' ?>">
-            <i class="fas fa-code text-cyan-400 w-4"></i>
-            <span>Code</span>
-            <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">
-              <?= array_sum(array_intersect_key($typeCounts, array_flip($fileTypes['code']))) ?>
-            </span>
-          </a>
+          <?php foreach($fileTypes as $type => $extensions): ?>
+            <?php $count = array_sum(array_intersect_key($typeCounts, array_flip($extensions))); ?>
+            <a href="?<?= http_build_query(array_merge($_GET, ['type' => $type])) ?>" 
+               class="nav-item p-3 flex items-center gap-3 text-white/80 hover:text-white <?= $filterType === $type ? 'active' : '' ?>">
+              <i class="fas fa-<?= getTypeIcon($type) ?> w-4 <?= getTypeColor($type) ?>"></i>
+              <span><?= ucfirst($type) ?></span>
+              <span class="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full"><?= $count ?></span>
+            </a>
+          <?php endforeach; ?>
         </div>
 
         <!-- Quick Actions -->
@@ -616,37 +286,26 @@
             Datei hochladen
           </a>
           
-          <button onclick="downloadSelected()" class="liquid-glass-btn-secondary p-3 w-full text-left text-white/80 hover:text-white" disabled id="downloadBtn">
+          <button onclick="downloadSelected()" class="nav-item p-3 w-full text-left text-white/80 hover:text-white" disabled id="downloadBtn">
             <i class="fas fa-download mr-3"></i>
             Ausgewählte herunterladen
           </button>
 
-          <button onclick="window.print()" class="nav-item p-3 w-full text-left text-white/80 hover:text-white">
-            <i class="fas fa-print mr-3"></i>
-            Liste drucken
+          <button onclick="deleteSelected()" class="nav-item p-3 w-full text-left text-white/80 hover:text-white" disabled id="deleteBtn">
+            <i class="fas fa-trash mr-3"></i>
+            Ausgewählte löschen
           </button>
         </div>
       </div>
 
       <!-- Main Content -->
-      <div class="main-content flex-1 flex flex-col min-w-0">
+      <div class="flex-1 flex flex-col min-w-0">
         <!-- Header Bar -->
-        <div class="glass-card m-6 mb-4">
+        <div class="liquid-glass m-6 mb-4">
           <div class="p-6">
             <div class="flex items-center justify-between">
-              <!-- Breadcrumb & Search -->
+              <!-- Search -->
               <div class="flex items-center gap-4 flex-1">
-                <div class="breadcrumb p-3">
-                  <div class="flex items-center gap-2 text-white/80">
-                    <i class="fas fa-home"></i>
-                    <span>Datei-Explorer</span>
-                    <?php if ($filterType): ?>
-                      <i class="fas fa-chevron-right text-xs"></i>
-                      <span class="capitalize"><?= ucfirst($filterType) ?></span>
-                    <?php endif; ?>
-                  </div>
-                </div>
-
                 <div class="search-bar flex-1 max-w-md">
                   <form method="GET" class="flex items-center">
                     <?php foreach ($_GET as $key => $value): ?>
@@ -672,16 +331,16 @@
               <div class="flex items-center gap-4">
                 <div class="view-toggle p-1 flex gap-1">
                   <button onclick="switchView('grid')" 
-                          class="view-toggle-btn px-3 py-2 text-white/60 hover:text-white <?= $currentView === 'grid' ? 'active' : '' ?>">
+                          class="view-toggle-btn px-3 py-2 <?= $currentView === 'grid' ? 'active' : '' ?>">
                     <i class="fas fa-th"></i>
                   </button>
                   <button onclick="switchView('list')" 
-                          class="view-toggle-btn px-3 py-2 text-white/60 hover:text-white <?= $currentView === 'list' ? 'active' : '' ?>">
+                          class="view-toggle-btn px-3 py-2 <?= $currentView === 'list' ? 'active' : '' ?>">
                     <i class="fas fa-list"></i>
                   </button>
                 </div>
 
-                <button onclick="selectAll()" class="liquid-glass-btn-secondary px-4 py-2 text-sm">
+                <button onclick="selectAll()" class="liquid-glass-btn-primary px-4 py-2 text-sm">
                   <i class="fas fa-check-square mr-2"></i>
                   Alle auswählen
                 </button>
@@ -694,7 +353,7 @@
         <div class="flex-1 p-6 pt-0 overflow-y-auto custom-scrollbar">
           <?php if (empty($files)): ?>
             <!-- Empty State -->
-            <div class="glass-card p-12 text-center">
+            <div class="liquid-glass p-12 text-center">
               <div class="w-24 h-24 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-folder-open text-4xl text-white/40"></i>
               </div>
@@ -717,18 +376,10 @@
                   <?php 
                   $fileInfo = getFileIcon($file['filename']);
                   $ext = strtolower(pathinfo($file['filename'], PATHINFO_EXTENSION));
-                  $fileType = 'document';
-                  foreach ($fileTypes as $type => $extensions) {
-                    if (in_array($ext, $extensions)) {
-                      $fileType = $type;
-                      break;
-                    }
-                  }
-                  ?>                  <div class="file-card file-type-<?= $fileType ?> p-6 group" 
-                       draggable="true" 
+                  ?>
+                  <div class="file-card p-6 group" 
                        data-file-id="<?= $file['id'] ?>"
                        data-filename="<?= htmlspecialchars($file['filename']) ?>"
-                       data-category-id="<?= $file['category_id'] ?? 0 ?>"
                        oncontextmenu="showContextMenu(event, <?= $file['id'] ?>)">
                     <div class="flex flex-col h-full">
                       <!-- Selection Checkbox -->
@@ -737,8 +388,8 @@
                                data-file-id="<?= $file['id'] ?>" onchange="updateBulkActions()">
                         
                         <!-- File Icon -->
-                        <div class="file-icon-container mx-auto">
-                          <svg class="w-6 h-6 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="file-icon-container mx-auto w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center">
+                          <svg class="w-8 h-8 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $fileInfo['icon'] ?>"/>
                           </svg>
                         </div>
@@ -752,21 +403,370 @@
 
                       <!-- File Info -->
                       <div class="flex-1 text-center">
-                        <h3 class="text-white font-medium text-sm mb-1 truncate" title="<?= htmlspecialchars($file['title'] ?? $file['original_name'] ?? $file['filename']) ?>">
-                          <?= htmlspecialchars($file['title'] ?? $file['original_name'] ?? $file['filename']) ?>
+                        <h3 class="text-white font-medium text-sm mb-1 truncate" title="<?= htmlspecialchars($file['display_name']) ?>">
+                          <?= htmlspecialchars($file['display_name']) ?>
                         </h3>
                         <p class="text-white/60 text-xs mb-2"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></p>
-                        <p class="text-white/40 text-xs"><?= date('d.m.Y', strtotime($file['upload_date'])) ?></p>
+                        <p class="text-white/40 text-xs"><?= date('d.m.Y', $file['upload_timestamp']) ?></p>
                       </div>
 
                       <!-- Actions -->
                       <div class="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a href="/download.php?id=<?= $file['id'] ?>" 
-                           class="flex-1 text-center py-2 px-3 liquid-glass-btn-secondary text-xs">
+                        <a href="/api/download.php?id=<?= $file['id'] ?>" 
+                           class="flex-1 text-center py-2 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
                           <i class="fas fa-download mr-1"></i>
                           Download
                         </a>
                         <button onclick="deleteFile(<?= $file['id'] ?>)" 
+                                class="py-2 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
+            <!-- List View -->
+            <div id="listView" class="<?= $currentView === 'list' ? 'block' : 'hidden' ?>">
+              <div class="liquid-glass overflow-hidden">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-white/10">
+                      <th class="text-left py-4 px-6 font-medium text-white/80">
+                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()" 
+                               class="rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500">
+                      </th>
+                      <th class="text-left py-4 px-6 font-medium text-white/80">Name</th>
+                      <th class="text-left py-4 px-6 font-medium text-white/80">Typ</th>
+                      <th class="text-left py-4 px-6 font-medium text-white/80">Kategorie</th>
+                      <th class="text-left py-4 px-6 font-medium text-white/80">Datum</th>
+                      <th class="text-left py-4 px-6 font-medium text-white/80">Größe</th>
+                      <th class="text-right py-4 px-6 font-medium text-white/80">Aktionen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($files as $file): ?>
+                      <?php 
+                      $fileInfo = getFileIcon($file['filename']);
+                      $ext = strtolower(pathinfo($file['filename'], PATHINFO_EXTENSION));
+                      $filePath = __DIR__ . '/../uploads/' . $file['filename'];
+                      $fileSize = file_exists($filePath) ? filesize($filePath) : ($file['file_size'] ?? 0);
+                      ?>
+                      <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group" 
+                          data-file-id="<?= $file['id'] ?>"
+                          oncontextmenu="showContextMenu(event, <?= $file['id'] ?>)">
+                        <td class="py-4 px-6">
+                          <input type="checkbox" class="file-select rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500" 
+                                 data-file-id="<?= $file['id'] ?>" onchange="updateBulkActions()">
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                              <svg class="w-4 h-4 <?= $fileInfo['color'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $fileInfo['icon'] ?>"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <p class="text-white font-medium text-sm"><?= htmlspecialchars($file['display_name']) ?></p>
+                              <p class="text-white/60 text-xs"><?= htmlspecialchars($file['filename']) ?></p>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <span class="text-white/70 text-sm uppercase"><?= $ext ?></span>
+                        </td>
+                        <td class="py-4 px-6 text-white/70 text-sm"><?= htmlspecialchars($file['category_name'] ?? 'Keine Kategorie') ?></td>
+                        <td class="py-4 px-6 text-white/70 text-sm"><?= date('d.m.Y', $file['upload_timestamp']) ?></td>
+                        <td class="py-4 px-6 text-white/70 text-sm"><?= formatFileSize($fileSize) ?></td>
+                        <td class="py-4 px-6 text-right">
+                          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <a href="/api/download.php?id=<?= $file['id'] ?>" 
+                               class="py-1 px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs transition-colors">
+                              Download
+                            </a>
+                            <button onclick="deleteFile(<?= $file['id'] ?>)" 
+                                    class="py-1 px-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 text-xs transition-colors">
+                              Löschen
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div id="contextMenu" class="context-menu fixed hidden py-2 min-w-48">
+    <button onclick="downloadFile(contextMenuFileId)" class="context-menu-item w-full text-left px-4 py-2 text-sm">
+      <i class="fas fa-download mr-3"></i>Download
+    </button>
+    <button onclick="renameFile(contextMenuFileId)" class="context-menu-item w-full text-left px-4 py-2 text-sm">
+      <i class="fas fa-edit mr-3"></i>Umbenennen
+    </button>
+    <button onclick="copyFile(contextMenuFileId)" class="context-menu-item w-full text-left px-4 py-2 text-sm">
+      <i class="fas fa-copy mr-3"></i>Kopieren
+    </button>
+    <hr class="border-white/10 my-1">
+    <button onclick="deleteFile(contextMenuFileId)" class="context-menu-item w-full text-left px-4 py-2 text-red-400 hover:text-red-300 text-sm">
+      <i class="fas fa-trash mr-3"></i>Löschen
+    </button>
+  </div>
+
+  <script>
+    let contextMenuFileId = null;
+    let selectedFiles = new Set();
+
+    // View Switching
+    function switchView(view) {
+      const gridView = document.getElementById('gridView');
+      const listView = document.getElementById('listView');
+      const buttons = document.querySelectorAll('.view-toggle-btn');
+      
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.set('view', view);
+      window.history.replaceState({}, '', url);
+      
+      // Toggle views
+      if (view === 'grid') {
+        gridView.classList.remove('hidden');
+        listView.classList.add('hidden');
+      } else {
+        gridView.classList.add('hidden');
+        listView.classList.remove('hidden');
+      }
+      
+      // Update buttons
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+
+    // File Selection
+    function updateBulkActions() {
+      const checkboxes = document.querySelectorAll('.file-select:checked');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+      
+      selectedFiles = new Set(Array.from(checkboxes).map(cb => cb.dataset.fileId));
+      
+      const hasSelection = selectedFiles.size > 0;
+      downloadBtn.disabled = !hasSelection;
+      deleteBtn.disabled = !hasSelection;
+      
+      downloadBtn.classList.toggle('nav-item', !hasSelection);
+      downloadBtn.classList.toggle('liquid-glass-btn-primary', hasSelection);
+      deleteBtn.classList.toggle('nav-item', !hasSelection);
+      deleteBtn.classList.toggle('liquid-glass-btn-primary', hasSelection);
+    }
+
+    function selectAll() {
+      const checkboxes = document.querySelectorAll('.file-select');
+      const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+      
+      checkboxes.forEach(cb => cb.checked = !allSelected);
+      updateBulkActions();
+    }
+
+    function toggleSelectAll() {
+      const mainCheckbox = document.getElementById('selectAllCheckbox');
+      const fileCheckboxes = document.querySelectorAll('.file-select');
+      
+      fileCheckboxes.forEach(cb => cb.checked = mainCheckbox.checked);
+      updateBulkActions();
+    }
+
+    // Context Menu
+    function showContextMenu(e, fileId) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      contextMenuFileId = fileId;
+      const contextMenu = document.getElementById('contextMenu');
+      
+      contextMenu.style.left = e.pageX + 'px';
+      contextMenu.style.top = e.pageY + 'px';
+      contextMenu.classList.remove('hidden');
+      
+      document.addEventListener('click', hideContextMenu);
+    }
+
+    function hideContextMenu() {
+      document.getElementById('contextMenu').classList.add('hidden');
+      document.removeEventListener('click', hideContextMenu);
+    }
+
+    // File Operations
+    function downloadFile(fileId) {
+      window.location.href = `/api/download.php?id=${fileId}`;
+      hideContextMenu();
+    }
+
+    function deleteFile(fileId) {
+      if (confirm('Sind Sie sicher, dass Sie diese Datei löschen möchten?')) {
+        fetch('/api/file-operations.php?action=delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file_id: fileId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showNotification(data.error, 'error');
+          }
+        });
+      }
+      hideContextMenu();
+    }
+
+    function renameFile(fileId) {
+      const newName = prompt('Neuer Name:');
+      if (newName && newName.trim()) {
+        fetch('/api/file-operations.php?action=rename', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file_id: fileId, new_name: newName.trim() })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showNotification(data.error, 'error');
+          }
+        });
+      }
+      hideContextMenu();
+    }
+
+    function copyFile(fileId) {
+      const newName = prompt('Name für die Kopie:');
+      if (newName !== null) {
+        fetch('/api/file-operations.php?action=copy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file_id: fileId, new_name: newName.trim() })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showNotification(data.error, 'error');
+          }
+        });
+      }
+      hideContextMenu();
+    }
+
+    function downloadSelected() {
+      if (selectedFiles.size === 0) return;
+      
+      if (selectedFiles.size === 1) {
+        const fileId = Array.from(selectedFiles)[0];
+        downloadFile(fileId);
+      } else {
+        showNotification('Bulk download wird implementiert...', 'info');
+      }
+    }
+
+    function deleteSelected() {
+      if (selectedFiles.size === 0) return;
+      
+      if (confirm(`${selectedFiles.size} Dateien löschen?`)) {
+        fetch('/api/file-operations.php?action=bulk-delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file_ids: Array.from(selectedFiles) })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showNotification(data.error, 'error');
+          }
+        });
+      }
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      const colors = {
+        success: 'bg-green-500/20 border-green-500/50',
+        error: 'bg-red-500/20 border-red-500/50',
+        warning: 'bg-yellow-500/20 border-yellow-500/50',
+        info: 'bg-blue-500/20 border-blue-500/50'
+      };
+      
+      notification.className = `fixed top-4 right-4 p-4 rounded-xl backdrop-blur-lg border ${colors[type]} text-white z-50 max-w-sm`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update bulk actions on page load
+      updateBulkActions();
+      
+      // Hide context menu on outside click
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('#contextMenu')) {
+          hideContextMenu();
+        }
+      });
+    });
+  </script>
+
+  <?php
+  // Helper functions for template
+  function getTypeIcon($type) {
+    $icons = [
+      'documents' => 'file-alt',
+      'images' => 'image',
+      'videos' => 'video',
+      'audio' => 'music',
+      'archives' => 'archive',
+      'code' => 'code'
+    ];
+    return $icons[$type] ?? 'file';
+  }
+
+  function getTypeColor($type) {
+    $colors = [
+      'documents' => 'text-blue-400',
+      'images' => 'text-green-400',
+      'videos' => 'text-pink-400',
+      'audio' => 'text-purple-400',
+      'archives' => 'text-yellow-400',
+      'code' => 'text-cyan-400'
+    ];
+    return $colors[$type] ?? 'text-gray-400';
+  }
+  ?>
+</body>
+</html>
                                 class="py-2 px-3 liquid-glass-btn-danger text-xs">
                           <i class="fas fa-trash"></i>
                         </button>

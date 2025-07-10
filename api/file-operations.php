@@ -317,4 +317,266 @@ function logActivity($userId, $action, $details, $pdo) {
         error_log("Activity logging error: " . $e->getMessage());
     }
 }
+
+function copyFile($input, $userId, $pdo) {
+    $fileId = $input['file_id'] ?? null;
+    $newName = trim($input['new_name'] ?? '');
+    
+    if (!$fileId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'File ID required']);
+        return;
+    }
+    
+    // Get original file
+    $stmt = $pdo->prepare("SELECT * FROM documents WHERE id = :id AND user_id = :uid");
+    $stmt->execute([':id' => $fileId, ':uid' => $userId]);
+    $originalFile = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$originalFile) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Datei nicht gefunden']);
+        return;
+    }
+    
+    // Generate new filename
+    $originalPath = __DIR__ . '/../uploads/' . $originalFile['filename'];
+    $pathInfo = pathinfo($originalFile['filename']);
+    $newFilename = uniqid() . '_' . ($newName ?: $pathInfo['filename']) . '.' . $pathInfo['extension'];
+    $newPath = __DIR__ . '/../uploads/' . $newFilename;
+    
+    // Copy physical file
+    if (!copy($originalPath, $newPath)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Fehler beim Kopieren der Datei']);
+        return;
+    }
+    
+    // Create database entry
+    $stmt = $pdo->prepare("
+        INSERT INTO documents (user_id, filename, original_name, title, category_id, file_size, upload_date)
+        VALUES (:uid, :filename, :original_name, :title, :category_id, :file_size, NOW())
+    ");
+    
+    $result = $stmt->execute([
+        ':uid' => $userId,
+        ':filename' => $newFilename,
+        ':original_name' => $newName ?: $originalFile['original_name'],
+        ':title' => $newName ?: $originalFile['title'],
+        ':category_id' => $originalFile['category_id'],
+        ':file_size' => filesize($newPath)
+    ]);
+    
+    if ($result) {
+        $newFileId = $pdo->lastInsertId();
+        logActivity($userId, 'file_copy', [
+            'original_file_id' => $fileId,
+            'new_file_id' => $newFileId,
+            'new_filename' => $newFilename
+        ], $pdo);
+        
+        echo json_encode(['success' => true, 'message' => 'Datei kopiert', 'new_file_id' => $newFileId]);
+    } else {
+        unlink($newPath); // Clean up physical file
+        http_response_code(500);
+        echo json_encode(['error' => 'Fehler beim Erstellen der Kopie']);
+    }
+}
+
+function createFolder($input, $userId, $pdo) {
+    $folderName = trim($input['folder_name'] ?? '');
+    $parentId = $input['parent_id'] ?? null;
+    
+    if (empty($folderName)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Ordnername erforderlich']);
+        return;
+    }
+    
+    // Check if folder already exists
+    $stmt = $pdo->prepare("
+        SELECT id FROM document_categories 
+        WHERE name = :name AND user_id = :uid AND parent_id = :parent_id
+    ");
+    $stmt->execute([
+        ':name' => $folderName,
+        ':uid' => $userId,
+        ':parent_id' => $parentId
+    ]);
+    
+    if ($stmt->fetch()) {
+        http_response_code(409);
+        echo json_encode(['error' => 'Ordner existiert bereits']);
+        return;
+    }
+    
+    // Create folder
+    $stmt = $pdo->prepare("
+        INSERT INTO document_categories (name, user_id, parent_id, created_at)
+        VALUES (:name, :uid, :parent_id, NOW())
+    ");
+    
+    $result = $stmt->execute([
+        ':name' => $folderName,
+        ':uid' => $userId,
+        ':parent_id' => $parentId
+    ]);
+    
+    if ($result) {
+        $folderId = $pdo->lastInsertId();
+        logActivity($userId, 'folder_create', [
+            'folder_id' => $folderId,
+            'folder_name' => $folderName,
+            'parent_id' => $parentId
+        ], $pdo);
+        
+        echo json_encode(['success' => true, 'message' => 'Ordner erstellt', 'folder_id' => $folderId]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Fehler beim Erstellen des Ordners']);
+    }
+}
+
+function updateMetadata($input, $userId, $pdo) {
+    $fileId = $input['file_id'] ?? null;
+    $metadata = $input['metadata'] ?? [];
+    
+    if (!$fileId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'File ID required']);
+        return;
+    }
+    
+    $updates = [];
+    $params = [':id' => $fileId, ':uid' => $userId];
+    
+    if (isset($metadata['title'])) {
+        $updates[] = 'title = :title';
+        $params[':title'] = trim($metadata['title']);
+    }
+    
+    if (isset($metadata['description'])) {
+        $updates[] = 'description = :description';
+        $params[':description'] = trim($metadata['description']);
+    }
+    
+    if (isset($metadata['tags'])) {
+        $updates[] = 'tags = :tags';
+        $params[':tags'] = json_encode($metadata['tags']);
+    }
+    
+    if (empty($updates)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Keine Metadaten zum Aktualisieren']);
+        return;
+    }
+    
+    $updates[] = 'updated_at = NOW()';
+    $sql = "UPDATE documents SET " . implode(', ', $updates) . " WHERE id = :id AND user_id = :uid";
+    
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute($params);
+    
+    if ($result && $stmt->rowCount() > 0) {
+        logActivity($userId, 'file_metadata_update', [
+            'file_id' => $fileId,
+            'updated_fields' => array_keys($metadata)
+        ], $pdo);
+        
+        echo json_encode(['success' => true, 'message' => 'Metadaten aktualisiert']);
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'Datei nicht gefunden']);
+    }
+}
+
+function bulkDelete($input, $userId, $pdo) {
+    $fileIds = $input['file_ids'] ?? [];
+    
+    if (empty($fileIds) || !is_array($fileIds)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'File IDs required']);
+        return;
+    }
+    
+    $placeholders = str_repeat('?,', count($fileIds) - 1) . '?';
+    $params = array_merge($fileIds, [$userId]);
+    
+    // Get files to delete
+    $stmt = $pdo->prepare("
+        SELECT id, filename FROM documents 
+        WHERE id IN ($placeholders) AND user_id = ?
+    ");
+    $stmt->execute($params);
+    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    if (empty($files)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Keine Dateien gefunden']);
+        return;
+    }
+    
+    $deletedCount = 0;
+    $deletedFiles = [];
+    
+    foreach ($files as $file) {
+        // Delete from database
+        $stmt = $pdo->prepare("DELETE FROM documents WHERE id = ? AND user_id = ?");
+        if ($stmt->execute([$file['id'], $userId])) {
+            // Delete physical file
+            $filePath = __DIR__ . '/../uploads/' . $file['filename'];
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
+            $deletedCount++;
+            $deletedFiles[] = $file['id'];
+        }
+    }
+    
+    if ($deletedCount > 0) {
+        logActivity($userId, 'bulk_delete', [
+            'deleted_files' => $deletedFiles,
+            'count' => $deletedCount
+        ], $pdo);
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => "$deletedCount Dateien gelöscht",
+            'deleted_count' => $deletedCount
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Fehler beim Löschen']);
+    }
+}
+
+function getRecentFiles($params, $userId, $pdo) {
+    $limit = min((int)($params['limit'] ?? 10), 50);
+    $days = min((int)($params['days'] ?? 7), 30);
+    
+    $stmt = $pdo->prepare("
+        SELECT d.*, dc.name as category_name
+        FROM documents d
+        LEFT JOIN document_categories dc ON d.category_id = dc.id
+        WHERE d.user_id = :uid 
+        AND d.upload_date >= DATE_SUB(NOW(), INTERVAL :days DAY)
+        ORDER BY d.upload_date DESC
+        LIMIT :limit
+    ");
+    
+    $stmt->execute([
+        ':uid' => $userId,
+        ':days' => $days,
+        ':limit' => $limit
+    ]);
+    
+    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo json_encode([
+        'success' => true,
+        'files' => $files,
+        'count' => count($files),
+        'days' => $days
+    ]);
+}
 ?>
