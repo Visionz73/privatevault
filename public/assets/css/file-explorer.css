@@ -400,21 +400,3 @@
     border-radius: 0.5rem;
   }
 }
-
-body { margin:0;font-family:sans-serif;display:flex }
-.fe-sidebar { width:12rem;background:#111;color:#fff;padding:1rem;display:flex;flex-direction:column }
-.fe-sidebar a { color:#ccc;text-decoration:none;margin:0.5rem 0 }
-.fe-sidebar a.active { color:#fff;font-weight:bold }
-.fe-main { flex:1; padding:1rem; background:#222;color:#fff }
-.fe-header { display:flex; justify-content:space-between; margin-bottom:1rem }
-.fe-header input { padding:0.3rem; width:200px }
-.fe-toggle button { background:#333;color:#ccc;border:none;padding:0.3rem;cursor:pointer }
-.fe-toggle button.active { background:#555;color:#fff }
-.fe-grid { display:grid; grid-template-columns:repeat(auto-fill,150px); gap:1rem }
-.fe-card { background:#333;padding:1rem;border-radius:8px;display:flex;flex-direction:column;align-items:center }
-.fe-icon { font-size:2rem }
-.fe-name { margin:0.5rem 0; text-align:center; word-break:break-all }
-.fe-date { font-size:0.8rem;color:#aaa }
-.fe-actions a { color:#ccc;margin:0 0.3rem;text-decoration:none }
-.fe-list { width:100%;border-collapse:collapse }
-.fe-list th, .fe-list td { padding:0.5rem;border-bottom:1px solid #444 }

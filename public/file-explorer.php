@@ -4,15 +4,15 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../src/controllers/FileExplorerController.php';
-session_start();
+require_once __DIR__ . '/../src/lib/auth.php';
 
-$ctrl = new FileExplorerController();
-if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $ctrl->delete((int)$_GET['delete']);
-} else {
-    $ctrl->index();
-}
+session_start();
+requireLogin();
+
+$userId = (int)$_SESSION['user_id'];
+
+// --- Input validieren und säubern ---
+$deleteId    = filter_input(INPUT_GET, 'delete', FILTER_VALIDATE_INT);
 $currentPath = filter_input(INPUT_GET, 'path',   FILTER_SANITIZE_STRING) ?: '';
 $currentView = filter_input(INPUT_GET, 'view',   FILTER_SANITIZE_STRING) ?: 'grid';
 $searchQuery = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_STRING) ?: '';

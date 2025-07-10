@@ -21,27 +21,33 @@ $totalDocs = $stmt->fetchColumn();
 ?>
 
 <div class="space-y-6">
+  <!-- Header -->
   <div class="glass-card p-8">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-2xl font-bold text-white mb-2">Dokumente Übersicht</h3>
-        <p class="text-white/70">Verwalten Sie alle Ihre Dateien</p>
+        <h2 class="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          Dokumente Übersicht
+        </h2>
+        <p class="text-white/70">Schnellzugriff auf Ihre wichtigsten Dateien</p>
       </div>
-      <div class="flex items-center gap-4">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-white"><?= $docCount ?? 0 ?></div>
-          <div class="text-white/60 text-sm">Dateien</div>
-        </div>
+      <div class="text-right">
+        <div class="text-sm text-white/60 mb-1">Gesamt</div>
+        <div class="text-2xl font-bold text-white"><?= $totalDocs ?></div>
       </div>
     </div>
     
     <div class="mt-6 flex gap-4">
       <a href="/file-explorer.php" class="liquid-glass-btn-primary px-6 py-3 font-medium inline-flex items-center gap-2">
-        <i class="fas fa-folder-open"></i>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0l7-3 7 3"/>
+        </svg>
         Datei-Explorer öffnen
       </a>
+      
       <a href="/upload.php" class="liquid-glass-btn-secondary px-6 py-3 font-medium inline-flex items-center gap-2">
-        <i class="fas fa-upload"></i>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
         Datei hochladen
       </a>
     </div>
@@ -140,12 +146,6 @@ $totalDocs = $stmt->fetchColumn();
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0l7-3 7 3"/>
             </svg>
             Alle Dateien im Explorer anzeigen
-          </a>
-        </div>
-      <?php endif; ?>
-    </div>
-  <?php endif; ?>
-</div>
           </a>
         </div>
       <?php endif; ?>
