@@ -22,7 +22,7 @@ $docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
 <article class="widget-card p-6 flex flex-col">
   <div class="flex justify-between items-center mb-6">
-    <a href="profile.php?tab=documents" class="group inline-flex items-center">
+    <a href="/data-explorer.php" class="group inline-flex items-center">
       <h2 class="mr-1 text-white/90 text-xl font-semibold">Dokumente</h2>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -38,7 +38,7 @@ $docCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
   <div class="widget-scroll-container flex-1">
     <div class="widget-scroll-content space-y-2">
       <?php if (!empty($recentDocuments)): ?>
-        <?php foreach ($recentDocuments as $doc): ?>          <div class="widget-list-item p-3 bg-white/5 border border-white/10 rounded-lg transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:transform hover:translateX-1 cursor-pointer" onclick="window.location.href='/file-explorer.php'">
+        <?php foreach ($recentDocuments as $doc): ?>          <div class="widget-list-item p-3 bg-white/5 border border-white/10 rounded-lg transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:transform hover:translateX-1 cursor-pointer" onclick="window.location.href='/data-explorer.php'">
             <div class="flex items-center space-x-3">
               <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg flex items-center justify-center backdrop-blur-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
