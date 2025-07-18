@@ -266,131 +266,30 @@
       color: white;
       font-weight: 800;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }    /* Dashboard Widget Layout - Responsive und dynamisch */
+    }    /* Dashboard Widget Layout - Buttons bündig am unteren Rand */
     .dashboard-short {
-      background: rgba(30, 30, 30, 0.85);
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 1.5rem;
-      color: white;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      height: 350px;
-      position: relative;
+      min-height: 350px; /* Mindesthöhe für einheitliches Erscheinungsbild */
     }
 
     .widget-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-height: 0;
     }
 
     .widget-buttons {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Responsive Dashboard Grid - Dynamische Anpassung */
-    .dashboard-grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      transition: all 0.3s ease;
-    }
-
-    /* Verschiedene Layout-Modi */
-    .dashboard-grid.layout-compact {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .dashboard-grid.layout-wide {
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 2rem;
-    }
-
-    .dashboard-grid.layout-large {
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
-    }
-
-    .dashboard-grid.layout-xl {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    /* Dynamische Spalten - Responsive Anpassung */
-    .dashboard-grid.dynamic-columns {
-      grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-    }
-
-    /* Auto-Resize Modus */
-    .dashboard-grid.auto-resize {
-      grid-template-columns: repeat(auto-fit, minmax(max(250px, 20vw), 1fr));
-    }
-
-    /* Responsive Breakpoints für bessere Anpassung */
-    @media (max-width: 640px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (min-width: 641px) and (max-width: 1024px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      }
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
-    }
-
-    @media (min-width: 1025px) and (max-width: 1280px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      }
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      }
-    }
-
-    @media (min-width: 1281px) and (max-width: 1536px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      }
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      }
-    }
-
-    @media (min-width: 1537px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      }
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      }
-    }
-
-    /* Bessere Anpassung für ultrabreite Bildschirme */
-    @media (min-width: 1920px) {
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      }
-    }
-
-    @media (min-width: 2560px) {
-      .dashboard-grid.dynamic-columns {
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-      }
+      margin-top: auto; /* Buttons automatisch nach unten drücken */
+      padding: 1.5rem;
+      padding-top: 0;
     }
 
     /* Quick Action Buttons */
@@ -965,225 +864,29 @@
       transition: background 0.5s ease, color 0.5s ease;
     }
 
-    /* Enhanced Dark Theme - Verbesserte Lesbarkeit */
-    body:not(.light-theme) {
-      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
-      color: #ffffff;
-    }
-
-    body:not(.light-theme) .dashboard-short {
-      background: rgba(30, 30, 30, 0.9);
-      backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-    }
-
-    body:not(.light-theme) .text-primary,
-    body:not(.light-theme) .text-white {
-      color: #ffffff !important;
-      font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    body:not(.light-theme) .text-secondary,
-    body:not(.light-theme) .text-white\/80 {
-      color: rgba(255, 255, 255, 0.9) !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    body:not(.light-theme) .text-muted,
-    body:not(.light-theme) .text-white\/60 {
-      color: rgba(255, 255, 255, 0.8) !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    body:not(.light-theme) .text-white\/50 {
-      color: rgba(255, 255, 255, 0.75) !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-    }
-
-    body:not(.light-theme) .stats-number {
-      color: #ffffff !important;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-    }
-
-    body:not(.light-theme) .quick-action-btn {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    body:not(.light-theme) .quick-action-btn:hover {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: #ffffff;
-    }
-
-    body:not(.light-theme) .short-list-item {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-    }
-
-    body:not(.light-theme) .short-list-item:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Enhanced Light Theme - Perfekte Lesbarkeit */
+    /* Light Theme Overrides */
     body.light-theme {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #cbd5e1 100%);
       color: #1f2937;
     }
 
-    body.light-theme .dashboard-short {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(25px);
-      border: 1px solid rgba(0, 0, 0, 0.1);
+    body.light-theme .dashboard-short,
+    body.light-theme .glassmorphism-container {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
       color: #1f2937;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     }
 
-    body.light-theme .text-primary,
-    body.light-theme .text-white,
-    body.light-theme .text-white\/90,
-    body.light-theme .text-white\/80,
-    body.light-theme .text-white\/60,
-    body.light-theme .text-white\/50 {
+    body.light-theme .text-primary {
       color: #1f2937 !important;
-      font-weight: 600;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
     }
 
     body.light-theme .text-secondary {
-      color: #374151 !important;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+      color: #4b5563 !important;
     }
 
     body.light-theme .text-muted {
       color: #6b7280 !important;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
-    }
-
-    body.light-theme .stats-number {
-      color: #1f2937 !important;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-    }
-
-    /* Light Theme - Weitere Anpassungen */
-    body.light-theme .control-bar {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    }
-
-    body.light-theme .control-icon {
-      background: rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      color: #374151;
-    }
-
-    body.light-theme .control-icon:hover {
-      background: rgba(0, 0, 0, 0.1);
-      border-color: rgba(0, 0, 0, 0.2);
-      color: #1f2937;
-    }
-
-    body.light-theme .control-icon.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: rgba(59, 130, 246, 0.3);
-      color: #3b82f6;
-    }
-
-    body.light-theme .quick-action-btn {
-      background: rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      color: #1f2937;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-    }
-
-    body.light-theme .quick-action-btn:hover {
-      background: rgba(0, 0, 0, 0.12);
-      border-color: rgba(0, 0, 0, 0.2);
-      color: #111827;
-    }
-
-    body.light-theme .short-list-item {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      color: #1f2937;
-    }
-
-    body.light-theme .short-list-item:hover {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    /* Verbesserte Lesbarkeit für Inputs */
-    body.light-theme input[type="text"],
-    body.light-theme input[type="email"],
-    body.light-theme input[type="password"],
-    body.light-theme textarea,
-    body.light-theme select {
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      color: #1f2937;
-    }
-
-    body.light-theme input[type="text"]:focus,
-    body.light-theme input[type="email"]:focus,
-    body.light-theme input[type="password"]:focus,
-    body.light-theme textarea:focus,
-    body.light-theme select:focus {
-      background: rgba(255, 255, 255, 1);
-      border-color: rgba(59, 130, 246, 0.5);
-      color: #111827;
-    }
-
-    /* Verbesserte Lesbarkeit für Notizen */
-    body.light-theme .note-card {
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      color: #1f2937;
-    }
-
-    body.light-theme .note-title {
-      color: #111827;
-    }
-
-    body.light-theme .note-content {
-      color: #374151;
-    }
-
-    body.light-theme .note-footer {
-      color: #6b7280;
-    }
-
-    body.light-theme .quick-action-btn:hover {
-      background: rgba(0, 0, 0, 0.15);
-      border-color: rgba(0, 0, 0, 0.25);
-      color: #111827;
-    }
-
-    body.light-theme .short-list-item {
-      background: rgba(0, 0, 0, 0.03);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      color: #1f2937;
-    }
-
-    body.light-theme .short-list-item:hover {
-      background: rgba(0, 0, 0, 0.06);
-      border-color: rgba(0, 0, 0, 0.12);
-      color: #111827;
-    }
-
-    body.light-theme .stats-number {
-      color: #1f2937;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
     }
 
     .node-preview {
@@ -1319,7 +1022,7 @@
     </div>
 
     <!-- Dashboard Shorts Grid -->
-    <div class="dashboard-grid" id="dashboardGrid">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
         <!-- Tasks Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6" onclick="window.location.href='inbox.php'">
@@ -2045,204 +1748,10 @@
                 <span class="text-sm text-white">Breit</span>
               </button>
               
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('large')">
-                <div class="grid grid-cols-1 gap-1 mb-2">
-                  <div class="bg-white/30 h-5 rounded"></div>
-                  <div class="bg-white/30 h-5 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Groß</span>
-              </button>
-              
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('xl')">
-                <div class="grid grid-cols-4 gap-1 mb-2">
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Extra Kompakt</span>
-              </button>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Widget-Größe</h4>
-            <div class="grid grid-cols-3 gap-3">
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('small')">
-                <div class="bg-white/30 h-6 rounded mb-2"></div>
-                <span class="text-sm text-white">Klein</span>
-              </button>
-              
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('normal')">
-                <div class="bg-white/30 h-8 rounded mb-2"></div>
-                <span class="text-sm text-white">Normal</span>
-              </button>
-              
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('large')">
-                <div class="bg-white/30 h-10 rounded mb-2"></div>
-                <span class="text-sm text-white">Groß</span>
-              </button>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Responsive-Modi</h4>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Auto-Anpassung</span>
-                <label class="switch">
-                  <input type="checkbox" id="autoResize" ${localStorage.getItem('autoResize') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Dynamische Spalten</span>
-                <label class="switch">
-                  <input type="checkbox" id="dynamicColumns" ${localStorage.getItem('dynamicColumns') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Animierte Übergänge</span>
-                <label class="switch">
-                  <input type="checkbox" id="animateTransitions" ${localStorage.getItem('animateTransitions') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      `);
-      
-      // Add event listeners for layout settings
-      const autoResize = modal.querySelector('#autoResize');
-      const dynamicColumns = modal.querySelector('#dynamicColumns');
-      const animateTransitions = modal.querySelector('#animateTransitions');
-      
-      autoResize.addEventListener('change', function() {
-        localStorage.setItem('autoResize', this.checked);
-        if (this.checked) {
-          enableAutoResize();
-        } else {
-          disableAutoResize();
-        }
-      });
-      
-      dynamicColumns.addEventListener('change', function() {
-        localStorage.setItem('dynamicColumns', this.checked);
-        updateDynamicColumns();
-      });
-      
-      animateTransitions.addEventListener('change', function() {
-        localStorage.setItem('animateTransitions', this.checked);
-        updateAnimationSettings();
-      });
-    }
-
-    // Fehlende Layout-Funktionen implementieren
-    function enableAutoResize() {
-      const dashboard = document.querySelector('.dashboard-grid');
-      if (dashboard) {
-        dashboard.classList.add('auto-resize');
-      }
-      
-      // Debounced resize handler
-      let resizeTimer;
-      const resizeHandler = () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(adjustGridForScreenSize, 100);
-      };
-      
-      window.addEventListener('resize', resizeHandler);
-      adjustGridForScreenSize();
-    }
-
-    function disableAutoResize() {
-      const dashboard = document.querySelector('.dashboard-grid');
-      if (dashboard) {
-        dashboard.classList.remove('auto-resize');
-      }
-      
-      // Remove resize event listener
-      window.removeEventListener('resize', resizeHandler);
-    }
-
-    function updateDynamicColumns() {
-      const dashboard = document.querySelector('.dashboard-grid');
-      const dynamicColumns = localStorage.getItem('dynamicColumns') !== 'false';
-      
-      if (dashboard) {
-        dashboard.classList.toggle('dynamic-columns', dynamicColumns);
-      }
-      
-      if (dynamicColumns) {
-        adjustGridForScreenSize();
-      }
-    }
-
-    function updateAnimationSettings() {
-      const animateTransitions = localStorage.getItem('animateTransitions') !== 'false';
-      const widgets = document.querySelectorAll('.dashboard-short');
-      
-      widgets.forEach(widget => {
-        if (animateTransitions) {
-          widget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        } else {
-          widget.style.transition = 'none';
-        }
-      });
-    }
-
-    function adjustGridForScreenSize() {
-      const dashboard = document.querySelector('.dashboard-grid');
-      if (!dashboard) return;
-      
-      const screenWidth = window.innerWidth;
-      const autoResize = localStorage.getItem('autoResize') !== 'false';
-      const dynamicColumns = localStorage.getItem('dynamicColumns') !== 'false';
-      
-      if (!autoResize && !dynamicColumns) return;
-      
-      // Berechne optimale Anzahl von Spalten basierend auf Bildschirmbreite
-      let optimalColumns;
-      let minWidth;
-      
-      if (screenWidth < 640) {
-        optimalColumns = 1;
-        minWidth = '100%';
-      } else if (screenWidth < 1024) {
-        optimalColumns = 2;
-        minWidth = '280px';
-      } else if (screenWidth < 1280) {
-        optimalColumns = 3;
-        minWidth = '300px';
-      } else if (screenWidth < 1920) {
-        optimalColumns = 4;
-        minWidth = '320px';
-      } else if (screenWidth < 2560) {
-        optimalColumns = 5;
-        minWidth = '350px';
-      } else {
-        optimalColumns = 6;
-        minWidth = '400px';
-      }
-      
-      if (dynamicColumns) {
-        dashboard.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`;
-      }
-      
-      // Trigger layout animation
-      dashboard.classList.add('layout-transition');
-      setTimeout(() => {
-        dashboard.classList.remove('layout-transition');
-      }, 300);
-    }
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('sidebar')">
+                <div class="grid grid-cols-3 gap-1 mb-2">
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded col-span-2"></div>
                   <div class="bg-white/30 h-4 rounded"></div>
                   <div class="bg-white/30 h-4 rounded col-span-2"></div>
                 </div>
@@ -2487,36 +1996,21 @@
       
       localStorage.setItem('dashboardLayout', layoutType);
       
-      // Entferne alle Layout-Klassen
-      dashboard.className = 'dashboard-grid';
+      switch (layoutType) {
+        case 'compact':
+          dashboard.className = 'dashboard-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
+          break;
+        case 'wide':
+          dashboard.className = 'dashboard-grid grid grid-cols-1 lg:grid-cols-2 gap-6';
+          break;
+        case 'sidebar':
+          dashboard.className = 'dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-6';
+          break;
+        default:
+          dashboard.className = 'dashboard-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+      }
       
-      // Animiere das Layout-Wechsel
-      dashboard.classList.add('layout-transition');
-      
-      setTimeout(() => {
-        switch (layoutType) {
-          case 'compact':
-            dashboard.classList.add('layout-compact');
-            break;
-          case 'wide':
-            dashboard.classList.add('layout-wide');
-            break;
-          case 'large':
-            dashboard.classList.add('layout-large');
-            break;
-          case 'xl':
-            dashboard.classList.add('layout-xl');
-            break;
-          default:
-            // Standard Layout - verwendet die CSS-Regeln
-            break;
-        }
-        
-        // Entferne Transition-Klasse
-        dashboard.classList.remove('layout-transition');
-        
-        showNotification(`Layout zu "${layoutType}" geändert`, 'success');
-      }, 150);
+      showNotification(`Layout zu "${layoutType}" geändert`, 'success');
     }
 
     function adjustWidgetSize(size) {
@@ -2524,18 +2018,15 @@
       localStorage.setItem('widgetSize', size);
       
       widgets.forEach(widget => {
-        widget.classList.remove('compact-mode', 'large-mode');
-        
         switch (size) {
           case 'small':
-            widget.classList.add('compact-mode');
+            widget.style.transform = 'scale(0.8)';
             break;
           case 'large':
-            widget.classList.add('large-mode');
+            widget.style.transform = 'scale(1.1)';
             break;
           default:
-            // Standard-Größe
-            break;
+            widget.style.transform = 'scale(1)';
         }
       });
       
@@ -2727,32 +2218,11 @@
         });
       }
       
-      // Initialize responsive layout features
-      const autoResize = localStorage.getItem('autoResize');
-      if (autoResize !== 'false') {
-        enableAutoResize();
-      }
-      
-      const dynamicColumns = localStorage.getItem('dynamicColumns');
-      if (dynamicColumns !== 'false') {
-        updateDynamicColumns();
-      }
-      
-      const animateTransitions = localStorage.getItem('animateTransitions');
-      if (animateTransitions !== 'false') {
-        updateAnimationSettings();
-      }
-      
       // Show performance metrics if enabled
       const showPerformance = localStorage.getItem('showPerformance');
       if (showPerformance === 'true') {
         togglePerformanceMetrics(true);
       }
-      
-      // Initialize grid adjustments
-      setTimeout(() => {
-        adjustGridForScreenSize();
-      }, 100);
     }
 
     // Notes App Variables
@@ -3322,604 +2792,6 @@
           }
         }, 300);
       }, 3000);
-    }
-
-    // Alle fehlenden Control Bar Funktionen
-    function openGradientPicker() {
-      const modal = document.getElementById('gradientPickerModal');
-      if (modal) {
-        modal.classList.add('active');
-      }
-    }
-
-    function closeGradientPicker() {
-      const modal = document.getElementById('gradientPickerModal');
-      if (modal) {
-        modal.classList.remove('active');
-      }
-    }
-
-    function selectGradient(gradientType) {
-      if (gradients[gradientType]) {
-        document.body.style.background = gradients[gradientType];
-        localStorage.setItem('dashboardGradient', gradientType);
-        currentGradient = gradientType;
-        showNotification(`Gradient zu "${gradientType}" geändert`, 'success');
-      }
-    }
-
-    function toggleTheme() {
-      const isLight = document.body.classList.contains('light-theme');
-      const newTheme = isLight ? 'dark' : 'light';
-      
-      localStorage.setItem('theme', newTheme);
-      
-      document.body.classList.add('theme-transition');
-      
-      if (newTheme === 'light') {
-        document.body.classList.add('light-theme');
-        
-        // Update glassmorphism containers for light theme
-        const glassContainers = document.querySelectorAll('.dashboard-short, .glassmorphism-container');
-        glassContainers.forEach(container => {
-          container.style.background = 'rgba(255, 255, 255, 0.8)';
-          container.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-        });
-        
-        // Update control bar icon
-        const themeIcon = document.querySelector('.control-icon [class*="moon"]');
-        if (themeIcon) {
-          themeIcon.className = 'fas fa-sun text-sm';
-        }
-      } else {
-        document.body.classList.remove('light-theme');
-        
-        // Reset glassmorphism containers for dark theme
-        const glassContainers = document.querySelectorAll('.dashboard-short, .glassmorphism-container');
-        glassContainers.forEach(container => {
-          container.style.background = 'rgba(255, 255, 255, 0.08)';
-          container.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-        });
-        
-        // Update control bar icon
-        const themeIcon = document.querySelector('.control-icon [class*="sun"]');
-        if (themeIcon) {
-          themeIcon.className = 'fas fa-moon text-sm';
-        }
-      }
-      
-      showNotification(`Theme zu ${newTheme === 'light' ? 'Hell' : 'Dunkel'} gewechselt`, 'success');
-    }
-
-    function toggleCompactMode() {
-      const isCompact = localStorage.getItem('compactMode') === 'true';
-      const newCompact = !isCompact;
-      
-      localStorage.setItem('compactMode', newCompact);
-      
-      const widgets = document.querySelectorAll('.dashboard-short');
-      const controlIcon = document.querySelector('.control-icon [class*="compress"]');
-      
-      if (newCompact) {
-        widgets.forEach(widget => {
-          widget.style.transform = 'scale(0.85)';
-          widget.style.margin = '0.5rem';
-        });
-        
-        if (controlIcon) {
-          controlIcon.className = 'fas fa-expand text-sm';
-        }
-        
-        showNotification('Kompakter Modus aktiviert', 'success');
-      } else {
-        widgets.forEach(widget => {
-          widget.style.transform = 'scale(1)';
-          widget.style.margin = '1rem';
-        });
-        
-        if (controlIcon) {
-          controlIcon.className = 'fas fa-compress text-sm';
-        }
-        
-        showNotification('Kompakter Modus deaktiviert', 'success');
-      }
-    }
-
-    function openNotificationSettings() {
-      const modal = createModal('Benachrichtigungseinstellungen', `
-        <div class="space-y-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-white">Desktop-Benachrichtigungen</h4>
-              <p class="text-sm text-white/60">Benachrichtigungen auch außerhalb des Browsers anzeigen</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="desktopNotifications" ${localStorage.getItem('desktopNotifications') === 'true' ? 'checked' : ''}>
-              <span class="slider"></span>
-            </label>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-white">Sound-Benachrichtigungen</h4>
-              <p class="text-sm text-white/60">Akustische Signale bei neuen Benachrichtigungen</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="soundNotifications" ${localStorage.getItem('soundNotifications') === 'true' ? 'checked' : ''}>
-              <span class="slider"></span>
-            </label>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-white">Email-Benachrichtigungen</h4>
-              <p class="text-sm text-white/60">Wichtige Updates per E-Mail erhalten</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="emailNotifications" ${localStorage.getItem('emailNotifications') === 'true' ? 'checked' : ''}>
-              <span class="slider"></span>
-            </label>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Benachrichtigungsintervall</h4>
-            <select id="notificationInterval" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
-              <option value="immediate">Sofort</option>
-              <option value="5min">Alle 5 Minuten</option>
-              <option value="15min">Alle 15 Minuten</option>
-              <option value="30min">Alle 30 Minuten</option>
-              <option value="1hour">Stündlich</option>
-            </select>
-          </div>
-        </div>
-      `);
-      
-      // Add event listeners
-      const desktopNotifications = modal.querySelector('#desktopNotifications');
-      const soundNotifications = modal.querySelector('#soundNotifications');
-      const emailNotifications = modal.querySelector('#emailNotifications');
-      const notificationInterval = modal.querySelector('#notificationInterval');
-      
-      desktopNotifications.addEventListener('change', function() {
-        localStorage.setItem('desktopNotifications', this.checked);
-        if (this.checked) {
-          requestNotificationPermission();
-        }
-      });
-      
-      soundNotifications.addEventListener('change', function() {
-        localStorage.setItem('soundNotifications', this.checked);
-      });
-      
-      emailNotifications.addEventListener('change', function() {
-        localStorage.setItem('emailNotifications', this.checked);
-      });
-      
-      notificationInterval.addEventListener('change', function() {
-        localStorage.setItem('notificationInterval', this.value);
-      });
-      
-      // Set current values
-      const savedInterval = localStorage.getItem('notificationInterval');
-      if (savedInterval) {
-        notificationInterval.value = savedInterval;
-      }
-    }
-
-    function openLayoutSettings() {
-      const modal = createModal('Layout-Einstellungen', `
-        <div class="space-y-6">
-          <div>
-            <h4 class="font-medium text-white mb-3">Widget-Anordnung</h4>
-            <div class="grid grid-cols-2 gap-4">
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('default')">
-                <div class="grid grid-cols-2 gap-1 mb-2">
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Standard</span>
-              </button>
-              
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('compact')">
-                <div class="grid grid-cols-3 gap-1 mb-2">
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                  <div class="bg-white/30 h-3 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Kompakt</span>
-              </button>
-              
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('wide')">
-                <div class="grid grid-cols-1 gap-1 mb-2">
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Breit</span>
-              </button>
-              
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('large')">
-                <div class="grid grid-cols-1 gap-1 mb-2">
-                  <div class="bg-white/30 h-5 rounded"></div>
-                  <div class="bg-white/30 h-5 rounded"></div>
-                </div>
-                <span class="text-sm text-white">Groß</span>
-              </button>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Widget-Größe</h4>
-            <div class="grid grid-cols-3 gap-3">
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('small')">
-                <div class="bg-white/30 h-6 rounded mb-2"></div>
-                <span class="text-sm text-white">Klein</span>
-              </button>
-              
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('normal')">
-                <div class="bg-white/30 h-8 rounded mb-2"></div>
-                <span class="text-sm text-white">Normal</span>
-              </button>
-              
-              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('large')">
-                <div class="bg-white/30 h-10 rounded mb-2"></div>
-                <span class="text-sm text-white">Groß</span>
-              </button>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Responsive-Modi</h4>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Auto-Anpassung</span>
-                <label class="switch">
-                  <input type="checkbox" id="autoResize" ${localStorage.getItem('autoResize') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Dynamische Spalten</span>
-                <label class="switch">
-                  <input type="checkbox" id="dynamicColumns" ${localStorage.getItem('dynamicColumns') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-white text-sm">Animierte Übergänge</span>
-                <label class="switch">
-                  <input type="checkbox" id="animateTransitions" ${localStorage.getItem('animateTransitions') !== 'false' ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Dashboard-Optionen</h4>
-            <div class="space-y-3">
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="showGreeting" ${localStorage.getItem('showGreeting') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Begrüßung anzeigen</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="showStats" ${localStorage.getItem('showStats') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Statistiken anzeigen</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="animateWidgets" ${localStorage.getItem('animateWidgets') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Widget-Animationen</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      `);
-      
-      // Add event listeners for layout settings
-      const showGreeting = modal.querySelector('#showGreeting');
-      const showStats = modal.querySelector('#showStats');
-      const animateWidgets = modal.querySelector('#animateWidgets');
-      const autoResize = modal.querySelector('#autoResize');
-      const dynamicColumns = modal.querySelector('#dynamicColumns');
-      const animateTransitions = modal.querySelector('#animateTransitions');
-      
-      showGreeting.addEventListener('change', function() {
-        localStorage.setItem('showGreeting', this.checked);
-        const greetingElement = document.querySelector('.greeting-text');
-        if (greetingElement) {
-          greetingElement.style.display = this.checked ? 'block' : 'none';
-        }
-      });
-      
-      showStats.addEventListener('change', function() {
-        localStorage.setItem('showStats', this.checked);
-        const statsElements = document.querySelectorAll('.stats-number');
-        statsElements.forEach(el => {
-          el.style.display = this.checked ? 'block' : 'none';
-        });
-      });
-      
-      animateWidgets.addEventListener('change', function() {
-        localStorage.setItem('animateWidgets', this.checked);
-        const widgets = document.querySelectorAll('.dashboard-short');
-        widgets.forEach(widget => {
-          widget.style.transition = this.checked ? 'all 0.3s ease' : 'none';
-        });
-      });
-      
-      autoResize.addEventListener('change', function() {
-        localStorage.setItem('autoResize', this.checked);
-        if (this.checked) {
-          enableAutoResize();
-        } else {
-          disableAutoResize();
-        }
-      });
-      
-      dynamicColumns.addEventListener('change', function() {
-        localStorage.setItem('dynamicColumns', this.checked);
-        updateDynamicColumns();
-      });
-      
-      animateTransitions.addEventListener('change', function() {
-        localStorage.setItem('animateTransitions', this.checked);
-        updateAnimationSettings();
-      });
-    }
-
-    function openSystemSettings() {
-      const modal = createModal('System-Einstellungen', `
-        <div class="space-y-6">
-          <div>
-            <h4 class="font-medium text-white mb-3">Sprache</h4>
-            <select id="languageSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
-              <option value="de">Deutsch</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-            </select>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Zeitzone</h4>
-            <select id="timezoneSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
-              <option value="Europe/Berlin">Europa/Berlin</option>
-              <option value="Europe/London">Europa/London</option>
-              <option value="America/New_York">Amerika/New York</option>
-              <option value="America/Los_Angeles">Amerika/Los Angeles</option>
-              <option value="Asia/Tokyo">Asien/Tokyo</option>
-            </select>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Automatische Updates</h4>
-            <label class="flex items-center gap-3">
-              <input type="checkbox" id="autoUpdates" ${localStorage.getItem('autoUpdates') !== 'false' ? 'checked' : ''} class="rounded">
-              <span class="text-white">Automatische Updates aktivieren</span>
-            </label>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Entwickleroptionen</h4>
-            <div class="space-y-3">
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="debugMode" ${localStorage.getItem('debugMode') === 'true' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Debug-Modus</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="showPerformance" ${localStorage.getItem('showPerformance') === 'true' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Performance-Metriken anzeigen</span>
-              </label>
-            </div>
-          </div>
-          
-          <div class="pt-4 border-t border-white/20">
-            <h4 class="font-medium text-white mb-3">Daten & Privatsphäre</h4>
-            <div class="space-y-3">
-              <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="exportData()">
-                <i class="fas fa-download mr-2"></i>
-                Daten exportieren
-              </button>
-              <button class="w-full p-3 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white transition-colors" onclick="clearCache()">
-                <i class="fas fa-trash mr-2"></i>
-                Cache leeren
-              </button>
-              <button class="w-full p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors" onclick="resetSettings()">
-                <i class="fas fa-undo mr-2"></i>
-                Einstellungen zurücksetzen
-              </button>
-            </div>
-          </div>
-        </div>
-      `);
-      
-      // Add event listeners for system settings
-      const languageSelect = modal.querySelector('#languageSelect');
-      const timezoneSelect = modal.querySelector('#timezoneSelect');
-      const autoUpdates = modal.querySelector('#autoUpdates');
-      const debugMode = modal.querySelector('#debugMode');
-      const showPerformance = modal.querySelector('#showPerformance');
-      
-      languageSelect.addEventListener('change', function() {
-        localStorage.setItem('language', this.value);
-        showNotification(`Sprache zu ${this.value} geändert. Seite wird neu geladen...`, 'info');
-        setTimeout(() => location.reload(), 2000);
-      });
-      
-      timezoneSelect.addEventListener('change', function() {
-        localStorage.setItem('timezone', this.value);
-        showNotification('Zeitzone geändert', 'success');
-      });
-      
-      autoUpdates.addEventListener('change', function() {
-        localStorage.setItem('autoUpdates', this.checked);
-      });
-      
-      debugMode.addEventListener('change', function() {
-        localStorage.setItem('debugMode', this.checked);
-      });
-      
-      showPerformance.addEventListener('change', function() {
-        localStorage.setItem('showPerformance', this.checked);
-        togglePerformanceMetrics(this.checked);
-      });
-      
-      // Set current values
-      const savedLanguage = localStorage.getItem('language');
-      if (savedLanguage) {
-        languageSelect.value = savedLanguage;
-      }
-      
-      const savedTimezone = localStorage.getItem('timezone');
-      if (savedTimezone) {
-        timezoneSelect.value = savedTimezone;
-      }
-    }
-
-    // Helper functions
-    function createModal(title, content) {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-gray-900/95 backdrop-blur-lg rounded-2xl p-6 max-w-2xl w-full mx-4 border border-white/20">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-white">${title}</h2>
-            <button onclick="this.closest('.fixed').remove()" class="text-white/60 hover:text-white transition-colors">
-              <i class="fas fa-times text-lg"></i>
-            </button>
-          </div>
-          ${content}
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      return modal;
-    }
-
-    function requestNotificationPermission() {
-      if ('Notification' in window) {
-        Notification.requestPermission();
-      }
-    }
-
-    function updateControlBarState() {
-      // Update theme icon
-      const themeIcon = document.querySelector('.control-icon [class*="moon"], .control-icon [class*="sun"]');
-      if (themeIcon) {
-        const isLight = document.body.classList.contains('light-theme');
-        themeIcon.className = isLight ? 'fas fa-sun text-sm' : 'fas fa-moon text-sm';
-      }
-      
-      // Update compact mode icon
-      const compactIcon = document.querySelector('.control-icon [class*="compress"], .control-icon [class*="expand"]');
-      if (compactIcon) {
-        const isCompact = localStorage.getItem('compactMode') === 'true';
-        compactIcon.className = isCompact ? 'fas fa-expand text-sm' : 'fas fa-compress text-sm';
-      }
-    }
-
-    function setupKeyboardShortcuts() {
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey || e.metaKey) {
-          switch(e.key) {
-            case 'p':
-              e.preventDefault();
-              openGradientPicker();
-              break;
-            case 't':
-              e.preventDefault();
-              toggleTheme();
-              break;
-            case 'k':
-              e.preventDefault();
-              toggleCompactMode();
-              break;
-            case 'l':
-              e.preventDefault();
-              openLayoutSettings();
-              break;
-            case 'n':
-              e.preventDefault();
-              openNotificationSettings();
-              break;
-            case 's':
-              e.preventDefault();
-              openSystemSettings();
-              break;
-          }
-        }
-      });
-    }
-
-    function setupDashboardWidgets() {
-      // Add any widget-specific setup here
-    }
-
-    function setupGreeting() {
-      // Add greeting setup if needed
-    }
-
-    function setupAutosave() {
-      // Save settings every 30 seconds
-      setInterval(() => {
-        const settings = {
-          theme: localStorage.getItem('theme'),
-          gradient: localStorage.getItem('dashboardGradient'),
-          compactMode: localStorage.getItem('compactMode'),
-          layout: localStorage.getItem('dashboardLayout'),
-          widgetSize: localStorage.getItem('widgetSize')
-        };
-        console.log('Autosave settings:', settings);
-      }, 30000);
-    }
-
-    function setupTooltips() {
-      // Initialize tooltips for control bar
-      const controlIcons = document.querySelectorAll('.control-icon');
-      controlIcons.forEach(icon => {
-        icon.addEventListener('mouseenter', function() {
-          const title = this.getAttribute('title');
-          if (title) {
-            showTooltip(this, title);
-          }
-        });
-        
-        icon.addEventListener('mouseleave', function() {
-          hideTooltip();
-        });
-      });
-    }
-
-    function showTooltip(element, text) {
-      const tooltip = document.createElement('div');
-      tooltip.className = 'fixed bg-black/80 text-white px-2 py-1 rounded text-xs z-50';
-      tooltip.style.pointerEvents = 'none';
-      tooltip.textContent = text;
-      
-      document.body.appendChild(tooltip);
-      
-      const rect = element.getBoundingClientRect();
-      tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
-      tooltip.style.top = (rect.bottom + 5) + 'px';
-      
-      tooltip.id = 'current-tooltip';
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('current-tooltip');
-      if (tooltip) {
-        tooltip.remove();
-      }
-    }
-
-    function initializeTooltips() {
-      setupTooltips();
     }
 
     // Initialize on page load
