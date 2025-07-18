@@ -266,30 +266,131 @@
       color: white;
       font-weight: 800;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }    /* Dashboard Widget Layout - Buttons bündig am unteren Rand */
+    }    /* Dashboard Widget Layout - Responsive und dynamisch */
     .dashboard-short {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(30, 30, 30, 0.85);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      position: relative;
+      color: white;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      min-height: 350px; /* Mindesthöhe für einheitliches Erscheinungsbild */
+      height: 350px;
+      position: relative;
     }
 
     .widget-content {
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
 
     .widget-buttons {
-      margin-top: auto; /* Buttons automatisch nach unten drücken */
-      padding: 1.5rem;
-      padding-top: 0;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsive Dashboard Grid - Dynamische Anpassung */
+    .dashboard-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      transition: all 0.3s ease;
+    }
+
+    /* Verschiedene Layout-Modi */
+    .dashboard-grid.layout-compact {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .dashboard-grid.layout-wide {
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+    }
+
+    .dashboard-grid.layout-large {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .dashboard-grid.layout-xl {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Dynamische Spalten - Responsive Anpassung */
+    .dashboard-grid.dynamic-columns {
+      grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    }
+
+    /* Auto-Resize Modus */
+    .dashboard-grid.auto-resize {
+      grid-template-columns: repeat(auto-fit, minmax(max(250px, 20vw), 1fr));
+    }
+
+    /* Responsive Breakpoints für bessere Anpassung */
+    @media (max-width: 640px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1280px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media (min-width: 1281px) and (max-width: 1536px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+    }
+
+    @media (min-width: 1537px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      }
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      }
+    }
+
+    /* Bessere Anpassung für ultrabreite Bildschirme */
+    @media (min-width: 1920px) {
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      }
+    }
+
+    @media (min-width: 2560px) {
+      .dashboard-grid.dynamic-columns {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      }
     }
 
     /* Quick Action Buttons */
@@ -864,29 +965,225 @@
       transition: background 0.5s ease, color 0.5s ease;
     }
 
-    /* Light Theme Overrides */
+    /* Enhanced Dark Theme - Verbesserte Lesbarkeit */
+    body:not(.light-theme) {
+      background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+      color: #ffffff;
+    }
+
+    body:not(.light-theme) .dashboard-short {
+      background: rgba(30, 30, 30, 0.9);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    body:not(.light-theme) .text-primary,
+    body:not(.light-theme) .text-white {
+      color: #ffffff !important;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    body:not(.light-theme) .text-secondary,
+    body:not(.light-theme) .text-white\/80 {
+      color: rgba(255, 255, 255, 0.9) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    body:not(.light-theme) .text-muted,
+    body:not(.light-theme) .text-white\/60 {
+      color: rgba(255, 255, 255, 0.8) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    body:not(.light-theme) .text-white\/50 {
+      color: rgba(255, 255, 255, 0.75) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    body:not(.light-theme) .stats-number {
+      color: #ffffff !important;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    body:not(.light-theme) .quick-action-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    body:not(.light-theme) .quick-action-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+    }
+
+    body:not(.light-theme) .short-list-item {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    body:not(.light-theme) .short-list-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Enhanced Light Theme - Perfekte Lesbarkeit */
     body.light-theme {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #cbd5e1 100%);
       color: #1f2937;
     }
 
-    body.light-theme .dashboard-short,
-    body.light-theme .glassmorphism-container {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.3);
+    body.light-theme .dashboard-short {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
       color: #1f2937;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     }
 
-    body.light-theme .text-primary {
+    body.light-theme .text-primary,
+    body.light-theme .text-white,
+    body.light-theme .text-white\/90,
+    body.light-theme .text-white\/80,
+    body.light-theme .text-white\/60,
+    body.light-theme .text-white\/50 {
       color: #1f2937 !important;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
     }
 
     body.light-theme .text-secondary {
-      color: #4b5563 !important;
+      color: #374151 !important;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     }
 
     body.light-theme .text-muted {
       color: #6b7280 !important;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    body.light-theme .stats-number {
+      color: #1f2937 !important;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Light Theme - Weitere Anpassungen */
+    body.light-theme .control-bar {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    body.light-theme .control-icon {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #374151;
+    }
+
+    body.light-theme .control-icon:hover {
+      background: rgba(0, 0, 0, 0.1);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: #1f2937;
+    }
+
+    body.light-theme .control-icon.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+    }
+
+    body.light-theme .quick-action-btn {
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: #1f2937;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    body.light-theme .quick-action-btn:hover {
+      background: rgba(0, 0, 0, 0.12);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: #111827;
+    }
+
+    body.light-theme .short-list-item {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      color: #1f2937;
+    }
+
+    body.light-theme .short-list-item:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Verbesserte Lesbarkeit für Inputs */
+    body.light-theme input[type="text"],
+    body.light-theme input[type="email"],
+    body.light-theme input[type="password"],
+    body.light-theme textarea,
+    body.light-theme select {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      color: #1f2937;
+    }
+
+    body.light-theme input[type="text"]:focus,
+    body.light-theme input[type="email"]:focus,
+    body.light-theme input[type="password"]:focus,
+    body.light-theme textarea:focus,
+    body.light-theme select:focus {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #111827;
+    }
+
+    /* Verbesserte Lesbarkeit für Notizen */
+    body.light-theme .note-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #1f2937;
+    }
+
+    body.light-theme .note-title {
+      color: #111827;
+    }
+
+    body.light-theme .note-content {
+      color: #374151;
+    }
+
+    body.light-theme .note-footer {
+      color: #6b7280;
+    }
+
+    body.light-theme .quick-action-btn:hover {
+      background: rgba(0, 0, 0, 0.15);
+      border-color: rgba(0, 0, 0, 0.25);
+      color: #111827;
+    }
+
+    body.light-theme .short-list-item {
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: #1f2937;
+    }
+
+    body.light-theme .short-list-item:hover {
+      background: rgba(0, 0, 0, 0.06);
+      border-color: rgba(0, 0, 0, 0.12);
+      color: #111827;
+    }
+
+    body.light-theme .stats-number {
+      color: #1f2937;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
     }
 
     .node-preview {
@@ -1022,7 +1319,7 @@
     </div>
 
     <!-- Dashboard Shorts Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+    <div class="dashboard-grid" id="dashboardGrid">
         <!-- Tasks Short -->
       <div class="dashboard-short col-span-1 md:col-span-2 xl:col-span-1">
         <div class="short-header p-6" onclick="window.location.href='inbox.php'">
@@ -1748,10 +2045,204 @@
                 <span class="text-sm text-white">Breit</span>
               </button>
               
-              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('sidebar')">
-                <div class="grid grid-cols-3 gap-1 mb-2">
-                  <div class="bg-white/30 h-4 rounded"></div>
-                  <div class="bg-white/30 h-4 rounded col-span-2"></div>
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('large')">
+                <div class="grid grid-cols-1 gap-1 mb-2">
+                  <div class="bg-white/30 h-5 rounded"></div>
+                  <div class="bg-white/30 h-5 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Groß</span>
+              </button>
+              
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('xl')">
+                <div class="grid grid-cols-4 gap-1 mb-2">
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Extra Kompakt</span>
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Widget-Größe</h4>
+            <div class="grid grid-cols-3 gap-3">
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('small')">
+                <div class="bg-white/30 h-6 rounded mb-2"></div>
+                <span class="text-sm text-white">Klein</span>
+              </button>
+              
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('normal')">
+                <div class="bg-white/30 h-8 rounded mb-2"></div>
+                <span class="text-sm text-white">Normal</span>
+              </button>
+              
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('large')">
+                <div class="bg-white/30 h-10 rounded mb-2"></div>
+                <span class="text-sm text-white">Groß</span>
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Responsive-Modi</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Auto-Anpassung</span>
+                <label class="switch">
+                  <input type="checkbox" id="autoResize" ${localStorage.getItem('autoResize') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Dynamische Spalten</span>
+                <label class="switch">
+                  <input type="checkbox" id="dynamicColumns" ${localStorage.getItem('dynamicColumns') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Animierte Übergänge</span>
+                <label class="switch">
+                  <input type="checkbox" id="animateTransitions" ${localStorage.getItem('animateTransitions') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for layout settings
+      const autoResize = modal.querySelector('#autoResize');
+      const dynamicColumns = modal.querySelector('#dynamicColumns');
+      const animateTransitions = modal.querySelector('#animateTransitions');
+      
+      autoResize.addEventListener('change', function() {
+        localStorage.setItem('autoResize', this.checked);
+        if (this.checked) {
+          enableAutoResize();
+        } else {
+          disableAutoResize();
+        }
+      });
+      
+      dynamicColumns.addEventListener('change', function() {
+        localStorage.setItem('dynamicColumns', this.checked);
+        updateDynamicColumns();
+      });
+      
+      animateTransitions.addEventListener('change', function() {
+        localStorage.setItem('animateTransitions', this.checked);
+        updateAnimationSettings();
+      });
+    }
+
+    // Fehlende Layout-Funktionen implementieren
+    function enableAutoResize() {
+      const dashboard = document.querySelector('.dashboard-grid');
+      if (dashboard) {
+        dashboard.classList.add('auto-resize');
+      }
+      
+      // Debounced resize handler
+      let resizeTimer;
+      const resizeHandler = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(adjustGridForScreenSize, 100);
+      };
+      
+      window.addEventListener('resize', resizeHandler);
+      adjustGridForScreenSize();
+    }
+
+    function disableAutoResize() {
+      const dashboard = document.querySelector('.dashboard-grid');
+      if (dashboard) {
+        dashboard.classList.remove('auto-resize');
+      }
+      
+      // Remove resize event listener
+      window.removeEventListener('resize', resizeHandler);
+    }
+
+    function updateDynamicColumns() {
+      const dashboard = document.querySelector('.dashboard-grid');
+      const dynamicColumns = localStorage.getItem('dynamicColumns') !== 'false';
+      
+      if (dashboard) {
+        dashboard.classList.toggle('dynamic-columns', dynamicColumns);
+      }
+      
+      if (dynamicColumns) {
+        adjustGridForScreenSize();
+      }
+    }
+
+    function updateAnimationSettings() {
+      const animateTransitions = localStorage.getItem('animateTransitions') !== 'false';
+      const widgets = document.querySelectorAll('.dashboard-short');
+      
+      widgets.forEach(widget => {
+        if (animateTransitions) {
+          widget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        } else {
+          widget.style.transition = 'none';
+        }
+      });
+    }
+
+    function adjustGridForScreenSize() {
+      const dashboard = document.querySelector('.dashboard-grid');
+      if (!dashboard) return;
+      
+      const screenWidth = window.innerWidth;
+      const autoResize = localStorage.getItem('autoResize') !== 'false';
+      const dynamicColumns = localStorage.getItem('dynamicColumns') !== 'false';
+      
+      if (!autoResize && !dynamicColumns) return;
+      
+      // Berechne optimale Anzahl von Spalten basierend auf Bildschirmbreite
+      let optimalColumns;
+      let minWidth;
+      
+      if (screenWidth < 640) {
+        optimalColumns = 1;
+        minWidth = '100%';
+      } else if (screenWidth < 1024) {
+        optimalColumns = 2;
+        minWidth = '280px';
+      } else if (screenWidth < 1280) {
+        optimalColumns = 3;
+        minWidth = '300px';
+      } else if (screenWidth < 1920) {
+        optimalColumns = 4;
+        minWidth = '320px';
+      } else if (screenWidth < 2560) {
+        optimalColumns = 5;
+        minWidth = '350px';
+      } else {
+        optimalColumns = 6;
+        minWidth = '400px';
+      }
+      
+      if (dynamicColumns) {
+        dashboard.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`;
+      }
+      
+      // Trigger layout animation
+      dashboard.classList.add('layout-transition');
+      setTimeout(() => {
+        dashboard.classList.remove('layout-transition');
+      }, 300);
+    }
                   <div class="bg-white/30 h-4 rounded"></div>
                   <div class="bg-white/30 h-4 rounded col-span-2"></div>
                 </div>
@@ -1996,21 +2487,36 @@
       
       localStorage.setItem('dashboardLayout', layoutType);
       
-      switch (layoutType) {
-        case 'compact':
-          dashboard.className = 'dashboard-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
-          break;
-        case 'wide':
-          dashboard.className = 'dashboard-grid grid grid-cols-1 lg:grid-cols-2 gap-6';
-          break;
-        case 'sidebar':
-          dashboard.className = 'dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-6';
-          break;
-        default:
-          dashboard.className = 'dashboard-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-      }
+      // Entferne alle Layout-Klassen
+      dashboard.className = 'dashboard-grid';
       
-      showNotification(`Layout zu "${layoutType}" geändert`, 'success');
+      // Animiere das Layout-Wechsel
+      dashboard.classList.add('layout-transition');
+      
+      setTimeout(() => {
+        switch (layoutType) {
+          case 'compact':
+            dashboard.classList.add('layout-compact');
+            break;
+          case 'wide':
+            dashboard.classList.add('layout-wide');
+            break;
+          case 'large':
+            dashboard.classList.add('layout-large');
+            break;
+          case 'xl':
+            dashboard.classList.add('layout-xl');
+            break;
+          default:
+            // Standard Layout - verwendet die CSS-Regeln
+            break;
+        }
+        
+        // Entferne Transition-Klasse
+        dashboard.classList.remove('layout-transition');
+        
+        showNotification(`Layout zu "${layoutType}" geändert`, 'success');
+      }, 150);
     }
 
     function adjustWidgetSize(size) {
@@ -2018,15 +2524,18 @@
       localStorage.setItem('widgetSize', size);
       
       widgets.forEach(widget => {
+        widget.classList.remove('compact-mode', 'large-mode');
+        
         switch (size) {
           case 'small':
-            widget.style.transform = 'scale(0.8)';
+            widget.classList.add('compact-mode');
             break;
           case 'large':
-            widget.style.transform = 'scale(1.1)';
+            widget.classList.add('large-mode');
             break;
           default:
-            widget.style.transform = 'scale(1)';
+            // Standard-Größe
+            break;
         }
       });
       
@@ -2218,11 +2727,32 @@
         });
       }
       
+      // Initialize responsive layout features
+      const autoResize = localStorage.getItem('autoResize');
+      if (autoResize !== 'false') {
+        enableAutoResize();
+      }
+      
+      const dynamicColumns = localStorage.getItem('dynamicColumns');
+      if (dynamicColumns !== 'false') {
+        updateDynamicColumns();
+      }
+      
+      const animateTransitions = localStorage.getItem('animateTransitions');
+      if (animateTransitions !== 'false') {
+        updateAnimationSettings();
+      }
+      
       // Show performance metrics if enabled
       const showPerformance = localStorage.getItem('showPerformance');
       if (showPerformance === 'true') {
         togglePerformanceMetrics(true);
       }
+      
+      // Initialize grid adjustments
+      setTimeout(() => {
+        adjustGridForScreenSize();
+      }, 100);
     }
 
     // Notes App Variables
