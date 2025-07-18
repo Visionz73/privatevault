@@ -3324,6 +3324,604 @@
       }, 3000);
     }
 
+    // Alle fehlenden Control Bar Funktionen
+    function openGradientPicker() {
+      const modal = document.getElementById('gradientPickerModal');
+      if (modal) {
+        modal.classList.add('active');
+      }
+    }
+
+    function closeGradientPicker() {
+      const modal = document.getElementById('gradientPickerModal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    function selectGradient(gradientType) {
+      if (gradients[gradientType]) {
+        document.body.style.background = gradients[gradientType];
+        localStorage.setItem('dashboardGradient', gradientType);
+        currentGradient = gradientType;
+        showNotification(`Gradient zu "${gradientType}" geändert`, 'success');
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.contains('light-theme');
+      const newTheme = isLight ? 'dark' : 'light';
+      
+      localStorage.setItem('theme', newTheme);
+      
+      document.body.classList.add('theme-transition');
+      
+      if (newTheme === 'light') {
+        document.body.classList.add('light-theme');
+        
+        // Update glassmorphism containers for light theme
+        const glassContainers = document.querySelectorAll('.dashboard-short, .glassmorphism-container');
+        glassContainers.forEach(container => {
+          container.style.background = 'rgba(255, 255, 255, 0.8)';
+          container.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+        });
+        
+        // Update control bar icon
+        const themeIcon = document.querySelector('.control-icon [class*="moon"]');
+        if (themeIcon) {
+          themeIcon.className = 'fas fa-sun text-sm';
+        }
+      } else {
+        document.body.classList.remove('light-theme');
+        
+        // Reset glassmorphism containers for dark theme
+        const glassContainers = document.querySelectorAll('.dashboard-short, .glassmorphism-container');
+        glassContainers.forEach(container => {
+          container.style.background = 'rgba(255, 255, 255, 0.08)';
+          container.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        });
+        
+        // Update control bar icon
+        const themeIcon = document.querySelector('.control-icon [class*="sun"]');
+        if (themeIcon) {
+          themeIcon.className = 'fas fa-moon text-sm';
+        }
+      }
+      
+      showNotification(`Theme zu ${newTheme === 'light' ? 'Hell' : 'Dunkel'} gewechselt`, 'success');
+    }
+
+    function toggleCompactMode() {
+      const isCompact = localStorage.getItem('compactMode') === 'true';
+      const newCompact = !isCompact;
+      
+      localStorage.setItem('compactMode', newCompact);
+      
+      const widgets = document.querySelectorAll('.dashboard-short');
+      const controlIcon = document.querySelector('.control-icon [class*="compress"]');
+      
+      if (newCompact) {
+        widgets.forEach(widget => {
+          widget.style.transform = 'scale(0.85)';
+          widget.style.margin = '0.5rem';
+        });
+        
+        if (controlIcon) {
+          controlIcon.className = 'fas fa-expand text-sm';
+        }
+        
+        showNotification('Kompakter Modus aktiviert', 'success');
+      } else {
+        widgets.forEach(widget => {
+          widget.style.transform = 'scale(1)';
+          widget.style.margin = '1rem';
+        });
+        
+        if (controlIcon) {
+          controlIcon.className = 'fas fa-compress text-sm';
+        }
+        
+        showNotification('Kompakter Modus deaktiviert', 'success');
+      }
+    }
+
+    function openNotificationSettings() {
+      const modal = createModal('Benachrichtigungseinstellungen', `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-medium text-white">Desktop-Benachrichtigungen</h4>
+              <p class="text-sm text-white/60">Benachrichtigungen auch außerhalb des Browsers anzeigen</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="desktopNotifications" ${localStorage.getItem('desktopNotifications') === 'true' ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-medium text-white">Sound-Benachrichtigungen</h4>
+              <p class="text-sm text-white/60">Akustische Signale bei neuen Benachrichtigungen</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="soundNotifications" ${localStorage.getItem('soundNotifications') === 'true' ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-medium text-white">Email-Benachrichtigungen</h4>
+              <p class="text-sm text-white/60">Wichtige Updates per E-Mail erhalten</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="emailNotifications" ${localStorage.getItem('emailNotifications') === 'true' ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Benachrichtigungsintervall</h4>
+            <select id="notificationInterval" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
+              <option value="immediate">Sofort</option>
+              <option value="5min">Alle 5 Minuten</option>
+              <option value="15min">Alle 15 Minuten</option>
+              <option value="30min">Alle 30 Minuten</option>
+              <option value="1hour">Stündlich</option>
+            </select>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners
+      const desktopNotifications = modal.querySelector('#desktopNotifications');
+      const soundNotifications = modal.querySelector('#soundNotifications');
+      const emailNotifications = modal.querySelector('#emailNotifications');
+      const notificationInterval = modal.querySelector('#notificationInterval');
+      
+      desktopNotifications.addEventListener('change', function() {
+        localStorage.setItem('desktopNotifications', this.checked);
+        if (this.checked) {
+          requestNotificationPermission();
+        }
+      });
+      
+      soundNotifications.addEventListener('change', function() {
+        localStorage.setItem('soundNotifications', this.checked);
+      });
+      
+      emailNotifications.addEventListener('change', function() {
+        localStorage.setItem('emailNotifications', this.checked);
+      });
+      
+      notificationInterval.addEventListener('change', function() {
+        localStorage.setItem('notificationInterval', this.value);
+      });
+      
+      // Set current values
+      const savedInterval = localStorage.getItem('notificationInterval');
+      if (savedInterval) {
+        notificationInterval.value = savedInterval;
+      }
+    }
+
+    function openLayoutSettings() {
+      const modal = createModal('Layout-Einstellungen', `
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-white mb-3">Widget-Anordnung</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('default')">
+                <div class="grid grid-cols-2 gap-1 mb-2">
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Standard</span>
+              </button>
+              
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('compact')">
+                <div class="grid grid-cols-3 gap-1 mb-2">
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                  <div class="bg-white/30 h-3 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Kompakt</span>
+              </button>
+              
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('wide')">
+                <div class="grid grid-cols-1 gap-1 mb-2">
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded"></div>
+                  <div class="bg-white/30 h-4 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Breit</span>
+              </button>
+              
+              <button class="layout-option p-4 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="applyLayout('large')">
+                <div class="grid grid-cols-1 gap-1 mb-2">
+                  <div class="bg-white/30 h-5 rounded"></div>
+                  <div class="bg-white/30 h-5 rounded"></div>
+                </div>
+                <span class="text-sm text-white">Groß</span>
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Widget-Größe</h4>
+            <div class="grid grid-cols-3 gap-3">
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('small')">
+                <div class="bg-white/30 h-6 rounded mb-2"></div>
+                <span class="text-sm text-white">Klein</span>
+              </button>
+              
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('normal')">
+                <div class="bg-white/30 h-8 rounded mb-2"></div>
+                <span class="text-sm text-white">Normal</span>
+              </button>
+              
+              <button class="layout-option p-3 rounded-lg border-2 border-white/20 hover:border-white/40 transition-colors" onclick="adjustWidgetSize('large')">
+                <div class="bg-white/30 h-10 rounded mb-2"></div>
+                <span class="text-sm text-white">Groß</span>
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Responsive-Modi</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Auto-Anpassung</span>
+                <label class="switch">
+                  <input type="checkbox" id="autoResize" ${localStorage.getItem('autoResize') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Dynamische Spalten</span>
+                <label class="switch">
+                  <input type="checkbox" id="dynamicColumns" ${localStorage.getItem('dynamicColumns') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-white text-sm">Animierte Übergänge</span>
+                <label class="switch">
+                  <input type="checkbox" id="animateTransitions" ${localStorage.getItem('animateTransitions') !== 'false' ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Dashboard-Optionen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showGreeting" ${localStorage.getItem('showGreeting') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Begrüßung anzeigen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showStats" ${localStorage.getItem('showStats') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Statistiken anzeigen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="animateWidgets" ${localStorage.getItem('animateWidgets') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Widget-Animationen</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for layout settings
+      const showGreeting = modal.querySelector('#showGreeting');
+      const showStats = modal.querySelector('#showStats');
+      const animateWidgets = modal.querySelector('#animateWidgets');
+      const autoResize = modal.querySelector('#autoResize');
+      const dynamicColumns = modal.querySelector('#dynamicColumns');
+      const animateTransitions = modal.querySelector('#animateTransitions');
+      
+      showGreeting.addEventListener('change', function() {
+        localStorage.setItem('showGreeting', this.checked);
+        const greetingElement = document.querySelector('.greeting-text');
+        if (greetingElement) {
+          greetingElement.style.display = this.checked ? 'block' : 'none';
+        }
+      });
+      
+      showStats.addEventListener('change', function() {
+        localStorage.setItem('showStats', this.checked);
+        const statsElements = document.querySelectorAll('.stats-number');
+        statsElements.forEach(el => {
+          el.style.display = this.checked ? 'block' : 'none';
+        });
+      });
+      
+      animateWidgets.addEventListener('change', function() {
+        localStorage.setItem('animateWidgets', this.checked);
+        const widgets = document.querySelectorAll('.dashboard-short');
+        widgets.forEach(widget => {
+          widget.style.transition = this.checked ? 'all 0.3s ease' : 'none';
+        });
+      });
+      
+      autoResize.addEventListener('change', function() {
+        localStorage.setItem('autoResize', this.checked);
+        if (this.checked) {
+          enableAutoResize();
+        } else {
+          disableAutoResize();
+        }
+      });
+      
+      dynamicColumns.addEventListener('change', function() {
+        localStorage.setItem('dynamicColumns', this.checked);
+        updateDynamicColumns();
+      });
+      
+      animateTransitions.addEventListener('change', function() {
+        localStorage.setItem('animateTransitions', this.checked);
+        updateAnimationSettings();
+      });
+    }
+
+    function openSystemSettings() {
+      const modal = createModal('System-Einstellungen', `
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-white mb-3">Sprache</h4>
+            <select id="languageSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Zeitzone</h4>
+            <select id="timezoneSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
+              <option value="Europe/Berlin">Europa/Berlin</option>
+              <option value="Europe/London">Europa/London</option>
+              <option value="America/New_York">Amerika/New York</option>
+              <option value="America/Los_Angeles">Amerika/Los Angeles</option>
+              <option value="Asia/Tokyo">Asien/Tokyo</option>
+            </select>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Automatische Updates</h4>
+            <label class="flex items-center gap-3">
+              <input type="checkbox" id="autoUpdates" ${localStorage.getItem('autoUpdates') !== 'false' ? 'checked' : ''} class="rounded">
+              <span class="text-white">Automatische Updates aktivieren</span>
+            </label>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Entwickleroptionen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="debugMode" ${localStorage.getItem('debugMode') === 'true' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Debug-Modus</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showPerformance" ${localStorage.getItem('showPerformance') === 'true' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Performance-Metriken anzeigen</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="pt-4 border-t border-white/20">
+            <h4 class="font-medium text-white mb-3">Daten & Privatsphäre</h4>
+            <div class="space-y-3">
+              <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="exportData()">
+                <i class="fas fa-download mr-2"></i>
+                Daten exportieren
+              </button>
+              <button class="w-full p-3 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white transition-colors" onclick="clearCache()">
+                <i class="fas fa-trash mr-2"></i>
+                Cache leeren
+              </button>
+              <button class="w-full p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors" onclick="resetSettings()">
+                <i class="fas fa-undo mr-2"></i>
+                Einstellungen zurücksetzen
+              </button>
+            </div>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for system settings
+      const languageSelect = modal.querySelector('#languageSelect');
+      const timezoneSelect = modal.querySelector('#timezoneSelect');
+      const autoUpdates = modal.querySelector('#autoUpdates');
+      const debugMode = modal.querySelector('#debugMode');
+      const showPerformance = modal.querySelector('#showPerformance');
+      
+      languageSelect.addEventListener('change', function() {
+        localStorage.setItem('language', this.value);
+        showNotification(`Sprache zu ${this.value} geändert. Seite wird neu geladen...`, 'info');
+        setTimeout(() => location.reload(), 2000);
+      });
+      
+      timezoneSelect.addEventListener('change', function() {
+        localStorage.setItem('timezone', this.value);
+        showNotification('Zeitzone geändert', 'success');
+      });
+      
+      autoUpdates.addEventListener('change', function() {
+        localStorage.setItem('autoUpdates', this.checked);
+      });
+      
+      debugMode.addEventListener('change', function() {
+        localStorage.setItem('debugMode', this.checked);
+      });
+      
+      showPerformance.addEventListener('change', function() {
+        localStorage.setItem('showPerformance', this.checked);
+        togglePerformanceMetrics(this.checked);
+      });
+      
+      // Set current values
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        languageSelect.value = savedLanguage;
+      }
+      
+      const savedTimezone = localStorage.getItem('timezone');
+      if (savedTimezone) {
+        timezoneSelect.value = savedTimezone;
+      }
+    }
+
+    // Helper functions
+    function createModal(title, content) {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="bg-gray-900/95 backdrop-blur-lg rounded-2xl p-6 max-w-2xl w-full mx-4 border border-white/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-white">${title}</h2>
+            <button onclick="this.closest('.fixed').remove()" class="text-white/60 hover:text-white transition-colors">
+              <i class="fas fa-times text-lg"></i>
+            </button>
+          </div>
+          ${content}
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      return modal;
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission();
+      }
+    }
+
+    function updateControlBarState() {
+      // Update theme icon
+      const themeIcon = document.querySelector('.control-icon [class*="moon"], .control-icon [class*="sun"]');
+      if (themeIcon) {
+        const isLight = document.body.classList.contains('light-theme');
+        themeIcon.className = isLight ? 'fas fa-sun text-sm' : 'fas fa-moon text-sm';
+      }
+      
+      // Update compact mode icon
+      const compactIcon = document.querySelector('.control-icon [class*="compress"], .control-icon [class*="expand"]');
+      if (compactIcon) {
+        const isCompact = localStorage.getItem('compactMode') === 'true';
+        compactIcon.className = isCompact ? 'fas fa-expand text-sm' : 'fas fa-compress text-sm';
+      }
+    }
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch(e.key) {
+            case 'p':
+              e.preventDefault();
+              openGradientPicker();
+              break;
+            case 't':
+              e.preventDefault();
+              toggleTheme();
+              break;
+            case 'k':
+              e.preventDefault();
+              toggleCompactMode();
+              break;
+            case 'l':
+              e.preventDefault();
+              openLayoutSettings();
+              break;
+            case 'n':
+              e.preventDefault();
+              openNotificationSettings();
+              break;
+            case 's':
+              e.preventDefault();
+              openSystemSettings();
+              break;
+          }
+        }
+      });
+    }
+
+    function setupDashboardWidgets() {
+      // Add any widget-specific setup here
+    }
+
+    function setupGreeting() {
+      // Add greeting setup if needed
+    }
+
+    function setupAutosave() {
+      // Save settings every 30 seconds
+      setInterval(() => {
+        const settings = {
+          theme: localStorage.getItem('theme'),
+          gradient: localStorage.getItem('dashboardGradient'),
+          compactMode: localStorage.getItem('compactMode'),
+          layout: localStorage.getItem('dashboardLayout'),
+          widgetSize: localStorage.getItem('widgetSize')
+        };
+        console.log('Autosave settings:', settings);
+      }, 30000);
+    }
+
+    function setupTooltips() {
+      // Initialize tooltips for control bar
+      const controlIcons = document.querySelectorAll('.control-icon');
+      controlIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', function() {
+          const title = this.getAttribute('title');
+          if (title) {
+            showTooltip(this, title);
+          }
+        });
+        
+        icon.addEventListener('mouseleave', function() {
+          hideTooltip();
+        });
+      });
+    }
+
+    function showTooltip(element, text) {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'fixed bg-black/80 text-white px-2 py-1 rounded text-xs z-50';
+      tooltip.style.pointerEvents = 'none';
+      tooltip.textContent = text;
+      
+      document.body.appendChild(tooltip);
+      
+      const rect = element.getBoundingClientRect();
+      tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+      tooltip.style.top = (rect.bottom + 5) + 'px';
+      
+      tooltip.id = 'current-tooltip';
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('current-tooltip');
+      if (tooltip) {
+        tooltip.remove();
+      }
+    }
+
+    function initializeTooltips() {
+      setupTooltips();
+    }
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize settings first
