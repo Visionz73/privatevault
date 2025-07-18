@@ -926,6 +926,229 @@
       color: white;
     }
 
+    /* Widget Sizing Classes */
+    .widget-small {
+      min-height: 200px;
+      padding: 1rem;
+    }
+    
+    .widget-small h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .widget-small .stats-number {
+      font-size: 1.5rem;
+    }
+    
+    .widget-medium {
+      min-height: 250px;
+      padding: 1.5rem;
+    }
+    
+    .widget-medium h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .widget-medium .stats-number {
+      font-size: 2rem;
+    }
+    
+    .widget-large {
+      min-height: 300px;
+      padding: 2rem;
+    }
+    
+    .widget-large h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    
+    .widget-large .stats-number {
+      font-size: 2.5rem;
+    }
+    
+    /* Compact Mode */
+    .compact-mode {
+      min-height: 150px !important;
+      padding: 0.75rem !important;
+    }
+    
+    .compact-mode h3 {
+      font-size: 0.875rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    
+    .compact-mode .stats-number {
+      font-size: 1.25rem !important;
+    }
+    
+    .compact-mode .widget-content {
+      padding: 0.5rem !important;
+    }
+    
+    /* Theme Support */
+    .theme-light .dashboard-short {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #1f2937;
+    }
+    
+    .theme-light .dashboard-short:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .theme-light .stats-number {
+      color: #3b82f6;
+    }
+    
+    .theme-dark .dashboard-short {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #f1f5f9;
+    }
+    
+    .theme-dark .dashboard-short:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .theme-dark .stats-number {
+      color: #60a5fa;
+    }
+    
+    /* Responsive Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      gap: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+      }
+      
+      .dashboard-short {
+        min-height: 200px;
+        padding: 1rem;
+      }
+      
+      .dashboard-short h3 {
+        font-size: 1rem;
+      }
+      
+      .stats-number {
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Tablet Responsive */
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .dashboard-grid {
+        gap: 1.5rem;
+      }
+      
+      .dashboard-short {
+        min-height: 225px;
+        padding: 1.25rem;
+      }
+      
+      .dashboard-short h3 {
+        font-size: 1.125rem;
+      }
+      
+      .stats-number {
+        font-size: 1.75rem;
+      }
+    }
+    
+    /* Desktop Responsive */
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        gap: 2rem;
+      }
+      
+      .dashboard-short {
+        min-height: 250px;
+        padding: 1.5rem;
+      }
+      
+      .dashboard-short h3 {
+        font-size: 1.25rem;
+      }
+      
+      .stats-number {
+        font-size: 2rem;
+      }
+    }
+    
+    /* Performance Optimizations */
+    .dashboard-short {
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+    
+    .dashboard-short:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Animation Classes */
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .animate-slide-up {
+      animation: slideUp 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Modal Styles */
+    .modal-backdrop {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .modal-content {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
@@ -2224,6 +2447,733 @@
         togglePerformanceMetrics(true);
       }
     }
+
+    // System Settings Function
+    function openSystemSettings() {
+      const modal = createModal('System-Einstellungen', `
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-white mb-3">Sprache</h4>
+            <select id="languageSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Zeitzone</h4>
+            <select id="timezoneSelect" class="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white">
+              <option value="Europe/Berlin">Europa/Berlin</option>
+              <option value="Europe/London">Europa/London</option>
+              <option value="America/New_York">Amerika/New York</option>
+              <option value="America/Los_Angeles">Amerika/Los Angeles</option>
+              <option value="Asia/Tokyo">Asien/Tokyo</option>
+            </select>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Automatische Updates</h4>
+            <label class="flex items-center gap-3">
+              <input type="checkbox" id="autoUpdates" ${localStorage.getItem('autoUpdates') !== 'false' ? 'checked' : ''} class="rounded">
+              <span class="text-white">Automatische Updates aktivieren</span>
+            </label>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Entwickleroptionen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="debugMode" ${localStorage.getItem('debugMode') === 'true' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Debug-Modus</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showPerformance" ${localStorage.getItem('showPerformance') === 'true' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Performance-Metriken anzeigen</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="pt-4 border-t border-white/20">
+            <h4 class="font-medium text-white mb-3">Daten & Privatsphäre</h4>
+            <div class="space-y-3">
+              <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="exportData()">
+                <i class="fas fa-download mr-2"></i>
+                Daten exportieren
+              </button>
+              <button class="w-full p-3 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white transition-colors" onclick="clearCache()">
+                <i class="fas fa-trash mr-2"></i>
+                Cache leeren
+              </button>
+              <button class="w-full p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors" onclick="resetSettings()">
+                <i class="fas fa-undo mr-2"></i>
+                Einstellungen zurücksetzen
+              </button>
+            </div>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for system settings
+      const languageSelect = modal.querySelector('#languageSelect');
+      const timezoneSelect = modal.querySelector('#timezoneSelect');
+      const autoUpdates = modal.querySelector('#autoUpdates');
+      const debugMode = modal.querySelector('#debugMode');
+      const showPerformance = modal.querySelector('#showPerformance');
+      
+      languageSelect.addEventListener('change', function() {
+        localStorage.setItem('language', this.value);
+      });
+      
+      timezoneSelect.addEventListener('change', function() {
+        localStorage.setItem('timezone', this.value);
+      });
+      
+      autoUpdates.addEventListener('change', function() {
+        localStorage.setItem('autoUpdates', this.checked);
+      });
+      
+      debugMode.addEventListener('change', function() {
+        localStorage.setItem('debugMode', this.checked);
+      });
+      
+      showPerformance.addEventListener('change', function() {
+        localStorage.setItem('showPerformance', this.checked);
+        togglePerformanceMetrics(this.checked);
+      });
+    }
+
+    // Helper Functions for Control Bar
+    function createModal(title, content) {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modal.innerHTML = `
+        <div class="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6 border-b border-white/10">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold text-white">${title}</h2>
+              <button class="text-white/60 hover:text-white transition-colors" onclick="this.closest('.fixed').remove()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            ${content}
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Close on background click
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+      
+      return modal;
+    }
+
+    // Control Bar State Functions
+    function updateControlBarState() {
+      // Update theme icon
+      const themeIcon = document.querySelector('.control-icon [class*="moon"], .control-icon [class*="sun"]');
+      if (themeIcon) {
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        themeIcon.className = currentTheme === 'dark' ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+      }
+      
+      // Update compact mode icon
+      const compactIcon = document.querySelector('.control-icon [class*="compress"], .control-icon [class*="expand"]');
+      if (compactIcon) {
+        const isCompact = localStorage.getItem('compactMode') === 'true';
+        compactIcon.className = isCompact ? 'fas fa-expand text-sm' : 'fas fa-compress text-sm';
+      }
+    }
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch (e.key) {
+            case 'p':
+              e.preventDefault();
+              openGradientPicker();
+              break;
+            case 't':
+              e.preventDefault();
+              toggleTheme();
+              break;
+            case 'l':
+              e.preventDefault();
+              openLayoutSettings();
+              break;
+            case 'n':
+              e.preventDefault();
+              openNotificationSettings();
+              break;
+          }
+        }
+      });
+    }
+
+    function initializeTooltips() {
+      // Tooltip functionality is already handled by the title attributes
+    }
+
+    function setupDashboardWidgets() {
+      // Apply dynamic layout
+      applyDynamicLayout();
+      
+      // Setup resize observer for responsive layout
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => {
+          applyDynamicLayout();
+        });
+        
+        const dashboard = document.querySelector('.dashboard-grid');
+        if (dashboard) {
+          resizeObserver.observe(dashboard);
+        }
+      }
+    }
+
+    function setupGreeting() {
+      // Greeting is already rendered server-side
+    }
+
+    function setupAutosave() {
+      // Auto-save settings every 30 seconds
+      setInterval(() => {
+        // Settings are already saved in localStorage when changed
+      }, 30000);
+    }
+
+    // Layout Settings Function
+    function openLayoutSettings() {
+      const modal = createModal('Layout-Einstellungen', `
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-white mb-3">Widget-Größe</h4>
+            <div class="grid grid-cols-3 gap-3">
+              <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('small')">
+                <i class="fas fa-th-large mb-1"></i>
+                <div class="text-xs">Klein</div>
+              </button>
+              <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('medium')">
+                <i class="fas fa-th mb-1"></i>
+                <div class="text-xs">Mittel</div>
+              </button>
+              <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('large')">
+                <i class="fas fa-th-large mb-1"></i>
+                <div class="text-xs">Groß</div>
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Spalten</h4>
+            <div class="flex items-center gap-3">
+              <label class="text-white">Desktop:</label>
+              <input type="range" id="desktopColumns" min="2" max="6" value="${localStorage.getItem('desktopColumns') || '4'}" 
+                     class="flex-1" onchange="updateDesktopColumns(this.value)">
+              <span id="desktopColumnsValue" class="text-white w-8">${localStorage.getItem('desktopColumns') || '4'}</span>
+            </div>
+            <div class="flex items-center gap-3 mt-2">
+              <label class="text-white">Tablet:</label>
+              <input type="range" id="tabletColumns" min="1" max="3" value="${localStorage.getItem('tabletColumns') || '2'}" 
+                     class="flex-1" onchange="updateTabletColumns(this.value)">
+              <span id="tabletColumnsValue" class="text-white w-8">${localStorage.getItem('tabletColumns') || '2'}</span>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Anzeige-Optionen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showGreeting" ${localStorage.getItem('showGreeting') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Begrüßung anzeigen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="showStats" ${localStorage.getItem('showStats') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Statistiken anzeigen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="animateWidgets" ${localStorage.getItem('animateWidgets') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Widget-Animationen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="dynamicLayout" ${localStorage.getItem('dynamicLayout') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Dynamisches Layout</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="pt-4 border-t border-white/20">
+            <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="resetLayout()">
+              <i class="fas fa-undo mr-2"></i>
+              Layout zurücksetzen
+            </button>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners
+      const showGreeting = modal.querySelector('#showGreeting');
+      const showStats = modal.querySelector('#showStats');
+      const animateWidgets = modal.querySelector('#animateWidgets');
+      const dynamicLayout = modal.querySelector('#dynamicLayout');
+      
+      showGreeting.addEventListener('change', function() {
+        localStorage.setItem('showGreeting', this.checked);
+        applyLayoutSettings();
+      });
+      
+      showStats.addEventListener('change', function() {
+        localStorage.setItem('showStats', this.checked);
+        applyLayoutSettings();
+      });
+      
+      animateWidgets.addEventListener('change', function() {
+        localStorage.setItem('animateWidgets', this.checked);
+        applyLayoutSettings();
+      });
+      
+      dynamicLayout.addEventListener('change', function() {
+        localStorage.setItem('dynamicLayout', this.checked);
+        applyDynamicLayout();
+      });
+    }
+
+    // Theme Toggle Function
+    function toggleTheme() {
+      const currentTheme = localStorage.getItem('theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      localStorage.setItem('theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      
+      // Update body class
+      document.body.className = document.body.className.replace(/theme-\w+/g, '');
+      document.body.classList.add(`theme-${newTheme}`);
+      
+      // Update control bar icon
+      updateControlBarState();
+      
+      // Apply theme colors
+      applyThemeColors(newTheme);
+    }
+
+    // Compact Mode Toggle Function
+    function toggleCompactMode() {
+      const currentCompact = localStorage.getItem('compactMode') === 'true';
+      const newCompact = !currentCompact;
+      
+      localStorage.setItem('compactMode', newCompact);
+      
+      // Apply compact mode
+      const widgets = document.querySelectorAll('.dashboard-short');
+      widgets.forEach(widget => {
+        if (newCompact) {
+          widget.classList.add('compact-mode');
+        } else {
+          widget.classList.remove('compact-mode');
+        }
+      });
+      
+      // Update control bar icon
+      updateControlBarState();
+      
+      // Reapply layout
+      applyDynamicLayout();
+    }
+
+    // Notification Settings Function
+    function openNotificationSettings() {
+      const modal = createModal('Benachrichtigungen', `
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-medium text-white mb-3">Desktop-Benachrichtigungen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="desktopNotifications" ${localStorage.getItem('desktopNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Desktop-Benachrichtigungen aktivieren</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="soundNotifications" ${localStorage.getItem('soundNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Ton-Benachrichtigungen</span>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Benachrichtigungstypen</h4>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="taskNotifications" ${localStorage.getItem('taskNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Aufgaben-Erinnerungen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="calendarNotifications" ${localStorage.getItem('calendarNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Kalender-Ereignisse</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="noteNotifications" ${localStorage.getItem('noteNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">Notiz-Erinnerungen</span>
+              </label>
+              <label class="flex items-center gap-3">
+                <input type="checkbox" id="systemNotifications" ${localStorage.getItem('systemNotifications') !== 'false' ? 'checked' : ''} class="rounded">
+                <span class="text-white">System-Benachrichtigungen</span>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-white mb-3">Benachrichtigungszeiten</h4>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <label class="text-white">Ruhemodus von:</label>
+                <input type="time" id="quietStart" value="${localStorage.getItem('quietStart') || '22:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="text-white">Ruhemodus bis:</label>
+                <input type="time" id="quietEnd" value="${localStorage.getItem('quietEnd') || '07:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+              </div>
+            </div>
+          </div>
+          
+          <div class="pt-4 border-t border-white/20">
+            <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="testNotification()">
+              <i class="fas fa-bell mr-2"></i>
+              Test-Benachrichtigung senden
+            </button>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for notification settings
+      const inputs = modal.querySelectorAll('input[type="checkbox"], input[type="time"]');
+      inputs.forEach(input => {
+        input.addEventListener('change', function() {
+          localStorage.setItem(this.id, this.type === 'checkbox' ? this.checked : this.value);
+        });
+      });
+    }
+
+    // Helper Functions for Layout Settings
+    function setWidgetSize(size) {
+      localStorage.setItem('widgetSize', size);
+      applyWidgetSizing(size);
+    }
+
+    function updateDesktopColumns(value) {
+      localStorage.setItem('desktopColumns', value);
+      document.getElementById('desktopColumnsValue').textContent = value;
+      applyDynamicLayout();
+    }
+
+    function updateTabletColumns(value) {
+      localStorage.setItem('tabletColumns', value);
+      document.getElementById('tabletColumnsValue').textContent = value;
+      applyDynamicLayout();
+    }
+
+    function resetLayout() {
+      // Clear layout settings
+      localStorage.removeItem('widgetSize');
+      localStorage.removeItem('desktopColumns');
+      localStorage.removeItem('tabletColumns');
+      localStorage.removeItem('showGreeting');
+      localStorage.removeItem('showStats');
+      localStorage.removeItem('animateWidgets');
+      localStorage.removeItem('dynamicLayout');
+      
+      // Reload page to apply defaults
+      location.reload();
+    }
+
+    function applyWidgetSizing(size) {
+      const widgets = document.querySelectorAll('.dashboard-short');
+      widgets.forEach(widget => {
+        widget.classList.remove('widget-small', 'widget-medium', 'widget-large');
+        widget.classList.add(`widget-${size}`);
+      });
+    }
+
+    function applyThemeColors(theme) {
+      const root = document.documentElement;
+      
+      if (theme === 'light') {
+        root.style.setProperty('--bg-primary', '#ffffff');
+        root.style.setProperty('--bg-secondary', '#f8fafc');
+        root.style.setProperty('--text-primary', '#1f2937');
+        root.style.setProperty('--text-secondary', '#6b7280');
+        root.style.setProperty('--border-color', '#e5e7eb');
+      } else {
+        root.style.setProperty('--bg-primary', '#0f172a');
+        root.style.setProperty('--bg-secondary', '#1e293b');
+        root.style.setProperty('--text-primary', '#f1f5f9');
+        root.style.setProperty('--text-secondary', '#cbd5e1');
+        root.style.setProperty('--border-color', '#334155');
+      }
+    }
+
+    function testNotification() {
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          new Notification('Test-Benachrichtigung', {
+            body: 'Dies ist eine Test-Benachrichtigung von PrivateVault.',
+            icon: '/favicon.ico'
+          });
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              new Notification('Test-Benachrichtigung', {
+                body: 'Dies ist eine Test-Benachrichtigung von PrivateVault.',
+                icon: '/favicon.ico'
+              });
+            }
+          });
+        }
+      }
+    }
+
+    // Data Management Functions
+    function exportData() {
+      const data = {
+        settings: {},
+        timestamp: new Date().toISOString()
+      };
+      
+      // Export all localStorage data
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        data.settings[key] = localStorage.getItem(key);
+      }
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `privatevault-settings-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearCache() {
+      if (confirm('Möchten Sie wirklich den Cache leeren? Dies kann die Ladezeit temporär erhöhen.')) {
+        // Clear localStorage
+        localStorage.clear();
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        
+        // Clear browser cache if possible
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => {
+              caches.delete(name);
+            });
+          });
+        }
+        
+        alert('Cache erfolgreich geleert.');
+        location.reload();
+      }
+    }
+
+    function resetSettings() {
+      if (confirm('Möchten Sie wirklich alle Einstellungen zurücksetzen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    function togglePerformanceMetrics(show) {
+      const metricsContainer = document.getElementById('performance-metrics');
+      if (show) {
+        if (!metricsContainer) {
+          const metrics = document.createElement('div');
+          metrics.id = 'performance-metrics';
+          metrics.className = 'fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg backdrop-blur-sm z-40';
+          metrics.innerHTML = `
+            <div class="text-sm font-medium mb-2">Performance</div>
+            <div class="text-xs space-y-1">
+              <div>Memory: <span id="memory-usage">--</span></div>
+              <div>Load Time: <span id="load-time">--</span></div>
+              <div>FPS: <span id="fps-counter">--</span></div>
+            </div>
+          `;
+          document.body.appendChild(metrics);
+          
+          // Start performance monitoring
+          startPerformanceMonitoring();
+        } else {
+          metricsContainer.style.display = 'block';
+        }
+      } else {
+        if (metricsContainer) {
+          metricsContainer.style.display = 'none';
+        }
+      }
+    }
+
+    function startPerformanceMonitoring() {
+      // Memory usage
+      if (performance.memory) {
+        setInterval(() => {
+          const memoryElement = document.getElementById('memory-usage');
+          if (memoryElement) {
+            const memory = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+            memoryElement.textContent = `${memory} MB`;
+          }
+        }, 1000);
+      }
+      
+      // Load time
+      window.addEventListener('load', () => {
+        const loadTimeElement = document.getElementById('load-time');
+        if (loadTimeElement) {
+          const loadTime = Math.round(performance.now());
+          loadTimeElement.textContent = `${loadTime} ms`;
+        }
+      });
+      
+      // FPS counter
+      let fps = 0;
+      let lastTime = performance.now();
+      function countFPS() {
+        const currentTime = performance.now();
+        fps = Math.round(1000 / (currentTime - lastTime));
+        lastTime = currentTime;
+        
+        const fpsElement = document.getElementById('fps-counter');
+        if (fpsElement) {
+          fpsElement.textContent = fps;
+        }
+        
+        requestAnimationFrame(countFPS);
+      }
+      requestAnimationFrame(countFPS);
+    }
+
+    // Enhanced Dynamic Layout System
+    function applyDynamicLayout() {
+      const dashboard = document.querySelector('.dashboard-grid');
+      if (!dashboard) return;
+      
+      const screenWidth = window.innerWidth;
+      const isDesktop = screenWidth >= 1024;
+      const isTablet = screenWidth >= 768 && screenWidth < 1024;
+      const isMobile = screenWidth < 768;
+      
+      // Check if dynamic layout is enabled
+      const dynamicLayout = localStorage.getItem('dynamicLayout') !== 'false';
+      
+      let columns;
+      let gap;
+      
+      if (isMobile) {
+        columns = 1;
+        gap = '1rem';
+      } else if (isTablet) {
+        columns = parseInt(localStorage.getItem('tabletColumns') || '2');
+        gap = '1.5rem';
+      } else {
+        // Desktop: use user setting or calculate dynamic columns
+        if (dynamicLayout) {
+          const availableWidth = screenWidth - 256 - 48; // Subtract sidebar and padding
+          const widgetSize = localStorage.getItem('widgetSize') || 'medium';
+          
+          let minWidgetWidth;
+          switch (widgetSize) {
+            case 'small':
+              minWidgetWidth = 280;
+              break;
+            case 'large':
+              minWidgetWidth = 400;
+              break;
+            default: // medium
+              minWidgetWidth = 320;
+          }
+          
+          const maxColumns = Math.floor(availableWidth / minWidgetWidth);
+          columns = Math.min(Math.max(maxColumns, 2), 6); // Between 2 and 6 columns
+        } else {
+          columns = parseInt(localStorage.getItem('desktopColumns') || '4');
+        }
+        gap = '2rem';
+      }
+      
+      // Apply CSS Grid
+      dashboard.style.display = 'grid';
+      dashboard.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+      dashboard.style.gap = gap;
+      dashboard.style.transition = 'all 0.3s ease';
+      
+      // Store current layout
+      localStorage.setItem('currentColumns', columns);
+      
+      // Apply widget sizing classes
+      const widgetSize = localStorage.getItem('widgetSize') || 'medium';
+      applyWidgetSizing(widgetSize);
+    }
+
+    // Enhanced Layout Functions
+    function applyLayoutSettings() {
+      const showGreeting = localStorage.getItem('showGreeting') !== 'false';
+      const showStats = localStorage.getItem('showStats') !== 'false';
+      const animateWidgets = localStorage.getItem('animateWidgets') !== 'false';
+      
+      // Apply greeting visibility
+      const greetingElement = document.querySelector('.greeting-text');
+      if (greetingElement) {
+        greetingElement.style.display = showGreeting ? 'block' : 'none';
+      }
+      
+      // Apply stats visibility
+      const statsElements = document.querySelectorAll('.stats-number');
+      statsElements.forEach(el => {
+        el.style.display = showStats ? 'block' : 'none';
+      });
+      
+      // Apply animations
+      const widgets = document.querySelectorAll('.dashboard-short');
+      widgets.forEach(widget => {
+        if (animateWidgets) {
+          widget.style.transition = 'all 0.3s ease';
+        } else {
+          widget.style.transition = 'none';
+        }
+      });
+    }
+
+    // Initialize all dashboard functionality
+    function initializeDashboard() {
+      setupDashboardWidgets();
+      applyLayoutSettings();
+      updateControlBarState();
+      setupKeyboardShortcuts();
+      
+      // Apply theme on load
+      const theme = localStorage.getItem('theme') || 'dark';
+      applyThemeColors(theme);
+      
+      // Apply compact mode if enabled
+      const compactMode = localStorage.getItem('compactMode') === 'true';
+      if (compactMode) {
+        toggleCompactMode();
+      }
+    }
+
+    // Call initialization when DOM is ready
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      applyDynamicLayout();
+    });
 
     // Notes App Variables
     let notesApp = {
