@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benachrichtigungs-Test | PrivateVault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d1b69 0%, #11101d 30%, #1a0909 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px;
+        }
+        
+        .btn:hover { 
+            background: rgba(59, 130, 246, 1); 
+            transform: translateY(-1px);
+        }
+        
+        .btn-success { background: rgba(16, 185, 129, 0.8); }
+        .btn-success:hover { background: rgba(16, 185, 129, 1); }
+        
+        .btn-warning { background: rgba(245, 158, 11, 0.8); }
+        .btn-warning:hover { background: rgba(245, 158, 11, 1); }
+        
+        .btn-error { background: rgba(239, 68, 68, 0.8); }
+        .btn-error:hover { background: rgba(239, 68, 68, 1); }
+        
+        .status-log {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .status-good {
+            color: #10b981;
+        }
+        
+        .status-bad {
+            color: #ef4444;
+        }
+        
+        .status-warning {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-8">
+        <h1 class="text-4xl font-bold text-center mb-2">🔔 Benachrichtigungs-Test</h1>
+        <p class="text-center text-gray-300 mb-8">Testen Sie alle Benachrichtigungsfunktionen</p>
+        
+        <!-- Status Overview -->
+        <div class="test-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">
+                <i class="fas fa-chart-line mr-2"></i>
+                System-Status
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl mb-2">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div class="text-sm">Browser-Unterstützung</div>
+                    <div id="browserSupport" class="font-bold">Wird geprüft...</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="text-sm">Berechtigung</div>
+                    <div id="permissionStatus" class="font-bold">Wird geprüft...</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="text-sm">API-Status</div>
+                    <div id="apiStatus" class="font-bold">Wird geprüft...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Desktop Notifications -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-desktop mr-2"></i>
+                    Desktop-Benachrichtigungen
+                </h2>
+                <p class="text-gray-300 mb-4">Teste Browser-Benachrichtigungen</p>
+                <div class="space-y-2">
+                    <button class="btn w-full" onclick="testDesktopNotification()">
+                        <i class="fas fa-bell"></i>
+                        Test senden
+                    </button>
+                    <button class="btn btn-warning w-full" onclick="requestNotificationPermission()">
+                        <i class="fas fa-key"></i>
+                        Berechtigung anfordern
+                    </button>
+                </div>
+            </div>
+            
+            <!-- API Tests -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-server mr-2"></i>
+                    API-Benachrichtigungen
+                </h2>
+                <p class="text-gray-300 mb-4">Teste Server-API</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn" onclick="testApiNotification('info')">
+                        <i class="fas fa-info-circle"></i>
+                        Info
+                    </button>
+                    <button class="btn btn-success" onclick="testApiNotification('success')">
+                        <i class="fas fa-check-circle"></i>
+                        Erfolg
+                    </button>
+                    <button class="btn btn-warning" onclick="testApiNotification('warning')">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Warnung
+                    </button>
+                    <button class="btn btn-error" onclick="testApiNotification('error')">
+                        <i class="fas fa-times-circle"></i>
+                        Fehler
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Settings Test -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-cog mr-2"></i>
+                    Einstellungen
+                </h2>
+                <p class="text-gray-300 mb-4">Teste Einstellungs-API</p>
+                <div class="space-y-2">
+                    <button class="btn w-full" onclick="loadSettings()">
+                        <i class="fas fa-download"></i>
+                        Einstellungen laden
+                    </button>
+                    <button class="btn btn-success w-full" onclick="saveTestSettings()">
+                        <i class="fas fa-save"></i>
+                        Test-Einstellungen speichern
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Badge Test -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-bell mr-2"></i>
+                    Badge-Test
+                </h2>
+                <p class="text-gray-300 mb-4">Teste Benachrichtigungs-Badge</p>
+                <div class="space-y-2">
+                    <button class="btn w-full" onclick="checkUnreadCount()">
+                        <i class="fas fa-hashtag"></i>
+                        Ungelesene zählen
+                    </button>
+                    <button class="btn btn-warning w-full" onclick="clearNotifications()">
+                        <i class="fas fa-trash"></i>
+                        Benachrichtigungen löschen
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Batch Test -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-layer-group mr-2"></i>
+                    Batch-Test
+                </h2>
+                <p class="text-gray-300 mb-4">Teste mehrere Benachrichtigungen</p>
+                <div class="space-y-2">
+                    <button class="btn w-full" onclick="sendBatchNotifications()">
+                        <i class="fas fa-paper-plane"></i>
+                        5 Benachrichtigungen senden
+                    </button>
+                    <button class="btn btn-error w-full" onclick="stressTest()">
+                        <i class="fas fa-bolt"></i>
+                        Stress-Test (20 Nachrichten)
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Manual Test -->
+            <div class="test-card">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-edit mr-2"></i>
+                    Manueller Test
+                </h2>
+                <p class="text-gray-300 mb-4">Erstelle eigene Benachrichtigung</p>
+                <div class="space-y-2">
+                    <input type="text" id="customTitle" placeholder="Titel" class="w-full p-2 rounded bg-white/10 border border-white/20 text-white placeholder-gray-400">
+                    <textarea id="customMessage" placeholder="Nachricht" class="w-full p-2 rounded bg-white/10 border border-white/20 text-white placeholder-gray-400" rows="2"></textarea>
+                    <button class="btn w-full" onclick="sendCustomNotification()">
+                        <i class="fas fa-paper-plane"></i>
+                        Senden
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Log Output -->
+        <div class="test-card">
+            <h2 class="text-xl font-semibold mb-4">
+                <i class="fas fa-terminal mr-2"></i>
+                Aktivitäts-Log
+            </h2>
+            <div id="statusLog" class="status-log">
+                <div class="text-blue-400">[System] Benachrichtigungs-Test geladen...</div>
+            </div>
+            <div class="mt-4 text-center">
+                <button class="btn btn-warning" onclick="clearLog()">
+                    <i class="fas fa-eraser"></i>
+                    Log leeren
+                </button>
+                <a href="../templates/dashboard.php" class="btn ml-2">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zum Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let notificationCount = 0;
+        
+        // Logging function
+        function log(message, type = 'info', prefix = 'Test') {
+            const logElement = document.getElementById('statusLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': 'text-blue-400',
+                'success': 'text-green-400',
+                'warning': 'text-yellow-400',
+                'error': 'text-red-400'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = colors[type] || 'text-gray-400';
+            logEntry.innerHTML = `[${timestamp}] [${prefix}] ${message}`;
+            
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // Clear log
+        function clearLog() {
+            document.getElementById('statusLog').innerHTML = '';
+            log('Log geleert', 'info', 'System');
+        }
+        
+        // Check system status
+        function checkSystemStatus() {
+            // Browser support
+            const browserSupport = document.getElementById('browserSupport');
+            if ('Notification' in window) {
+                browserSupport.textContent = 'Unterstützt';
+                browserSupport.className = 'font-bold status-good';
+            } else {
+                browserSupport.textContent = 'Nicht unterstützt';
+                browserSupport.className = 'font-bold status-bad';
+            }
+            
+            // Permission status
+            const permissionStatus = document.getElementById('permissionStatus');
+            if ('Notification' in window) {
+                const permission = Notification.permission;
+                permissionStatus.textContent = permission === 'granted' ? 'Erteilt' : permission === 'denied' ? 'Verweigert' : 'Ausstehend';
+                permissionStatus.className = `font-bold ${permission === 'granted' ? 'status-good' : permission === 'denied' ? 'status-bad' : 'status-warning'}`;
+            } else {
+                permissionStatus.textContent = 'N/A';
+                permissionStatus.className = 'font-bold status-bad';
+            }
+            
+            // API status
+            checkApiStatus();
+        }
+        
+        // Check API status
+        async function checkApiStatus() {
+            const apiStatus = document.getElementById('apiStatus');
+            try {
+                const response = await fetch('./api/notifications.php?action=unread_count', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    apiStatus.textContent = 'Online';
+                    apiStatus.className = 'font-bold status-good';
+                    log('API erfolgreich verbunden', 'success', 'API');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                apiStatus.textContent = 'Offline';
+                apiStatus.className = 'font-bold status-bad';
+                log(`API-Fehler: ${error.message}`, 'error', 'API');
+            }
+        }
+        
+        // Test desktop notification
+        function testDesktopNotification() {
+            log('Teste Desktop-Benachrichtigung...', 'info');
+            
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    notificationCount++;
+                    const notification = new Notification('Test-Benachrichtigung', {
+                        body: `Dies ist Test-Benachrichtigung #${notificationCount}`,
+                        icon: '/favicon.ico',
+                        badge: '/favicon.ico',
+                        tag: 'test-notification'
+                    });
+                    
+                    notification.onclick = function() {
+                        log('Desktop-Benachrichtigung geklickt', 'info');
+                        this.close();
+                    };
+                    
+                    log('Desktop-Benachrichtigung gesendet!', 'success');
+                } else {
+                    log('Keine Berechtigung für Desktop-Benachrichtigungen', 'warning');
+                    requestNotificationPermission();
+                }
+            } else {
+                log('Desktop-Benachrichtigungen werden nicht unterstützt', 'error');
+            }
+        }
+        
+        // Request notification permission
+        function requestNotificationPermission() {
+            log('Fordere Benachrichtigungsberechtigung an...', 'info');
+            
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    log(`Berechtigung: ${permission}`, permission === 'granted' ? 'success' : 'warning');
+                    checkSystemStatus(); // Update status display
+                });
+            } else {
+                log('Benachrichtigungen werden nicht unterstützt', 'error');
+            }
+        }
+        
+        // Test API notification
+        async function testApiNotification(type) {
+            log(`Sende ${type.toUpperCase()}-Benachrichtigung über API...`, 'info');
+            
+            const messages = {
+                'info': 'Dies ist eine Informations-Benachrichtigung.',
+                'success': 'Vorgang erfolgreich abgeschlossen!',
+                'warning': 'Achtung: Hier ist eine Warnung.',
+                'error': 'Fehler: Etwas ist schiefgelaufen.'
+            };
+            
+            try {
+                const response = await fetch('./api/notifications.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: `Test ${type.toUpperCase()}`,
+                        message: messages[type],
+                        type: type
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log(`${type.toUpperCase()}-Benachrichtigung erfolgreich gesendet!`, 'success', 'API');
+                } else {
+                    log(`Fehler: ${result.error}`, 'error', 'API');
+                }
+            } catch (error) {
+                log(`API-Fehler: ${error.message}`, 'error', 'API');
+            }
+        }
+        
+        // Load settings
+        async function loadSettings() {
+            log('Lade Benachrichtigungseinstellungen...', 'info');
+            
+            try {
+                const response = await fetch('./api/notifications.php', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log('Einstellungen erfolgreich geladen:', 'success', 'Settings');
+                    log(JSON.stringify(result.settings, null, 2), 'info', 'Settings');
+                } else {
+                    log(`Fehler beim Laden: ${result.error}`, 'error', 'Settings');
+                }
+            } catch (error) {
+                log(`Fehler: ${error.message}`, 'error', 'Settings');
+            }
+        }
+        
+        // Save test settings
+        async function saveTestSettings() {
+            log('Speichere Test-Einstellungen...', 'info');
+            
+            const testSettings = {
+                desktop_enabled: true,
+                sound_enabled: true,
+                email_enabled: false,
+                task_reminders: true,
+                calendar_events: true,
+                system_alerts: true,
+                finance_updates: true,
+                quiet_start: '22:00',
+                quiet_end: '07:00',
+                frequency: 'immediate'
+            };
+            
+            try {
+                const response = await fetch('./api/notifications.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testSettings)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log('Test-Einstellungen gespeichert!', 'success', 'Settings');
+                } else {
+                    log(`Fehler: ${result.error}`, 'error', 'Settings');
+                }
+            } catch (error) {
+                log(`Fehler: ${error.message}`, 'error', 'Settings');
+            }
+        }
+        
+        // Check unread count
+        async function checkUnreadCount() {
+            log('Prüfe ungelesene Benachrichtigungen...', 'info');
+            
+            try {
+                const response = await fetch('./api/notifications.php?action=unread_count', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log(`Ungelesene Benachrichtigungen: ${result.count}`, 'success', 'Badge');
+                } else {
+                    log(`Fehler: ${result.error}`, 'error', 'Badge');
+                }
+            } catch (error) {
+                log(`Fehler: ${error.message}`, 'error', 'Badge');
+            }
+        }
+        
+        // Clear notifications (mock function)
+        function clearNotifications() {
+            log('Benachrichtigungen gelöscht (Mock)', 'warning', 'Badge');
+        }
+        
+        // Send batch notifications
+        async function sendBatchNotifications() {
+            log('Sende 5 Test-Benachrichtigungen...', 'info', 'Batch');
+            
+            const notifications = [
+                { title: 'Aufgabe fällig', message: 'Ihre Aufgabe ist heute fällig.', type: 'warning' },
+                { title: 'Neuer Termin', message: 'Sie haben einen neuen Termin.', type: 'info' },
+                { title: 'Backup abgeschlossen', message: 'Ihr Backup wurde erfolgreich erstellt.', type: 'success' },
+                { title: 'Speicher fast voll', message: 'Ihr Speicher ist zu 90% belegt.', type: 'warning' },
+                { title: 'Update verfügbar', message: 'Eine neue Version ist verfügbar.', type: 'info' }
+            ];
+            
+            for (let i = 0; i < notifications.length; i++) {
+                const notif = notifications[i];
+                await testApiNotification(notif.type);
+                await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay between notifications
+            }
+            
+            log('Batch-Benachrichtigungen abgeschlossen', 'success', 'Batch');
+        }
+        
+        // Stress test
+        async function stressTest() {
+            log('Starte Stress-Test mit 20 Benachrichtigungen...', 'warning', 'Stress');
+            
+            const types = ['info', 'success', 'warning', 'error'];
+            
+            for (let i = 0; i < 20; i++) {
+                const type = types[i % types.length];
+                testApiNotification(type);
+                
+                if (i % 5 === 4) {
+                    await new Promise(resolve => setTimeout(resolve, 200)); // Short break every 5 notifications
+                }
+            }
+            
+            log('Stress-Test abgeschlossen', 'success', 'Stress');
+        }
+        
+        // Send custom notification
+        function sendCustomNotification() {
+            const title = document.getElementById('customTitle').value || 'Custom Test';
+            const message = document.getElementById('customMessage').value || 'Dies ist eine benutzerdefinierte Test-Benachrichtigung.';
+            
+            log(`Sende benutzerdefinierte Benachrichtigung: "${title}"`, 'info', 'Custom');
+            
+            testApiNotification('info');
+            
+            // Clear inputs
+            document.getElementById('customTitle').value = '';
+            document.getElementById('customMessage').value = '';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            log('Benachrichtigungs-Test bereit', 'success', 'System');
+            
+            if ('Notification' in window) {
+                log(`Browser-Unterstützung: Ja (${Notification.permission})`, 'info', 'System');
+            } else {
+                log('Browser-Unterstützung: Nein', 'warning', 'System');
+            }
+        });
+    </script>
+</body>
+</html>

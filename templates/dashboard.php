@@ -78,6 +78,37 @@
       left: 100%;
     }
 
+    /* Notification Badge */
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+
     .control-icon:hover {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.25);
@@ -2956,7 +2987,17 @@
     // Load notification settings from server
     async function loadNotificationSettings() {
       try {
-        const response = await fetch('/api/notifications.php');
+        const response = await fetch('./api/notifications.php', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success) {
@@ -3014,13 +3055,17 @@
       };
       
       try {
-        const response = await fetch('/api/notifications.php', {
+        const response = await fetch('./api/notifications.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(settings)
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         
@@ -3107,14 +3152,27 @@
 
     // Enhanced Test Notification Function
     function testNotification() {
-      sendNotification('Test-Benachrichtigung', 'Dies ist eine Test-Benachrichtigung von PrivateVault.', 'info');
+      const titles = ['Test-Benachrichtigung', 'Neue Nachricht', 'Erinnerung', 'Info'];
+      const messages = [
+        'Dies ist eine Test-Benachrichtigung von PrivateVault.',
+        'Sie haben eine neue Nachricht erhalten.',
+        'Vergessen Sie nicht Ihre wichtigen Aufgaben!',
+        'Das System funktioniert einwandfrei.'
+      ];
+      const types = ['info', 'success', 'warning', 'error'];
+      
+      const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      
+      sendNotification(randomTitle, randomMessage, randomType);
     }
 
     // Send notification function
     async function sendNotification(title, message, type = 'info', data = null) {
       try {
         // Send to server first
-        const response = await fetch('/api/notifications.php', {
+        const response = await fetch('./api/notifications.php', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -3126,6 +3184,10 @@
             data: data
           })
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const result = await response.json();
         
@@ -3337,7 +3399,18 @@
     // Check for new notifications
     async function checkForNewNotifications() {
       try {
-        const response = await fetch('/api/notifications.php?since=' + (localStorage.getItem('lastNotificationCheck') || ''));
+        const lastCheck = localStorage.getItem('lastNotificationCheck') || '';
+        const response = await fetch(`./api/notifications.php?since=${encodeURIComponent(lastCheck)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.notifications && data.notifications.length > 0) {
@@ -3384,7 +3457,17 @@
     // Update notification badge
     async function updateNotificationBadge() {
       try {
-        const response = await fetch('/api/notifications.php?action=unread_count');
+        const response = await fetch('./api/notifications.php?action=unread_count', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.count !== undefined) {
