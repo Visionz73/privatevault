@@ -1148,6 +1148,64 @@
         transform: translateY(0) scale(1);
       }
     }
+    
+    /* In-App Notification Styles */
+    .in-app-notification {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      animation: slideInRight 0.3s ease-out;
+    }
+    
+    .in-app-notification.translate-x-full {
+      transform: translateX(100%);
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Notification Permission Banner */
+    .notification-permission-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .notification-permission-banner.show {
+      transform: translateY(0);
+    }
+    
+    /* Notification Badge */
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: #EF4444;
+      color: white;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
 
   </style>
 </head>
@@ -1167,6 +1225,7 @@
     </div>
     <div class="control-icon" onclick="openNotificationSettings()" title="Benachrichtigungen">
       <i class="fas fa-bell text-sm"></i>
+      <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
     </div>
     <div class="control-icon" onclick="openLayoutSettings()" title="Layout anpassen">
       <i class="fas fa-th text-sm"></i>
@@ -2789,76 +2848,203 @@
       applyDynamicLayout();
     }
 
-    // Notification Settings Function
+    // Enhanced Notification Settings Function
     function openNotificationSettings() {
-      const modal = createModal('Benachrichtigungen', `
-        <div class="space-y-6">
-          <div>
-            <h4 class="font-medium text-white mb-3">Desktop-Benachrichtigungen</h4>
-            <div class="space-y-3">
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="desktopNotifications" ${localStorage.getItem('desktopNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Desktop-Benachrichtigungen aktivieren</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="soundNotifications" ${localStorage.getItem('soundNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Ton-Benachrichtigungen</span>
-              </label>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Benachrichtigungstypen</h4>
-            <div class="space-y-3">
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="taskNotifications" ${localStorage.getItem('taskNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Aufgaben-Erinnerungen</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="calendarNotifications" ${localStorage.getItem('calendarNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Kalender-Ereignisse</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="noteNotifications" ${localStorage.getItem('noteNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">Notiz-Erinnerungen</span>
-              </label>
-              <label class="flex items-center gap-3">
-                <input type="checkbox" id="systemNotifications" ${localStorage.getItem('systemNotifications') !== 'false' ? 'checked' : ''} class="rounded">
-                <span class="text-white">System-Benachrichtigungen</span>
-              </label>
-            </div>
-          </div>
-          
-          <div>
-            <h4 class="font-medium text-white mb-3">Benachrichtigungszeiten</h4>
-            <div class="space-y-3">
-              <div class="flex items-center gap-3">
-                <label class="text-white">Ruhemodus von:</label>
-                <input type="time" id="quietStart" value="${localStorage.getItem('quietStart') || '22:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
-              </div>
-              <div class="flex items-center gap-3">
-                <label class="text-white">Ruhemodus bis:</label>
-                <input type="time" id="quietEnd" value="${localStorage.getItem('quietEnd') || '07:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+      // First load current settings from server
+      loadNotificationSettings().then(settings => {
+        const modal = createModal('Benachrichtigungen', `
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-medium text-white mb-3">Desktop-Benachrichtigungen</h4>
+              <div class="space-y-3">
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="desktopNotifications" ${settings.desktop_enabled ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Desktop-Benachrichtigungen aktivieren</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="soundNotifications" ${settings.sound_enabled ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Ton-Benachrichtigungen</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="emailNotifications" ${settings.email_enabled ? 'checked' : ''} class="rounded">
+                  <span class="text-white">E-Mail-Benachrichtigungen</span>
+                </label>
               </div>
             </div>
+            
+            <div>
+              <h4 class="font-medium text-white mb-3">Benachrichtigungstypen</h4>
+              <div class="space-y-3">
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="taskNotifications" ${settings.task_reminders ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Aufgaben-Erinnerungen</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="calendarNotifications" ${settings.calendar_events ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Kalender-Ereignisse</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="noteNotifications" ${settings.note_reminders ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Notiz-Erinnerungen</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="systemNotifications" ${settings.system_alerts ? 'checked' : ''} class="rounded">
+                  <span class="text-white">System-Benachrichtigungen</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="financeNotifications" ${settings.finance_updates ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Finanz-Updates</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="documentNotifications" ${settings.document_uploads ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Dokument-Uploads</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" id="securityNotifications" ${settings.security_warnings ? 'checked' : ''} class="rounded">
+                  <span class="text-white">Sicherheitswarnungen</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="font-medium text-white mb-3">Benachrichtigungszeiten</h4>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <label class="text-white">Ruhemodus von:</label>
+                  <input type="time" id="quietStart" value="${settings.quiet_start || '22:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="text-white">Ruhemodus bis:</label>
+                  <input type="time" id="quietEnd" value="${settings.quiet_end || '07:00'}" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="text-white">Häufigkeit:</label>
+                  <select id="notificationFrequency" class="p-2 rounded bg-white/10 border border-white/20 text-white">
+                    <option value="immediate" ${settings.frequency === 'immediate' ? 'selected' : ''}>Sofort</option>
+                    <option value="hourly" ${settings.frequency === 'hourly' ? 'selected' : ''}>Stündlich</option>
+                    <option value="daily" ${settings.frequency === 'daily' ? 'selected' : ''}>Täglich</option>
+                    <option value="weekly" ${settings.frequency === 'weekly' ? 'selected' : ''}>Wöchentlich</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pt-4 border-t border-white/20 space-y-3">
+              <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="testNotification()">
+                <i class="fas fa-bell mr-2"></i>
+                Test-Benachrichtigung senden
+              </button>
+              <button class="w-full p-3 rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors" onclick="saveNotificationSettings()">
+                <i class="fas fa-save mr-2"></i>
+                Einstellungen speichern
+              </button>
+            </div>
           </div>
-          
-          <div class="pt-4 border-t border-white/20">
-            <button class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors" onclick="testNotification()">
-              <i class="fas fa-bell mr-2"></i>
-              Test-Benachrichtigung senden
-            </button>
-          </div>
-        </div>
-      `);
-      
-      // Add event listeners for notification settings
-      const inputs = modal.querySelectorAll('input[type="checkbox"], input[type="time"]');
-      inputs.forEach(input => {
-        input.addEventListener('change', function() {
-          localStorage.setItem(this.id, this.type === 'checkbox' ? this.checked : this.value);
+        `);
+        
+        // Add event listeners for notification settings
+        const inputs = modal.querySelectorAll('input[type="checkbox"], input[type="time"], select');
+        inputs.forEach(input => {
+          input.addEventListener('change', function() {
+            // Mark as changed for saving
+            this.dataset.changed = 'true';
+          });
         });
       });
+    }
+
+    // Load notification settings from server
+    async function loadNotificationSettings() {
+      try {
+        const response = await fetch('/api/notifications.php');
+        const data = await response.json();
+        
+        if (data.success) {
+          return data.settings;
+        } else {
+          console.error('Failed to load notification settings:', data.error);
+          return getDefaultNotificationSettings();
+        }
+      } catch (error) {
+        console.error('Error loading notification settings:', error);
+        return getDefaultNotificationSettings();
+      }
+    }
+
+    // Get default notification settings
+    function getDefaultNotificationSettings() {
+      return {
+        desktop_enabled: true,
+        sound_enabled: true,
+        email_enabled: true,
+        push_enabled: true,
+        task_reminders: true,
+        calendar_events: true,
+        note_reminders: false,
+        system_alerts: true,
+        finance_updates: true,
+        document_uploads: true,
+        security_warnings: true,
+        quiet_start: '22:00',
+        quiet_end: '07:00',
+        frequency: 'immediate'
+      };
+    }
+
+    // Save notification settings to server
+    async function saveNotificationSettings() {
+      const modal = document.querySelector('.fixed');
+      if (!modal) return;
+      
+      // Collect all settings
+      const settings = {
+        desktop_enabled: modal.querySelector('#desktopNotifications').checked,
+        sound_enabled: modal.querySelector('#soundNotifications').checked,
+        email_enabled: modal.querySelector('#emailNotifications').checked,
+        task_reminders: modal.querySelector('#taskNotifications').checked,
+        calendar_events: modal.querySelector('#calendarNotifications').checked,
+        note_reminders: modal.querySelector('#noteNotifications').checked,
+        system_alerts: modal.querySelector('#systemNotifications').checked,
+        finance_updates: modal.querySelector('#financeNotifications').checked,
+        document_uploads: modal.querySelector('#documentNotifications').checked,
+        security_warnings: modal.querySelector('#securityNotifications').checked,
+        quiet_start: modal.querySelector('#quietStart').value,
+        quiet_end: modal.querySelector('#quietEnd').value,
+        frequency: modal.querySelector('#notificationFrequency').value
+      };
+      
+      try {
+        const response = await fetch('/api/notifications.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(settings)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Benachrichtigungseinstellungen gespeichert!', 'success');
+          
+          // Update localStorage for immediate use
+          Object.keys(settings).forEach(key => {
+            localStorage.setItem(key, settings[key]);
+          });
+          
+          // Request notification permission if desktop notifications are enabled
+          if (settings.desktop_enabled && 'Notification' in window) {
+            if (Notification.permission === 'default') {
+              Notification.requestPermission();
+            }
+          }
+        } else {
+          showNotification('Fehler beim Speichern: ' + data.error, 'error');
+        }
+      } catch (error) {
+        console.error('Error saving notification settings:', error);
+        showNotification('Fehler beim Speichern der Einstellungen', 'error');
+      }
     }
 
     // Helper Functions for Layout Settings
@@ -2919,24 +3105,308 @@
       }
     }
 
+    // Enhanced Test Notification Function
     function testNotification() {
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          new Notification('Test-Benachrichtigung', {
-            body: 'Dies ist eine Test-Benachrichtigung von PrivateVault.',
-            icon: '/favicon.ico'
-          });
-        } else if (Notification.permission !== 'denied') {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              new Notification('Test-Benachrichtigung', {
-                body: 'Dies ist eine Test-Benachrichtigung von PrivateVault.',
-                icon: '/favicon.ico'
+      sendNotification('Test-Benachrichtigung', 'Dies ist eine Test-Benachrichtigung von PrivateVault.', 'info');
+    }
+
+    // Send notification function
+    async function sendNotification(title, message, type = 'info', data = null) {
+      try {
+        // Send to server first
+        const response = await fetch('/api/notifications.php', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: title,
+            message: message,
+            type: type,
+            data: data
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show desktop notification if enabled and permitted
+          const desktopEnabled = localStorage.getItem('desktop_enabled') !== 'false';
+          
+          if (desktopEnabled && 'Notification' in window) {
+            if (Notification.permission === 'granted') {
+              const notification = new Notification(title, {
+                body: message,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: 'privatevault-' + Date.now(),
+                requireInteraction: type === 'error' || type === 'warning',
+                silent: localStorage.getItem('sound_enabled') === 'false'
               });
+              
+              // Auto-close after 5 seconds for non-critical notifications
+              if (type === 'info' || type === 'success') {
+                setTimeout(() => {
+                  notification.close();
+                }, 5000);
+              }
+              
+              // Handle notification click
+              notification.onclick = function() {
+                window.focus();
+                this.close();
+                
+                // Handle specific notification actions based on type
+                if (data && data.action) {
+                  handleNotificationAction(data.action, data);
+                }
+              };
+            } else if (Notification.permission === 'default') {
+              // Request permission
+              const permission = await Notification.requestPermission();
+              if (permission === 'granted') {
+                // Retry sending notification
+                sendNotification(title, message, type, data);
+              }
             }
-          });
+          }
+          
+          // Show in-app notification
+          showInAppNotification(title, message, type);
+          
+          // Play sound if enabled
+          if (localStorage.getItem('sound_enabled') !== 'false') {
+            playNotificationSound(type);
+          }
+          
+          return true;
+        } else {
+          console.error('Failed to send notification:', result.error);
+          return false;
         }
+      } catch (error) {
+        console.error('Error sending notification:', error);
+        showInAppNotification('Fehler beim Senden der Benachrichtigung', error.message, 'error');
+        return false;
       }
+    }
+
+    // Show in-app notification
+    function showInAppNotification(title, message, type = 'info') {
+      // Remove existing notifications
+      const existing = document.querySelectorAll('.in-app-notification');
+      existing.forEach(n => n.remove());
+      
+      const notification = document.createElement('div');
+      notification.className = `in-app-notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg border backdrop-blur-sm max-w-sm transform transition-all duration-300 translate-x-full`;
+      
+      // Set colors based on type
+      let bgColor, borderColor, iconClass;
+      switch (type) {
+        case 'success':
+          bgColor = 'bg-green-900/90';
+          borderColor = 'border-green-500/30';
+          iconClass = 'fas fa-check-circle text-green-400';
+          break;
+        case 'warning':
+          bgColor = 'bg-yellow-900/90';
+          borderColor = 'border-yellow-500/30';
+          iconClass = 'fas fa-exclamation-triangle text-yellow-400';
+          break;
+        case 'error':
+          bgColor = 'bg-red-900/90';
+          borderColor = 'border-red-500/30';
+          iconClass = 'fas fa-times-circle text-red-400';
+          break;
+        default:
+          bgColor = 'bg-blue-900/90';
+          borderColor = 'border-blue-500/30';
+          iconClass = 'fas fa-info-circle text-blue-400';
+      }
+      
+      notification.className += ` ${bgColor} ${borderColor}`;
+      
+      notification.innerHTML = `
+        <div class="flex items-start gap-3">
+          <i class="${iconClass} mt-0.5"></i>
+          <div class="flex-1">
+            <h4 class="font-medium text-white text-sm">${title}</h4>
+            <p class="text-gray-300 text-xs mt-1">${message}</p>
+          </div>
+          <button class="text-gray-400 hover:text-white transition-colors" onclick="this.closest('.in-app-notification').remove()">
+            <i class="fas fa-times text-xs"></i>
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 5000);
+    }
+
+    // Play notification sound
+    function playNotificationSound(type = 'info') {
+      try {
+        // Create audio context if needed
+        if (!window.audioContext) {
+          window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // Different frequencies for different notification types
+        let frequency;
+        switch (type) {
+          case 'success':
+            frequency = 800;
+            break;
+          case 'warning':
+            frequency = 600;
+            break;
+          case 'error':
+            frequency = 400;
+            break;
+          default:
+            frequency = 700;
+        }
+        
+        const oscillator = window.audioContext.createOscillator();
+        const gainNode = window.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(window.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, window.audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, window.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + 0.3);
+        
+        oscillator.start(window.audioContext.currentTime);
+        oscillator.stop(window.audioContext.currentTime + 0.3);
+      } catch (error) {
+        console.warn('Could not play notification sound:', error);
+      }
+    }
+
+    // Handle notification actions
+    function handleNotificationAction(action, data) {
+      switch (action) {
+        case 'open_task':
+          if (data.taskId) {
+            window.location.href = `/taskboard.php?task=${data.taskId}`;
+          }
+          break;
+        case 'open_calendar':
+          if (data.eventId) {
+            window.location.href = `/calendar.php?event=${data.eventId}`;
+          }
+          break;
+        case 'open_note':
+          if (data.noteId) {
+            // Open notes app with specific note
+            openNotesApp();
+            // Load specific note (implementation depends on notes app)
+          }
+          break;
+        case 'open_finance':
+          window.location.href = '/havetopay.php';
+          break;
+        default:
+          console.log('Unknown notification action:', action);
+      }
+    }
+
+    // Check for notifications periodically
+    function startNotificationPolling() {
+      // Check every 30 seconds for new notifications
+      setInterval(async () => {
+        await checkForNewNotifications();
+      }, 30000);
+    }
+
+    // Check for new notifications
+    async function checkForNewNotifications() {
+      try {
+        const response = await fetch('/api/notifications.php?since=' + (localStorage.getItem('lastNotificationCheck') || ''));
+        const data = await response.json();
+        
+        if (data.success && data.notifications && data.notifications.length > 0) {
+          data.notifications.forEach(notification => {
+            sendNotification(
+              notification.title,
+              notification.message,
+              notification.type,
+              notification.data ? JSON.parse(notification.data) : null
+            );
+          });
+          
+          // Update last check time
+          localStorage.setItem('lastNotificationCheck', new Date().toISOString());
+        }
+      } catch (error) {
+        console.error('Error checking for notifications:', error);
+      }
+    }
+
+    // Initialize notification system
+    function initializeNotifications() {
+      // Request notification permission on first load
+      if ('Notification' in window && Notification.permission === 'default') {
+        // Don't request immediately, wait for user interaction
+        document.addEventListener('click', function requestPermissionOnce() {
+          if (localStorage.getItem('desktop_enabled') !== 'false') {
+            Notification.requestPermission();
+          }
+          document.removeEventListener('click', requestPermissionOnce);
+        }, { once: true });
+      }
+      
+      // Start polling for notifications
+      startNotificationPolling();
+      
+      // Check immediately
+      checkForNewNotifications();
+      
+      // Update notification badge
+      updateNotificationBadge();
+    }
+
+    // Update notification badge
+    async function updateNotificationBadge() {
+      try {
+        const response = await fetch('/api/notifications.php?action=unread_count');
+        const data = await response.json();
+        
+        if (data.success && data.count !== undefined) {
+          const badge = document.getElementById('notificationBadge');
+          if (badge) {
+            if (data.count > 0) {
+              badge.textContent = data.count > 99 ? '99+' : data.count;
+              badge.style.display = 'flex';
+            } else {
+              badge.style.display = 'none';
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error updating notification badge:', error);
+      }
+    }
+
+    // Show notification to user immediately
+    function showNotification(title, message, type = 'info') {
+      showInAppNotification(title, message, type);
+      updateNotificationBadge(); // Update badge when new notification is shown
     }
 
     // Data Management Functions
@@ -3155,6 +3625,7 @@
       applyLayoutSettings();
       updateControlBarState();
       setupKeyboardShortcuts();
+      initializeNotifications(); // Add notification system
       
       // Apply theme on load
       const theme = localStorage.getItem('theme') || 'dark';
