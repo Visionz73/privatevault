@@ -1880,6 +1880,7 @@
         glassContainers.forEach(container => {
           container.style.background = 'rgba(255, 255, 255, 0.25)';
           container.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+          container.style.color = '#1f2937';
         });
         
         // Update control bar icon
@@ -2612,12 +2613,19 @@
       const debugMode = modal.querySelector('#debugMode');
       const showPerformance = modal.querySelector('#showPerformance');
       
+      // Set current values
+      languageSelect.value = localStorage.getItem('language') || 'de';
+      timezoneSelect.value = localStorage.getItem('timezone') || 'Europe/Berlin';
+      
       languageSelect.addEventListener('change', function() {
         localStorage.setItem('language', this.value);
+        showNotification('Sprache geändert. Seite wird neu geladen...', 'info');
+        setTimeout(() => location.reload(), 2000);
       });
       
       timezoneSelect.addEventListener('change', function() {
         localStorage.setItem('timezone', this.value);
+        showNotification('Zeitzone geändert', 'success');
       });
       
       autoUpdates.addEventListener('change', function() {
@@ -2626,23 +2634,22 @@
       
       debugMode.addEventListener('change', function() {
         localStorage.setItem('debugMode', this.checked);
+        console.log('Debug-Modus:', this.checked ? 'aktiviert' : 'deaktiviert');
       });
       
       showPerformance.addEventListener('change', function() {
         localStorage.setItem('showPerformance', this.checked);
         togglePerformanceMetrics(this.checked);
       });
-    }
-
-    // Helper Functions for Control Bar
+    }    // Helper Functions for Control Bar
     function createModal(title, content) {
       const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
       modal.innerHTML = `
-        <div class="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-          <div class="p-6 border-b border-white/10">
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6 border-b border-white/20">
             <div class="flex items-center justify-between">
-              <h2 class="text-xl font-semibold text-white">${title}</h2>
+              <h3 class="text-xl font-semibold text-white">${title}</h3>
               <button class="text-white/60 hover:text-white transition-colors" onclick="this.closest('.fixed').remove()">
                 <i class="fas fa-times"></i>
               </button>
@@ -2750,13 +2757,6 @@
               <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('small')">
                 <i class="fas fa-th-large mb-1"></i>
                 <div class="text-xs">Klein</div>
-              </button>
-              <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('medium')">
-                <i class="fas fa-th mb-1"></i>
-                <div class="text-xs">Mittel</div>
-              </button>
-              <button class="p-3 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors" onclick="setWidgetSize('large')">
-                <i class="fas fa-th-large mb-1"></i>
                 <div class="text-xs">Groß</div>
               </button>
             </div>
