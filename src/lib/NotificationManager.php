@@ -276,5 +276,37 @@ class NotificationManager {
             $data
         );
     }
+
+    /**
+     * Fetch notifications with pagination and optional filters
+     */
+    public function listNotifications(int $userId, int $limit = 20, int $offset = 0, bool $unreadOnly = false, ?string $type = null): array {
+        $limit = max(1, min(100, $limit));
+        $offset = max(0, $offset);
+        $sql = "SELECT id, title, message, type, data, created_at, read_at FROM notifications WHERE user_id = ?";
+        $params = [$userId];
+        if ($unreadOnly) { $sql .= " AND read_at IS NULL"; }
+        if ($type) { $sql .= " AND type = ?"; $params[] = $type; }
+        $sqlCount = "SELECT COUNT(*) FROM (".$sql.") c";
+        $sql .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        $paramsWithLimits = array_merge($params, [$limit, $offset]);
+        try {
+            $stmt = $this->pdo->prepare($sqlCount);
+            $stmt->execute($params);
+            $total = (int)$stmt->fetchColumn();
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($paramsWithLimits);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return [
+                'total' => $total,
+                'limit' => $limit,
+                'offset' => $offset,
+                'notifications' => $rows
+            ];
+        } catch (\Throwable $e) {
+            error_log('Failed to list notifications: '.$e->getMessage());
+            return ['total' => 0, 'limit' => $limit, 'offset' => $offset, 'notifications' => []];
+        }
+    }
 }
 ?>
